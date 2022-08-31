@@ -1,0 +1,245 @@
+name: "Check Pull Request Readiness"
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  install-dependencies:
+    name: Installing dependencies
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Install dependencies
+        if: steps.cache.outputs.cache-hit != 'true'
+        run: |
+          bash config/venv_setup.sh
+      - name: Confirming everything is OK
+        run: |
+          ls -la venv
+
+  pr-name-check:
+    name: PR name check
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+    timeout-minutes: 2
+    needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
+      PR_AUTHOR: ${{ github.actor }}
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: PR name check
+        run: |
+          bash config/stage_1_style_tests/_stage_pr_name_check.sh "$PR_NAME" "$PR_AUTHOR"
+
+  code-style:
+    name: Code Style
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [ install-dependencies ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Code Syle
+        run: |
+          bash config/stage_1_style_tests/_stage_run_lint.sh
+
+  type-check:
+    name: Check types
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [ code-style ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Code Syle
+        run: |
+          bash config/stage_1_style_tests/_stage_run_mypy.sh
+
+  unittests:
+    name: Unittests
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    needs: [ install-dependencies ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Run tests
+        run: |
+          bash config/run_tests.sh
+
+  start:
+    name: Check start.py
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    needs: [ install-dependencies ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Run start
+        run: |
+          bash config/run_start.sh
+
+  coverage:
+    name: Coverage
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    needs: [ unittests ]
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Run start
+        run: |
+          bash config/collect_coverage/run_coverage.sh
+
+  spellcheck:
+    name: Spellcheck
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [ install-dependencies ]
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Aspell
+        run: |
+          sudo apt-get install aspell aspell-en aspell-ru
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Spell check
+        run: |
+          bash config/spellcheck/_stage_spellcheck.sh
+  stubgen:
+    name: Stub generation
+    runs-on: ubuntu-latest
+    timeout-minutes: 1
+    needs: [ spellcheck ]
+    steps:
+      - uses: actions/checkout@master
+      - name: Install Aspell
+        run: |
+          sudo apt-get install aspell aspell-en aspell-ru
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+      - name: Cache pip
+        uses: actions/cache@v2
+        id: cache
+        with:
+          path: |
+            ./venv/
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-venv-
+      - name: Stubgen check
+        run: |
+          bash config/stage_1_style_tests/_stage_run_stubgen.sh
