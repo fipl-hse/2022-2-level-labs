@@ -1,0 +1,12 @@
+{
+    "lab_1_classify_by_frequencies": 93,
+    "lab_1_concordance": 95,
+    "lab_1_frequency_dictionary": 70,
+    "lab_2_classify_by_knn": 96,
+    "lab_2_edit_distance": 46,
+    "lab_2_plagiarism": 91,
+    "lab_2_spellchecker": 57,
+    "lab_3_classify_by_ngrams": 100,
+    "lab_4_doc2vec_by_tfidf": 51,
+    "lab_4_generate_texts_by_ngrams": 88
+}

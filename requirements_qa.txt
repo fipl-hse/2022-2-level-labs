@@ -1,0 +1,8 @@
+black==22.6.0
+coverage[toml]==6.4.4
+mypy==0.971
+pylint==2.7.1
+pymdown-extensions==9.5
+pyspelling==2.8.1
+pytest==6.2.5
+typed-argument-parser==1.7.2
