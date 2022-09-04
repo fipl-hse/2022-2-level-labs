@@ -35,23 +35,26 @@
 
 ### Базовый уровень
 
-1. Mark Lutz.
+1. :books: :us: M. Lutz.
    [Learning Python](https://www.amazon.com/Learning-Python-5th-Mark-Lutz/dp/1449355730).
-2. Хирьянов Тимофей Фёдорович. Видеолекции.
+2. :video_camera: :ru: Хирьянов Т.Ф. Видеолекции.
    [Практика программирования на Python 3](https://www.youtube.com/watch?v=fgf57Sa5A-A&list=PLRDzFCPr95fLuusPXwvOPgXzBL3ZTzybY)
-   .
-3. Хирьянов Тимофей Фёдорович. Видеолекции.
+   . 2019.
+3. :video_camera: :ru: Хирьянов Т.Ф. Видеолекции.
    [Алгоритмы и структуры данных на Python 3](https://www.youtube.com/watch?v=KdZ4HF1SrFs&list=PLRDzFCPr95fK7tr47883DFUbm4GeOjjc0)
-   .
-4. [Официальная документация](https://docs.python.org/3/).
+   . 2017.
+5. :bookmark: :us: [Официальная документация](https://docs.python.org/3/).
 
 ### Продвинутый уровень
 
-1. Mark Lutz.
+1. :books: :us: M. Lutz.
    [Programming Python: Powerful Object-Oriented Programming](https://www.amazon.com/Programming-Python-Powerful-Object-Oriented/dp/0596158106)
-1. J. Burton Browning.
+2. :books: :us: J. Burton Browning.
    [Pro Python 3: Features and Tools for Professional Development](https://www.amazon.com/Pro-Python-Features-Professional-Development/dp/1484243846)
-   .
+   . 
+3. :video_camera: :ru: Хирьянов Т.Ф. Видеолекции.
+   [Основы программирования и анализа данных на Python](https://teach-in.ru/course/python-programming-and-data-analysis-basics)
+   . 2022.
 
 ## Порядок сдачи и оценивания лабораторной работы
 
@@ -83,6 +86,6 @@
 
 ## Ресурсы
 
-1. [Таблица успеваемости](https://docs.google.com/spreadsheets/d/1haOOmZQqzo9xykCbpeJ7uP1ZgO7N_Hsrhpb1apZtiDE/edit?usp=sharing)
+1. [Таблица успеваемости](https://docs.google.com/spreadsheets/d/1MEH1VMmOeVBs1n88x_j_U_jat6JYkDNNKN6v0RJYFyA/edit?usp=sharing)
 2. [Инструкция по запуску юнит тестов](./docs/public/tests.md)
 2. [Инструкция по настройке и обновлению репозитория](./docs/public/repository_ru.md)
