@@ -10,7 +10,7 @@ def convert_raw_pr_name(pr_name_raw: str) -> str:
 
 
 def is_matching_name(pr_name: str, compiled_pattern, example_name) -> bool:
-    if re.search(compiled_pattern, pr_name):
+    if not re.search(compiled_pattern, pr_name):
         print('Your Pull Request title does not confirm to the template.')
         print(example_name, end='\n\n')
         return False

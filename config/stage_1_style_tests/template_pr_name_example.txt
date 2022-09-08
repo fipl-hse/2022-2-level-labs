@@ -1,1 +1,1 @@
-Laboratory Work #\d, \w+ \w+ - 20FPL\d
+Laboratory Work #\d, \w+ \w+ - 2\dFPL\d
