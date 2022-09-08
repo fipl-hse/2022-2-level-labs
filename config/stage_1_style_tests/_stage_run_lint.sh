@@ -20,11 +20,9 @@ for LAB_NAME in $LABS; do
 
 	lint_output=$(python -m pylint --rcfile config/stage_1_style_tests/.pylintrc ${LAB_NAME})
 
-  echo "ABCASDASDSADASDSAD"
-
   python config/stage_1_style_tests/lint_level.py \
-          --lint-output "$lint_output" \
-          --target-score "$TARGET_SCORE"
+          --lint-output "${lint_output}" \
+          --target-score "${TARGET_SCORE}"
 
   if [[ $? -ne 0 ]]; then
     echo "Lint check failed for lab ${LAB_NAME}."
