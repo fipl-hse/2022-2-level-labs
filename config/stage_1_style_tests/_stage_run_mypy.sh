@@ -13,10 +13,10 @@ FAILED=0
 LABS=$(cat config/labs.txt)
 
 for LAB_NAME in $LABS; do
-	echo "Running lint for lab ${LAB_NAME}"
+	echo "Running mypy for lab ${LAB_NAME}"
   TARGET_SCORE=$(bash config/get_mark.sh ${LAB_NAME})
 
-  if [[ ${TARGET_SCORE} > 7 ]]; then
+  if [[ ${TARGET_SCORE} -gt 7 ]]; then
     echo "Running mypy checks for marks 8 and 10"
     mypy ${LAB_NAME}
   fi

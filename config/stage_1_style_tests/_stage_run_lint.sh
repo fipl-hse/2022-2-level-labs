@@ -15,14 +15,14 @@ FAILED=0
 LABS=$(cat config/labs.txt)
 
 for LAB_NAME in $LABS; do
-	echo "Running lint for lab ${lab}"
+	echo "Running lint for lab ${LAB_NAME}"
   TARGET_SCORE=$(bash config/get_mark.sh ${LAB_NAME})
 
-	lint_output=$(python -m pylint --rcfile config/stage_1_style_tests/.pylintrc ${LAB_NAME})
+	lint_output=$(python -m pylint --exit-zero --rcfile config/stage_1_style_tests/.pylintrc ${LAB_NAME})
 
   python config/stage_1_style_tests/lint_level.py \
-          --lint-output "$lint_output" \
-          --target-score "$TARGET_SCORE"
+          --lint-output "${lint_output}" \
+          --target-score "${TARGET_SCORE}"
 
   if [[ $? -ne 0 ]]; then
     echo "Lint check failed for lab ${LAB_NAME}."
