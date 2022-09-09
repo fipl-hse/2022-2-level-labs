@@ -17,7 +17,16 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    new_text = ""
+    if type(text) == str:
+        text = text.lower()
+        for symbol in text:
+            if symbol == " " or symbol.isalpha():
+                new_text += symbol
+        split_words = new_text.split()
+        return split_words
+    else:
+        return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -33,7 +42,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    not_stop_words = []
+    if type(tokens) == list and type(stop_words) == list and stop_words != []:
+        for word in tokens:
+            if word not in stop_words:
+                not_stop_words.append(word)
+        return not_stop_words
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -157,3 +173,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
+
+# remove_stop_words(clean_and_tokenize(target_text), stop_words)
