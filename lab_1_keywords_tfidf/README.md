@@ -1,7 +1,6 @@
 
 # Лабораторная работа №1  
-  
-## Дано  
+## Дано check
 
 1. Текст сказки Ганса Христана Андерсена "Дюймовочка" на русском языке [(ссылка)](https://github.com/fipl-hse/2022-2-level-labs-admin/blob/main/lab_1_keywords_tfidf/assets/%D0%94%D1%8E%D0%B9%D0%BC%D0%BE%D0%B2%D0%BE%D1%87%D0%BA%D0%B0.txt)
 2. Список стоп-слов (предлоги, союзы, местоимения и другие неполнозначные слова русского языка) [(ссылка)](https://github.com/fipl-hse/2022-2-level-labs-admin/blob/main/lab_1_keywords_tfidf/assets/stop_words.txt)
