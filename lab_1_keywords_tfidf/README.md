@@ -3,10 +3,10 @@
   
 ## Дано  
 
-1. Текст сказки Ганса Христана Андерсена "Дюймовочка" на русском языке [(ссылка)](https://github.com/fipl-hse/2022-2-level-labs-admin/blob/main/lab_1_keywords_tfidf/assets/%D0%94%D1%8E%D0%B9%D0%BC%D0%BE%D0%B2%D0%BE%D1%87%D0%BA%D0%B0.txt)
-2. Список стоп-слов (предлоги, союзы, местоимения и другие неполнозначные слова русского языка) [(ссылка)](https://github.com/fipl-hse/2022-2-level-labs-admin/blob/main/lab_1_keywords_tfidf/assets/stop_words.txt)
-3. Словарь с Inverse Document Frequency значениями для каждого из слов коллекции сказок Г. Х. Андерсена [(ссылка)](https://github.com/fipl-hse/2022-2-level-labs-admin/blob/main/lab_1_keywords_tfidf/assets/IDF.json)
-4. Словарь с корпусными частотами для каждого из слов коллекции сказок Г. Х. Андерсена [(ссылка)](https://github.com/fipl-hse/2022-2-level-labs-admin/blob/main/lab_1_keywords_tfidf/assets/corpus_frequencies.json)
+1. Текст сказки Ганса Христана Андерсена "Дюймовочка" на русском языке [(ссылка)](assets/Дюймовочка.txt)
+2. Список стоп-слов (предлоги, союзы, местоимения и другие неполнозначные слова русского языка) [(ссылка)](assets/stop_words.txt)
+3. Словарь с Inverse Document Frequency значениями для каждого из слов коллекции сказок Г. Х. Андерсена [(ссылка)](assets/IDF.json)
+4. Словарь с корпусными частотами для каждого из слов коллекции сказок Г. Х. Андерсена [(ссылка)](assets/corpus_frequencies.json)
   
 Необходимо выделить ключевые слова из текста сказки "Дюймовочка".
 
@@ -270,5 +270,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> dic
 ## Узнать больше
 
 * [Источник текстов Г. Х. Андерсена](https://lukoshko.net/storyList/skazki-andersena.htm)
+* [Пример создания частотного словаря и словаря IDF из корпуса](assets/freq_and_idf_dictionary_creation.py)
 * [TF-IDF clearly explained](https://medium.com/swlh/a-quick-intro-to-tf-idf-483db9a749f5)
 * [Три странички, объясняющие принцип работы $\chi^2$ для взвешивания терминов](https://cyberleninka.ru/article/n/raspredelenie-hi-kvadrat-i-vzveshivanie-terminov)  
