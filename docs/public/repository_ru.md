@@ -17,5 +17,5 @@ git fetch upstream
 3. Обновляем свой репозиторий с изменениями из удаленного репозитория:
 
 ```bash
-git merge upstream/master
+git merge upstream/main
 ```
