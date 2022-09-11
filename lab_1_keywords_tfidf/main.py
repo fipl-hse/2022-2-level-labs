@@ -64,7 +64,18 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    freq_dict = {}
+    for token in tokens:
+        if token in freq_dict:
+            freq_dict[token] += 1
+        elif type(token) != str:
+            return None
+        else:
+            freq_dict[token] = 1
+    if tokens != list and tokens == []:
+        return None
+    else:
+        return freq_dict
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -82,7 +93,19 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    top_words = []
+    try:
+        sorted_freq = sorted(frequencies.values(), reverse=True)
+        for i in sorted_freq:
+            for key, value in frequencies.items():
+                if value == i:
+                    if len(top_words) < top:
+                        top_words.append(key)
+                elif type(key) != str:
+                    return None
+        return top_words
+    except TypeError:
+        return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
