@@ -5,7 +5,7 @@
 1. Создаем `upstream` таргет в репозитории:
 
 ```bash
-git remote add upstream https://github.com/fipl-hse/2021-2-level-labs
+git remote add upstream https://github.com/fipl-hse/2022-2-level-labs
 ```
 
 2. Получаем данные об изменениях в удаленном репозитории:
