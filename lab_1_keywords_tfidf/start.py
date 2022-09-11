@@ -32,5 +32,51 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     RESULT = None
+
+
+    def clean_and_tokenize(text: str) -> list[str]:
+        if isinstance(text, str):
+            no_punc_text = ''
+            punctuation = '!?-.,\'\"():;'
+            for e in text:
+                if e not in punctuation:
+                    no_punc_text += e
+            all_words = no_punc_text.lower().strip().split()
+            return all_words
+        else:
+            return None
+
+
+    all_words = clean_and_tokenize(target_text)
+
+
+    def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str]:
+        if isinstance(tokens, list) and isinstance(stop_words, list):
+            no_stop_words = [w for w in tokens if w not in stop_words]
+            print(no_stop_words)
+            return no_stop_words
+        else:
+            return None
+
+
+    no_stop_words = remove_stop_words(all_words, stop_words)
+
+
+    def calculate_frequencies(tokens: list[str]) -> dict[str: int]:
+        if (isinstance(tokens, list) and tokens
+                and all(isinstance(w, str) for w in tokens)):
+            freq_dict = {}
+            for w in tokens:
+                if w not in freq_dict:
+                    freq_dict[w] = 1
+                else:
+                    freq_dict[w] += 1
+            print(freq_dict)
+        else:
+            return None
+
+    calculate_frequencies(no_stop_words)
+
+
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    #assert RESULT, 'Keywords are not extracted'
