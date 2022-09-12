@@ -4,6 +4,8 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
+from typing import Optional, Union
+
 
 if __name__ == "__main__":
 
@@ -34,7 +36,7 @@ if __name__ == "__main__":
     RESULT = None
 
 
-    def clean_and_tokenize(text: str) -> list[str]:
+    def clean_and_tokenize(text: str) -> Optional[list[str]]:
         if isinstance(text, str):
             no_punc_text = ''
             punctuation = '!?-.,\'\"():;'
@@ -50,7 +52,7 @@ if __name__ == "__main__":
     all_words = clean_and_tokenize(target_text)
 
 
-    def remove_stop_words(tokens: list[str], stop_words: list[str]) -> list[str]:
+    def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
         if isinstance(tokens, list) and isinstance(stop_words, list):
             no_stop_words = [w for w in tokens if w not in stop_words]
             print(no_stop_words)
@@ -72,10 +74,32 @@ if __name__ == "__main__":
                 else:
                     freq_dict[w] += 1
             print(freq_dict)
+            return(freq_dict)
+
         else:
             return None
 
-    calculate_frequencies(no_stop_words)
+
+    freq_dict = calculate_frequencies(no_stop_words)
+
+
+    def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> list[str]:
+        if isinstance(frequencies, dict) and isinstance(top, int):
+            val_lst = sorted(frequencies.values(), reverse=True)
+            top_words = []
+            counter = 0
+            for i in range(top):
+                search_freq = val_lst[counter]
+                counter += 1
+                top_words += [word for word, freq in frequencies.items() if freq == search_freq]
+            print(val_lst)
+            print(top_words)
+        else:
+            return None
+
+
+    top_words = get_top_n(freq_dict, 10)
+
 
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
