@@ -7,7 +7,14 @@ echo 'Running mypy check...'
 
 source venv/bin/activate
 
+set +e
+
 mypy config seminars
+
+if [[ "$?" != "0" ]]; then
+  echo "Mypy check failed for config and seminars folder"
+  exit 1
+fi
 
 FAILED=0
 LABS=$(cat config/labs.txt)
@@ -29,10 +36,11 @@ for LAB_NAME in $LABS; do
   fi
 done
 
+set -e
+
 if [[ ${FAILED} -eq 1 ]]; then
 	echo "Mypy check failed."
 	exit ${FAILED}
 fi
 
 echo "Mypy check passed."
-
