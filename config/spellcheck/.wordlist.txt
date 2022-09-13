@@ -38,6 +38,7 @@
 конкордансов
 конкордансы
 контекстов
+коллабораторы
 Казюлина
 Кузнецова
 лейбл
@@ -113,6 +114,7 @@
 форк
 форком
 форка
+форках
 форке
 ФПЛ
 Хирьянов
@@ -125,13 +127,16 @@
 Actions
 AndreiKashchikhin
 and
+admins
 bookmark
 books
 Browning
 Burton
+blob
 camera
 com
 commit
+config
 level-labs
 chi
 clearly
@@ -145,6 +150,7 @@ Features
 for
 frac
 Frequency
+fipl-hse
 git
 Github
 IDF
@@ -156,6 +162,7 @@ Learning
 log
 Lutz
 Mark
+main
 k-ближайших
 Mac
 MacOS
@@ -191,5 +198,6 @@ Tools
 TF
 TF-IDF
 TFIDF
+txt
 XX
 Windows
