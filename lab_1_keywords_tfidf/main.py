@@ -4,69 +4,98 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 
+import json
+from pathlib import Path
+
+if __name__ == "__main__":
+
+    # finding paths to the necessary utils
+    PROJECT_ROOT = Path(__file__).parent
+    ASSETS_PATH = PROJECT_ROOT / 'assets'
+
+    # reading the text from which keywords are going to be extracted
+    TARGET_TEXT_PATH = ASSETS_PATH / 'Дюймовочка.txt'
+    with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
+        target_text = file.read()
+
+    # reading list of stop words
+    STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
+    with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
+        stop_words = file.read().split('\n')
+
+    # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
+    IDF_PATH = ASSETS_PATH / 'IDF.json'
+    with open(IDF_PATH, 'r', encoding='utf-8') as file:
+        idf = json.load(file)
+
+    # reading frequencies for all tokens in the corpus of H.C. Andersen tales
+    CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
+    with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
+        corpus_freqs = json.load(file)
+
+    RESULT = None
+
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    """
-    Removes punctuation, casts to lowercase, splits into tokens
-
-    Parameters:
-    text (str): Original text
-
-    Returns:
-    list[str]: A sequence of lowercase tokens with no punctuation
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    if isinstance(text, str):
+        no_punc_text = ''
+        punctuation = '!?-.,\'\"():;@#№$%^<>&*/`~|'
+        for e in text:
+            if e not in punctuation:
+                no_punc_text += e
+        all_words = no_punc_text.lower().strip().split()
+        return all_words
+    else:
+        return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
-    """
-    Excludes stop words from the token sequence
-
-    Parameters:
-    tokens (List[str]): Original token sequence
-    stop_words (List[str]: Tokens to exclude
-
-    Returns:
-    List[str]: Token sequence that does not include stop words
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        no_stop_words = [w for w in tokens if w not in stop_words]
+        return no_stop_words
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
-    """
-    Composes a frequency dictionary from the token sequence
+    if (isinstance(tokens, list) and tokens
+            and all(isinstance(w, str) for w in tokens)):
+        freq_dict = {}
+        for w in tokens:
+            if w not in freq_dict:
+                freq_dict[w] = 1
+            else:
+                freq_dict[w] += 1
+        return freq_dict
 
-    Parameters:
-    tokens (List[str]): Token sequence to count frequencies for
-
-    Returns:
-    Dict: {token: number of occurrences in the token sequence} dictionary
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    """
-    Extracts a certain number of most frequent tokens
+    if (isinstance(frequencies, dict) and frequencies.values() and frequencies.keys()
+            and isinstance(top, int) and top > 0):
 
-    Parameters:
-    frequencies (Dict): A dictionary with tokens and
-    its corresponding frequency values
-    top (int): Number of token to extract
+        counter = 0
+        top_words = []
+        val_lst = sorted(frequencies.values(), reverse=True)
 
-    Returns:
-    List[str]: Sequence of specified length
-    consisting of tokens with the largest frequency
+        if top > len(frequencies.keys()):
+            for v in val_lst:
+                search_freq = val_lst[counter]
+                counter += 1
+                top_words += [word for word, freq in frequencies.items() if freq == search_freq and word not in top_words]
+            return top_words
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+        else:
+            for i in range(top):
+                search_freq = val_lst[counter]
+                counter += 1
+                top_words += [word for word, freq in frequencies.items() if freq == search_freq and word not in top_words]
+            return top_words
+
+    else:
+        return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
