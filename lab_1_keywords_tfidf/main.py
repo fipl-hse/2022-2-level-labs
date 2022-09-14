@@ -73,45 +73,47 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    if (isinstance(frequencies, dict) and frequencies.values() and frequencies.keys()
-            and isinstance(top, int) and top > 0):
+    if (isinstance(frequencies, dict) and frequencies
+            and all(isinstance(k, str) for k in frequencies.keys())
+            and all(isinstance(v, int or float) for v in frequencies.values())
+            and isinstance(top, int) and type(top) != bool and top > 0):
 
-        counter = 0
-        top_words = []
         val_lst = sorted(frequencies.values(), reverse=True)
+        top_words = []
+        counter = 0
 
-        if top > len(frequencies.keys()):
+        if top > len(val_lst):
             for v in val_lst:
                 search_freq = val_lst[counter]
                 counter += 1
-                top_words += [word for word, freq in frequencies.items() if freq == search_freq and word not in top_words]
-            return top_words
+                top_words += [word for word, freq in frequencies.items()
+                              if freq == search_freq and word not in top_words]
 
         else:
             for i in range(top):
                 search_freq = val_lst[counter]
                 counter += 1
-                top_words += [word for word, freq in frequencies.items() if freq == search_freq and word not in top_words]
-            return top_words
+                top_words += [word for word, freq in frequencies.items()
+                              if freq == search_freq and word not in top_words]
+        while len(top_words) > top:
+            top_words.pop()
+
+        return top_words
 
     else:
         return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
-    """
-    Calculates Term Frequency score for each word in a token sequence
-    based on the raw frequency
-
-    Parameters:
-    frequencies (Dict): Raw number of occurrences for each of the tokens
-
-    Returns:
-    dict: A dictionary with tokens and corresponding term frequency score
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    if isinstance(frequencies, dict) and frequencies.keys() and frequencies.values():
+        all_words = sum(frequencies.values())
+        tf_dict = {}
+        for w, f in frequencies.items():
+            tf = f / all_words
+            tf_dict[w] = tf
+        return tf_dict
+    else:
+        None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
