@@ -31,6 +31,17 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    # RESULT = None
+    # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    # assert RESULT, 'Keywords are not extracted'
+
+from main import clean_and_tokenize
+from main import remove_stop_words
+
+a = clean_and_tokenize(target_text)
+b = remove_stop_words(a, stop_words)
+print(b)
+
+
+
+

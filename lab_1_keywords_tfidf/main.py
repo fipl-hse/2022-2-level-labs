@@ -17,7 +17,10 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    text = text.lower()
+    no_punctuation = text.replace(",", "").replace("?", "").replace("-", "").replace("!", "").replace(")", "").replace("(", "").replace(".", "").replace(":", "").replace(";", "").replace("  ", " ")
+    clean_text = no_punctuation.split()
+    return clean_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -33,7 +36,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    tokens_cleaned = [i for i in tokens if i not in stop_words]
+    return tokens_cleaned
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
