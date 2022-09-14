@@ -7,6 +7,9 @@ from typing import Optional, Union
 import json
 from pathlib import Path
 
+from math import log
+
+
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
@@ -105,33 +108,39 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
-    if isinstance(frequencies, dict) and frequencies.keys() and frequencies.values():
+    if (isinstance(frequencies, dict)
+        and all(isinstance(k, str) for k in frequencies.keys())
+            and all(isinstance(v, int or float) for v in frequencies.values())):
+
         all_words = sum(frequencies.values())
         tf_dict = {}
+
         for w, f in frequencies.items():
             tf = f / all_words
             tf_dict[w] = tf
         return tf_dict
+
     else:
         None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
-    """
-    Calculates TF-IDF score for each of the tokens
-    based on its TF and IDF scores
+    if (isinstance(term_freq, dict) and term_freq and all(isinstance(w, str) for w in term_freq.keys())
+            and all(isinstance(f, float) for f in term_freq.values())
+            and isinstance(idf, dict) and all(isinstance(w, str) for w in idf.keys())
+            and all(isinstance(f, float) for f in idf.values())):
 
-    Parameters:
-    term_freq (Dict): A dictionary with tokens and its corresponding TF values
-    idf (Dict): A dictionary with tokens and its corresponding IDF values
+        freq_dict = {}
 
-    Returns:
-    Dict: A dictionary with tokens and its corresponding TF-IDF values
+        for w in term_freq:
+            if w not in idf.keys():
+                idf[w] = log(47 / 1)
+            tfidf = term_freq[w] * idf[w]
+            freq_dict[w] = tfidf
+        return freq_dict
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
-
+    else:
+        return None
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
