@@ -22,7 +22,7 @@ class CalculateChiValuesTest(unittest.TestCase):
         """
         expected_frequencies = {'this': 0.1, 'is': 0.4, 'example': 0.2}
 
-        observed_frequencies = {'this': 0.01, 'is': 0.04, 'example': 0.02}
+        observed_frequencies = {'this': 1, 'is': 4, 'example': 2}
 
         expected = {'example': 0.162, 'is': 0.324, 'this': 0.081}
 
@@ -37,7 +37,7 @@ class CalculateChiValuesTest(unittest.TestCase):
         """
         expected_frequencies = {}
 
-        observed_frequencies = {'this': 0.01, 'is': 0.04, 'example': 0.02}
+        observed_frequencies = {'this': 1, 'is': 4, 'example': 2}
 
         expected = None
 
@@ -72,7 +72,7 @@ class CalculateChiValuesTest(unittest.TestCase):
             self.assertEqual(expected, actual)
 
         for bad_input in bad_inputs:
-            actual = calculate_chi_values({'a': 2, 'b': 3}, bad_input)
+            actual = calculate_chi_values({'a': 0.2, 'b': 0.3}, bad_input)
             self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -83,7 +83,7 @@ class CalculateChiValuesTest(unittest.TestCase):
         """
         expected_frequencies = {'this': 0.1, 'is': 0.4, 'example': 0.2, None: 0.1}
 
-        observed_frequencies = {'this': 0.01, 'is': 0.04, 'example': 0.02}
+        observed_frequencies = {'this': 1, 'is': 4, 'example': 2}
 
         expected = None
 
@@ -106,13 +106,13 @@ class CalculateChiValuesTest(unittest.TestCase):
         """
         expected_frequencies = {'this': 0.1, 'is': 0.4, 'example': 0.2}
 
-        observed_frequencies = {'this': 0.01, 'is': 0.04, 'example': 0.02, None: 123}
+        observed_frequencies = {'this': 1, 'is': 4, 'example': 2, None: 123}
 
         expected = None
 
         actual = calculate_chi_values(expected_frequencies, observed_frequencies)
         self.assertEqual(expected, actual)
 
-        observed_frequencies = {'this': 0.01, 'is': 0.04, 'example': 0.02, 'abc': [0.2]}
+        observed_frequencies = {'this': 1, 'is': 4, 'example': 2, 'abc': [0.2]}
         actual = calculate_chi_values(expected_frequencies, observed_frequencies)
         self.assertEqual(expected, actual)
