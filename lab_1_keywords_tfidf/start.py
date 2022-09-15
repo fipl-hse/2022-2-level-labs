@@ -3,10 +3,11 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-
+from main import (clean_and_tokenize, remove_stop_words,
+                  calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf,
+                  calculate_expected_frequency, calculate_chi_values)
 
 if __name__ == "__main__":
-
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
@@ -31,6 +32,18 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
+    tokens = clean_and_tokenize(target_text)
+    tokens = remove_stop_words(tokens, stop_words)
+    freq_dict = calculate_frequencies(tokens)
+    tf_dict = calculate_tf(freq_dict)
+    tfidf_dict = calculate_tfidf(tf_dict, idf)
+    top = get_top_n(tfidf_dict, 10)
+    print('Most frequent words by tfidf_dict:', ', '.join(top), end='.\n')
+    expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+    chi_dict = calculate_chi_values(expected_freq_dict, freq_dict)
+    top_chi = get_top_n(chi_dict, 10)
+    print('Most frequent words by chi value:', ', '.join(top_chi), end='.\n')
+
+    RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
