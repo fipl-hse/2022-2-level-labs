@@ -40,7 +40,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        lst = list()
+        for item in tokens:
+            if not item in stop_words:
+                lst.append(item)
+    else:
+        lst = None
+    return lst
+
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
