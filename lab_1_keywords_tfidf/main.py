@@ -14,11 +14,11 @@ def right_type(container: Union[list, tuple, dict, set], container_type: type,
     """
     empty_check = allow_empty or container
     if type(container) == container_type and type(container) == dict:
-        return (all([type(key) == elements_type['keys'] for key in container.keys()])
-                and all([type(value) == elements_type['values'] for value in container.values()])
+        return (all(type(key) == elements_type['keys'] for key in container.keys())
+                and all(type(value) == elements_type['values'] for value in container.values())
                 and empty_check)
     if type(container) == container_type and type(container) != dict:
-        return all([type(i) == elements_type for i in container]) and empty_check
+        return all(type(i) == elements_type for i in container) and empty_check
     return False
 
 
