@@ -3,7 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-
+import string
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -17,7 +17,14 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(text, str):
+        text1 = text.lower()
+        text2 = text1.translate(str.maketrans('', '', string.punctuation))
+        lst = text2.split()
+    else:
+        lst = None
+    return lst
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:

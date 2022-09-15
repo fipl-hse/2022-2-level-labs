@@ -1,9 +1,9 @@
 """
 Frequency-driven keyword extraction starter
 """
-import json
+import main
 from pathlib import Path
-
+import json
 
 if __name__ == "__main__":
 
@@ -32,5 +32,11 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     RESULT = None
+
+    text_step1 = main.clean_and_tokenize(target_text)
+    print(text_step1)
+
+
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
+
