@@ -125,11 +125,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    tf = {}
+    tf_dict = {}
     if correct_type(frequencies, [str, int]) is True:
         for key, value in frequencies.items():
-            tf[key] = value / len(tex)
-        return tf
+            tf_dict[key] = value / sum(frequencies.values())
+        return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -175,7 +175,7 @@ def calculate_expected_frequency(
     expected_dict = {}
     if correct_type(doc_freqs, [str, int]) is True and correct_type(corpus_freqs, [str, int]) is True:
         for key, value in doc_freqs.items():
-            l = len(target_text) - value
+            l = sum(doc_freqs.values()) - value
             m = sum(corpus_freqs.values()) - value
             k = corpus_freqs.get(key)
             expected_dict[key] = ((value + k) * (value + l)) / (value + k + l + m)
