@@ -34,8 +34,7 @@ if __name__ == "__main__":
     RESULT = None
 
     text_step1 = main.clean_and_tokenize(target_text)
-    print(text_step1)
-
+    text_step2 = main.remove_stop_words(text_step1, stop_words)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
