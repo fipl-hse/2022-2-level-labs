@@ -38,6 +38,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         without_punctuation = ''.join([i for i in text if i not in string.punctuation])
         tokens = [token for token in without_punctuation.lower().split()]
         return tokens
+    return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -55,6 +56,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if right_type(tokens, list, str) and right_type(stop_words, list, str):
         return [token for token in tokens if token not in stop_words]
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -71,6 +73,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if right_type(tokens, list, str, allow_empty=False):
         return {token: tokens.count(token) for token in tokens}
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -93,6 +96,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and (right_type(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)
                  or right_type(frequencies, dict, {'keys': str, 'values': float}, allow_empty=False))):
         return sorted(frequencies, key=frequencies.get, reverse=True)[:top]
+    return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -112,6 +116,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             and right_type(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)):
         total = sum(frequencies.values())
         return {term: occur / total for term, occur in frequencies.items()}
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -137,6 +142,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             else:
                 tfidf[term] = math.log(47 / (0 + 1)) * term_freq[term]
         return tfidf
+    return None
 
 
 def calculate_expected_frequency(
@@ -165,6 +171,7 @@ def calculate_expected_frequency(
             c = sum(doc_freqs.values()) - a
             new_freq[token] = ((a + c) * (a + b)) / (a + c + d + b)
         return new_freq
+    return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -189,6 +196,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
         for token in expected:
             new_freq[token] = ((observed[token] - expected[token]) ** 2) / expected[token]
         return new_freq
+    return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -214,3 +222,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
             return {word: value for word, value in chi_values.items() if value > criterion[alpha]}
         except KeyError:
             pass
+    return None
