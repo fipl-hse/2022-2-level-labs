@@ -24,7 +24,7 @@ class CalculateChiValuesTest(unittest.TestCase):
 
         observed_frequencies = {'this': 1, 'is': 4, 'example': 2}
 
-        expected = {'example': 0.162, 'is': 0.324, 'this': 0.081}
+        expected = {'example': 16.2, 'is': 32.4, 'this': 8.1}
 
         actual = calculate_chi_values(expected_frequencies, observed_frequencies)
         self.assertEqual(expected, actual)
