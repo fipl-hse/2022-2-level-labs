@@ -17,10 +17,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    text = text.lower()
-    no_punctuation = text.replace(",", "").replace("?", "").replace("-", "").replace("!", "").replace(")", "").replace("(", "").replace(".", "").replace(":", "").replace(";", "").replace("  ", " ")
-    clean_text = no_punctuation.split()
-    return clean_text
+    if type(text) == str:
+        text = text.lower().replace(",", "").replace("?", "").replace("-", "").replace("!", "").replace(")", "").replace("(", "").replace(".", "").replace(":", "").replace(";", "").replace("  ", " ").split()
+        return text
+    else:
+        return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -36,8 +37,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    tokens_cleaned = [i for i in tokens if i not in stop_words]
-    return tokens_cleaned
+    if type(tokens) == list and type(stop_words) == list:
+        tokens_cleaned = [i for i in tokens if i not in stop_words]
+        return tokens_cleaned
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -52,7 +56,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if type(tokens) == list:
+        frequency_dict = {i: tokens.count(i) for i in tokens}
+        return frequency_dict
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -70,7 +78,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if type(frequencies) == dict and type(top) == int:
+        sorting = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
+        final_sorting = sorting[:top]
+        top_words = []
+        for item in final_sorting:
+            top_words.append(item[0])
+        return top_words
+    else:
+        return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:

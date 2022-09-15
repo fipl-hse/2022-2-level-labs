@@ -37,9 +37,13 @@ if __name__ == "__main__":
 
 from main import clean_and_tokenize
 from main import remove_stop_words
+from main import calculate_frequencies
+from main import get_top_n
 
 a = clean_and_tokenize(target_text)
 b = remove_stop_words(a, stop_words)
+# c = calculate_frequencies(b)
+# d = get_top_n(c, 20)
 print(b)
 
 
