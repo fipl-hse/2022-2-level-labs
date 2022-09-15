@@ -36,7 +36,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if type(text) == str:
         without_punctuation = ''.join([i for i in text if i not in string.punctuation])
-        tokens = [token for token in without_punctuation.lower().split()]
+        tokens = without_punctuation.lower().split()
         return tokens
     return None
 
