@@ -23,11 +23,11 @@ def right_type_container(container: Union[list, tuple, dict, set], container_typ
     """
     empty_check = allow_empty or container
     if isinstance(container, container_type) and isinstance(container, dict):
-        return (all(type_check(key, elements_type['keys']) for key in container.keys())
+        return bool(all(type_check(key, elements_type['keys']) for key in container.keys())
                 and all(type_check(value, elements_type['values']) for value in container.values())
                 and empty_check)
     if isinstance(container, container_type) and not isinstance(container, dict):
-        return all(type_check(i, elements_type) for i in container) and empty_check
+        return bool(all(type_check(i, elements_type) for i in container) and empty_check)
     return False
 
 
@@ -103,7 +103,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and top > 0
             and (right_type_container(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)
                  or right_type_container(frequencies, dict, {'keys': str, 'values': float}, allow_empty=False))):
-        return sorted(list(frequencies), key=frequencies.get, reverse=True)[:top]
+        return sorted(frequencies, key=frequencies.get, reverse=True)[:top]
     return None
 
 
