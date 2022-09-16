@@ -130,17 +130,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             and isinstance(idf, dict) and all(isinstance(w, str) for w in idf.keys())
             and all(isinstance(f, float) for f in idf.values())):
 
-        freq_dict = {}
+        tfidf_dict = {}
 
         for w in term_freq:
             if w not in idf.keys():
                 idf[w] = log(47 / 1)
             tfidf = term_freq[w] * idf[w]
-            freq_dict[w] = tfidf
-        return freq_dict
+            tfidf_dict[w] = tfidf
+        return tfidf_dict
 
     else:
         return None
+
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
