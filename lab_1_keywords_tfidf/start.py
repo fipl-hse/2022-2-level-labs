@@ -1,14 +1,15 @@
 """
 Frequency-driven keyword extraction starter
 """
-import json
 from pathlib import Path
+import json
+import main
 
 
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
-    PROJECT_ROOT = Path(__file__).parent
+    PROJECT_ROOT = Path('new').parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
 
     # reading the text from which keywords are going to be extracted
@@ -31,6 +32,17 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    print(main.clean_and_tokenize(target_text))
+    tokens = main.clean_and_tokenize(target_text)
+    print(main.remove_stop_words(tokens, stop_words))
+    tokens = main.remove_stop_words(tokens, stop_words)
+    print(main.calculate_frequencies(tokens))
+    frequencies = main.calculate_frequencies(tokens)
+    print(main.get_top_n(frequencies, 15))
+
+
+    # RESULT = None
+    # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    # assert RESULT, 'Keywords are not extracted'
+
+
