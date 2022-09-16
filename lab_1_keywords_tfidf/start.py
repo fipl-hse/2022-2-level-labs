@@ -33,7 +33,8 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     tokens = clean_and_tokenize(target_text)
-    tokens = remove_stop_words(tokens, stop_words)
+    if tokens:
+        tokens = remove_stop_words(tokens, stop_words)
     freq_dict = calculate_frequencies(tokens)
     tf_dict = calculate_tf(freq_dict)
     tfidf_dict = calculate_tfidf(tf_dict, idf)
