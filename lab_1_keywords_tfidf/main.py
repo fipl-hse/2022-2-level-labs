@@ -156,7 +156,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return tfidf
 
 
-def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
+def calculate_expected_frequency(
+        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus

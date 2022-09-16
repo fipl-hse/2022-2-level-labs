@@ -47,11 +47,11 @@ freq_dict = calculate_frequencies(not_stop_words)
 top_words = get_top_n(freq_dict, 10)
 tf_dict = calculate_tf(freq_dict)
 tfidf = calculate_tfidf(tf_dict, idf)
-print(f'The top of words by tfidf: {get_top_n(tfidf, 10)}')
+print(f"The top of words by tfidf: {get_top_n(tfidf, 10)}")
 expected_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 x2_dict = calculate_chi_values(expected_dict, freq_dict)
 top_x2 = get_top_n(x2_dict, 10)
-print(f'The top of words by chi: {top_x2}')
+print(f"The top of words by chi: {top_x2}")
 significant_words_dict = extract_significant_words(x2_dict, 0.05)
 
 RESULT = top_x2
