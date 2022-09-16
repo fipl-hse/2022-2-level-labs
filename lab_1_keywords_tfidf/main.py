@@ -3,70 +3,77 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import string
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    """
-    Removes punctuation, casts to lowercase, splits into tokens
+    if type(text) == str:
+        text = text.lower()
+        for a in string.punctuation:
+            if a in text:
+                text = text.replace(a, '')
+        text = text.strip().split()
+        return text
+    else:
+        return None
 
-    Parameters:
-    text (str): Original text
-
-    Returns:
-    list[str]: A sequence of lowercase tokens with no punctuation
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
-    """
-    Excludes stop words from the token sequence
-
-    Parameters:
-    tokens (List[str]): Original token sequence
-    stop_words (List[str]: Tokens to exclude
-
-    Returns:
-    List[str]: Token sequence that does not include stop words
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    if all(isinstance(x, str) for x in tokens) and all(isinstance(x, str) for x in stop_words):
+        b = 0
+        while b < len(tokens):
+            for c in stop_words:
+                if tokens[b] == c:
+                    tokens.remove(c)
+                    b -= 1
+            b += 1
+        return tokens
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
-    """
-    Composes a frequency dictionary from the token sequence
-
-    Parameters:
-    tokens (List[str]): Token sequence to count frequencies for
-
-    Returns:
-    Dict: {token: number of occurrences in the token sequence} dictionary
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    if type(tokens) == list and len(tokens) != 0:
+        d = {}
+        for i in tokens:
+            if type(i) == str:
+                if i in d.keys():
+                    d[i] = 1 + d[i]
+                else:
+                    d[i] = 1
+            else:
+                return None
+        return d
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    """
-    Extracts a certain number of most frequent tokens
+    if top.isnumeric():
+        i = round(float(top))
+        frequencies = sorted(frequencies.items(), key=lambda item: item[1])
+        a = frequencies[::-1]
+        d = a[:i]
+        return d
+    elif top.isalpha():
+        return None
 
-    Parameters:
-    frequencies (Dict): A dictionary with tokens and
-    its corresponding frequency values
-    top (int): Number of token to extract
+    #"""
+    #Extracts a certain number of most frequent tokens
 
-    Returns:
-    List[str]: Sequence of specified length
-    consisting of tokens with the largest frequency
+    #Parameters:
+    #frequencies (Dict): A dictionary with tokens and
+    #its corresponding frequency values
+    #top (int): Number of token to extract
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    #Returns:
+    #List[str]: Sequence of specified length
+    #consisting of tokens with the largest frequency
+
+    #In case of corrupt input arguments, None is returned
+    #"""
+    #pass
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
