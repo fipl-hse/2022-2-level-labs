@@ -4,23 +4,18 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 
+from lab_1_keywords_tfidf.assets.freq_and_idf_dictionary_creation import file
 
-def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    text = text.lower()
-    text = text.replace("!", ".").replace("?", ".").replace("-", ".").replace("\n", " ")
-    sents = text.split(".")
 
-    List = []
-    for sent in sents:
-        cleand_sent = ""
-        for symbol in sent:
-            if symbol.isalpha() or symbol == " ":
-                cleand_sent += symbol
-        cleand_sent = cleand_sent.strip()
-        if cleand_sent:
-            words = cleand_sent.split()
-            List.append(words)
-    return List
+def clean_and_tokenize(text: str) -> [list[str]]:
+    name_file = 'Дюймовочка.txt'
+    File = open(name_file, 'rt')
+    text = File.read()
+    File.close()
+    words = text.split()
+    words = [word.lower() for word in words]
+    print(words)
+    return(words)
 
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -33,7 +28,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
