@@ -10,7 +10,7 @@ with open("Дюймовочка.txt", "r", encoding="utf-8") as f1:
     frequencies = {}
     top = 6
 
-def clean_and_tokenize(text: str):
+def clean_and_tokenize(text: str) -> Optional[list[str]]:
     global tokens
     punctuation = '''!.?,:;"'-()'''
     text = text.lower()
@@ -24,7 +24,7 @@ def clean_and_tokenize(text: str):
 
 clean_and_tokenize(text)
 
-def remove_stop_words(tokens: list[str], stop_words: list[str]):
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     global tokens_clean
     tokens_clean = [i for i in tokens if i not in stop_words]
     print('Чистый список слов текста:')
@@ -34,7 +34,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]):
 remove_stop_words(tokens,stop_words)
 
 
-def calculate_frequencies(tokens_clean: list[str]):
+def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
     global frequencies
     frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
     print('Подсчёт слов в тексте:')
@@ -44,7 +44,7 @@ def calculate_frequencies(tokens_clean: list[str]):
 calculate_frequencies(tokens_clean)
 
 
-def get_top_n(frequencies: dict[str,int], top: int):
+def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     sorted_values = sorted(frequencies.values(), reverse=True)
     sorted_dict = {}
     for i in sorted_values:
