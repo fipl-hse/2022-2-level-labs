@@ -1,6 +1,8 @@
 """
 Programming 2022
 Seminar 2
+
+
 Data Type: String
 """
 
