@@ -1,72 +1,62 @@
-"""
-Lab 1
-Extract keywords based on frequency related metrics
-"""
 from typing import Optional, Union
 
+with open("Дюймовочка.txt", "r", encoding="utf-8") as f1:
+    f2 = open("stop_words.txt", "r", encoding="utf-8")
+    text = f1.read()
+    stopwords = f2.read()
+    stop_words = stopwords.split()
+    tokens = []
+    tokens_clean = []
+    frequencies = {}
+    top = 6
 
-def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    """
-    Removes punctuation, casts to lowercase, splits into tokens
+def clean_and_tokenize(text: str):
+    global tokens
+    punctuation = '''!.?,:;"'-()'''
+    text = text.lower()
+    for element in text:
+        if element in punctuation:
+            text = text.replace(element,' ')
+    tokens = [element for element in text.split()]
+    print('Неочищенный список слов текста:')
+    print(tokens)
+    return(tokens)
 
-    Parameters:
-    text (str): Original text
+clean_and_tokenize(text)
 
-    Returns:
-    list[str]: A sequence of lowercase tokens with no punctuation
+def remove_stop_words(tokens: list[str], stop_words: list[str]):
+    global tokens_clean
+    tokens_clean = [i for i in tokens if i not in stop_words]
+    print('Чистый список слов текста:')
+    print(tokens_clean)
+    return(tokens_clean)
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
-
-
-def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
-    """
-    Excludes stop words from the token sequence
-
-    Parameters:
-    tokens (List[str]): Original token sequence
-    stop_words (List[str]: Tokens to exclude
-
-    Returns:
-    List[str]: Token sequence that does not include stop words
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
-
-
-def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
-    """
-    Composes a frequency dictionary from the token sequence
-
-    Parameters:
-    tokens (List[str]): Token sequence to count frequencies for
-
-    Returns:
-    Dict: {token: number of occurrences in the token sequence} dictionary
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+remove_stop_words(tokens,stop_words)
 
 
-def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    """
-    Extracts a certain number of most frequent tokens
+def calculate_frequencies(tokens_clean: list[str]):
+    global frequencies
+    frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
+    print('Подсчёт слов в тексте:')
+    print(frequencies)
+    return(frequencies)
 
-    Parameters:
-    frequencies (Dict): A dictionary with tokens and
-    its corresponding frequency values
-    top (int): Number of token to extract
+calculate_frequencies(tokens_clean)
 
-    Returns:
-    List[str]: Sequence of specified length
-    consisting of tokens with the largest frequency
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+def get_top_n(frequencies: dict[str,int], top: int):
+    sorted_values = sorted(frequencies.values(), reverse=True)
+    sorted_dict = {}
+    for i in sorted_values:
+        for k in frequencies.keys():
+            if frequencies[k] == i:
+                sorted_dict[k] = frequencies[k]
+                break
+    print('Топ 6 самых частых слов в тексте:')
+    for i in range(top):
+        print(list(sorted_dict.items())[i])
+
+get_top_n(frequencies, top)
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
