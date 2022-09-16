@@ -202,7 +202,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
     Select those tokens from the token sequence that
-    have a chi-squared value smaller than the criterion
+    have a chi-squared value greater than the criterion
 
     Parameters:
     chi_values (Dict): A dictionary with tokens and
