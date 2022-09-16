@@ -2,23 +2,32 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import string
 import math
 
 
-def right_type(container: Union[list, tuple, dict, set], container_type: type,
-               elements_type: Union[type, dict[str, type]], allow_empty=True) -> bool:
+def type_check(value: Any, expected_type: type) -> bool:
+    """
+    Works like built-in isinstance but differentiates between int and bool
+    """
+    if expected_type is int:
+        return isinstance(value, expected_type) and not isinstance(value, bool)
+    return isinstance(value, expected_type)
+
+
+def right_type_container(container: Union[list, tuple, dict, set], container_type: type,
+                         elements_type: Union[type, dict[str, type]], allow_empty=True) -> bool:
     """
     Checks datatype of a container and its elements
     """
     empty_check = allow_empty or container
-    if type(container) == container_type and type(container) == dict:
-        return (all(type(key) == elements_type['keys'] for key in container.keys())
-                and all(type(value) == elements_type['values'] for value in container.values())
+    if isinstance(container, container_type) and isinstance(container, dict):
+        return (all(type_check(key, elements_type['keys']) for key in container.keys())
+                and all(type_check(value, elements_type['values']) for value in container.values())
                 and empty_check)
-    if type(container) == container_type and type(container) != dict:
-        return all(type(i) == elements_type for i in container) and empty_check
+    if isinstance(container, container_type) and not isinstance(container, dict):
+        return all(type_check(i, elements_type) for i in container) and empty_check
     return False
 
 
@@ -34,10 +43,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if type(text) == str:
+    if isinstance(text, str):
         without_punctuation = ''.join([i for i in text if i not in string.punctuation])
-        tokens = without_punctuation.lower().split()
-        return tokens
+        return without_punctuation.lower().split()
     return None
 
 
@@ -46,7 +54,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     Excludes stop words from the token sequence
 
     Parameters:
-    tokens List[str]): Original token sequence
+    tokens List[str]: Original token sequence
     stop_words List[str]: Tokens to exclude
 
     Returns:
@@ -54,7 +62,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if right_type(tokens, list, str) and right_type(stop_words, list, str):
+    if right_type_container(tokens, list, str) and right_type_container(stop_words, list, str):
         return [token for token in tokens if token not in stop_words]
     return None
 
@@ -71,7 +79,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if right_type(tokens, list, str, allow_empty=False):
+    if right_type_container(tokens, list, str, allow_empty=False):
         return {token: tokens.count(token) for token in tokens}
     return None
 
@@ -91,10 +99,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if (type(top) == int
+    if (type_check(top, int)
             and top > 0
-            and (right_type(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)
-                 or right_type(frequencies, dict, {'keys': str, 'values': float}, allow_empty=False))):
+            and (right_type_container(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)
+                 or right_type_container(frequencies, dict, {'keys': str, 'values': float}, allow_empty=False))):
         return sorted(frequencies, key=frequencies.get, reverse=True)[:top]
     return None
 
@@ -112,8 +120,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if (type(frequencies) == dict
-            and right_type(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)):
+    if (isinstance(frequencies, dict)
+            and right_type_container(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)):
         total = sum(frequencies.values())
         return {term: occur / total for term, occur in frequencies.items()}
     return None
@@ -133,8 +141,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if (right_type(term_freq, dict, {'keys': str, 'values': float}, allow_empty=False)
-            and right_type(idf, dict, {'keys': str, 'values': float})):
+    if (right_type_container(term_freq, dict, {'keys': str, 'values': float}, allow_empty=False)
+            and right_type_container(idf, dict, {'keys': str, 'values': float})):
         tfidf = {}
         for term in term_freq:
             if idf.get(term) is not None:
@@ -161,15 +169,21 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if (right_type(doc_freqs, dict, {'keys': str, 'values': int}, allow_empty=False) and
-            right_type(corpus_freqs, dict, {'keys': str, 'values': int})):
+    if (right_type_container(doc_freqs, dict, {'keys': str, 'values': int}, allow_empty=False) and
+            right_type_container(corpus_freqs, dict, {'keys': str, 'values': int})):
         new_freq = {}
         for token in doc_freqs:
-            a = doc_freqs[token]
-            b = corpus_freqs.get(token, 0)
-            d = sum(corpus_freqs.values()) - b
-            c = sum(doc_freqs.values()) - a
-            new_freq[token] = ((a + c) * (a + b)) / (a + c + d + b)
+            given_token_freq_in_given_document = doc_freqs[token]
+            given_token_freq_in_other_documents = corpus_freqs.get(token, 0)
+            other_token_freq_in_given_document = sum(corpus_freqs.values()) - given_token_freq_in_other_documents
+            other_token_freq_in_other_documents = sum(doc_freqs.values()) - given_token_freq_in_given_document
+
+            res = (((given_token_freq_in_given_document + other_token_freq_in_other_documents)
+                    * (given_token_freq_in_given_document + given_token_freq_in_other_documents))
+                   / (given_token_freq_in_given_document + other_token_freq_in_other_documents
+                      + other_token_freq_in_given_document + given_token_freq_in_other_documents))
+
+            new_freq[token] = res
         return new_freq
     return None
 
@@ -190,8 +204,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if (right_type(expected, dict, {'keys': str, 'values': float}, allow_empty=False)
-            and right_type(observed, dict, {'keys': str, 'values': int}, allow_empty=False)):
+    if (right_type_container(expected, dict, {'keys': str, 'values': float}, allow_empty=False)
+            and right_type_container(observed, dict, {'keys': str, 'values': int}, allow_empty=False)):
         new_freq = {}
         for token in expected:
             new_freq[token] = ((observed[token] - expected[token]) ** 2) / expected[token]
@@ -215,11 +229,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if (right_type(chi_values, dict, {'keys': str, 'values': float}, allow_empty=False)
-            and type(alpha) == float):
-        criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-        try:
-            return {word: value for word, value in chi_values.items() if value > criterion[alpha]}
-        except KeyError:
-            pass
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if (right_type_container(chi_values, dict, {'keys': str, 'values': float}, allow_empty=False)
+            and isinstance(alpha, float)
+            and criterion.get(alpha)):
+        return {word: value for word, value in chi_values.items() if value > criterion[alpha]}
     return None
