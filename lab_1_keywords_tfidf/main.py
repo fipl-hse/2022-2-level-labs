@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 
 
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -157,3 +158,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
+
