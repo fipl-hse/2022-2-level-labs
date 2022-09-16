@@ -17,7 +17,7 @@ def type_check(value: Any, expected_type: type) -> bool:
 
 
 def right_type_container(container: Union[list, tuple, dict, set], container_type: type,
-                         elements_type: Union[type, dict[str, type]], allow_empty=True) -> bool:
+                         elements_type: Union[type, dict[str, type]], allow_empty: bool = True) -> bool:
     """
     Checks datatype of a container and its elements
     """
@@ -103,7 +103,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and top > 0
             and (right_type_container(frequencies, dict, {'keys': str, 'values': int}, allow_empty=False)
                  or right_type_container(frequencies, dict, {'keys': str, 'values': float}, allow_empty=False))):
-        return sorted(frequencies, key=frequencies.get, reverse=True)[:top]
+        return sorted(list(frequencies), key=frequencies.get, reverse=True)[:top]
     return None
 
 
@@ -146,7 +146,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         tfidf = {}
         for term in term_freq:
             if idf.get(term) is not None:
-                tfidf[term] = idf.get(term) * term_freq[term]
+                tfidf[term] = idf.get(term, 0) * term_freq[term]
             else:
                 tfidf[term] = math.log(47 / (0 + 1)) * term_freq[term]
         return tfidf
