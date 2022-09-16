@@ -32,7 +32,7 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    freq_dict, tf_dict, tfidf_dict, expected_freq_dict, chi_dict, top_chi = [None for _ in range(6)]
+    freq_dict, tf_dict, tfidf_dict, top, expected_freq_dict, chi_dict, top_chi = [None for _ in range(7)]
     tokens = clean_and_tokenize(target_text)
 
     if tokens:
@@ -49,16 +49,20 @@ if __name__ == "__main__":
 
     if tfidf_dict:
         top = get_top_n(tfidf_dict, 10)
+
+    if top:
         print('Most frequent words by tfidf_dict:', ', '.join(top), end='.\n')
 
     if freq_dict:
         expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
-    if expected_freq_dict:
+    if expected_freq_dict and freq_dict:
         chi_dict = calculate_chi_values(expected_freq_dict, freq_dict)
 
     if chi_dict:
         top_chi = get_top_n(chi_dict, 10)
+
+    if top_chi:
         print('Most frequent words by chi value:', ', '.join(top_chi), end='.\n')
 
     RESULT = top_chi
