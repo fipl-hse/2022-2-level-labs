@@ -34,6 +34,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
 split_words = clean_and_tokenize(target_text)
+print(split_words)
 not_stop_words = remove_stop_words(split_words, stop_words)
 freq_dict = calculate_frequencies(not_stop_words)
 top_words = get_top_n(freq_dict, 10)
