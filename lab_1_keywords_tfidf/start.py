@@ -3,7 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from main import (correct_type, clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf,
+from main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf,
                   calculate_tfidf, calculate_expected_frequency, calculate_chi_values, extract_significant_words)
 
 if __name__ == "__main__":
@@ -46,6 +46,6 @@ top_x2 = get_top_n(x2_dict, 10)
 print(top_x2)
 significant_words_dict = extract_significant_words(x2_dict, 0.05)
 
-RESULT = None
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+RESULT = top_x2
+# DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+assert RESULT, 'Keywords are not extracted'
