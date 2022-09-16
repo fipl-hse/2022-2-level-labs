@@ -7,11 +7,12 @@ import string
 import math
 from typing import Optional, Union
 
-
+#If x is None:
 def for_i_type_checker(collection, type_of_instance):
     return all(map(lambda x: isinstance(x, type_of_instance), collection))
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
+    print(isinstance(True, int))
     if not isinstance(text, str):
         return None
 
@@ -39,7 +40,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
 
-    condition_1 = isinstance(tokens, list)
+    condition_1 = isinstance(tokens, list) and tokens != (None and False)
     condition_2 = for_i_type_checker(tokens, str) and for_i_type_checker(stop_words, str)
     condition_3 = (stop_words == [] or isinstance(stop_words, list))
 
@@ -67,7 +68,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
-    condit_1 = isinstance(tokens, list) and tokens != None
+    condit_1 = isinstance(tokens, list) and tokens != (None and False)
     condit_2 = (for_i_type_checker(tokens, str))
 
     if condit_1 and condit_2:
@@ -94,11 +95,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     key_value = list(frequencies.items()) # Подумай как эту функцию потом укоротить и улучшить, все пустые словари -- некорректные значения?
 
-    cond_1 = isinstance(frequencies, dict) and isinstance(top, int | float)
+    cond_1 = isinstance(frequencies, dict) and isinstance(top, int)
     cond_2 = for_i_type_checker(list(frequencies.keys()), str)
-    cond_3 = for_i_type_checker(list(frequencies.values()), int | float)
+    cond_3 = for_i_type_checker(list(frequencies.values()), int)
+    cond_4 = frequencies != (None and False)
 
-    if cond_1 and cond_2 and cond_3:
+    if cond_1 and cond_2 and cond_3 and cond_4:
         slice_index = top - 1
         #print(sorted(key_value, key=lambda point: point[1]))
         # сортируем по второму значению кортежа
@@ -286,7 +288,8 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     c_2 = for_i_type_checker(chi_keys, str) and for_i_type_checker(list(chi_values.values()), float)
 
     if c_1 and c_2:
-        significant_words = {(word if chi_values.get(word) > critical_point else None) : chi_values.get(word) for word in chi_keys}
+        significant_words = {(word if chi_values.get(word) > critical_point else None) : chi_values.get(word)
+                             for word in chi_keys}
         del significant_words[None]
         return significant_words
     else:
