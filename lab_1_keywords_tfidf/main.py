@@ -6,13 +6,29 @@ from typing import Optional, Union
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
+    text = text.lower()
+    text = text.replace("!", ".").replace("?", ".").replace("-", ".").replace("\n", " ")
+    sents = text.split(".")
+
+    List = []
+    for sent in sents:
+        cleand_sent = ""
+        for symbol in sent:
+            if symbol.isalpha() or symbol == " ":
+                cleand_sent += symbol
+        cleand_sent = cleand_sent.strip()
+        if cleand_sent:
+            words = cleand_sent.split()
+            List.append(words)
+    return List
+
     """
     Removes punctuation, casts to lowercase, splits into tokens
 
     Parameters:
     text (str): Original text
 
-    Returns:
+    Returns:  
     list[str]: A sequence of lowercase tokens with no punctuation
 
     In case of corrupt input arguments, None is returned
