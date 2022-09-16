@@ -143,6 +143,15 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
 
 
+clean_words = clean_and_tokenize(target_text)
+no_stop_words = remove_stop_words(clean_words, stop_words)
+freq_dict = calculate_frequencies(no_stop_words)
+tf_dict = calculate_tf(freq_dict)
+tfidf_dict = calculate_tfidf(tf_dict, idf)
+top_idf_words = get_top_n(tfidf_dict, 10)
+print(top_idf_words)
+
+
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
