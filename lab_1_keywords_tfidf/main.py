@@ -136,11 +136,7 @@ def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    t = list(frequencies.values)
-    d = len(frequencies)
-    $$tf(t, d) = \frac{n_t}{N_d}$$
-    * $n_t$ - количество вхождений слова $t$ в документ $d$,
-    * $N_d$ - общее количество слов в документе $d$.
+    pass
 
 
 def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optional[Dict[str, float]]:
