@@ -1,0 +1,47 @@
+[33mcommit 69b9be341036bc82cd444df1e0648181ebf78268[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m)[m
+Author: Viktoria Teterina <vsteterina@edu.hse.ru>
+Date:   Fri Sep 16 09:58:54 2022 +0300
+
+    byhe
+
+[33mcommit 18c58c7da1b6aea96c7501d350d1d61acb785082[m[33m ([m[1;31morigin/main[m[33m, [m[1;31morigin/HEAD[m[33m)[m
+Author: Viktoria Teterina <vsteterina@edu.hse.ru>
+Date:   Fri Sep 16 09:51:52 2022 +0300
+
+    byhe
+
+[33mcommit 65485b0c2556de8f80fcb77fe523a62b96260c76[m
+Author: Andrej Kashchikhin <43414784+WhiteJaeger@users.noreply.github.com>
+Date:   Thu Sep 8 22:56:02 2022 +0300
+
+    [LAB 1] Description, tests and stubs (#5)
+
+[33mcommit 97631713a8d9c25ed3e21343fd32ea435fc63cc5[m
+Author: Artyom Tugaryov <artyom.tugaryov.logins@gmail.com>
+Date:   Thu Sep 8 22:45:52 2022 +0300
+
+    [SEMINARS] A listing for the first seminar (#4)
+
+[33mcommit 93bd1d3c8c08bcf67fe0b8cd3d860f1b4a9b7432[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Sun Sep 4 16:06:37 2022 +0300
+
+    [DOCS] Link to spreadsheet with marks (#3)
+
+[33mcommit 07578b2c060935393b65f6cead86daeafe6e84ed[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Sun Sep 4 15:37:21 2022 +0300
+
+    [DOCS] Actualizing seed structure (#2)
+
+[33mcommit a7a1336c8d9f6d19fa835e2d8c3e683aef55b073[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Wed Aug 31 15:57:53 2022 +0300
+
+    [CI] Seed structure and CI (#1)
+
+[33mcommit 85153ccc527700a6759d9ead7af8983d41f7926b[m
+Author: Alexander Demidovskij <monadv@yandex.ru>
+Date:   Fri Aug 19 15:40:33 2022 +0300
+
+    Initial commit
