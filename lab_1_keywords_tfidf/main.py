@@ -38,7 +38,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     new_text = ""
     if type(text) == str:
         for symbol in text.lower():
-            if symbol == " " or symbol.isalpha():
+            if symbol == " " or symbol.isalpha() or symbol == "\n":
                 new_text += symbol
         split_words = new_text.split()
         return split_words
@@ -103,7 +103,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     top_words = []
-    if correct_type(frequencies, [str, Union[int, float]]) is True:
+    if correct_type(frequencies, [str, int]) is True or correct_type(frequencies, [str, float]) is True:
         sorted_freq = sorted(frequencies.values(), reverse=True)
         for i in sorted_freq:
             for key, value in frequencies.items():
@@ -152,13 +152,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             try:
                 tfidf[key] = term_freq[key] * idf[key]
             except KeyError:
-                idf[key] = log(47 / 0 + 1) * term_freq[key]
+                idf[key] = log(47 / (0 + 1)) * term_freq[key]
         return tfidf
 
 
-def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
-) -> Optional[dict[str, float]]:
+def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -177,7 +175,7 @@ def calculate_expected_frequency(
         for key, value in doc_freqs.items():
             l = sum(doc_freqs.values()) - value
             m = sum(corpus_freqs.values()) - value
-            k = corpus_freqs.get(key)
+            k = corpus_freqs.get(key, 0)
             expected_dict[key] = ((value + k) * (value + l)) / (value + k + l + m)
         return expected_dict
 
