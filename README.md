@@ -90,3 +90,5 @@
 2. [Инструкция по запуску юнит тестов](./docs/public/tests.md)
 3. [Инструкция по подготовке к прохождению курса](./docs/public/starting_guide_ru.md)
 4. [Инструкция по настройке и обновлению репозитория](./docs/public/repository_ru.md)
+
+lalala
