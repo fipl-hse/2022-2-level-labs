@@ -21,7 +21,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     text = text.lower()
-    for bad_symbol in '.,:-!;%<>&*@#':
+    for bad_symbol in '.,:-!?;%<>&*@#()':
         text = text.replace(bad_symbol, '')
     text = text.split()
     return text
@@ -171,7 +171,28 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict) or doc_freqs == {} or corpus_freqs == {}:
+        return None
+    doc_occurrence = 0
+    for key, value in doc_freqs.items():
+        if not isinstance(key, str):
+            return None
+        doc_occurrence += value
+    corpus_occurrence = 0
+    for key, value in corpus_freqs.items():
+        if not isinstance(key, str):
+            return None
+        corpus_occurrence += value
+    exp_freqs = {}
+    for key, doc_freq in doc_freqs.items():
+        # j = doc_freq
+        # k = corpus_freqs[key]
+        # l = doc_occurrence - doc_freq
+        # m = corpus_occurrence - corpus_freqs[key]
+        # (j+k)*(j+l)/j+k+l+m
+        # после взаимного уничтожения слагаемых:
+        exp_freqs[key] = (doc_freq + corpus_freqs[key]) * doc_occurrence / (doc_occurrence + corpus_occurrence)
+    return exp_freqs
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
