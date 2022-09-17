@@ -5,19 +5,16 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 
 
-def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    """
-    Removes punctuation, casts to lowercase, splits into tokens
+def clean_and_tokenize(text: str) -> list[str]:
+    if not isinstance(text, str):
+        return None
+    for i in text:
+        if not i.isalnum() and i != ' ':
+            text = text.replace(i, '')
+    text = text.lower()
+    text = text.split()
+    return text
 
-    Parameters:
-    text (str): Original text
-
-    Returns:
-    list[str]: A sequence of lowercase tokens with no punctuation
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -80,7 +77,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     Returns:
     dict: A dictionary with tokens and corresponding term frequency score
 
-    In case of corrupt input arguments, None is returned
+    In case of corrupt input   arguments, None is returned
     """
     pass
 
