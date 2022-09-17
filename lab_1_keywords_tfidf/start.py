@@ -17,28 +17,28 @@ if __name__ == "__main__":
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
         target_text = file.read()
 
-    target_text = main.clean_and_tokenize(target_text)
+    tokenized_text = main.clean_and_tokenize(target_text)
 
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
 
-    target_text = main.remove_stop_words(target_text, stop_words)
+    tokenized_text = main.remove_stop_words(tokenized_text, stop_words)
 
-    target_text = main.calculate_frequencies(target_text)
+    frequencies = main.calculate_frequencies(tokenized_text)
 
-    main.get_top_n(target_text, 10)
+    main.get_top_n(frequencies, 10)
 
-    target_text = main.calculate_tf(target_text)
+    tf_calculated = main.calculate_tf(frequencies)
 
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
-    target_text = main.calculate_tfidf(target_text, idf)
-    print(main.get_top_n(target_text, 10))
+    tfidf_calculated = main.calculate_tfidf(tf_calculated, idf)
+    print(main.get_top_n(tfidf_calculated, 10))
 
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
