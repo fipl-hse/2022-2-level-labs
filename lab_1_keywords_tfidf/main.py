@@ -20,12 +20,10 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     text = text.lower()
-    for i in '.,:-!;%<>&*@#':
-        # "что-то" и "маленькая-маленькая" обрабатываются как одно слово. Не стоит ли заменять пробелами?
-        text = text.replace(i, '')
+    for bad_symbol in '.,:-!;%<>&*@#':
+        text = text.replace(bad_symbol, '')
     text = text.split()
     return text
-
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -41,7 +39,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None
+
+    for stop_word in stop_words:
+        while stop_word in tokens:
+            tokens.remove(stop_word)
+
+    return tokens
+
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
