@@ -22,8 +22,8 @@ class CalculateTFIDFTest(unittest.TestCase):
         """
         Ideal calculate tf-idf scenario
         """
-        term_f = {'this': 2, 'is': 4, 'an': 5, 'example': 2, 'of': 2, 'test': 2,
-                  'text': 2, 'contains': 2, 'two': 2, 'parts': 2}
+        term_f = {'this': 0.08, 'is': 0.16, 'an': 0.2, 'example': 0.08, 'of': 0.08, 'test': 0.08,
+                  'text': 0.08, 'contains': 0.08, 'two': 0.08, 'parts': 0.08}
 
         idf = {
             'this': math.log(3 / 2),
@@ -48,17 +48,7 @@ class CalculateTFIDFTest(unittest.TestCase):
             'sense': math.log(3 / 1),
             'parts': math.log(3 / 1)
         }
-
-        expected = {'an': 1.0986122886681098,
-                    'contains': 1.0986122886681098,
-                    'example': 1.0986122886681098,
-                    'is': 0.0,
-                    'of': 1.0986122886681098,
-                    'parts': 1.0986122886681098,
-                    'test': 0.4054651081081644,
-                    'text': 0.4054651081081644,
-                    'this': 0.4054651081081644,
-                    'two': 1.0986122886681098}
+        expected = {term: term_freq * idf[term] for term, term_freq in term_f.items()}
 
         actual = calculate_tfidf(term_f, idf)
         self.assertEqual(expected, actual)
@@ -108,21 +98,11 @@ class CalculateTFIDFTest(unittest.TestCase):
         """
         calculate tf-idf, empty idf
         """
-        term_f = {'this': 2, 'is': 4, 'an': 5, 'example': 2, 'of': 2, 'test': 2,
-                  'text': 2, 'contains': 2, 'two': 2, 'parts': 2}
+        term_f = {'this': 0.08, 'is': 0.16, 'an': 0.2, 'example': 0.08, 'of': 0.08, 'test': 0.08,
+                  'text': 0.08, 'contains': 0.08, 'two': 0.08, 'parts': 0.08}
 
         idf = {}
-
-        expected = {'an': 3.8501476017100584,
-                    'contains': 3.8501476017100584,
-                    'example': 3.8501476017100584,
-                    'is': 3.8501476017100584,
-                    'of': 3.8501476017100584,
-                    'parts': 3.8501476017100584,
-                    'test': 3.8501476017100584,
-                    'text': 3.8501476017100584,
-                    'this': 3.8501476017100584,
-                    'two': 3.8501476017100584}
+        expected = {term: term_freq * math.log(47 / 1) for term, term_freq in term_f.items()}
 
         actual = calculate_tfidf(term_f, idf)
         self.assertEqual(expected, actual)
@@ -189,8 +169,8 @@ class CalculateTFIDFTest(unittest.TestCase):
         """
         calculate tf-idf when no idf for a term
         """
-        term_f = {'this': 2, 'is': 4, 'an': 5, 'example': 2, 'of': 2, 'test': 2,
-                  'text': 2, 'contains': 2, 'two': 2, 'parts': 2}
+        term_f = {'this': 0.08, 'is': 0.16, 'an': 0.2, 'example': 0.08, 'of': 0.08, 'test': 0.08,
+                  'text': 0.08, 'contains': 0.08, 'two': 0.08, 'parts': 0.08}
 
         idf = {
             'is': math.log(3 / 3),
@@ -215,16 +195,8 @@ class CalculateTFIDFTest(unittest.TestCase):
             'parts': math.log(3 / 1)
         }
 
-        expected = {'an': 1.0986122886681098,
-                    'contains': 1.0986122886681098,
-                    'example': 1.0986122886681098,
-                    'is': 0.0,
-                    'of': 1.0986122886681098,
-                    'parts': 1.0986122886681098,
-                    'test': 0.4054651081081644,
-                    'text': 0.4054651081081644,
-                    'this': 3.8501476017100584,
-                    'two': 1.0986122886681098}
+        max_idf = math.log(47 / 1)
+        expected = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_f.items()}
 
         actual = calculate_tfidf(term_f, idf)
         self.assertEqual(expected, actual)
