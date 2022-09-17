@@ -214,8 +214,6 @@ def calculate_chi_values(expected: Dict[str, float], observed: Dict[str, int]) -
     else:
         return None
 
-# $$\chi^2 = \frac{(observed - expected)^2}{expected}$$
-
 
 def extract_significant_words(chi_values: Dict[str, float], alpha: float) -> Optional[Dict[str, float]]:
     """
