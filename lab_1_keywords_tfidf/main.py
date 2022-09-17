@@ -4,20 +4,23 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 from math import log
+from string import punctuation
 
 
-def correct_type(d: Union[dict, list], type1: list) -> bool:
-    if type(d) == dict:
+def correct_type(d: Union[dict, list], type1: list, empty: str) -> bool:
+    if isinstance(d, dict) is True:
+        if empty == "no" and len(d) == 0:
+            return False
         for key, value in d.items():
             if type(key) != type1[0] or type(value) != type1[1]:
                 return False
-            continue
         return True
-    elif type(d) == list and d != []:
+    elif isinstance(d, list) is True:
+        if empty == "no" and len(d) == 0:
+            return False
         for i in d:
             if type(i) != type1[0]:
                 return False
-            continue
         return True
     else:
         return False
@@ -36,12 +39,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     new_text = ""
-    if type(text) == str:
+    if isinstance(text, str) is True:
         for symbol in text.lower():
-            if symbol == " " or symbol.isalpha() or symbol == "\n":
+            if symbol not in punctuation:
                 new_text += symbol
         split_words = new_text.split()
         return split_words
+    return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -58,11 +62,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     not_stop_words = []
-    if correct_type(tokens, [str]) is True and correct_type(stop_words, [str]) is True:
-        for word in tokens:
-            if word not in stop_words:
-                not_stop_words.append(word)
+    if correct_type(tokens, [str], "no") is True and correct_type(stop_words, [str], "yes") is True:
+        for token in tokens:
+            if token not in stop_words:
+                not_stop_words.append(token)
         return not_stop_words
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -78,13 +83,14 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
     freq_dict = {}
-    if correct_type(tokens, [str]) is True:
+    if correct_type(tokens, [str], "no") is True:
         for token in tokens:
             if token in freq_dict:
                 freq_dict[token] += 1
             else:
                 freq_dict[token] = 1
         return freq_dict
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -103,13 +109,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     top_words = []
-    if correct_type(frequencies, [str, int]) is True or correct_type(frequencies, [str, float]) is True:
-        sorted_freq = sorted(frequencies.values(), reverse=True)
-        for i in sorted_freq:
+    correct = correct_type(frequencies, [str, float], "no") or correct_type(frequencies, [str, int], "no")
+    if type(top) == int and top > 0 and correct is True:
+        sorted_values = sorted(frequencies.values(), reverse=True)
+        for i in sorted_values:
             for key, value in frequencies.items():
-                if value == i and len(top_words) < top:
+                if i == value and len(top_words) < top:
                     top_words.append(key)
         return top_words
+    return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -126,10 +134,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     tf_dict = {}
-    if correct_type(frequencies, [str, int]) is True:
+    if correct_type(frequencies, [str, int], "no") is True:
         for key, value in frequencies.items():
             tf_dict[key] = value / sum(frequencies.values())
         return tf_dict
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -147,13 +156,14 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     tfidf = {}
-    if correct_type(term_freq, [str, float]) is True and correct_type(idf, [str, float]) is True:
+    if correct_type(term_freq, [str, float], "no") is True and correct_type(idf, [str, float], "yes") is True:
         for key, value in term_freq.items():
             try:
                 tfidf[key] = term_freq[key] * idf[key]
             except KeyError:
-                idf[key] = log(47 / (0 + 1)) * term_freq[key]
+                tfidf[key] = log(47 / (0 + 1)) * term_freq[key]
         return tfidf
+    return None
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
@@ -171,13 +181,14 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     In case of corrupt input arguments, None is returned
     """
     expected_dict = {}
-    if correct_type(doc_freqs, [str, int]) is True and correct_type(corpus_freqs, [str, int]) is True:
+    if correct_type(doc_freqs, [str, int], "no") is True and correct_type(corpus_freqs, [str, int], "yes") is True:
         for key, value in doc_freqs.items():
-            l = sum(doc_freqs.values()) - value
-            m = sum(corpus_freqs.values()) - value
             k = corpus_freqs.get(key, 0)
+            m = sum(corpus_freqs.values()) - k
+            l = sum(doc_freqs.values()) - value
             expected_dict[key] = ((value + k) * (value + l)) / (value + k + l + m)
         return expected_dict
+    return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -197,10 +208,11 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
     x2_dict = {}
-    if correct_type(expected, [str, float]) is True and correct_type(observed, [str, int]) is True:
+    if correct_type(expected, [str, float], "no") is True and correct_type(observed, [str, int], "no") is True:
         for key, value in expected.items():
             x2_dict[key] = (observed.get(key) - value) ** 2 / value
         return x2_dict
+    return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -221,8 +233,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     """
     significant_words_dict = {}
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if correct_type(chi_values, [str, float]) is True and type(alpha) == float:
+    if correct_type(chi_values, [str, float], "no") is True and isinstance(alpha, float) and alpha in criterion.keys():
         for key, value in chi_values.items():
             if value > criterion[alpha]:
                 significant_words_dict[key] = value
         return significant_words_dict
+    return None
