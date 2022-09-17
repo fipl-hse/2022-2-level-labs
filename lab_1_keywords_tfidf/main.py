@@ -141,12 +141,11 @@ def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optio
     """
     if isinstance(term_freq, dict) and isinstance(idf, dict):
         tfidf_dic = {}
-        for key, value in idf.items():
-            for k, v in term_freq.items():
-                if idf[key] != 0:
-                    tfidf_dic[k] = v*value
-                else:
-                    tfidf_dic[k] = v*47
+        for key in term_freq.keys():
+            if idf[key] != 0:
+                tfidf_dic[key] = term_freq[key]*idf[key]
+            else:
+                tfidf_dic[key] = term_freq[key]*47
         return tfidf_dic
     else:
         return None
@@ -173,16 +172,17 @@ def calculate_expected_frequency(
     # $l$ - количество вхождений всех слов, кроме $t$, в документ $d$
     # $m$ - количество вхождений всех слов, кроме $t$, в коллекцию документов $D$
     # $$Expected = \frac {(a + b) \times(a + c)}{a + b + c + d}$$
+
     if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
-        exp_dic = {}
+        expected_dic = {}
         for keys, values in doc_freqs.items():
             j = doc_freqs[keys]
             k = corpus_freqs[keys]
             l = sum(list(doc_freqs.values())) - j
             m = sum(list(corpus_freqs.values())) - k
             formula = ((j + k) * (j + l)) / (j + k + l + m)
-            exp_dic[keys] = formula
-        return exp_dic
+            expected_dic[keys] = formula
+        return expected_dic
     else:
         return None
 
@@ -203,7 +203,18 @@ def calculate_chi_values(expected: Dict[str, float], observed: Dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(expected, dict) and isinstance(observed, dict):
+        chi_dic = {}
+        for key in observed.keys():
+            a = expected[key]
+            b = observed[key]
+            chi_value = ((b - a) ** 2) / a
+            chi_dic[key] = chi_value
+        return chi_dic
+    else:
+        return None
+
+# $$\chi^2 = \frac{(observed - expected)^2}{expected}$$
 
 
 def extract_significant_words(chi_values: Dict[str, float], alpha: float) -> Optional[Dict[str, float]]:

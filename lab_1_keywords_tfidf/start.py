@@ -45,7 +45,8 @@ if __name__ == "__main__":
     tfidf_dic = main.calculate_tfidf(term_freq, idf)
     print(main.get_top_n(tfidf_dic, 10))
     print(main.calculate_expected_frequency(frequencies, corpus_freqs))
-
+    expected_freq = main.calculate_expected_frequency(frequencies, corpus_freqs)
+    print(main.calculate_chi_values(expected_freq, frequencies))
 
 
     # RESULT = None
