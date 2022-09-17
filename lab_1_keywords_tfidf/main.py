@@ -21,7 +21,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return None
     text = text.lower()
     for i in '.,:-!':
-        # "что-то" и "маленькая-маленькая" обрабатываются как одно слово. Может, здесь надо менять на ' ', а не на ''?
+        # "что-то" и "маленькая-маленькая" обрабатываются как одно слово. Не стоит ли заменять пробелами?
         text = text.replace(i, '')
     text = text.split()
     return text
