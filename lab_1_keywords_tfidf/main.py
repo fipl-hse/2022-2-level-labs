@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -145,7 +146,16 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(term_freq, dict) or not isinstance(idf, dict) or term_freq == {} or idf == {}:
+        return None
+    for key, value in term_freq.items():
+        if not isinstance(key, str) or not isinstance(value, float):
+            return None
+        if key in idf.keys():
+            term_freq[key] = term_freq[key] * idf[key]
+        else:
+            term_freq[key] = term_freq[key] * math.log(47)
+    return term_freq
 
 
 def calculate_expected_frequency(
