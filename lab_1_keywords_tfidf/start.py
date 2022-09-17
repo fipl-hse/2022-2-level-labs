@@ -50,6 +50,6 @@ if __name__ == "__main__":
     significant_words = main.extract_significant_words(chi_values, 0.05)
     print(main.get_top_n(significant_words, 10))
 
-    RESULT = None
+    RESULT = main.get_top_n(significant_words, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
