@@ -46,6 +46,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     expected_frequency = main.calculate_expected_frequency(frequencies, corpus_freqs)
+    chi_values = main.calculate_chi_values(expected_frequency, frequencies)
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

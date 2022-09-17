@@ -211,7 +211,17 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(expected, dict) or not isinstance(observed, dict) or expected == {} or observed == {}:
+        return None
+    chi_values = {}
+    for key in expected.keys():
+        if not isinstance(key, str):
+            return None
+    for key, value in observed.items():
+        if not isinstance(key, str):
+            return None
+        chi_values[key] = (value - expected[key]) ** 2 / expected[key]
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
