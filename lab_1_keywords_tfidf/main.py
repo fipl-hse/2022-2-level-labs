@@ -83,44 +83,10 @@ def get_top_n(frequencies: Dict[str, Union[int, float]], top: int) -> Optional[L
     top_values = sorted(frequencies.values(), reverse=True)
     top_n_values = top_values[:top]
     for i in top_n_values:
-        for k, v in frequencies.items():
+        for k in frequencies.keys():
             if frequencies[k] == i:
-                top_dic[k] = v
-                break
+                top_dic[k] = frequencies[k]
     return list(top_dic.keys())
-
-
-    # for keys, values in frequencies.items():
-    #     if top_n_values == frequencies[keys]:
-    #         top_dic[keys] = values
-    #         top_dic = {keys: values}
-    #         return list(top_dic.keys())
-    # top_dic[keys] = top_n_values
-    # top_dic = dict(keys for keys, top_n_values in frequencies.items())
-    # for keys in top_dic.items():
-    #     return list(keys)
-    # return list(top_dic.keys())
-    # for key in frequencies.keys():
-    #     if top_n_values == frequencies[key]:
-    #         top_dic[key] = top_n_values
-    #         top_dic = {key: top_n_values}
-    #         return list(top_dic.keys())
-            # for i in top_dic.keys():
-            #     return list(i)
-            #     # return list(top_dic.keys())
-
-        # return top_list.keys()
-    # for k, top_n_values in frequencies.items():
-    #     if top_n_values:
-    #         top_list += frequencies.keys()
-    #         # top_list = top_list.append(k)
-    # return top_list
-    # for k in frequencies.items():
-    #     if frequencies.get(k) == top_n_values:
-    #         # top_list = list(words)
-    #         top_list += f'{k}: {frequencies[k]}'
-    #         top_list += k
-    # return top_list
 
 
 def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
@@ -136,7 +102,10 @@ def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    # $$tf(t, d) = \frac{n_t}{N_d}$$
+    # * $n_t$ - количество вхождений слова $t$ в документ $d$,
+    # * $N_d$ - общее количество слов в документе $d$.
+
 
 
 def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optional[Dict[str, float]]:
