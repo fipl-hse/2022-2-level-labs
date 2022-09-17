@@ -118,7 +118,17 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(frequencies, dict):
+        return None
+    total_words = 0
+    for token, frequency in frequencies.items():
+        if not isinstance(token, str):
+            return None
+        total_words += frequency
+    for token in frequencies:
+        frequencies[token] = frequencies[token] / total_words
+    print(frequencies)
+    return frequencies
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
