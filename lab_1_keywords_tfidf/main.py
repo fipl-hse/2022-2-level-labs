@@ -20,11 +20,10 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     text = text.lower()
-    for i in '.,:-!':
+    for i in '.,:-!;%<>&*@#':
         # "что-то" и "маленькая-маленькая" обрабатываются как одно слово. Не стоит ли заменять пробелами?
         text = text.replace(i, '')
     text = text.split()
-    print(text)
     return text
 
 
