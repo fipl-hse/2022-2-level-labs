@@ -89,7 +89,20 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    def sort_key(word_and_frequency: tuple[str, Union[int, float]]):
+        return word_and_frequency[1]
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
+        return None
+    top_list = []
+    for item in frequencies.items():
+        if not isinstance(item[0], str) or not isinstance(item[1], int | float):
+            return None
+        top_list.append(item)
+    top_list.sort(reverse=True, key=sort_key)
+    top_list = top_list[:top]
+    for index in range(len(top_list)):
+        top_list[index] = top_list[index][0]
+    return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:

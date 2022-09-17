@@ -28,6 +28,8 @@ if __name__ == "__main__":
 
     target_text = main.calculate_frequencies(target_text)
 
+    main.get_top_n(target_text, 10)
+
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
