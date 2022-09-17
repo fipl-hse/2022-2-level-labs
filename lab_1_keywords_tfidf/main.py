@@ -17,12 +17,15 @@ def clean_and_tokenize(text: str) -> Optional[List[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    punctuation = '''!,()-[]{};:“'"”\<>./?@#$%^&*_~'''
-    for i in punctuation:
-        text = text.replace(i, '')
-    text = text.lower().strip().split()
-    '''если превращает в список - делает это побуквенно, поэтому нужен сплит'''
-    return text
+    if isinstance(text, str):
+        punctuation = '''!,()[]-{};:“'"”\<>./?@#$%^&*_~'''
+        for i in punctuation:
+            text = text.replace(i, '')
+        text = text.lower().strip().split()
+        '''если превращает в список - делает это побуквенно, поэтому нужен сплит'''
+        return text
+    else:
+        return None
 
 
 def remove_stop_words(tokens: List[str], stop_words: List[str]) -> Optional[List[str]]:
@@ -38,11 +41,14 @@ def remove_stop_words(tokens: List[str], stop_words: List[str]) -> Optional[List
 
     In case of corrupt input arguments, None is returned
     """
-    no_stop_words = []
-    for word in tokens:
-        if word not in stop_words:
-            no_stop_words.append(word)
-    return no_stop_words
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        no_stop_words = []
+        for word in tokens:
+            if word not in stop_words:
+                no_stop_words.append(word)
+        return no_stop_words
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: List[str]) -> Optional[Dict[str, int]]:
@@ -57,11 +63,14 @@ def calculate_frequencies(tokens: List[str]) -> Optional[Dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    token_freq = {}
-    for word in tokens:
-        token_freq[word] = token_freq.get(word, 0) + 1
+    if isinstance(tokens, list):
+        token_freq = {}
+        for word in tokens:
+            token_freq[word] = token_freq.get(word, 0) + 1
     #     d[key] = value, так добавляем в него элемент
-    return token_freq
+        return token_freq
+    else:
+        return None
 
 
 def get_top_n(frequencies: Dict[str, Union[int, float]], top: int) -> Optional[List[str]]:
@@ -79,14 +88,17 @@ def get_top_n(frequencies: Dict[str, Union[int, float]], top: int) -> Optional[L
 
     In case of corrupt input arguments, None is returned
     """
-    top_dic = {}
-    top_values = sorted(frequencies.values(), reverse=True)
-    top_n_values = top_values[:top]
-    for i in top_n_values:
-        for k in frequencies.keys():
-            if frequencies[k] == i:
-                top_dic[k] = frequencies[k]
-    return list(top_dic.keys())
+    if isinstance(frequencies, dict) and isinstance(top, int):
+        top_dic = {}
+        top_values = sorted(frequencies.values(), reverse=True)
+        top_n_values = top_values[:top]
+        for i in top_n_values:
+            for k in frequencies.keys():
+                if frequencies[k] == i:
+                    top_dic[k] = frequencies[k]
+        return list(top_dic.keys())
+    else:
+        return None
 
 
 def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
@@ -102,10 +114,15 @@ def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    # $$tf(t, d) = \frac{n_t}{N_d}$$
-    # * $n_t$ - количество вхождений слова $t$ в документ $d$,
-    # * $N_d$ - общее количество слов в документе $d$.
-
+    if isinstance(frequencies, dict):
+        tf_dic = {}
+        values = list(frequencies.values())
+        n_d = sum(values)
+        for k, v in frequencies.items():
+            tf_dic[k] = v/n_d
+        return tf_dic
+    else:
+        return None
 
 
 def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optional[Dict[str, float]]:
@@ -122,7 +139,17 @@ def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(term_freq, dict) and isinstance(idf, dict):
+        tfidf_dic = {}
+        for key, value in idf.items():
+            for k, v in term_freq.items():
+                if idf[key] != 0:
+                    tfidf_dic[k] = v*value
+                else:
+                    tfidf_dic[k] = v*47
+        return tfidf_dic
+    else:
+        return None
 
 
 def calculate_expected_frequency(
@@ -141,7 +168,23 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    # $j$ - количество вхождений слова $t$ в документ $d$
+    # $k$ - количество вхождений слова $t$ во все тексты коллекции $D$
+    # $l$ - количество вхождений всех слов, кроме $t$, в документ $d$
+    # $m$ - количество вхождений всех слов, кроме $t$, в коллекцию документов $D$
+    # $$Expected = \frac {(a + b) \times(a + c)}{a + b + c + d}$$
+    if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
+        exp_dic = {}
+        for keys, values in doc_freqs.items():
+            j = doc_freqs[keys]
+            k = corpus_freqs[keys]
+            l = sum(list(doc_freqs.values())) - j
+            m = sum(list(corpus_freqs.values())) - k
+            formula = ((j + k) * (j + l)) / (j + k + l + m)
+            exp_dic[keys] = formula
+        return exp_dic
+    else:
+        return None
 
 
 def calculate_chi_values(expected: Dict[str, float], observed: Dict[str, int]) -> Optional[Dict[str, float]]:

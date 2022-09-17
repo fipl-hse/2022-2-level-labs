@@ -38,7 +38,14 @@ if __name__ == "__main__":
     tokens = main.remove_stop_words(tokens, stop_words)
     print(main.calculate_frequencies(tokens))
     frequencies = main.calculate_frequencies(tokens)
-    print(main.get_top_n(frequencies, 15))
+    print(main.get_top_n(frequencies, 8))
+    print(main.calculate_tf(frequencies))
+    term_freq = main.calculate_tf(frequencies)
+    print(main.calculate_tfidf(term_freq, idf))
+    tfidf_dic = main.calculate_tfidf(term_freq, idf)
+    print(main.get_top_n(tfidf_dic, 10))
+    print(main.calculate_expected_frequency(frequencies, corpus_freqs))
+
 
 
     # RESULT = None
