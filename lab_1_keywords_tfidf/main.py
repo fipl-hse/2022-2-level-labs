@@ -2,7 +2,7 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from math import log
 from string import punctuation
 
@@ -29,7 +29,7 @@ def correct_list(variable: list, type1: type, empty: str) -> bool:
     return False
 
 
-def is_int(variable) -> bool:
+def is_int(variable: Any) -> bool:
     actual_type = type(variable)
     if actual_type == int:
         return True
@@ -224,7 +224,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     x2_dict = {}
     if correct_dict(expected, str, float, "no") is True and correct_dict(observed, str, int, "no") is True:
         for key, value in expected.items():
-            x2_dict[key] = (observed.get(key) - value) ** 2 / value
+            x2_dict[key] = (observed.get(key, 0) - value) ** 2 / value
         return x2_dict
     return None
 
