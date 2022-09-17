@@ -128,7 +128,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         total_words += frequency
     for token in frequencies:
         frequencies[token] = frequencies[token] / total_words
-    print(frequencies)
     return frequencies
 
 
