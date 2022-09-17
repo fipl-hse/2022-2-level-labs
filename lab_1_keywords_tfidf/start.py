@@ -3,6 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
+import main
 
 
 if __name__ == "__main__":
@@ -15,6 +16,8 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH = ASSETS_PATH / 'Дюймовочка.txt'
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
         target_text = file.read()
+
+    target_text = main.clean_and_tokenize(target_text)
 
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
