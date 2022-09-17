@@ -38,6 +38,7 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     target_text = main.calculate_tfidf(target_text, idf)
+    print(main.get_top_n(target_text, 10))
 
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
