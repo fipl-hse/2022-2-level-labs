@@ -49,7 +49,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     return tokens
 
 
-
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
@@ -62,7 +61,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(tokens, list) or tokens == []:
+        return None
+    frequency_dict = {}
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+        if token in frequency_dict.keys():
+            frequency_dict[token] += 1
+        else:
+            frequency_dict[token] = 1
+    return frequency_dict
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
