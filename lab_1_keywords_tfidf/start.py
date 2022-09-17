@@ -47,6 +47,7 @@ if __name__ == "__main__":
 
     expected_frequency = main.calculate_expected_frequency(frequencies, corpus_freqs)
     chi_values = main.calculate_chi_values(expected_frequency, frequencies)
+    significant_words = main.extract_significant_words(chi_values, 0.05)
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
