@@ -3,7 +3,12 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-
+from main import clean_and_tokenize
+from main import remove_stop_words
+from main import calculate_frequencies
+from main import get_top_n
+from main import calculate_tf
+from main import calculate_tfidf
 
 if __name__ == "__main__":
 
@@ -35,17 +40,14 @@ if __name__ == "__main__":
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     # assert RESULT, 'Keywords are not extracted'
 
-from main import clean_and_tokenize
-from main import remove_stop_words
-from main import calculate_frequencies
-from main import get_top_n
 
-a = clean_and_tokenize(target_text)
-b = remove_stop_words(a, stop_words)
-# c = calculate_frequencies(b)
-# d = get_top_n(c, 20)
-print(b)
-
-
+cleaned_text = clean_and_tokenize(target_text)
+no_punc_text = remove_stop_words(cleaned_text, stop_words)
+frequency = calculate_frequencies(no_punc_text)
+tf = calculate_tf(frequency)
+top_of_words = get_top_n(frequency, 10)
+tfidf = calculate_tfidf(tf, idf)
+tfidf_top = get_top_n(tfidf, 10)
+print(tfidf_top)
 
 
