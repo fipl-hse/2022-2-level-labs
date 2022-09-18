@@ -6,17 +6,15 @@ from typing import Optional, Union
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    """
-    Removes punctuation, casts to lowercase, splits into tokens
-
-    Parameters:
-    text (str): Original text
-
-    Returns:
-    list[str]: A sequence of lowercase tokens with no punctuation
-
-    In case of corrupt input arguments, None is returned
-    """
+    if not isinstance(text, str):
+        return None
+    text = text.replace('\n', ' ').lower().strip()
+    fin_text = ''
+    for symbol in text:
+        if symbol.isalnum() == True or symbol == ' ':
+            fin_text += symbol
+    lst = fin_text.split()
+    return lst
     pass
 
 
@@ -157,3 +155,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
+
+
