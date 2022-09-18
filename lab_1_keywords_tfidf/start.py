@@ -31,6 +31,29 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+
+    def clean_and_tokenize(text: str) -> Optional[list[str]]:
+        clean1 = text.lower().replace(':', '').replace('!', '').replace('...', '').replace('!..', '').replace('?..', '').replace('.', '').replace(',', '').replace('?', '').replace(';', '').replace('-', '')
+        clean2 = clean1.split()
+
+
+        return clean2
+
+    clean_list = clean_and_tokenize(target_text)
+    print(clean_list)
+
+
+    def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
+        for word in stop_words:
+            while word in tokens:
+                tokens.remove(word)
+
+        return tokens
+
+
+    delet_list = remove_stop_words(clean_list, stop_words)
+    print(delet_list)
+
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

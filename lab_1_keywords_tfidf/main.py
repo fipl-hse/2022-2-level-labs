@@ -8,32 +8,34 @@ from typing import Optional, Union
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
-
     Parameters:
     text (str): Original text
-
     Returns:
     list[str]: A sequence of lowercase tokens with no punctuation
-
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    clean1 = text.lower().replace(':', '').replace('!', '').replace('...', '').replace('!..', '').replace('?..', '').replace('.', '').replace(',', '').replace('?', '').replace(';', '').replace('-', '')
+    clean2 = clean1.split()
+
+    return clean2
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
-    Excludes stop words from the token sequence
+        Excludes stop words from the token sequence
+        Parameters:
+        tokens (List[str]): Original token sequence
+        stop_words (List[str]: Tokens to exclude
+        Returns:
+        List[str]: Token sequence that does not include stop words
+        In case of corrupt input arguments, None is returned
+        """
+    for word in stop_words:
+        while word in tokens:
+            tokens.remove(word)
 
-    Parameters:
-    tokens (List[str]): Original token sequence
-    stop_words (List[str]: Tokens to exclude
-
-    Returns:
-    List[str]: Token sequence that does not include stop words
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
