@@ -16,7 +16,6 @@ from lab_1_keywords_tfidf.main import (
 )
 
 if __name__ == "__main__":
-
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
@@ -41,19 +40,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-split_words = clean_and_tokenize(target_text)
-not_stop_words = remove_stop_words(split_words, stop_words)
-freq_dict = calculate_frequencies(not_stop_words)
-top_words = get_top_n(freq_dict, 10)
-tf_dict = calculate_tf(freq_dict)
-tfidf = calculate_tfidf(tf_dict, idf)
-print(f'The top of words by tfidf: {get_top_n(tfidf, 10)}')
-expected_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
-x2_dict = calculate_chi_values(expected_dict, freq_dict)
-top_x2 = get_top_n(x2_dict, 10)
-print(f'The top of words by chi: {top_x2}')
-significant_words_dict = extract_significant_words(x2_dict, 0.05)
+    split_words = clean_and_tokenize(target_text)
 
-RESULT = top_x2
-# DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-assert RESULT, "Keywords are not extracted"
+    if split_words:
+        not_stop_words = remove_stop_words(split_words, stop_words)
+
+    if not_stop_words:
+        freq_dict = calculate_frequencies(not_stop_words)
+
+    if freq_dict:
+        top_words = get_top_n(freq_dict, 10)
+        tf_dict = calculate_tf(freq_dict)
+
+    if tf_dict:
+        tfidf = calculate_tfidf(tf_dict, idf)
+        print(f'The top of words by tfidf: {get_top_n(tfidf, 10)}')
+        expected_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+
+    if expected_dict:
+        x2_dict = calculate_chi_values(expected_dict, freq_dict)
+        top_x2 = get_top_n(x2_dict, 10)
+        print(f'The top of words by chi: {top_x2}')
+        RESULT = top_x2
+
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, "Keywords are not extracted"
