@@ -99,7 +99,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         return None
     top_list = []
     for item in frequencies.items():
-        if not isinstance(item[0], str) or not isinstance(item[1], float | int):
+        if not isinstance(item[0], str) or not isinstance(item[1], (float, int)):
             return None
         top_list.append(item)
     top_list.sort(reverse=True, key=sort_key)
