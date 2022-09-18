@@ -151,9 +151,7 @@ def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optio
         return None
 
 
-def calculate_expected_frequency(
-        doc_freqs: Dict[str, int], corpus_freqs: Dict[str, float]
-) -> Optional[Dict[str, float]]:
+def calculate_expected_frequency(doc_freqs: Dict[str, int], corpus_freqs: Dict[str, int]) -> Optional[Dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -218,7 +216,7 @@ def calculate_chi_values(expected: Dict[str, float], observed: Dict[str, int]) -
 def extract_significant_words(chi_values: Dict[str, float], alpha: float) -> Optional[Dict[str, float]]:
     """
     Select those tokens from the token sequence that
-    have a chi-squared value smaller than the criterion
+    have a chi-squared value greater than the criterion
 
     Parameters:
     chi_values (Dict): A dictionary with tokens and
