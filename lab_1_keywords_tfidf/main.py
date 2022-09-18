@@ -23,8 +23,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     text = text.lower()
     for bad_symbol in '.,:-!?;%<>&*@#()':
         text = text.replace(bad_symbol, '')
-    text = text.split()
-    return text
+    text_split = text.split()
+    return text_split
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -91,7 +91,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    def sort_key(word_and_frequency: tuple[str, Union[int, float]]):
+    def sort_key(word_and_frequency: tuple[str, Union[int, float]]) -> Optional[Union[int, float]]:
         return word_and_frequency[1]
 
     if not isinstance(frequencies, dict) or frequencies == {} \
@@ -104,9 +104,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         top_list.append(item)
     top_list.sort(reverse=True, key=sort_key)
     top_list = top_list[:top]
-    for index, value in enumerate(top_list):
-        top_list[index] = value[0]
-    return top_list
+    normal_top_list = []
+    for value in top_list:
+        normal_top_list.append(value[0])
+    return normal_top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
