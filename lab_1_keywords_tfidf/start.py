@@ -44,6 +44,7 @@ if __name__ == "__main__":
     NOT_STOP_WORDS = None
     FREQ_DICT = None
     TF_DICT = None
+    TFIDF = None
     EXPECTED_DICT = None
     X2_DICT = None
     TOP_X2 = None
@@ -61,8 +62,10 @@ if __name__ == "__main__":
         TF_DICT = calculate_tf(FREQ_DICT)
 
     if TF_DICT:
-        tfidf = calculate_tfidf(TF_DICT, idf)
-        print(f'The top of words by tfidf: {get_top_n(tfidf, 10)}')
+        TFIDF = calculate_tfidf(TF_DICT, idf)
+
+    if TFIDF:
+        print(f'The top of words by tfidf: {get_top_n(TFIDF, 10)}')
 
     if FREQ_DICT:
         EXPECTED_DICT = calculate_expected_frequency(FREQ_DICT, corpus_freqs)
