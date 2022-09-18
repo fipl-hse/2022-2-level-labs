@@ -186,12 +186,15 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     exp_freqs = {}
     for key, doc_freq in doc_freqs.items():
         # j = doc_freq
-        # k = corpus_freqs[key]
+        # k = corpus_freqs[key] (0 if does not appear corpus)
+        corpus_freq = 0
+        if key in corpus_freqs.keys():
+            corpus_freq = corpus_freqs[key]
         # l = doc_total - doc_freq
         # m = corpus_total - corpus_freqs[key]
         # (j+k)*(j+l)/j+k+l+m
         # после взаимного уничтожения слагаемых:
-        exp_freqs[key] = (doc_freq + corpus_freqs[key]) * doc_total / (doc_total + corpus_total)
+        exp_freqs[key] = (doc_freq + corpus_freq) * doc_total / (doc_total + corpus_total)
     return exp_freqs
 
 
