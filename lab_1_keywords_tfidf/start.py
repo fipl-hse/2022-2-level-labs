@@ -3,7 +3,12 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
+# from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
+#    get_top_n, calculate_tf, calculate_tfidf, calculate_expected_frequency, \
+#    calculate_chi_values, extract_significant_words
+#
+#   The one below does not work in PyCharm
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
     get_top_n, calculate_tf, calculate_tfidf, calculate_expected_frequency, \
     calculate_chi_values, extract_significant_words
 
