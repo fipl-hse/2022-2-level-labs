@@ -42,11 +42,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-
     for stop_word in stop_words:
         while stop_word in tokens:
             tokens.remove(stop_word)
-
     return tokens
 
 
@@ -90,7 +88,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-
     if not isinstance(frequencies, dict) or frequencies == {} \
             or not isinstance(top, int) or isinstance(top, bool) or top <= 0:
         return None
@@ -189,14 +186,13 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     exp_freqs = {}
     for key, doc_freq in doc_freqs.items():
         # j = doc_freq
-        # k = corpus_freqs[key] (0 if does not appear corpus)
+        # k = corpus_freqs[key] (0 if does not appear in corpus)
         corpus_freq = 0
         if key in corpus_freqs.keys():
             corpus_freq = corpus_freqs[key]
         # l = doc_total - doc_freq
         # m = corpus_total - corpus_freqs[key]
-        # (j+k)*(j+l)/j+k+l+m
-        # после взаимного уничтожения слагаемых:
+        # (j+k)*(j+l)/j+k+l+m; после взаимного уничтожения слагаемых:
         exp_freqs[key] = (doc_freq + corpus_freq) * doc_total / (doc_total + corpus_total)
     return exp_freqs
 
