@@ -6,6 +6,17 @@ from typing import Optional, Union
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
+    """
+    Removes punctuation, casts to lowercase, splits into tokens
+
+    Parameters:
+    text (str): Original text
+
+    Returns:
+    list[str]: A sequence of lowercase tokens with no punctuation
+
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(text, str):
         return None
     text = text.replace('\n', ' ').lower().strip()
@@ -13,8 +24,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     for symbol in text:
         if symbol.isalnum() == True or symbol == ' ':
             fin_text += symbol
-    lst = fin_text.split()
-    return lst
+    tokens = fin_text.split()
+    return tokens
     pass
 
 
@@ -31,6 +42,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None
+    for i in tokens:
+        for j in stop_words:
+            if i == j:
+                while j in tokens:
+                    tokens.remove(i)
+    return tokens
     pass
 
 
@@ -46,6 +65,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(tokens, list):
+        return None
+    frequencies = {}
+    for i in tokens:
+        freq = tokens.count(i)
+        frequencies[i] = freq
+    return frequencies
     pass
 
 
