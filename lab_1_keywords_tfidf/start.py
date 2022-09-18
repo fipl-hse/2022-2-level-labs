@@ -39,17 +39,27 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokenized_text = clean_and_tokenize(target_text)
-    tokenized_text = remove_stop_words(tokenized_text, stop_words)
-    frequencies = calculate_frequencies(tokenized_text)
-    tf_calculated = calculate_tf(frequencies)
-    tfidf_calculated = calculate_tfidf(tf_calculated, idf)
-    print(get_top_n(tfidf_calculated, 10))
-    expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
-    chi_values = calculate_chi_values(expected_frequency, frequencies)
-    significant_words = extract_significant_words(chi_values, 0.05)
-    print(get_top_n(significant_words, 10))
-
-    RESULT = get_top_n(significant_words, 10)
+    if target_text:
+        tokenized_text = clean_and_tokenize(target_text)
+    if tokenized_text and stop_words:
+        tokenized_text = remove_stop_words(tokenized_text, stop_words)
+    if tokenized_text:
+        frequencies = calculate_frequencies(tokenized_text)
+    if frequencies:
+        tf_calculated = calculate_tf(frequencies)
+    if tf_calculated and idf:
+        tfidf_calculated = calculate_tfidf(tf_calculated, idf)
+    if tfidf_calculated:
+        print(get_top_n(tfidf_calculated, 10))
+    if frequencies and corpus_freqs:
+        expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
+    if expected_frequency and frequencies:
+        chi_values = calculate_chi_values(expected_frequency, frequencies)
+    if chi_values:
+        significant_words = extract_significant_words(chi_values, 0.05)
+    if significant_words:
+        print(get_top_n(significant_words, 10))
+    if significant_words:
+        RESULT = get_top_n(significant_words, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
