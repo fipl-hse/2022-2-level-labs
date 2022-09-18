@@ -58,7 +58,6 @@ if __name__ == "__main__":
         FREQ_DICT = calculate_frequencies(NOT_STOP_WORDS)
 
     if FREQ_DICT:
-        top_words = get_top_n(FREQ_DICT, 10)
         TF_DICT = calculate_tf(FREQ_DICT)
 
     if TF_DICT:
