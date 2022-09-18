@@ -75,6 +75,8 @@ if __name__ == "__main__":
 
     if X2_DICT:
         TOP_X2 = get_top_n(X2_DICT, 10)
+
+    if TOP_X2:
         print(f'The top of words by chi: {TOP_X2}')
 
     RESULT = TOP_X2
