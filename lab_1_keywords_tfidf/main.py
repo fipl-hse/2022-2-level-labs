@@ -166,6 +166,8 @@ doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
         doc_words_sum = sum(doc_freqs.values())
         collection_words_sum = sum(corpus_freqs.values())
         for w, f in doc_freqs.items():
+            if w not in corpus_freqs.keys():
+                corpus_freqs[w] = 0
             expected = (((f + corpus_freqs[w]) * (f + doc_words_sum - f)) /
                         (f + corpus_freqs[w] + doc_words_sum - f + collection_words_sum - corpus_freqs[w]))
             expected_dict[w] = expected
@@ -195,7 +197,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             and all(isinstance(v, float) for v in expected.values())
             and isinstance(observed, dict) and observed != {}
             and all(isinstance(k, str) for k in observed.keys())
-           and all(isinstance(v, int) for v in observed.values())):
+            and all(isinstance(v, int) for v in observed.values())):
 
         chi_dict = {}
         for w, f in observed.items():
@@ -222,4 +224,16 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if (isinstance(chi_values, dict) and chi_values != {}
+        and all(isinstance(k, str) for k in chi_values.keys())
+        and all(isinstance(v, float) for v in chi_values.values())
+        and alpha in [0.05, 0.01, 0.001]):
+
+        criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+        significant_chi_words = {}
+        for w, chi_val in chi_values.items():
+            if chi_val >= criterion[alpha]:
+                significant_chi_words[w] = chi_val
+        return significant_chi_words
+    else:
+        return None

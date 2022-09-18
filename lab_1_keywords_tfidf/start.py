@@ -36,8 +36,6 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
-
 
     def clean_and_tokenize(text: str) -> Optional[list[str]]:
         if isinstance(text, str):
@@ -49,8 +47,8 @@ if __name__ == "__main__":
             return None
 
 
-    a = clean_and_tokenize(target_text)
-    print(a)
+    clean_words = clean_and_tokenize(target_text)
+    print(clean_words)
 
 
     def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -62,12 +60,13 @@ if __name__ == "__main__":
             return None
 
 
-    b = remove_stop_words(a, stop_words)
-    print(b)
+    no_stop_words = remove_stop_words(clean_words, stop_words)
+    print(no_stop_words)
 
     def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         if (isinstance(tokens, list) and tokens != []
                 and all(isinstance(t, str) for t in tokens)):
+
             freq_dict = {}
             for t in tokens:
                 if t not in freq_dict:
@@ -79,8 +78,8 @@ if __name__ == "__main__":
             return None
 
 
-    c = calculate_frequencies(b)
-    print(c)
+    freq_dict = calculate_frequencies(no_stop_words)
+    print(freq_dict)
 
 
     def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -98,8 +97,8 @@ if __name__ == "__main__":
             return None
 
 
-    d = get_top_n(c, 10)
-    print(d)
+    top_words = get_top_n(freq_dict, 10)
+    print(top_words)
 
 
     def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -113,8 +112,8 @@ if __name__ == "__main__":
             None
 
 
-    e = calculate_tf(c)
-    print(e)
+    tf_dict = calculate_tf(freq_dict)
+    print(tf_dict)
 
 
     def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -133,10 +132,10 @@ if __name__ == "__main__":
             return None
 
 
-    f = calculate_tfidf(e, idf)
-    print(f)
+    tfidf_dict = calculate_tfidf(tf_dict, idf)
+    print(tfidf_dict)
 
-    print(get_top_n(f, 5))
+    print(get_top_n(tfidf_dict, 5))
 
     def calculate_expected_frequency(
             doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -155,14 +154,16 @@ if __name__ == "__main__":
         In case of corrupt input arguments, None is returned
         """
         if (isinstance(doc_freqs, dict) and doc_freqs != {} and all(isinstance(k, str) for k in doc_freqs.keys())
-            and all(isinstance(v, int) for v in doc_freqs.values())
-            and isinstance(corpus_freqs, dict) and all(isinstance(k, str) for k in corpus_freqs.keys())
-            and all(isinstance(v, int) for v in corpus_freqs.values())):
+                and all(isinstance(v, int) for v in doc_freqs.values())
+                and isinstance(corpus_freqs, dict) and all(isinstance(k, str) for k in corpus_freqs.keys())
+                and all(isinstance(v, int) for v in corpus_freqs.values())):
 
             expected_dict = {}
             doc_words_sum = sum(doc_freqs.values())
             collection_words_sum = sum(corpus_freqs.values())
             for w, f in doc_freqs.items():
+                if w not in corpus_freqs.keys():
+                    corpus_freqs[w] = 0
                 expected = (((f + corpus_freqs[w]) * (f + doc_words_sum - f)) /
                             (f + corpus_freqs[w] + doc_words_sum - f + collection_words_sum - corpus_freqs[w]))
                 expected_dict[w] = expected
@@ -171,8 +172,8 @@ if __name__ == "__main__":
             return
 
 
-    g = calculate_expected_frequency(c, corpus_freqs)
-    print(g)
+    expected_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+    print(expected_dict)
 
 
     def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -207,8 +208,48 @@ if __name__ == "__main__":
             return None
 
 
-    h = calculate_chi_values(c, g)
-    print(h)
+    chi_dict = calculate_chi_values(freq_dict, expected_dict)
+    print(chi_dict)
+
+
+    def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
+        """
+        Select those tokens from the token sequence that
+        have a chi-squared value greater than the criterion
+
+        Parameters:
+        chi_values (Dict): A dictionary with tokens and
+        its corresponding chi-squared value
+        alpha (float): Level of significance that controls critical value of chi-squared metric
+
+        Returns:
+        Dict: A dictionary with significant tokens
+        and its corresponding chi-squared value
+
+        In case of corrupt input arguments, None is returned
+        """
+        if (isinstance(chi_values, dict) and chi_values != {}
+                and all(isinstance(k, str) for k in chi_values.keys())
+                and all(isinstance(v, float) for v in chi_values.values())
+                and alpha in [0.05, 0.01, 0.001]):
+
+            criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+            significant_chi_words = {}
+            for w, chi_val in chi_values.items():
+                if chi_val >= criterion[alpha]:
+                    significant_chi_words[w] = chi_val
+            return significant_chi_words
+        else:
+            return None
+
+
+    significant_chi_words = extract_significant_words(chi_dict, 0.05)
+    print(significant_chi_words)
+
+    num_significant_chi_words = get_top_n(significant_chi_words, 10)
+    print(num_significant_chi_words)
+
+    RESULT = num_significant_chi_words
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    #assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
