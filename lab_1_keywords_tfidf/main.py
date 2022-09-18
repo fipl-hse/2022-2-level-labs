@@ -91,9 +91,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    def sort_key(word_and_frequency: tuple[str, Union[int, float]]) -> Optional[Union[int, float]]:
-        return word_and_frequency[1]
-
     if not isinstance(frequencies, dict) or frequencies == {} \
             or not isinstance(top, int) or isinstance(top, bool) or top <= 0:
         return None
@@ -102,7 +99,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         if not isinstance(item[0], str) or not isinstance(item[1], (float, int)):
             return None
         top_list.append(item)
-    top_list.sort(reverse=True, key=sort_key)
+    top_list.sort(reverse=True, key=lambda word_and_frequency: word_and_frequency[1])
     top_list = top_list[:top]
     normal_top_list = []
     for value in top_list:
