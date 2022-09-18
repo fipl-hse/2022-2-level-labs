@@ -94,7 +94,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     def sort_key(word_and_frequency: tuple[str, Union[int, float]]):
         return word_and_frequency[1]
 
-    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
+    if not isinstance(frequencies, dict) or frequencies == {} \
+            or not isinstance(top, int) or isinstance(top, bool) or top <= 0:
         return None
     top_list = []
     for item in frequencies.items():
