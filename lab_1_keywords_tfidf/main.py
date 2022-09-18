@@ -119,7 +119,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
 
 
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, float]
 ) -> Optional[dict[str, float]]:
