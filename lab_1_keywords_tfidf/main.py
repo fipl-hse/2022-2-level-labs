@@ -99,13 +99,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         return None
     top_list = []
     for item in frequencies.items():
-        if not isinstance(item[0], str) or not (isinstance(item[1], int) or isinstance(item[1], float)):
+        if not isinstance(item[0], str) or not isinstance(item[1], float | int):
             return None
         top_list.append(item)
     top_list.sort(reverse=True, key=sort_key)
     top_list = top_list[:top]
-    for index in range(len(top_list)):
-        top_list[index] = top_list[index][0]
+    for index, value in enumerate(top_list):
+        top_list[index] = value[0]
     return top_list
 
 
@@ -248,14 +248,14 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if not isinstance(chi_values, dict) or chi_values == {} or not isinstance(alpha, float) \
-            or not alpha in CRITERION.keys():
+            or not alpha in criterion.keys():
         return None
     significant_words = {}
     for key, value in chi_values.items():
         if not isinstance(key, str):
             return None
-        if value > CRITERION[alpha]:
+        if value > criterion[alpha]:
             significant_words[key] = value
     return significant_words
