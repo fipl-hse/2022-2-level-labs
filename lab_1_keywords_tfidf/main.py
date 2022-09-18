@@ -125,13 +125,14 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     if not isinstance(frequencies, dict):
         return None
     total_words = 0
+    tf_dict = {}
     for token, frequency in frequencies.items():
         if not isinstance(token, str):
             return None
         total_words += frequency
     for token in frequencies.keys():
-        frequencies[token] = frequencies[token] / total_words
-    return frequencies
+        tf_dict[token] = frequencies[token] / total_words
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -150,14 +151,15 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not isinstance(term_freq, dict) or not isinstance(idf, dict) or term_freq == {}:
         return None
+    tfidf_dict = {}
     for key, value in term_freq.items():
         if not isinstance(key, str) or not isinstance(value, float):
             return None
         if key in idf.keys():
-            term_freq[key] = term_freq[key] * idf[key]
+            tfidf_dict[key] = term_freq[key] * idf[key]
         else:
-            term_freq[key] = term_freq[key] * math.log(47)
-    return term_freq
+            tfidf_dict[key] = term_freq[key] * math.log(47)
+    return tfidf_dict
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
