@@ -3,7 +3,8 @@ markers = [
     "mark4: tests for level 4",
     "mark6: tests for level 6",
     "mark8: tests for level 8",
-    "mark10: tests for level 10"
+    "mark10: tests for level 10",
+    "lab_1_keywords_tfidf: lab_1_keywords_tfidf"
 ]
 norecursedirs = [
     "venv*"
