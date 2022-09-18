@@ -55,6 +55,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     print('Топ 6 самых частых слов в тексте:')
     for i in range(top):
         print(list(sorted_dict.items())[i])
+        return(list(sorted_dict.items()))
 
 get_top_n(frequencies, top)
 
