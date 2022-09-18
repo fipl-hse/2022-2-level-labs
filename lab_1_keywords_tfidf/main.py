@@ -126,7 +126,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         if not isinstance(token, str):
             return None
         total_words += frequency
-    for token in frequencies:
+    for token in frequencies.keys():
         frequencies[token] = frequencies[token] / total_words
     return frequencies
 
@@ -173,25 +173,25 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     """
     if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict) or doc_freqs == {} or corpus_freqs == {}:
         return None
-    doc_occurrence = 0
+    doc_total = 0
     for key, value in doc_freqs.items():
         if not isinstance(key, str):
             return None
-        doc_occurrence += value
-    corpus_occurrence = 0
+        doc_total += value
+    corpus_total = 0
     for key, value in corpus_freqs.items():
         if not isinstance(key, str):
             return None
-        corpus_occurrence += value
+        corpus_total += value
     exp_freqs = {}
     for key, doc_freq in doc_freqs.items():
         # j = doc_freq
         # k = corpus_freqs[key]
-        # l = doc_occurrence - doc_freq
-        # m = corpus_occurrence - corpus_freqs[key]
+        # l = doc_total - doc_freq
+        # m = corpus_total - corpus_freqs[key]
         # (j+k)*(j+l)/j+k+l+m
         # после взаимного уничтожения слагаемых:
-        exp_freqs[key] = (doc_freq + corpus_freqs[key]) * doc_occurrence / (doc_occurrence + corpus_occurrence)
+        exp_freqs[key] = (doc_freq + corpus_freqs[key]) * doc_total / (doc_total + corpus_total)
     return exp_freqs
 
 

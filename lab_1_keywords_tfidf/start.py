@@ -28,8 +28,6 @@ if __name__ == "__main__":
 
     frequencies = main.calculate_frequencies(tokenized_text)
 
-    main.get_top_n(frequencies, 10)
-
     tf_calculated = main.calculate_tf(frequencies)
 
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
