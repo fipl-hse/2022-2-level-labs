@@ -3,6 +3,14 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+from string import punctuation
+from operator import itemgetter
+
+with open("Дюймовочка.txt", 'r', encoding="utf-8") as f:
+    text = f.read()
+with open("stop_words.txt", 'r', encoding="utf-8") as f:
+    stop_words = f.read()
+stop_words = stop_words.split()
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -17,7 +25,19 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    if isinstance(text, str):
+        for i in punctuation:
+            text = text.replace(i, "")
+            text = text.lower().strip()
+        spisok = text.split()
+        print(spisok)
+        return spisok
+    else:
+        return None
+
+
+sp = clean_and_tokenize(text)
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -33,7 +53,18 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        clean_spisok = []
+        for i in sp:
+            if i not in stop_words:
+                clean_spisok.append(i)
+        print(clean_spisok)
+        return clean_spisok
+    else:
+        return None
+
+
+cs = remove_stop_words(sp, stop_words)
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -48,7 +79,16 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    dictionary = {}
+    for i in cs:
+        if i in dictionary.keys():
+            dictionary[i] += 1
+        else:
+            dictionary[i] = 1
+    print(dictionary)
+    return dictionary
+
+slovar = calculate_frequencies(cs)
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -66,7 +106,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(frequencies, dict) and isinstance(top, int):
+        slovar_filtered = sorted(slovar.items(), key=itemgetter(1), reverse=True)[:top]
+        print(list(slovar_filtered))
+        return slovar_filtered
+    else:
+        return None
+
+
+top_words = get_top_n(slovar, 2)
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -103,7 +151,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(
-    doc_freqs: dict[str, int], corpus_freqs: dict[str, float]
+        doc_freqs: dict[str, int], corpus_freqs: dict[str, float]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
