@@ -8,6 +8,9 @@ from string import punctuation
 
 
 def correct_dict(variable: dict, type1: type, type2: type, empty: str) -> bool:
+    """
+    Checks the type of dict, keys and values
+    """
     if isinstance(variable, dict) is True:
         if empty == "no" and len(variable) == 0:
             return False
@@ -19,6 +22,9 @@ def correct_dict(variable: dict, type1: type, type2: type, empty: str) -> bool:
 
 
 def correct_list(variable: list, type1: type, empty: str) -> bool:
+    """
+    Checks the type of list and its elements
+    """
     if isinstance(variable, list) is True:
         if empty == "no" and len(variable) == 0:
             return False
@@ -30,6 +36,9 @@ def correct_list(variable: list, type1: type, empty: str) -> bool:
 
 
 def is_int(variable: Any) -> bool:
+    """
+    Checks whether type of variable is int
+    """
     actual_type = type(variable)
     if actual_type == int:
         return True
