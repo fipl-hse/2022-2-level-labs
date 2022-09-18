@@ -190,7 +190,20 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if (isinstance(expected, dict) and expected != {}
+            and all(isinstance(k, str) for k in expected.keys())
+            and all(isinstance(v, float) for v in expected.values())
+            and isinstance(observed, dict) and observed != {}
+            and all(isinstance(k, str) for k in observed.keys())
+           and all(isinstance(v, int) for v in observed.values())):
+
+        chi_dict = {}
+        for w, f in observed.items():
+            chi = (((f - expected[w]) ** 2) / (expected[w]))
+            chi_dict[w] = chi
+        return chi_dict
+    else:
+        return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:

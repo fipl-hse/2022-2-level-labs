@@ -85,8 +85,8 @@ if __name__ == "__main__":
 
     def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
         if (isinstance(frequencies, dict) and frequencies is not None
-                and all(isinstance(k, str) for k in frequencies.keys())
-                and all(isinstance(v, int or float) for v in frequencies.values())
+                #and all(isinstance(k, str) for k in frequencies.keys())
+                #and all(isinstance(v, int or float) for v in frequencies.values())
                 and isinstance(top, int) and top is not (True or False) and top > 0):
 
             sorted_freq_dict = {k: v for k, v in sorted(frequencies.items(), key=lambda k: k[1], reverse=True)}
@@ -136,6 +136,8 @@ if __name__ == "__main__":
     f = calculate_tfidf(e, idf)
     print(f)
 
+    print(get_top_n(f, 5))
+
     def calculate_expected_frequency(
             doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
     ) -> Optional[dict[str, float]]:
@@ -172,6 +174,41 @@ if __name__ == "__main__":
     g = calculate_expected_frequency(c, corpus_freqs)
     print(g)
 
+
+    def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
+        """
+        Calculates chi-squared value for the tokens
+        based on their expected and observed frequency rates
+
+        Parameters:
+        expected (Dict): A dictionary with tokens and
+        its corresponding expected frequency
+        observed (Dict): A dictionary with tokens and
+        its corresponding observed frequency
+
+        Returns:
+        Dict: A dictionary with tokens and its corresponding chi-squared value
+
+        In case of corrupt input arguments, None is returned
+        """
+        if (isinstance(expected, dict) and expected != {}
+                #and all(isinstance(k, str) for k in expected.keys())
+                #and all(isinstance(v, float) for v in expected.values())
+                and isinstance(observed, dict) and observed != {}):
+                #and all(isinstance(k, str) for k in observed.keys())
+                #and all(isinstance(v, int) for v in corpus_freqs.values())):
+
+            chi_dict = {}
+            for w, f in observed.items():
+                chi = (((f - expected[w]) ** 2) / (expected[w]))
+                chi_dict[w] = chi
+            return chi_dict
+        else:
+            return None
+
+
+    h = calculate_chi_values(c, g)
+    print(h)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     #assert RESULT, 'Keywords are not extracted'
