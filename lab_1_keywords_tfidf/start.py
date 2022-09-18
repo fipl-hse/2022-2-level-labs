@@ -6,6 +6,9 @@ from pathlib import Path
 
 from typing import Optional, Union
 
+import math
+import string
+
 
 if __name__ == "__main__":
 
@@ -38,68 +41,136 @@ if __name__ == "__main__":
 
     def clean_and_tokenize(text: str) -> Optional[list[str]]:
         if isinstance(text, str):
-            no_punc_text = ''
-            punctuation = '!?-.,\'\"():;'
-            for e in text:
-                if e not in punctuation:
-                    no_punc_text += e
-            all_words = no_punc_text.lower().strip().split()
-            return all_words
+            for p in string.punctuation:
+                text = text.replace(p, '')
+            clean_words = text.lower().strip().split()
+            return clean_words
         else:
             return None
 
 
-    all_words = clean_and_tokenize(target_text)
+    a = clean_and_tokenize(target_text)
+    print(a)
 
 
     def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
-        if isinstance(tokens, list) and isinstance(stop_words, list):
-            no_stop_words = [w for w in tokens if w not in stop_words]
-            print(no_stop_words)
+        if (isinstance(tokens, list) and tokens != [] and all(isinstance(t, str) for t in tokens)
+                and isinstance(stop_words, list)):
+            no_stop_words = [t for t in tokens if t not in stop_words]
             return no_stop_words
         else:
             return None
 
 
-    no_stop_words = remove_stop_words(all_words, stop_words)
+    b = remove_stop_words(a, stop_words)
+    print(b)
 
-
-    def calculate_frequencies(tokens: list[str]) -> dict[str: int]:
-        if (isinstance(tokens, list) and tokens
-                and all(isinstance(w, str) for w in tokens)):
+    def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
+        if (isinstance(tokens, list) and tokens != []
+                and all(isinstance(t, str) for t in tokens)):
             freq_dict = {}
-            for w in tokens:
-                if w not in freq_dict:
-                    freq_dict[w] = 1
+            for t in tokens:
+                if t not in freq_dict:
+                    freq_dict[t] = 1
                 else:
-                    freq_dict[w] += 1
-            print(freq_dict)
-            return(freq_dict)
+                    freq_dict[t] += 1
+            return freq_dict
+        else:
+            return None
+
+
+    c = calculate_frequencies(b)
+    print(c)
+
+
+    def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
+        if (isinstance(frequencies, dict) and frequencies is not None
+                and all(isinstance(k, str) for k in frequencies.keys())
+                and all(isinstance(v, int or float) for v in frequencies.values())
+                and isinstance(top, int) and top is not (True or False) and top > 0):
+
+            sorted_freq_dict = {k: v for k, v in sorted(frequencies.items(), key=lambda k: k[1], reverse=True)}
+            sorted_words = list(sorted_freq_dict.keys())
+            top_words = sorted_words if top > len(frequencies) else sorted_words[:top]
+            return top_words
 
         else:
             return None
 
 
-    freq_dict = calculate_frequencies(no_stop_words)
+    d = get_top_n(c, 10)
+    print(d)
 
 
-    def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> list[str]:
-        if isinstance(frequencies, dict) and isinstance(top, int):
-            val_lst = sorted(frequencies.values(), reverse=True)
-            top_words = []
-            counter = 0
-            for i in range(top):
-                search_freq = val_lst[counter]
-                counter += 1
-                top_words += [word for word, freq in frequencies.items() if freq == search_freq]
-            print(val_lst)
-            print(top_words)
+    def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
+        if (isinstance(frequencies, dict) and frequencies != {}
+                and all(isinstance(k, str) for k in frequencies.keys())
+                and all(isinstance(v, int or float) for v in frequencies.values())):
+            words_num = sum(frequencies.values())
+            tf_dict = {w: (f / words_num) for w, f in frequencies.items()}
+            return tf_dict
+        else:
+            None
+
+
+    e = calculate_tf(c)
+    print(e)
+
+
+    def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
+        if (isinstance(term_freq, dict) and term_freq != {} and all(isinstance(w, str) for w in term_freq.keys())
+                and all(isinstance(f, float) for f in term_freq.values())
+                and isinstance(idf, dict) and all(isinstance(w, str) for w in idf.keys())
+                and all(isinstance(f, float) for f in idf.values())):
+
+            tfidf_dict = {}
+            for w in term_freq:
+                if w not in idf.keys():
+                    idf[w] = math.log(47 / 1)
+                tfidf_dict[w] = term_freq[w] * idf[w]
+            return tfidf_dict
         else:
             return None
 
 
-    top_words = get_top_n(freq_dict, 10)
+    f = calculate_tfidf(e, idf)
+    print(f)
 
+    def calculate_expected_frequency(
+            doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+    ) -> Optional[dict[str, float]]:
+        """
+        Calculates expected frequency for each of the tokens based on its
+        Term Frequency score for both target document and general corpus
+
+        Parameters:
+        doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
+        corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
+
+        Returns:
+        Dict: A dictionary with tokens and its corresponding expected frequency
+
+        In case of corrupt input arguments, None is returned
+        """
+        if (isinstance(doc_freqs, dict) and doc_freqs != {} and all(isinstance(k, str) for k in doc_freqs.keys())
+            and all(isinstance(v, int) for v in doc_freqs.values())
+            and isinstance(corpus_freqs, dict) and all(isinstance(k, str) for k in corpus_freqs.keys())
+            and all(isinstance(v, int) for v in corpus_freqs.values())):
+
+            expected_dict = {}
+            doc_words_sum = sum(doc_freqs.values())
+            collection_words_sum = sum(corpus_freqs.values())
+            for w, f in doc_freqs.items():
+                expected = (((f + corpus_freqs[w]) * (f + doc_words_sum - f)) /
+                            (f + corpus_freqs[w] + doc_words_sum - f + collection_words_sum - corpus_freqs[w]))
+                expected_dict[w] = expected
+            return expected_dict
+        else:
+            return
+
+
+    g = calculate_expected_frequency(c, corpus_freqs)
+    print(g)
 
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
