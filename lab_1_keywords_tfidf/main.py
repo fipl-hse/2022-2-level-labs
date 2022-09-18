@@ -90,8 +90,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
+
     def sort_key(word_and_frequency: tuple[str, Union[int, float]]):
         return word_and_frequency[1]
+
     if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
         return None
     top_list = []
@@ -243,9 +245,10 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(chi_values, dict) or chi_values == {} or not isinstance(alpha, float):
-        return None
     CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if not isinstance(chi_values, dict) or chi_values == {} or not isinstance(alpha, float) \
+            or not alpha in CRITERION.keys():
+        return None
     significant_words = {}
     for key, value in chi_values.items():
         if not isinstance(key, str):
