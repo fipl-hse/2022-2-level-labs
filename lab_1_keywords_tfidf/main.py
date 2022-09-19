@@ -26,7 +26,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     Parameters:
     tokens (List[str]): Original token sequence
-    stop_words (List[str]: Tokens to exclude
+    stop_words (List[str]): Tokens to exclude
 
     Returns:
     List[str]: Token sequence that does not include stop words
