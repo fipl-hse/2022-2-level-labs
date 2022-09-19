@@ -151,11 +151,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             and right_dict(idf, keys_type=str, values_type=float)):
         tfidf_dict = {}
         for term in term_freq:
-            if idf.get(term) is not None:
-                tfidf_score = idf.get(term, 0) * term_freq[term]
-            else:
-                tfidf_score = math.log(47 / (0 + 1)) * term_freq[term]
-            tfidf_dict[term] = tfidf_score
+            tfidf_dict[term] = idf.get(term, math.log(47 / (0 + 1))) * term_freq[term]
         return tfidf_dict
     return None
 
