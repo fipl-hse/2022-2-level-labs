@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 # сделать нахождение значений словарей через get !!!!!! (через квадратные скобки не лучший способ)
-# вернуть обратно удаленные описания функций
+# вернуть обратно удаленные описания функций - сделано
 
 
 def clean_and_tokenize(text: str)  -> Optional[list[str]]:
@@ -23,7 +23,7 @@ def clean_and_tokenize(text: str)  -> Optional[list[str]]:
     else:
         text = text.lower()
         text = text.strip()
-        marks = ",.:;!?—(){}[]&"
+        marks = ",.:;!?—-(){}[]&"
         # добавить удаление  пробелов рядом с пробелами
         for i in text:
             if i in marks:
@@ -31,7 +31,7 @@ def clean_and_tokenize(text: str)  -> Optional[list[str]]:
             else:
                 pass
         words_list = text.split()
-        print(words_list)
+        return (words_list)
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -49,10 +49,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         return None
     elif len(tokens) == 0 or len(stop_words) == 0:
         return None
-    for word in stop_words:
-        while word in tokens:
-            tokens.remove(word)   # апдейт кажется я починила но все равно нужно чекнуть (код пропускал некоторые слова)
-    print(tokens)
+    else:
+        for word in stop_words:
+            while word in tokens:
+                tokens.remove(word)   # апдейт кажется я починила но все равно нужно чекнуть (код пропускал некоторые слова)
+        return(tokens)
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -69,7 +70,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         """
     frequencies = {}
     if isinstance(tokens, list) is False or len(tokens) == 0:
-        return None
+        return
     for i in tokens:
         if isinstance(i, str) is False:
             return None
@@ -77,7 +78,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         for i in tokens:
             x = tokens.count(i)
             frequencies[i] = x
-    print(frequencies)
+    return (frequencies)
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -112,7 +113,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             top_list = sorted(frequencies, key=frequencies.get, reverse=True)[:top]
         else:
             top_list = sorted(frequencies, key=frequencies.get, reverse=True)
-        print(top_list)
+        return (top_list)
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -144,7 +145,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         for key, val in frequencies.items():
             tf = val / words_num
             tf_dict[key] = round(tf, 3)   # нужен ли тут раунд?
-        print(tf_dict)
+        return (tf_dict)
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -181,7 +182,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             else:
                 key_idf = math.log(47 / 0 + 1)
                 tfidf_dict[key] = v * key_idf
-            print(tfidf_dict)
+            return (tfidf_dict)
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -231,7 +232,7 @@ def calculate_expected_frequency(
                 # k - количество вхождений слова t во все тексты коллекции D
                 exp = ((j + k) * (j * l))/ (j + k + l + m)
                 exp_freqs[key] = exp
-        print(exp_freqs)
+        return (exp_freqs)
     pass
 
 
