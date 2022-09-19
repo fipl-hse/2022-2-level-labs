@@ -21,6 +21,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     return clean2
 
 
+
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
         Excludes stop words from the token sequence

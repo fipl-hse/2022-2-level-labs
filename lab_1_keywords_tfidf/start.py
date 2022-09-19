@@ -43,6 +43,7 @@ if __name__ == "__main__":
     print(clean_list)
 
 
+
     def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
         for word in stop_words:
             while word in tokens:
