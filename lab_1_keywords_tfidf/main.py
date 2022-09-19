@@ -2,12 +2,12 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Type
 import string
 import math
 
 
-def type_check(value: Any, expected_type: type) -> bool:
+def type_check(value: Any, expected_type: Type[Any]) -> bool:
     """
     Works like built-in isinstance but differentiates between int and bool
     """
@@ -16,8 +16,8 @@ def type_check(value: Any, expected_type: type) -> bool:
     return isinstance(value, expected_type)
 
 
-def right_type_container(container: Union[list, tuple, set], container_type: type,
-                         elements_type: type, allow_empty: bool = True) -> bool:
+def right_type_container(container: Union[list, tuple, set], container_type: Type[Any],
+                         elements_type: Type[Any], allow_empty: bool = True) -> bool:
     """
     Checks datatype of a container and its elements
     """
@@ -26,7 +26,7 @@ def right_type_container(container: Union[list, tuple, set], container_type: typ
                 all(type_check(i, elements_type) for i in container) and empty_check))
 
 
-def right_dict(dictionary: dict, keys_type: type, values_type: type, allow_empty: bool = True) -> bool:
+def right_dict(dictionary: dict, keys_type: Type[Any], values_type: Type[Any], allow_empty: bool = True) -> bool:
     """
     Checks datatype of keys and values of dictionary
     """
@@ -60,8 +60,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     Excludes stop words from the token sequence
 
     Parameters:
-    tokens List[str]: Original token sequence
-    stop_words List[str]: Tokens to exclude
+    tokens (List[str]): Original token sequence
+    stop_words (List[str]: Tokens to exclude
 
     Returns:
     List[str]: Token sequence that does not include stop words
@@ -149,18 +149,19 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if (right_dict(term_freq, keys_type=str, values_type=float, allow_empty=False)
             and right_dict(idf, keys_type=str, values_type=float)):
-        tfidf = {}
+        tfidf_dict = {}
         for term in term_freq:
             if idf.get(term) is not None:
-                tfidf[term] = idf.get(term, 0) * term_freq[term]
+                tfidf_score = idf.get(term, 0) * term_freq[term]
             else:
-                tfidf[term] = math.log(47 / (0 + 1)) * term_freq[term]
-        return tfidf
+                tfidf_score = math.log(47 / (0 + 1)) * term_freq[term]
+            tfidf_dict[term] = tfidf_score
+        return tfidf_dict
     return None
 
 
 def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
