@@ -4,6 +4,7 @@ Extract keywords based on frequency related metrics
 
 """
 from typing import Optional, Union
+from math import log
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -139,7 +140,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if isinstance(term_freq, dict) and isinstance(idf, dict):
         tfidf_dict = {}
         for word, freq in term_freq.items():
-            tfidf_dict[word] = term_freq.get(word) * idf.get(word)
+            if idf.get(word) is None:
+                idf_score = log(47 / (0 + 1))
+            else:
+                idf_score = idf.get(word)
+            tfidf_dict[word] = term_freq.get(word) * idf_score
         return tfidf_dict
     else:
         return None
