@@ -2,18 +2,34 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, List
+import re
 
 
-def clean_and_tokenize(text: str) -> list[str]:
-    if not isinstance(text, str):
+
+def clean_and_tokenize(text: str) -> Optional[List[str]]:
+    """
+      Removes punctuation, casts to lowercase, splits into tokens
+      Parameters:
+      text (str): Original text
+      Returns:
+      list[str]: A sequence of lowercase tokens with no punctuation
+      In case of corrupt input arguments, None is returned
+      """
+    pass
+
+    if isinstance(text, str):
+        text = re.sub('[!@#$\n-.,]', '', text)
+        text = text.replace('  ', ' ')
+        text.strip()
+        text = text.lower()
+        text = text.split()
+        return text
+    else:
         return None
-    for i in text:
-        if not i.isalnum() and i != ' ':
-            text = text.replace(i, '')
-    text = text.lower()
-    text = text.split()
-    return text
+
+
+
 
 
 
@@ -31,6 +47,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     pass
+
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        tokens_new = []
+        for i in tokens:
+            if i not in stop_words:
+                tokens_new.append(i)
+        return tokens_new
+    else:
+        return None
+
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
