@@ -3,6 +3,8 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+# сделать нахождение значений словарей через get !!!!!! (через квадратные скобки не лучший способ)
+# вернуть обратно удаленные описания функций
 
 
 def clean_and_tokenize(text: str):
@@ -18,8 +20,8 @@ def clean_and_tokenize(text: str):
                 text = text.replace(i, "")
             else:
                 pass
-        list = text.split()
-        print(list)
+        words_list = text.split()
+        print(words_list)
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     if isinstance(tokens, list) is False or isinstance(stop_words, list) is False:
@@ -28,7 +30,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         return None
     for word in stop_words:
         while word in tokens:
-            tokens.remove(word)   #апдейт кажется я починила но все равно нужно чекнуть (код пропускал некоторые слова)
+            tokens.remove(word)   # апдейт кажется я починила но все равно нужно чекнуть (код пропускал некоторые слова)
     print(tokens)
 
 
@@ -61,7 +63,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) is False or (isinstance(top, (int, float)) is False ):
+    if isinstance(frequencies, dict) is False or (isinstance(top, (int, float)) is False):
         return None
     else:
         freq_val = list(frequencies.values())
@@ -70,9 +72,14 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             words_num += value
         print(words_num)
         if top <= words_num:
-            top_list = sorted(frequencies, key = frequencies.get, reverse = True)[:top]  #get возвращает значение по указанному ключу
+            """следующая абракадара сортирует значения функций по убыванию(reverse = true, 
+             если этого не писать будет по возрастанию)
+             и выдает лист ключей, которым эти значения принадлежат"""
+            # нужно лучше разобраться в функции sorted
+            # get возвращает значение по указанному ключу
+            top_list = sorted(frequencies, key=frequencies.get, reverse=True)[:top]
         else:
-            top_list = sorted(frequencies, key = frequencies.get, reverse = True)
+            top_list = sorted(frequencies, key=frequencies.get, reverse=True)
         print(top_list)
 
 
@@ -89,8 +96,12 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) is False:   #добавить проверку на то, являются ли ключи строками а значения интами
+    if isinstance(frequencies, dict) is False:
+        # добавить проверку на то, являются ли ключи строками а значения интами #апдейт - сделано
         return None
+    for k, v in frequencies.items():
+        if isinstance(k, int) is False or isinstance(v, int) is False:
+            return None
     else:
         freq_values = list(frequencies.values())
         words_num = 0
@@ -99,7 +110,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         tf_dict = {}
         for key, val in frequencies.items():
             tf = val / words_num
-            tf_dict[key] = round(tf, 3)   #нужен ли тут раунд?
+            tf_dict[key] = round(tf, 3)   # нужен ли тут раунд?
         print(tf_dict)
 
 
@@ -117,7 +128,24 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-
+    # я понятия не имею работает ли эта функция
+    if isinstance(term_freq, dict) is False or isinstance(idf, dict) is False:
+        return None
+    for k, v in term_freq.items():
+        if isinstance(k, str) is False or isinstance(v, float) is False:
+            return None
+    else:
+        import math
+        tfidf_dict = {}
+        for key, v in term_freq.items():
+            if key in idf:
+                tfidf_dict[key] = v * idf.get(key)
+                """в словарь со значениями tfidf добавляю слово, которое является ключом, и его значение,
+                равное произведению значений данных на входе словарей(если вдруг я забуду что тут происходит )"""
+            else:
+                key_idf = math.log(47 / 0 + 1)
+                tfidf_dict[key] = v * key_idf
+            print(tfidf_dict)
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
