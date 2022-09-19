@@ -37,9 +37,15 @@ if __name__ == "__main__":
 
 print(main.clean_and_tokenize(target_text))
 tokens = main.clean_and_tokenize(target_text)
+print(len(tokens))
 print(main.remove_stop_words(tokens, stop_words))
 tokens = main.remove_stop_words(tokens, stop_words)
 print(main.calculate_frequencies(tokens))
 frequencies = main.calculate_frequencies(tokens)
-top = input("Number of tokens to extract: ")
-print(main.get_top_n(frequencies, top))
+print(main.get_top_n(frequencies, 10))
+print(main.calculate_tf(frequencies))
+term_freq = main.calculate_tf(frequencies)
+print(term_freq)
+print(main.calculate_tfidf(term_freq, idf))
+
+
