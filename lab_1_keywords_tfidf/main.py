@@ -22,7 +22,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     for punc in string.punctuation:
         text = text.replace(punc, '')
         clean_words = text.lower().strip().split()
-        return clean_words
+    return clean_words
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
