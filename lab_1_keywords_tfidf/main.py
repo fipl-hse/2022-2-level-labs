@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union, List, Dict
+from math import log
 
 
 def clean_and_tokenize(text: str) -> Optional[List[str]]:
@@ -145,7 +146,7 @@ def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optio
             if idf[key] != 0:
                 tfidf_dic[key] = term_freq[key]*idf[key]
             else:
-                tfidf_dic[key] = term_freq[key]*47
+                tfidf_dic[key] = term_freq[key]*log(47)
         return tfidf_dic
     else:
         return None

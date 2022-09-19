@@ -1,8 +1,8 @@
 """
 Frequency-driven keyword extraction starter
 """
-from pathlib import Path
 import json
+from pathlib import Path
 import main
 
 
