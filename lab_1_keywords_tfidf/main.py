@@ -25,7 +25,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         for i in punctuation:
             text = text.replace(i, '')
         text = text.lower().split()
-        '''если превращает в список - делает это побуквенно, поэтому нужен сплит'''
         return text
 
 
