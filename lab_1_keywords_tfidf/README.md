@@ -232,7 +232,7 @@ $$\chi^2 = \frac{(observed - expected)^2}{expected}$$
   
 Интерфейс:
 ```py
-def calculate_chi_values(expected: dict[str, float], observed: dict[str, float]) ->  dict[str, float]:
+def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) ->  dict[str, float]:
  pass
 ```  
 
