@@ -8,6 +8,16 @@ from typing import Optional, Union
 
 
 def clean_and_tokenize(text: str):
+    """
+    Removes punctuation, casts to lowercase, splits into tokens
+
+    Parameters:
+    text (str): Original text
+
+    Returns:
+    list[str]: A sequence of lowercase tokens with no punctuation
+    In case of corrupt input arguments, None is returned
+    """
     if isinstance(text, str) is False:
         return None
     else:
@@ -24,6 +34,17 @@ def clean_and_tokenize(text: str):
         print(words_list)
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
+    """
+    Excludes stop words from the token sequence
+
+    Parameters:
+    tokens (List[str]): Original token sequence
+    stop_words (List[str]: Tokens to exclude
+
+    Returns:
+    List[str]: Token sequence that does not include stop words
+    In case of corrupt input arguments, None is returned
+    """
     if isinstance(tokens, list) is False or isinstance(stop_words, list) is False:
         return None
     elif len(tokens) == 0 or len(stop_words) == 0:
@@ -35,6 +56,17 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
+    """
+        Composes a frequency dictionary from the token sequence
+
+        Parameters:
+        tokens (List[str]): Token sequence to count frequencies for
+
+        Returns:
+        Dict: {token: number of occurrences in the token sequence} dictionary
+
+        In case of corrupt input arguments, None is returned
+        """
     frequencies = {}
     if isinstance(tokens, list) is False or len(tokens) == 0:
         return None
@@ -72,7 +104,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             words_num += value
         print(words_num)
         if top <= words_num:
-            """следующая абракадара сортирует значения функций по убыванию(reverse = true, 
+            """следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
              если этого не писать будет по возрастанию)
              и выдает лист ключей, которым эти значения принадлежат"""
             # нужно лучше разобраться в функции sorted
@@ -163,6 +195,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
+
     pass
 
 
