@@ -60,6 +60,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 get_top_n(frequencies, top)
 
 
+
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
