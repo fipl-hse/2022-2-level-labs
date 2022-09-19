@@ -4,9 +4,6 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 
-# import json
-# from pathlib import Path
-
 import math
 import string
 
@@ -21,8 +18,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(text, str):
-        for p in string.punctuation:
-            text = text.replace(p, '')
+        for punc in string.punctuation:
+            text = text.replace(punc, '')
         clean_words = text.lower().strip().split()
         return clean_words
     else:
@@ -39,9 +36,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     List[str]: Token sequence that does not include stop words
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(tokens, list) and tokens != [] and all(isinstance(t, str) for t in tokens)
+    if (isinstance(tokens, list) and tokens != [] and all(isinstance(token, str) for token in tokens)
             and isinstance(stop_words, list)):
-        no_stop_words = [t for t in tokens if t not in stop_words]
+        no_stop_words = [token for token in tokens if token not in stop_words]
         return no_stop_words
     else:
         return None
@@ -57,13 +54,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
     if (isinstance(tokens, list) and tokens != []
-            and all(isinstance(t, str) for t in tokens)):
+            and all(isinstance(token, str) for token in tokens)):
         freq_dict = {}
-        for t in tokens:
-            if t not in freq_dict:
-                freq_dict[t] = 1
+        for token in tokens:
+            if token not in freq_dict:
+                freq_dict[token] = 1
             else:
-                freq_dict[t] += 1
+                freq_dict[token] += 1
         return freq_dict
     else:
         return None
@@ -82,11 +79,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if (isinstance(frequencies, dict) and frequencies != {}
-            #and all(isinstance(k, str) for k in frequencies.keys())
-            #and all(isinstance(v, int or float) for v in frequencies.values())
+            # and all(isinstance(token, str) for word in frequencies.keys())
+            # and all(isinstance(freq, int or float) for freq in frequencies.values())
             and isinstance(top, int) and top is not (True or False) and top > 0):
 
-        sorted_freq_dict = {k: v for k, v in sorted(frequencies.items(), key=lambda k: k[1], reverse=True)}
+        sorted_freq_dict = {token: token for token, freq
+                            in sorted(frequencies.items(), key=lambda token: token[1], reverse=True)}
         sorted_words = list(sorted_freq_dict.keys())
         top_words = sorted_words if top > len(frequencies) else sorted_words[:top]
         return top_words
@@ -106,10 +104,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if (isinstance(frequencies, dict) and frequencies != {}
-            and all(isinstance(k, str) for k in frequencies.keys())
-            and all(isinstance(v, int or float) for v in frequencies.values())):
+            and all(isinstance(token, str) for token in frequencies.keys())
+            and all(isinstance(freq, int or float) for freq in frequencies.values())):
+
         words_num = sum(frequencies.values())
-        tf_dict = {w: (f / words_num) for w, f in frequencies.items()}
+        tf_dict = {token: (freq / words_num) for token, freq in frequencies.items()}
         return tf_dict
     else:
         None
@@ -126,23 +125,24 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     Dict: A dictionary with tokens and its corresponding TF-IDF values
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(term_freq, dict) and term_freq != {} and all(isinstance(w, str) for w in term_freq.keys())
-            and all(isinstance(f, float) for f in term_freq.values())
-            and isinstance(idf, dict) and all(isinstance(w, str) for w in idf.keys())
-            and all(isinstance(f, float) for f in idf.values())):
+    if (isinstance(term_freq, dict) and term_freq != {}
+            and all(isinstance(token, str) for token in term_freq.keys())
+            and all(isinstance(tf, float) for tf in term_freq.values())
+            and isinstance(idf, dict) and all(isinstance(token, str) for token in idf.keys())
+            and all(isinstance(idf_val, float) for idf_val in idf.values())):
 
         tfidf_dict = {}
-        for w in term_freq:
-            if w not in idf.keys():
-                idf[w] = math.log(47 / 1)
-            tfidf_dict[w] = term_freq[w] * idf[w]
+        for token in term_freq:
+            if token not in idf.keys():
+                idf[token] = math.log(47 / 1)
+            tfidf_dict[token] = term_freq[token] * idf[token]
         return tfidf_dict
     else:
         return None
 
 
 def calculate_expected_frequency(
-doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
@@ -157,20 +157,24 @@ doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(doc_freqs, dict) and doc_freqs != {} and all(isinstance(k, str) for k in doc_freqs.keys())
-            and all(isinstance(v, int) for v in doc_freqs.values())
-            and isinstance(corpus_freqs, dict) and all(isinstance(k, str) for k in corpus_freqs.keys())
-            and all(isinstance(v, int) for v in corpus_freqs.values())):
+    if (isinstance(doc_freqs, dict) and doc_freqs != {}
+            and all(isinstance(token, str) for token in doc_freqs.keys())
+            and all(isinstance(freq, int) for freq in doc_freqs.values())
+            and isinstance(corpus_freqs, dict)
+            and all(isinstance(token, str) for token in corpus_freqs.keys())
+            and all(isinstance(freq, int) for freq in corpus_freqs.values())):
 
         expected_dict = {}
         doc_words_sum = sum(doc_freqs.values())
         collection_words_sum = sum(corpus_freqs.values())
-        for w, f in doc_freqs.items():
-            if w not in corpus_freqs.keys():
-                corpus_freqs[w] = 0
-            expected = (((f + corpus_freqs[w]) * (f + doc_words_sum - f)) /
-                        (f + corpus_freqs[w] + doc_words_sum - f + collection_words_sum - corpus_freqs[w]))
-            expected_dict[w] = expected
+        for token, freq in doc_freqs.items():
+            if token not in corpus_freqs.keys():
+                corpus_freqs[token] = 0
+
+            expected = (((freq + corpus_freqs[token]) * (freq + doc_words_sum - freq)) /
+                    (freq + corpus_freqs[token] + doc_words_sum - freq + collection_words_sum - corpus_freqs[token]))
+
+            expected_dict[token] = expected
         return expected_dict
     else:
         return
@@ -193,16 +197,16 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
     if (isinstance(expected, dict) and expected != {}
-            and all(isinstance(k, str) for k in expected.keys())
-            and all(isinstance(v, float) for v in expected.values())
+            and all(isinstance(token, str) for token in expected.keys())
+            and all(isinstance(freq, float) for freq in expected.values())
             and isinstance(observed, dict) and observed != {}
-            and all(isinstance(k, str) for k in observed.keys())
-            and all(isinstance(v, int) for v in observed.values())):
+            and all(isinstance(token, str) for token in observed.keys())
+            and all(isinstance(freq, int) for freq in observed.values())):
 
         chi_dict = {}
-        for w, f in observed.items():
-            chi = (((f - expected[w]) ** 2) / (expected[w]))
-            chi_dict[w] = chi
+        for token, freq in observed.items():
+            chi = (((freq - expected[token]) ** 2) / (expected[token]))
+            chi_dict[token] = chi
         return chi_dict
     else:
         return None
@@ -225,15 +229,15 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     if (isinstance(chi_values, dict) and chi_values != {}
-        and all(isinstance(k, str) for k in chi_values.keys())
-        and all(isinstance(v, float) for v in chi_values.values())
+        and all(isinstance(token, str) for token in chi_values.keys())
+        and all(isinstance(chi_val, float) for chi_val in chi_values.values())
         and alpha in [0.05, 0.01, 0.001]):
 
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         significant_chi_words = {}
-        for w, chi_val in chi_values.items():
+        for token, chi_val in chi_values.items():
             if chi_val >= criterion[alpha]:
-                significant_chi_words[w] = chi_val
+                significant_chi_words[token] = chi_val
         return significant_chi_words
     else:
         return None
