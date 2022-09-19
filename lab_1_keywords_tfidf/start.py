@@ -4,7 +4,7 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
-from main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf,
+from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf,
                   calculate_tfidf, calculate_expected_frequency, calculate_chi_values, extract_significant_words)
 
 
@@ -35,35 +35,27 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     clean_words = clean_and_tokenize(target_text)
-    print(clean_words)
 
     no_stop_words = remove_stop_words(clean_words, stop_words)
-    print(no_stop_words)
 
     freq_dict = calculate_frequencies(no_stop_words)
-    print(freq_dict)
 
     top_words = get_top_n(freq_dict, 10)
-    print(top_words)
 
     tf_dict = calculate_tf(freq_dict)
-    print(tf_dict)
 
     tfidf_dict = calculate_tfidf(tf_dict, idf)
-    print(tfidf_dict)
 
-    print(get_top_n(tfidf_dict, 5))
+    print(get_top_n(tfidf_dict, 10))
 
     expected_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
-    print(expected_dict)
 
     chi_dict = calculate_chi_values(expected_dict, freq_dict)
-    print(chi_dict)
 
     significant_chi_words = extract_significant_words(chi_dict, 0.05)
-    print(significant_chi_words)
 
     num_significant_chi_words = get_top_n(significant_chi_words, 10)
+    print(num_significant_chi_words)
 
     RESULT = num_significant_chi_words
 
