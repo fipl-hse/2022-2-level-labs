@@ -3,7 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
+from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf
 
 if __name__ == "__main__":
 
@@ -35,17 +35,17 @@ if __name__ == "__main__":
     ''' # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted' '''
 
-print(main.clean_and_tokenize(target_text))
-tokens = main.clean_and_tokenize(target_text)
+print(clean_and_tokenize(target_text))
+tokens = clean_and_tokenize(target_text)
 print(len(tokens))
-print(main.remove_stop_words(tokens, stop_words))
-tokens = main.remove_stop_words(tokens, stop_words)
-print(main.calculate_frequencies(tokens))
-frequencies = main.calculate_frequencies(tokens)
-print(main.get_top_n(frequencies, 10))
-print(main.calculate_tf(frequencies))
-term_freq = main.calculate_tf(frequencies)
+print(remove_stop_words(tokens, stop_words))
+tokens = remove_stop_words(tokens, stop_words)
+print(calculate_frequencies(tokens))
+frequencies = calculate_frequencies(tokens)
+print(get_top_n(frequencies, 10))
+print(calculate_tf(frequencies))
+term_freq = calculate_tf(frequencies)
 print(term_freq)
-print(main.calculate_tfidf(term_freq, idf))
+print(calculate_tfidf(term_freq, idf))
 
 

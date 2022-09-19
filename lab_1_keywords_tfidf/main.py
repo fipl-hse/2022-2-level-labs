@@ -17,12 +17,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         In case of corrupt input arguments, None is returned
         """
     if isinstance(text, str):
-        text = text.lower()
+        lowed_text = text.lower()
+        only_text = ''
         for punctuation_mark in string.punctuation:
-            if punctuation_mark in text:
-                text = text.replace(punctuation_mark, '')
-        text = text.strip().split()
-        return text
+            if punctuation_mark in lowed_text:
+                only_text = lowed_text.replace(punctuation_mark, '')
+        cleaned_text = only_text.strip().split()
+        return cleaned_text
     else:
         return None
 
