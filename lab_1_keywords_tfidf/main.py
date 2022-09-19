@@ -59,6 +59,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 
 
+
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
