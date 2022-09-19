@@ -41,7 +41,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    for i in tokens:
+    for i in tokens[::-1]:
         if i in stop_words:
             tokens.remove(i)
         else:
@@ -61,7 +61,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    frequencies = {}
+    for i in tokens:
+        if i not in frequencies.keys():
+            frequencies[i] = 1
+        else:
+            frequencies[i] += 1
+    return frequencies
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
