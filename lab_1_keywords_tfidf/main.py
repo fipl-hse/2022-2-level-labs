@@ -17,6 +17,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
+    text = open('Дюймовочка.txt').read().replace('\n', ' ')
+    print(text)
     pass
 
 
