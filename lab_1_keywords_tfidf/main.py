@@ -7,7 +7,7 @@ from typing import Optional, Union
 # вернуть обратно удаленные описания функций
 
 
-def clean_and_tokenize(text: str):
+def clean_and_tokenize(text: str)  -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
 
@@ -129,7 +129,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict) is False:
-        # добавить проверку на то, являются ли ключи строками а значения интами #апдейт - сделано
+        # добавить проверку на то, являются ли ключи строками а значения интами
+        # апдейт - сделано
         return None
     for k, v in frequencies.items():
         if isinstance(k, int) is False or isinstance(v, int) is False:
@@ -163,10 +164,13 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     # я понятия не имею работает ли эта функция
     if isinstance(term_freq, dict) is False or isinstance(idf, dict) is False:
         return None
-    for k, v in term_freq.items():
-        if isinstance(k, str) is False or isinstance(v, float) is False:
-            return None
     else:
+        for k, v in term_freq.items():
+            if isinstance(k, str) is False or isinstance(v, float) is False:
+                return None
+        for k, v in term_freq.items():
+            if isinstance(k, str) is False or isinstance(v, float) is False:
+                return None
         import math
         tfidf_dict = {}
         for key, v in term_freq.items():
@@ -182,6 +186,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
+    # я не знаю, работает ли эта функция
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -195,7 +200,38 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-
+    if isinstance(doc_freqs, dict) is False or isinstance(corpus_freqs, dict) is False:
+        return None
+    else:
+        for k, v in doc_freqs.items():
+            if isinstance(k, str) is False or isinstance(v, int) is False:
+                return None
+        for k, v in corpus_freqs.items():
+            if isinstance(k, str) is False or isinstance(v, int) is False:
+                return None
+        # подумать как решить это по другому
+        words_in_doc = 0
+        words_in_col = 0
+        doc_freqs_val = list(doc_freqs.values())
+        col_freqs_val = list(doc_freqs.values())
+        for i in doc_freqs_val:
+            words_in_doc += i
+        for i in col_freqs_val:
+            words_in_col += i
+        exp_freqs = {}
+        for key, val in corpus_freqs.items():
+            for i in range(doc_freqs_val):
+                l = words_in_doc - doc_freqs_val[i]
+                # l -  количество вхождений всех слов, кроме , в документ d
+                m = words_in_col - col_freqs_val[i]
+                # m - количество вхождений всех слов, кроме , в коллекцию документов D
+                j = doc_freqs_val[i]
+                # j - количество вхождений слова t  в документ d
+                k = col_freqs_val[i]
+                # k - количество вхождений слова t во все тексты коллекции D
+                exp = ((j + k) * (j * l))/ (j + k + l + m)
+                exp_freqs[key] = exp
+        print(exp_freqs)
     pass
 
 
@@ -234,4 +270,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
+
     pass
