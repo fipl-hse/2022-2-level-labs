@@ -17,7 +17,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     list[str]: A sequence of lowercase tokens with no punctuation
     In case of corrupt input arguments, None is returned
     """
-    if not(isinstance(text, str)):
+    if not isinstance(text, str):
         return None
     for punc in string.punctuation:
         text = text.replace(punc, '')
