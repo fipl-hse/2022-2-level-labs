@@ -18,8 +18,17 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
 
+    if isinstance(text, str):
+        punctuation = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~'
+        my_text = ''
+        for i in text.lower().replace('\n', ' '):
+            if i not in punctuation:
+                my_text += i
+        my_text = my_text.split()
+        return my_text
+    else:
+        return None
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -34,7 +43,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    my_tokens = []
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        for token in tokens:
+            if token not in stop_words:
+                my_tokens.append(token)
+        return my_tokens
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -49,7 +65,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(tokens, list):
+        my_dict = {token: tokens.count(token) for token in tokens}
+        return my_dict
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -67,7 +87,19 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(frequencies, dict) and isinstance(top, int):
+        my_frequencies = frequencies
+        my_top_list = []
+        if top <= len(frequencies):
+            for i in range(top):
+                top_token = max(my_frequencies, key=my_frequencies.get)
+                my_top_list.append(top_token)
+                del my_frequencies[top_token]
+            return my_top_list
+        else:
+            return None
+    else:
+         return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -83,7 +115,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(frequencies, dict):
+        tf_dict = {word: frequency / sum(frequencies.values()) for word, frequency in frequencies.items()}
+        return tf_dict
+    else:
+        return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -100,7 +136,13 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(term_freq, dict) and isinstance(idf, dict):
+        tfidf_dict = {}
+        for word, freq in term_freq.items():
+            tfidf_dict[word] = term_freq.get(word) * idf.get(word)
+        return tfidf_dict
+    else:
+        return None
 
 
 def calculate_expected_frequency(
