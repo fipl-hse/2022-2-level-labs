@@ -1,63 +1,57 @@
 from typing import Optional, Union
 
-with open("Дюймовочка.txt", "r", encoding="utf-8") as f1:
-    f2 = open("stop_words.txt", "r", encoding="utf-8")
-    text = f1.read()
-    stopwords = f2.read()
-    stop_words = stopwords.split()
-    tokens = []
-    tokens_clean = []
-    frequencies = {}
-    top = 6
-
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    global tokens
     punctuation = '''!.?,:;"'-()'''
-    text = text.lower()
-    for element in text:
-        if element in punctuation:
-            text = text.replace(element,' ')
-    tokens = [element for element in text.split()]
-    print('Неочищенный список слов текста:')
-    print(tokens)
-    return(tokens)
-
-clean_and_tokenize(text)
+    if isinstance(text, str):
+        text = text.lower()
+        for element in text:
+            if element in punctuation:
+                text = text.replace(element,' ')
+        tokens = [element for element in text.split()]
+        print('Неочищенный список слов текста:')
+        print(tokens)
+        return(tokens)
+    else:
+        return None
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
-    global tokens_clean
-    tokens_clean = [i for i in tokens if i not in stop_words]
-    print('Чистый список слов текста:')
-    print(tokens_clean)
-    return(tokens_clean)
-
-remove_stop_words(tokens,stop_words)
+    if (isinstance(tokens, list) and tokens != [] and all(isinstance(t, str) for t in tokens)
+    and isinstance(stop_words, list)):
+        tokens_clean = [i for i in tokens if i not in stop_words]
+        print('Чистый список слов текста:')
+        print(tokens_clean)
+        return(tokens_clean)
+    else:
+        return None
 
 
 def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
-    global frequencies
-    frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
-    print('Подсчёт слов в тексте:')
-    print(frequencies)
-    return(frequencies)
-
-calculate_frequencies(tokens_clean)
+    if (isinstance(tokens_clean, list) and tokens_clean != [] and all(isinstance(t, str) for t in tokens_clean)):
+        frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
+        print('Подсчёт слов в тексте:')
+        print(frequencies)
+        return(frequencies)
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    sorted_values = sorted(frequencies.values(), reverse=True)
-    sorted_dict = {}
-    for i in sorted_values:
-        for k in frequencies.keys():
-            if frequencies[k] == i:
-                sorted_dict[k] = frequencies[k]
-                break
-    print('Топ 6 самых частых слов в тексте:')
-    for i in range(top):
-        print(list(sorted_dict.items())[i])
-        return(list(sorted_dict.items()))
-
-get_top_n(frequencies, top)
+    if (isinstance(frequencies, dict) and frequencies != {} and isinstance(top, int)
+    and top is not (True or False) and top > 0):
+        sorted_values = sorted(frequencies.values(), reverse=True)
+        sorted_dict = {}
+        for i in sorted_values:
+            for k in frequencies.keys():
+                if frequencies[k] == i:
+                    sorted_dict[k] = frequencies[k]
+                    break
+        print('Топ 6 самых частых слов в тексте:')
+        global top_six
+        words = list(sorted_dict.keys())
+        top_six = words[:top]
+        print(top_six)
+        return(top_six)
+    return None
 
 
 
