@@ -92,10 +92,8 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         return None
     frequency_dict = {}
     for token in tokens:
-        if token in frequency_dict.keys():
-            frequency_dict[token] += 1
-        else:
-            frequency_dict[token] = 1
+        if token not in frequency_dict.keys():
+            frequency_dict[token] = tokens.count(token)
     return frequency_dict
 
 
@@ -117,9 +115,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not check(frequencies, dict, exp_cont=str, exp_val=(float, int), not_empty=True) \
             or not check(top, int) or top <= 0:
         return None
-    top_list = []
-    for key in frequencies.keys():
-        top_list.append(key)
+    top_list = list(frequencies.keys())
     top_list.sort(reverse=True, key=lambda word: frequencies[word])
     return top_list[:top]
 
@@ -191,14 +187,12 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     corpus_total = sum(corpus_freqs.values())
     exp_freqs = {}
     for key, doc_freq in doc_freqs.items():
-        # j = doc_freq
-        # k = corpus_freqs[key] (0 if does not appear in corpus)
+        # j = doc_freq; k = corpus_freqs[key] (0 if does not appear in corpus)
+        # l = doc_total - doc_freq; m = corpus_total - corpus_freqs[key]
+        # (j+k)*(j+l)/(j+k+l+m)
         corpus_freq = 0
         if key in corpus_freqs.keys():
             corpus_freq = corpus_freqs[key]
-        # l = doc_total - doc_freq
-        # m = corpus_total - corpus_freqs[key]
-        # (j+k)*(j+l)/j+k+l+m; после взаимного уничтожения слагаемых:
         exp_freqs[key] = (doc_freq + corpus_freq) * doc_total / (doc_total + corpus_total)
     return exp_freqs
 
@@ -245,8 +239,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not check(chi_values, dict, exp_cont=str, not_empty=True) or \
-            not check(alpha, float) or alpha not in criterion.keys():
+    if not check(chi_values, dict, exp_cont=str, not_empty=True) or alpha not in criterion.keys():
         return None
     significant_words = {}
     for key, value in chi_values.items():
