@@ -4,7 +4,7 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
-
+# чтобы добраться до дома дурака. Тук-тук!
 if __name__ == "__main__":
 
     # finding paths to the necessary utils

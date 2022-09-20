@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 
-
+# Зачем курица перешла дорогу?
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
