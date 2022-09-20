@@ -24,7 +24,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     else:
         return None
 
-
 def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
     if (isinstance(tokens_clean, list) and tokens_clean != [] and all(isinstance(t, str) for t in tokens_clean)):
         frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
@@ -33,7 +32,6 @@ def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
         return(frequencies)
     else:
         return None
-
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     if (isinstance(frequencies, dict) and frequencies != {} and isinstance(top, int)
@@ -53,8 +51,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         return(top_six)
     return None
 
-
-
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
@@ -69,7 +65,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     pass
-
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
@@ -86,7 +81,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     pass
-
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, float]
@@ -106,7 +100,6 @@ def calculate_expected_frequency(
     """
     pass
 
-
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates chi-squared value for the tokens
@@ -124,7 +117,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
     pass
-
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """

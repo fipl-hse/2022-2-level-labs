@@ -28,8 +28,8 @@ print(f'Numbers: {first_num} and {second_num}')
 # third_num = first_num / second_num
 
 # Fix the first exception:
-second_num = 5
-third_num = first_num / second_num
+#second_num = 5
+third_num = first_num / 1
 print(f'Numbers: {first_num}, {second_num} and {third_num}')
 
 
