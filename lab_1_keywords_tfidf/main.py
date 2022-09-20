@@ -20,30 +20,22 @@ def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, no
     Returns:
     bool: True if obj (and its content if needed) has the expected type, False otherwise
     """
-    ret = True
-    if exp_type == int and (not isinstance(obj, int) or isinstance(obj, bool)):
-        ret = False
-    if exp_type == str and not isinstance(obj, str) and ret:
-        ret = False
-    if exp_type == list and not isinstance(obj, list) and ret:
-        ret = False
-    if exp_type == list and exp_cont and ret:
+    flag = True
+    if not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool) or (not_empty and not obj):
+        flag = False
+    if exp_type == list and exp_cont and flag:
         for item in obj:
             if not check(item, exp_cont):
-                ret = False
-    if exp_type == dict and not isinstance(obj, dict) and ret:
-        ret = False
-    if exp_type == dict and exp_cont and ret:
+                flag = False
+    if exp_type == dict and exp_cont and flag:
         for key in obj.keys():
             if not check(key, exp_cont):
-                ret = False
-    if exp_type == dict and exp_val and ret:
+                flag = False
+    if exp_type == dict and exp_val and flag:
         for value in obj.values():
             if not check(value, exp_val):
-                ret = False
-    if not_empty and not obj and ret:
-        ret = False
-    return ret
+                flag = False
+    return flag
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
