@@ -1,7 +1,6 @@
 """
 Lab 1
 Extract keywords based on frequency related metrics
-
 """
 from typing import Optional, Union
 from math import log
@@ -67,6 +66,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(tokens, list):
+        for token in tokens:
+            if not tokens == []:
+                if not isinstance(token, str):
+                    return None
+                return None
         my_dict = {token: tokens.count(token) for token in tokens}
         return my_dict
     else:
@@ -88,10 +92,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) and isinstance(top, int):
+    if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
         my_frequencies = frequencies
         my_top_list = []
-        if top <= len(frequencies):
+        if top <= len(frequencies.keys()):
             for i in range(top):
                 top_token = max(my_frequencies, key=my_frequencies.get)
                 my_top_list.append(top_token)
@@ -100,7 +104,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         else:
             return None
     else:
-         return None
+        return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
