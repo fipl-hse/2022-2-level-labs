@@ -55,7 +55,7 @@ if __name__ == "__main__":
         tfidf_dict = calculate_tfidf(tf_dict, idf)
 
     if tfidf_dict:
-        exp_freq_dict = calculate_expected_frequency(tfidf_dict, corpus_freqs)
+        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
     if exp_freq_dict:
         chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)

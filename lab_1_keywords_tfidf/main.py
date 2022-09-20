@@ -37,6 +37,7 @@ def check_positive_int(user_input):
         return True
     return False
 
+
 def check_float(user_input):
     if isinstance(user_input, float):
         return True
@@ -56,7 +57,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(text, str):
-        punctuation = '''!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~'''
+        punctuation = '''!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~'''
         my_text = ''
         for i in text.lower().replace('\n', ' '):
             if i not in punctuation:
@@ -197,13 +198,15 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, False):
+    if check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, True):
         dict_exp_freqs = {}
         for word, freq in doc_freqs.items():
-            dfw = doc_freqs.get(word)
-            cfw = corpus_freqs.get(word)
-            dict_exp_freqs[word] = ((dfw + cfw) * (dfw + sum(doc_freqs.values()) - dfw)) / \
-                                   (dfw + cfw + dfw + sum(doc_freqs.values()) - dfw + sum(corpus_freqs.values()) - cfw)
+            doc_freq = doc_freqs.get(word, 0)
+            except_word_doc_freq = sum(doc_freqs.values()) - doc_freq
+            corpus_freq = corpus_freqs.get(word, 0)
+            except_word_corpus_freq = sum(corpus_freqs.values()) - corpus_freq
+            dict_exp_freqs[word] = ((doc_freq + corpus_freq) * (doc_freq + except_word_doc_freq)) /\
+                                   (doc_freq + corpus_freq + doc_freq + except_word_doc_freq + except_word_corpus_freq)
         return dict_exp_freqs
     return None
 
@@ -248,7 +251,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if check_dict(chi_values, str, float, False) and check_float(alpha):
+    if check_dict(chi_values, str, float, True) and check_float(alpha):
         significant_words_dict = {}
         for word, chi_value in chi_values.items():
             if chi_value >= alpha:
