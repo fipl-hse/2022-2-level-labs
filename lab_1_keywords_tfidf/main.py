@@ -17,12 +17,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         In case of corrupt input arguments, None is returned
         """
     if isinstance(text, str):
-        lowed_text = text.lower()
-        only_text = ''
+        lowered_text = text.lower()
         for punctuation_mark in string.punctuation:
-            if punctuation_mark in lowed_text:
-                only_text = lowed_text.replace(punctuation_mark, '')
-        cleaned_text = only_text.strip().split()
+            if punctuation_mark in lowered_text:
+                lowered_text = lowered_text.replace(punctuation_mark, '')
+        cleaned_text = lowered_text.strip().split()
         return cleaned_text
     else:
         return None
@@ -64,10 +63,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         Dict: {token: number of occurrences in the token sequence} dictionary
         In case of corrupt input arguments, None is returned
         """
-    if len(tokens) != 0 and isinstance(tokens, list):
+    if isinstance(tokens, list) and len(tokens) != 0:
         frequency_dict = {}
         for token in tokens:
-            if type(token) == str:
+            if isinstance(token, str):
                 if token in frequency_dict.keys():
                     frequency_dict[token] = 1 + frequency_dict[token]
                 else:

@@ -37,7 +37,6 @@ if __name__ == "__main__":
 
 print(clean_and_tokenize(target_text))
 tokens = clean_and_tokenize(target_text)
-print(len(tokens))
 print(remove_stop_words(tokens, stop_words))
 tokens = remove_stop_words(tokens, stop_words)
 print(calculate_frequencies(tokens))
