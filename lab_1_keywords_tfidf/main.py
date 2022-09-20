@@ -56,7 +56,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-
     if check_input(text, str, False):
         punctuation = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~'
         my_text = ''
