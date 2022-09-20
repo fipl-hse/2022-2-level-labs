@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+from math import log
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -22,8 +23,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     for i in text:
         if i.isalnum() or i == ' ':
             res_text += i
-        else:
-            continue
     tokens = res_text.split()
     return tokens
 
@@ -41,12 +40,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    for i in tokens[::-1]:
-        if i in stop_words:
-            tokens.remove(i)
-        else:
-            continue
-    return tokens
+    res_tokens = []
+    for i in tokens:
+        if i not in stop_words:
+            res_tokens += i
+    return res_tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -85,7 +83,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    sorted_dict = {}
+    for i in sorted(frequencies, key=frequencies.get, reverse=True):
+        sorted_dict[i] = frequencies[i]
+    top_n = list(sorted_dict.keys())[:top]
+    return top_n
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -101,7 +103,13 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    tf = {}
+    nd = len(clean_and_tokenize(target_text))
+    for i in frequencies.keys():
+        nt = frequencies.get(i)
+        token_tf = nt / nd
+        tf[i] = token_tf
+    return tf
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -118,7 +126,16 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    tfidf = {}
+    for i in term_freq.keys():
+        token_tf = term_freq.get(i)
+        if i in idf.keys():
+            token_idf = idf.get(i)
+        else:
+            token_idf = log(47 / (0 + 1))
+        token_tfidf = token_tf * token_idf
+        tfidf[i] = token_tfidf
+    return tfidf
 
 
 def calculate_expected_frequency(
@@ -137,7 +154,18 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    expected = {}
+    for i in doc_freqs.keys():
+        j = doc_freqs.get(i)
+        if i in corpus_freqs.keys():
+            k = corpus_freqs.get(i)
+        else:
+            k = 0
+        l = sum(doc_freqs.values()) - j
+        m = sum(corpus_freqs.values()) - k
+        expected_token = ((j + k) * (j + l)) / (j + k + l + m)
+        expected[i] = expected_token
+    return expected
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -156,7 +184,13 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    chi_values = {}
+    for i in expected.keys():
+        expected_token = expected.get(i)
+        observed_token = observed.get(i)
+        chi = ((observed_token - expected_token) ** 2) / expected_token
+        chi_values[i] = chi
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -175,4 +209,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    significant_words = chi_values.copy()
+    for i in significant_words.keys():
+        token_key = significant_words.get(i)
+        if token_key < alpha:
+            del significant_words[i]
+    return significant_words
