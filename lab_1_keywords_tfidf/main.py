@@ -42,7 +42,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(tokens, list) and isinstance(stop_words, list) and type(tokens) == list[str] \
-            and type(stop_words) == list[str]:
+            and type(stop_words) == list[str] and tokens != [] and stop_words != []:
         return None
     else:
         no_stop_words = []
@@ -64,7 +64,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and type(tokens) == list[str]:
+    if not isinstance(tokens, list) and type(tokens) == list[str] and tokens != []:
         return None
     else:
         token_freq = {}
@@ -89,7 +89,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and isinstance(top, int) and type(frequencies) == dict[str, Union[int, float]]:
+    if not isinstance(frequencies, dict) and isinstance(top, int) and type(frequencies) == dict[str, Union[int, float]]\
+            and frequencies != {} and top > 0:
         return None
     else:
         top_dic = {}
@@ -115,7 +116,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and type(frequencies) == dict[str, int]:
+    if not isinstance(frequencies, dict) and type(frequencies) == dict[str, int] and frequencies != {}:
         return None
     else:
         tf_dic = {}
@@ -139,7 +140,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(term_freq, dict) and isinstance(idf, dict) and type(term_freq) == dict[str, float]:
+    if not isinstance(term_freq, dict) and isinstance(idf, dict) and type(term_freq) == dict[str, float] \
+            and type(idf) == dict[str, float] and term_freq != {} and idf != {}:
         return None
     else:
         tfidf_dic = {}
@@ -174,11 +176,13 @@ def calculate_expected_frequency(
     # $$Expected = \frac {(a + b) \times(a + c)}{a + b + c + d}$$
 
     if not isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and type(doc_freqs) == dict[str, int] \
-            and type(corpus_freqs) == dict[str, float]:
+            and type(corpus_freqs) == dict[str, float] and doc_freqs != {} and corpus_freqs != {}:
         return None
     else:
         expected_dic = {}
         for keys, values in doc_freqs.items():
+            if keys not in corpus_freqs:
+                corpus_freqs[keys] = 0
             j = doc_freqs[keys]
             k = corpus_freqs[keys]
             l = sum(list(doc_freqs.values())) - j
@@ -205,7 +209,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(expected, dict) and isinstance(observed, dict) and type(expected) == dict[str, float] \
-            and type(observed) == dict[str, int]:
+            and type(observed) == dict[str, int] and expected != {} and observed != {}:
         return None
     else:
         chi_dic = {}
@@ -233,4 +237,14 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(chi_values, dict) and isinstance(alpha, float) and alpha != 0 \
+            and type(chi_values) == dict[str, float] and chi_values != {}:
+        return None
+    else:
+        significant_dic = {}
+        criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+        alpha = criterion.get(alpha)
+        for key, value in chi_values.items():
+            if value >= alpha:
+                significant_dic[key] = value
+        return significant_dic
