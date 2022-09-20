@@ -117,7 +117,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict):
-        tf_dict = {word: frequency / sum(frequencies.values()) for word, frequency in frequencies.items()}
+        tf_dict = {word: (frequency / sum(frequencies.values())) for word, frequency in frequencies.items()}
         return tf_dict
     else:
         return None
@@ -166,7 +166,14 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
+        dict_exp_freqs = {}
+        for word, freq in doc_freqs.items():
+            dfw = doc_freqs.get(word)
+            cfw = corpus_freqs.get(word)
+            dict_exp_freqs[word] = ((dfw + cfw) * (dfw + sum(doc_freqs.values()) - dfw)) / (dfw + cfw + dfw + sum(doc_freqs.values()) - dfw + sum(corpus_freqs.values()) - cfw)
+        return dict_exp_freqs
+    return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
