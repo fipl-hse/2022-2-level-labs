@@ -6,9 +6,9 @@ from typing import Optional, Union
 from math import log
 
 
-def check_list(user_input, elements_type: type) -> bool:
+def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
     if isinstance(user_input, list):
-        if not user_input:
+        if user_input == [] and can_be_empty is False:
             return False
         for element in user_input:
             if not isinstance(element, elements_type):
@@ -17,9 +17,9 @@ def check_list(user_input, elements_type: type) -> bool:
     return False
 
 
-def check_dict(user_input, key_type: type, value_type: type):
+def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool):
     if isinstance(user_input, dict):
-        if not user_input:
+        if user_input == {} and can_be_empty is False:
             return False
         for key, value in user_input.items():
             if not (isinstance(key, key_type) and isinstance(value, value_type)):
@@ -28,9 +28,11 @@ def check_dict(user_input, key_type: type, value_type: type):
     return False
 
 
-def check_int(user_input):
+def check_positive_int(user_input):
     if isinstance(user_input, int):
         if isinstance(user_input, bool):
+            return False
+        if user_input <= 0:
             return False
         return True
     return False
@@ -56,8 +58,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
                 my_text += i
         my_text = my_text.split()
         return my_text
-    else:
-        return None
+    return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -74,13 +75,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     my_tokens = []
-    if check_list(tokens, str) and check_list(stop_words, str):
+    if check_list(tokens, str, False) and check_list(stop_words, str, True):
         for token in tokens:
             if token not in stop_words:
                 my_tokens.append(token)
         return my_tokens
-    else:
-        return None
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -95,12 +95,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if check_list(tokens, str):
+    if check_list(tokens, str, False):
         if tokens:
             my_dict = {token: tokens.count(token) for token in tokens}
             return my_dict
-    else:
-        return None
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -118,19 +117,18 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if (check_dict(frequencies, str, int) or check_dict(frequencies, str, float)) and check_int(top):
+    if (check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)) and \
+            check_positive_int(top):
         my_frequencies = frequencies
         my_top_list = []
-        if top <= len(frequencies.keys()):
+        if top > len(frequencies):
+            top = len(frequencies)
             for i in range(top):
                 top_token = max(my_frequencies, key=my_frequencies.get)
                 my_top_list.append(top_token)
                 del my_frequencies[top_token]
             return my_top_list
-        else:
-            return None
-    else:
-        return None
+    return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -146,11 +144,10 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if check_dict(frequencies, str, int):
+    if check_dict(frequencies, str, int, False):
         tf_dict = {word: (frequency / sum(frequencies.values())) for word, frequency in frequencies.items()}
         return tf_dict
-    else:
-        return None
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -167,7 +164,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if check_dict(term_freq, str, float) and check_dict(idf, str, float):
+    if check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True):
         tfidf_dict = {}
         for word, freq in term_freq.items():
             if idf.get(word) is None:
@@ -176,8 +173,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                 idf_score = idf.get(word)
             tfidf_dict[word] = term_freq.get(word) * idf_score
         return tfidf_dict
-    else:
-        return None
+    return None
 
 
 def calculate_expected_frequency(
@@ -196,7 +192,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if check_dict(doc_freqs, str, int) and check_dict(corpus_freqs, str, int):
+    if check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, False):
         dict_exp_freqs = {}
         for word, freq in doc_freqs.items():
             dfw = doc_freqs.get(word)
