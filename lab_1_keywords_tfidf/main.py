@@ -37,6 +37,11 @@ def check_positive_int(user_input):
         return True
     return False
 
+def check_float(user_input):
+    if isinstance(user_input, float):
+        return True
+    return False
+
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -219,7 +224,12 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if check_dict(expected, str, float, False) and check_dict(observed, str, int, False):
+        chi_dict = {}
+        for word, freq in expected.items():
+            chi_dict[word] = ((observed.get(word) - freq) ** 2) / freq
+        return chi_dict
+    return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -238,4 +248,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if check_dict(chi_values, str, float, False) and check_float(alpha):
+        significant_words_dict = {}
+        for word, chi_value in chi_values.items():
+            if chi_value >= alpha:
+                significant_words_dict[word] = chi_value
+    return None

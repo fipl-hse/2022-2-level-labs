@@ -11,6 +11,7 @@ from lab_1_keywords_tfidf.main import (
     calculate_tf,
     calculate_tfidf,
     calculate_expected_frequency,
+    calculate_chi_values
 )
 
 if __name__ == "__main__":
@@ -56,6 +57,9 @@ if __name__ == "__main__":
     if tfidf_dict:
         exp_freq_dict = calculate_expected_frequency(tfidf_dict, corpus_freqs)
 
-    RESULT = get_top_n(tfidf_dict, 10)
+    if exp_freq_dict:
+        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
+
+    RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
