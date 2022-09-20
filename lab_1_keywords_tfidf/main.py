@@ -239,7 +239,8 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not check(chi_values, dict, exp_cont=str, not_empty=True) or alpha not in criterion.keys():
+    if not check(chi_values, dict, exp_cont=str, not_empty=True) or not check(alpha, float) \
+            or alpha not in criterion.keys():
         return None
     significant_words = {}
     for key, value in chi_values.items():
