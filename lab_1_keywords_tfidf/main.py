@@ -23,13 +23,9 @@ def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, no
         flag = False
     if exp_type in (list, dict) and not_empty and not obj and flag:
         flag = False
-    if exp_type == list and exp_cont and flag:
+    if exp_type in (list, dict) and exp_cont and flag:
         for item in obj:
             if not check(item, exp_cont):
-                flag = False
-    if exp_type == dict and exp_cont and flag:
-        for key in obj.keys():
-            if not check(key, exp_cont):
                 flag = False
     if exp_type == dict and exp_val and flag:
         for value in obj.values():
