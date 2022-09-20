@@ -2,12 +2,12 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union, List, Dict
+from typing import Optional, Union
 import string
 
 
 
-def clean_and_tokenize(text:str) -> Optional[List[str]]:
+def clean_and_tokenize(text:str) -> Optional[list[str]]:
     """
       Removes punctuation, casts to lowercase, splits into tokens
       Parameters:
@@ -19,16 +19,14 @@ def clean_and_tokenize(text:str) -> Optional[List[str]]:
     if not isinstance(text, str):
         return None
     else:
-        for p in string.punctuation:
-            if p in text:
-                text = text.replace(p, '')
-                text.strip()
-                text = text.lower()
-                text = text.split()
-                return text
+        text = text.translate(str.maketrans('', '', string.punctuation))
+        text.strip()
+        text = text.lower()
+        text = text.split()
+        return text
 
 
-def remove_stop_words(tokens: List[str], stop_words: List[str]) -> Optional[List[str]]:
+def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
 
@@ -41,19 +39,20 @@ def remove_stop_words(tokens: List[str], stop_words: List[str]) -> Optional[List
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and isinstance(stop_words, list):
+    if not (isinstance(tokens, list) and isinstance(stop_words, list) and tokens):
+        return None
+    else:
         tokens_new = []
         for i in tokens:
             if i not in stop_words:
                 tokens_new.append(i)
         return tokens_new
-    else:
-        return None
 
 
 
 
-def calculate_frequencies(tokens: List[str]) -> Optional[Dict[str, int]]:
+
+def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
 
@@ -65,14 +64,18 @@ def calculate_frequencies(tokens: List[str]) -> Optional[Dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and len(tokens) != 0:
-        frequency_dict = {i: tokens.count(i) for i in tokens}
-        return frequency_dict
-    else:
+    if not (isinstance(tokens, list) and tokens):
         return None
+    else:
+        for token in tokens:
+            if not isinstance(token, str):
+                return None
+            else:
+                frequency_dict = {i: tokens.count(i) for i in tokens}
+            return frequency_dict
 
 
-def get_top_n(frequencies: Dict[str, Union[int, float]], top: int) -> Optional[List[str]]:
+def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
     Extracts a certain number of most frequent tokens
 
@@ -87,10 +90,10 @@ def get_top_n(frequencies: Dict[str, Union[int, float]], top: int) -> Optional[L
 
     In case of corrupt input arguments, None is returned
     """
-    pass
 
 
-def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
+
+def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
     based on the raw frequency
@@ -101,12 +104,12 @@ def calculate_tf(frequencies: Dict[str, int]) -> Optional[Dict[str, float]]:
     Returns:
     dict: A dictionary with tokens and corresponding term frequency score
 
-    In case of corrupt input   arguments, None is returned
+    In case of corrupt input arguments, None is returned
     """
     pass
 
 
-def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optional[Dict[str, float]]:
+def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
     Calculates TF-IDF score for each of the tokens
     based on its TF and IDF scores
@@ -124,8 +127,8 @@ def calculate_tfidf(term_freq: Dict[str, float], idf: Dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(
-    doc_freqs: Dict[str, int], corpus_freqs: Dict[str, int]
-) -> Optional[Dict[str, float]]:
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -142,7 +145,7 @@ def calculate_expected_frequency(
     pass
 
 
-def calculate_chi_values(expected: Dict[str, float], observed: Dict[str, int]) -> Optional[Dict[str, float]]:
+def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates chi-squared value for the tokens
     based on their expected and observed frequency rates
@@ -161,7 +164,7 @@ def calculate_chi_values(expected: Dict[str, float], observed: Dict[str, int]) -
     pass
 
 
-def extract_significant_words(chi_values: Dict[str, float], alpha: float) -> Optional[Dict[str, float]]:
+def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
     Select those tokens from the token sequence that
     have a chi-squared value greater than the criterion
