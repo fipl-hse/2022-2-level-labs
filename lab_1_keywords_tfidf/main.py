@@ -7,12 +7,12 @@ from math import log
 from string import punctuation
 
 
-def correct_dict(variable: dict, type1: type, type2: type, empty: str) -> bool:
+def correct_dict(variable: dict, type1: type, type2: type, empty: bool) -> bool:
     """
     Checks the type of dict, keys and values
     """
-    if isinstance(variable, dict) is True:
-        if empty == "no" and len(variable) == 0:
+    if isinstance(variable, dict):
+        if empty is False and variable == {}:
             return False
         for key, value in variable.items():
             if isinstance(key, type1) is False or isinstance(value, type2) is False:
@@ -21,12 +21,12 @@ def correct_dict(variable: dict, type1: type, type2: type, empty: str) -> bool:
     return False
 
 
-def correct_list(variable: list, type1: type, empty: str) -> bool:
+def correct_list(variable: list, type1: type, empty: bool) -> bool:
     """
     Checks the type of list and its elements
     """
-    if isinstance(variable, list) is True:
-        if empty == "no" and len(variable) == 0:
+    if isinstance(variable, list):
+        if empty is False and variable == []:
             return False
         for i in variable:
             if isinstance(i, type1) is False:
@@ -39,8 +39,9 @@ def is_int(variable: Any) -> bool:
     """
     Checks whether type of variable is int
     """
-    actual_type = type(variable)
-    if actual_type == int:
+    if isinstance(variable, int):
+        if isinstance(variable, bool):
+            return False
         return True
     return False
 
@@ -57,8 +58,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    new_text = ""
-    if isinstance(text, str) is True:
+    if isinstance(text, str):
+        new_text = ""
         for symbol in text.lower():
             if symbol not in punctuation:
                 new_text += symbol
@@ -80,8 +81,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    not_stop_words = []
-    if correct_list(tokens, str, "no") is True and correct_list(stop_words, str, "yes") is True:
+    if correct_list(tokens, str, False) and correct_list(stop_words, str, True):
+        not_stop_words = []
         for token in tokens:
             if token not in stop_words:
                 not_stop_words.append(token)
@@ -101,8 +102,8 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    freq_dict = {}
-    if correct_list(tokens, str, "no") is True:
+    if correct_list(tokens, str, False):
+        freq_dict = {}
         for token in tokens:
             if token in freq_dict:
                 freq_dict[token] += 1
@@ -127,9 +128,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    top_words = []
-    correct = correct_dict(frequencies, str, float, "no") or correct_dict(frequencies, str, int, "no")
-    if is_int(top) is True and top > 0 and correct is True:
+    correct = correct_dict(frequencies, str, float, False) or correct_dict(frequencies, str, int, False)
+    if is_int(top) and top > 0 and correct:
+        top_words = []
         sorted_values = sorted(frequencies.values(), reverse=True)
         for i in sorted_values:
             for key, value in frequencies.items():
@@ -152,8 +153,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    tf_dict = {}
-    if correct_dict(frequencies, str, int, "no") is True:
+    if correct_dict(frequencies, str, int, False):
+        tf_dict = {}
         for key, value in frequencies.items():
             tf_dict[key] = value / sum(frequencies.values())
         return tf_dict
@@ -174,8 +175,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    tfidf = {}
-    if correct_dict(term_freq, str, float, "no") is True and correct_dict(idf, str, float, "yes") is True:
+    if correct_dict(term_freq, str, float, False) and correct_dict(idf, str, float, True):
+        tfidf = {}
         for key in term_freq.keys():
             try:
                 tfidf[key] = term_freq[key] * idf[key]
@@ -201,8 +202,8 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    expected_dict = {}
-    if correct_dict(doc_freqs, str, int, "no") is True and correct_dict(corpus_freqs, str, int, "yes") is True:
+    if correct_dict(doc_freqs, str, int, False) and correct_dict(corpus_freqs, str, int, True):
+        expected_dict = {}
         for key, value in doc_freqs.items():
             number_words_corpus = corpus_freqs.get(key, 0)
             number_other_words_corpus = sum(corpus_freqs.values()) - number_words_corpus
@@ -230,8 +231,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    x2_dict = {}
-    if correct_dict(expected, str, float, "no") is True and correct_dict(observed, str, int, "no") is True:
+    if correct_dict(expected, str, float, False) and correct_dict(observed, str, int, False):
+        x2_dict = {}
         for key, value in expected.items():
             x2_dict[key] = (observed.get(key, 0) - value) ** 2 / value
         return x2_dict
@@ -254,9 +255,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    significant_words_dict = {}
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if correct_dict(chi_values, str, float, "no") is True and isinstance(alpha, float) and alpha in criterion.keys():
+    if correct_dict(chi_values, str, float, False) and isinstance(alpha, float) and alpha in criterion.keys():
+        significant_words_dict = {}
         for key, value in chi_values.items():
             if value > criterion[alpha]:
                 significant_words_dict[key] = value
