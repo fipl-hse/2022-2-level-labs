@@ -6,6 +6,44 @@ from typing import Optional, Union
 from math import log
 
 
+def check_input(user_input, input_type: type, accept_float: bool) -> bool:
+    """
+    Checks weather the object is right type
+    """
+    if input_type == list:
+        if isinstance(user_input, list):
+            if user_input:
+                for element in user_input:
+                    if not isinstance(element, str):
+                        return False
+            return False
+        return True
+
+    if input_type == dict:
+        if isinstance(user_input, dict):
+            if user_input:
+                for k, v in user_input.items():
+                    if isinstance(k, str) and (isinstance(v, int) or isinstance(v, float)):
+                        if isinstance(v, float) and accept_float is False:
+                            return False
+                    return False
+            return False
+        return True
+
+    if input_type == int:
+        if isinstance(user_input, int):
+            if isinstance(user_input, bool):
+                return False
+            return False
+        return True
+
+    if input_type == str:
+        if isinstance(user_input, str):
+            if not user_input:
+                return False
+        return True
+
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -19,7 +57,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
 
-    if isinstance(text, str):
+    if check_input(text, str, False):
         punctuation = '!"#$%&\'()*+,-./:;<=>?@[\]^_`{|}~'
         my_text = ''
         for i in text.lower().replace('\n', ' '):
@@ -45,7 +83,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     my_tokens = []
-    if isinstance(tokens, list) and isinstance(stop_words, list):
+    if check_input(tokens, list, False) and check_input(stop_words, list, False):
         for token in tokens:
             if token not in stop_words:
                 my_tokens.append(token)
@@ -66,10 +104,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list):
-        if tokens != []:
+    if check_input(tokens, list, False):
+        if tokens:
             my_dict = {token: tokens.count(token) for token in tokens}
-        return my_dict
+            return my_dict
     else:
         return None
 
@@ -89,7 +127,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
+    if check_input(frequencies, dict, True) and check_input(top, int, False):
         my_frequencies = frequencies
         my_top_list = []
         if top <= len(frequencies.keys()):
@@ -117,7 +155,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict):
+    if check_input(frequencies, dict, False):
         tf_dict = {word: (frequency / sum(frequencies.values())) for word, frequency in frequencies.items()}
         return tf_dict
     else:
@@ -138,7 +176,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(term_freq, dict) and isinstance(idf, dict):
+    if check_input(term_freq, dict, True) and check_input(idf, dict, True):
         tfidf_dict = {}
         for word, freq in term_freq.items():
             if idf.get(word) is None:
@@ -167,7 +205,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
+    if check_input(doc_freqs, dict, False) and check_input(corpus_freqs, dict, False):
         dict_exp_freqs = {}
         for word, freq in doc_freqs.items():
             dfw = doc_freqs.get(word)
