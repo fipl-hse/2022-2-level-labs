@@ -5,12 +5,7 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 from string import punctuation
 from operator import itemgetter
-
-with open("Дюймовочка.txt", 'r', encoding="utf-8") as f:
-    text = f.read()
-with open("stop_words.txt", 'r', encoding="utf-8") as f:
-    stop_words = f.read()
-stop_words = stop_words.split()
+from math import log
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -37,9 +32,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return None
 
 
-sp = clean_and_tokenize(text)
-
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -53,18 +45,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and isinstance(stop_words, list):
+    if not isinstance(tokens, list) and isinstance(stop_words, list) and type(tokens) == list[str] \
+            and type(stop_words) == list[str]:
+        return None
+    else:
         clean_spisok = []
-        for i in sp:
+        for i in tokens:
             if i not in stop_words:
                 clean_spisok.append(i)
         print(clean_spisok)
         return clean_spisok
-    else:
-        return None
-
-
-cs = remove_stop_words(sp, stop_words)
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -79,16 +69,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    dictionary = {}
-    for i in cs:
-        if i in dictionary.keys():
-            dictionary[i] += 1
-        else:
-            dictionary[i] = 1
-    print(dictionary)
-    return dictionary
-
-slovar = calculate_frequencies(cs)
+    if not isinstance(tokens, list) and type(tokens) == list[str]:
+        return None
+    else:
+        dictionary = {}
+        for i in tokens:
+            if i in dictionary.keys():
+                dictionary[i] += 1
+            else:
+                dictionary[i] = 1
+        print(dictionary)
+        return dictionary
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -107,14 +98,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict) and isinstance(top, int):
-        slovar_filtered = sorted(slovar.items(), key=itemgetter(1), reverse=True)[:top]
-        print(list(slovar_filtered))
+        slovar_filtered = sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top]
         return slovar_filtered
     else:
         return None
-
-
-top_words = get_top_n(slovar, 2)
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -130,7 +117,15 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(frequencies, dict) and type(frequencies) == dict[str, int]:
+        return None
+    else:
+        tf_dict = {}
+        number_of_occurrences = sum(frequencies.values())
+        for word, quantity in frequencies.items():
+            tf_dict[word] = quantity / number_of_occurrences
+        print(tf_dict)
+        return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -147,7 +142,17 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(term_freq, dict) and isinstance(idf, dict):
+        return None
+    else:
+        tf_idf = {}
+        for key in term_freq.keys():
+            if idf[key] == 0:
+                tf_idf[key] = term_freq[key] * log(47) / (0 + 1)
+            else:
+                tf_idf[key] = term_freq[key] * idf[key]
+        print(tf_idf)
+        return tf_idf
 
 
 def calculate_expected_frequency(
