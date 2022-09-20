@@ -2,8 +2,8 @@
 Frequency-driven keyword extraction starter
 """
 import json
-import main
 from pathlib import Path
+import main
 
 if __name__ == "__main__":
 
@@ -43,6 +43,6 @@ if __name__ == "__main__":
     significant_words_1 = main.extract_significant_words(chi_values, 0.001)
     top_n_chi = main.get_top_n(chi_values, 10)
 
-    RESULT = None
+    RESULT = top_n_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
