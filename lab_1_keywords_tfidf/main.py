@@ -1,13 +1,11 @@
 from typing import Optional, Union
-
+import string
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    punctuation = '''!.?,:;"'-()'''
     if isinstance(text, str):
         text = text.lower()
-        for element in text:
-            if element in punctuation:
-                text = text.replace(element,' ')
+        for element in string.punctuation:
+            text = text.replace(element, '')
         tokens = [element for element in text.split()]
         print('Неочищенный список слов текста:')
         print(tokens)
