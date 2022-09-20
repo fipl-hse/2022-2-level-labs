@@ -17,11 +17,20 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    text = open('Дюймовочка.txt').read().replace('\n', ' ')
-    print(text)
+    if not isinstance(text, str):
+        'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        return None
+    'if var text is not a string - return None'
+    text = text.lower()
+    'make entire var text lowercase'
+    punctuation_symbols = '.,:-!?;%<>&*@#()' 'creating a var that has all the punctuation marks'
+    for i in punctuation_symbols:
+        'go through each punctuation symbol and replace it in the text by noting'
+        text = text.replace(i, '')
+    text_split = text.split()
+    'splits text by spaces'
+    return text_split
     pass
-
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
