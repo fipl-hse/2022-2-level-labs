@@ -27,8 +27,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return None
 
 
-
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
         Excludes stop words from the token sequence
@@ -50,8 +48,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
                 break
         index += 1
     return tokens
-
-
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -78,8 +74,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         return None
 
 
-
-
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
         Extracts a certain number of most frequent tokens
@@ -92,7 +86,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if not isinstance(frequencies, dict) or frequencies == {} or not isinstance(top, int) or isinstance(top, bool) or top <= 0:
+    if not isinstance(frequencies, dict) or frequencies == {} or not isinstance(top, int) or isinstance(top, bool) or \
+            top <= 0:
         return None
     frequencies = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
     if len(frequencies) < top:
@@ -106,8 +101,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             top_list.append(word[0])
         top_n_words = top_list[:top]
         return top_n_words
-
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -131,8 +124,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     for key in frequencies.keys():
         new_dict[key] = frequencies[key] / all_words
     return new_dict
-
-
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -162,25 +153,44 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     return final_dict
 
 
-
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
-    Calculates expected frequency for each of the tokens based on its
-    Term Frequency score for both target document and general corpus
+        Calculates expected frequency for each of the tokens based on its
+        Term Frequency score for both target document and general corpus
 
-    Parameters:
-    doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
-    corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
+        Parameters:
+        doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
+        corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
 
-    Returns:
-    Dict: A dictionary with tokens and its corresponding expected frequency
+        Returns:
+        Dict: A dictionary with tokens and its corresponding expected frequency
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+        In case of corrupt input arguments, None is returned
+        """
+
+    if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict) or doc_freqs == {}:
+        return None
+
+    for key, value in doc_freqs.items():
+        if not isinstance(key, str):
+            return None
+
+    for key, value in corpus_freqs.items():
+        if not isinstance(key, str):
+            return None
+
+    expected_freq = {}
+    for key, value in doc_freqs.items():
+        words_in_doc = sum(doc_freqs.values()) - value
+        word_in_corpus = 0
+        if key in corpus_freqs.keys():
+            word_in_corpus = corpus_freqs.get(key)
+        words_in_corpus = sum(corpus_freqs.values()) - word_in_corpus
+        expected_freq[key] = ((value + word_in_corpus) * (value + words_in_doc)) / (
+                value + word_in_corpus + words_in_doc + words_in_corpus)
+    return expected_freq
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
