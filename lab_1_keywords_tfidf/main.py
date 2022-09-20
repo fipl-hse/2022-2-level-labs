@@ -8,7 +8,7 @@ import math
 
 def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, not_empty: bool = False) -> bool:
     """
-    Checks any type used in program.
+    Checks any type used in program. Also works for types of containers' content.
 
     Parameters:
     obj (Any): An object which type is checked
