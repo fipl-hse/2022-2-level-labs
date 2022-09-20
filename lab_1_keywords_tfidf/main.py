@@ -20,29 +20,30 @@ def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, no
     Returns:
     bool: True if obj (and its content if needed) has the expected type, False otherwise
     """
+    ret = True
     if exp_type == int and (not isinstance(obj, int) or isinstance(obj, bool)):
-        return False
-    if exp_type == str and not isinstance(obj, str):
-        return False
-    if exp_type == list and not isinstance(obj, list):
-        return False
-    if exp_type == list and exp_cont:
+        ret = False
+    if exp_type == str and not isinstance(obj, str) and ret:
+        ret = False
+    if exp_type == list and not isinstance(obj, list) and ret:
+        ret = False
+    if exp_type == list and exp_cont and ret:
         for item in obj:
             if not check(item, exp_cont):
-                return False
-    if exp_type == dict and not isinstance(obj, dict):
-        return False
-    if exp_type == dict and exp_cont:
+                ret = False
+    if exp_type == dict and not isinstance(obj, dict) and ret:
+        ret = False
+    if exp_type == dict and exp_cont and ret:
         for key in obj.keys():
             if not check(key, exp_cont):
-                return False
-    if exp_type == dict and exp_val:
+                ret = False
+    if exp_type == dict and exp_val and ret:
         for value in obj.values():
             if not check(value, exp_val):
-                return False
-    if not_empty and not obj:
-        return False
-    return True
+                ret = False
+    if not_empty and not obj and ret:
+        ret = False
+    return ret
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -129,7 +130,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             or not check(top, int) or top <= 0:
         return None
     top_list = []
-    for key, value in frequencies.items():
+    for key in frequencies.keys():
         top_list.append(key)
     top_list.sort(reverse=True, key=lambda word: frequencies[word])
     return top_list[:top]
@@ -174,7 +175,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if not check(term_freq, dict, exp_cont=str, exp_val=float, not_empty=True) or not check(idf, dict):
         return None
     tfidf_dict = {}
-    for key, value in term_freq.items():
+    for key in term_freq.keys():
         if key in idf.keys():
             tfidf_dict[key] = term_freq[key] * idf[key]
         else:
