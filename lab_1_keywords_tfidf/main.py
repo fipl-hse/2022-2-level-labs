@@ -48,10 +48,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not check(text, str):
         return None
-    text = text.lower()
     for bad_symbol in '.,:-!?;%<>&*@#()':
         text = text.replace(bad_symbol, '')
-    text_split = text.split()
+    text_split = text.lower().split()
     return text_split
 
 
@@ -160,10 +159,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf_dict = {}
     for key in term_freq.keys():
-        if key in idf.keys():
-            tfidf_dict[key] = term_freq[key] * idf[key]
-        else:
-            tfidf_dict[key] = term_freq[key] * math.log(47)
+        tfidf_dict[key] = term_freq[key] * idf[key] if key in term_freq.keys() else term_freq[key] * math.log(47)
     return tfidf_dict
 
 
