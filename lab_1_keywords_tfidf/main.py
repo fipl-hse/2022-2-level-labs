@@ -3,20 +3,11 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import string
 
-from lab_1_keywords_tfidf.assets.freq_and_idf_dictionary_creation import file
 
 
-def clean_and_tokenize(text: str) -> [list[str]]:
-    name_file = 'Дюймовочка.txt'
-    File = open(name_file, 'rt')
-    text = File.read()
-    File.close()
-    words = text.split()
-    words = [word.lower() for word in words]
-    print(words)
-    return(words)
-
+def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
 
@@ -28,7 +19,16 @@ def clean_and_tokenize(text: str) -> [list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-
+    if isinstance(text, str):
+        for punctuation in string.punctuation:
+            if punctuation in text:
+                text = text.strip()
+                text = text.replace('-', '')
+                text = text.replace('.', '')
+                text = text.replace(punctuation, '').lower().split()
+                return text
+        else:
+            return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -44,7 +44,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(tokens, list) or isinstance(stop_words, list):
+        tokens_without_sw = []
+        for words in tokens:
+            if words not in stop_words:
+                tokens_without_sw.append(words)
+        return tokens_without_sw
+    else:
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -59,7 +66,23 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if len(tokens) != 0 and isinstance(tokens, list):
+        freq_dictionary = {}
+        for element in tokens:
+            if type(element) == str:
+                if element in freq_dictionary.keys():
+                    freq_dictionary[element] = 1 + freq_dictionary[element]
+                else:
+                    freq_dictionary[element] = 1
+            else:
+                return None
+        return freq_dictionary
+    else:
+        return None
+
+
+
+
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -114,7 +137,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(
-    doc_freqs: dict[str, int], corpus_freqs: dict[str, float]
+        doc_freqs: dict[str, int], corpus_freqs: dict[str, float]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
