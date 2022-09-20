@@ -19,8 +19,9 @@ def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, no
     bool: True if obj (and its content if needed) has the expected type, False otherwise
     """
     flag = True
-    if not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool) \
-            or (exp_type == list or exp_type == dict) and not_empty and not obj:
+    if not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool):
+        flag = False
+    if exp_type in (list, dict) and not_empty and not obj and flag:
         flag = False
     if exp_type == list and exp_cont and flag:
         for item in obj:
