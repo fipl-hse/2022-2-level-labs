@@ -121,7 +121,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             check_positive_int(top):
         my_frequencies = frequencies
         my_top_list = []
-        if top > len(frequencies):
+        if top >= len(frequencies):
             top = len(frequencies)
             for i in range(top):
                 top_token = max(my_frequencies, key=my_frequencies.get)
