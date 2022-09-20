@@ -9,19 +9,18 @@ import math
 def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, not_empty: bool = False) -> bool:
     """
     Checks any type used in program. Also works for types of containers' content.
-
     Parameters:
     obj (Any): An object which type is checked
     exp_type (Any): A type we expect obj to be
     exp_cont (Any): A type we expect the content (elements for lists or keys for dictionaries) to be (optional)
     exp_val (Any): A type we expect the values in a dictionary to be (optional)
     not_empty (bool): If exp_type is a container, True stands for "it should not be empty" (optional)
-
     Returns:
     bool: True if obj (and its content if needed) has the expected type, False otherwise
     """
     flag = True
-    if not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool) or (not_empty and not obj):
+    if not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool) \
+            or (exp_type == list or exp_type == dict) and not_empty and not obj:
         flag = False
     if exp_type == list and exp_cont and flag:
         for item in obj:
