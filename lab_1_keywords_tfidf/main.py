@@ -44,6 +44,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
+    if not (isinstance(tokens, str) and isinstance(stop_words,str)):
+        'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        return None
+    stop_words_removed = [x for x in tokens if x not in stop_words]
+    return stop_words_removed
     pass
 
 
@@ -59,6 +64,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
+    Dict= {}
+    for i in tokens:
+        if i in Dict.keys():
+            Dict[i] = 1 + Dict[i]
+        else:
+            Dict[i] = 1
+    return(Dict)
     pass
 
 
@@ -77,6 +89,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
+
     pass
 
 
