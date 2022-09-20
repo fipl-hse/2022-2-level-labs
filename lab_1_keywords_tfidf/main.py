@@ -41,8 +41,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and isinstance(stop_words, list) and tokens == list[str] \
-            and stop_words == list[str]:
+    if not isinstance(tokens, list) and isinstance(stop_words, list) and type(tokens) == list[str] \
+            and type(stop_words) == list[str]:
         return None
     else:
         no_stop_words = []
@@ -64,7 +64,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and tokens == list[str]:
+    if not isinstance(tokens, list) and type(tokens) == list[str]:
         return None
     else:
         token_freq = {}
@@ -89,7 +89,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and isinstance(top, int) and frequencies == dict[str, Union[int, float]]:
+    if not isinstance(frequencies, dict) and isinstance(top, int) and type(frequencies) == dict[str, Union[int, float]]:
         return None
     else:
         top_dic = {}
@@ -115,7 +115,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and frequencies == dict[str, int]:
+    if not isinstance(frequencies, dict) and type(frequencies) == dict[str, int]:
         return None
     else:
         tf_dic = {}
@@ -139,7 +139,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq == dict[str, float]:
+    if not isinstance(term_freq, dict) and isinstance(idf, dict) and type(term_freq) == dict[str, float]:
         return None
     else:
         tfidf_dic = {}
@@ -173,8 +173,8 @@ def calculate_expected_frequency(
     # $m$ - количество вхождений всех слов, кроме $t$, в коллекцию документов $D$
     # $$Expected = \frac {(a + b) \times(a + c)}{a + b + c + d}$$
 
-    if not isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and doc_freqs == dict[str, int] \
-            and corpus_freqs == dict[str, float]:
+    if not isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and type(doc_freqs) == dict[str, int] \
+            and type(corpus_freqs) == dict[str, float]:
         return None
     else:
         expected_dic = {}
@@ -204,8 +204,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(expected, dict) and isinstance(observed, dict) and expected == dict[str, float] \
-            and observed == dict[str, int]:
+    if not isinstance(expected, dict) and isinstance(observed, dict) and type(expected) == dict[str, float] \
+            and type(observed) == dict[str, int]:
         return None
     else:
         chi_dic = {}
