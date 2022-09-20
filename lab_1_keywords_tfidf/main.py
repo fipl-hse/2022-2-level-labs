@@ -3,15 +3,16 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import math
 
 
 def type_of_elements(object, elem_type, key=str, value=int):
-    if isinstance(object, dict):
+    if all(isinstance(element, elem_type) for element in object):
+        return True
+    elif isinstance(object, dict):
         if all(isinstance(element, key) for element in object.keys()) and \
                 all(isinstance(element, value) for element in object.values()):
             return True
-    elif all(isinstance(element, elem_type) for element in object):
-        return True
     else:
         return False
 
@@ -28,16 +29,16 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(text, str):
+    if not isinstance(text, str):
+        return None
+    else:
         punctuation = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
-        res = " "
+        res = ""
         for element in text:
             if element not in punctuation:
                 res += element
         cleaned_text = res.lower().split()
         return cleaned_text
-    else:
-        return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -53,14 +54,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and isinstance(stop_words, list):
+    if not isinstance(tokens, list) and not isinstance(stop_words, list) and not tokens:
+        return None
+    else:
         if type_of_elements(tokens, str) and type_of_elements(stop_words, str):
-            tokens_cleaned = [i for i in tokens if i not in stop_words]
+            tokens_cleaned = [key_word for key_word in tokens if key_word not in stop_words]
             return tokens_cleaned
         else:
             return None
-    else:
-        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -75,11 +76,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and type_of_elements(tokens, str) and len(tokens) != 0:
-        frequency_dict = {i: tokens.count(i) for i in tokens}
-        return frequency_dict
-    else:
+    if not isinstance(tokens, list) and not type_of_elements(tokens, str) and not tokens:
         return None
+    else:
+        frequency_dict = {token: tokens.count(token) for token in tokens}
+        return frequency_dict
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -97,7 +98,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) and type(top) is int and len(frequencies) > 0 and top > 0:
+    if isinstance(frequencies, dict) and type(top) is int and top > 0 and frequencies:
         if type_of_elements(frequencies, tuple, str, int | float):
             sorting = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
             final_sorting = sorting[:top]
@@ -124,13 +125,14 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) and type_of_elements(frequencies, tuple, str, int):
-        term_freq_dict = {}
-        for element in frequencies.items():
-            term_freq = element[1] / len(frequencies)
-            temporary_dict = {element[0]: term_freq}
-            term_freq_dict.update(temporary_dict)
-        return term_freq_dict
+    if isinstance(frequencies, dict) and type_of_elements(frequencies, tuple, str, int) and frequencies:
+        with open("assets\Дюймовочка.txt", "r", encoding="utf-8") as file:
+            words_in_text = clean_and_tokenize(file.read())
+            term_freq_dict = {}
+            for element in frequencies.items():
+                term_freq = element[1] / len(words_in_text)
+                term_freq_dict[element[0]] = term_freq
+            return term_freq_dict
     else:
         return None
 
@@ -149,16 +151,20 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(term_freq, dict) and isinstance(idf, dict) and type_of_elements(term_freq, tuple, str, float) and type_of_elements(idf, tuple, str, float):
+    if isinstance(term_freq, dict) and isinstance(idf, dict) and type_of_elements(term_freq, tuple, str, float)\
+            and type_of_elements(idf, tuple, str, float) and term_freq:
         tfidf_dict = {}
+        all_texts = 47
+        docs_with_word = 0
         for element in term_freq.items():
+            if element not in idf.items():
+                tfidf = math.log(abs(all_texts)/(abs(docs_with_word) + 1))
+                tfidf_dict[element[0]] = tfidf
             tfidf = element[1] * idf[element[0]]
-            new_dict = {element[0]: tfidf}
-            tfidf_dict.update(new_dict)
+            tfidf_dict[element[0]] = tfidf
         return tfidf_dict
     else:
         return None
-
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
