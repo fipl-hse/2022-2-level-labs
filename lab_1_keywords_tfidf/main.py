@@ -21,13 +21,14 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     else:
         text = text.lower()
         text = text.strip()
-        marks = ",.:;!?—-(){}[]&"
+        marks = ",.:;!?—-(){}[]&"   # исправить немного, чтобы в словах дефисы не убирал
         # добавить удаление  пробелов рядом с пробелами
         for i in text:
             if i in marks:
                 text = text.replace(i, "")
         words_list = text.split()
         return (words_list)
+        print(words_list)
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -96,12 +97,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or not isinstance(top, (int, float)):
         return None
     else:
-        freq_val = list(frequencies.values())
-        words_num = 0
-        for value in freq_val:
-            words_num += value
-        print(words_num)
-        if top <= words_num:    # исправить в соответветствии с комментарием ментора
+        freq_len = len(frequencies)
+        if top <= freq_len:    # исправить в соответветствии с комментарием ментора
             """следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
              если этого не писать будет по возрастанию)
              и выдает лист ключей, которым эти значения принадлежат"""
@@ -164,9 +161,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         for k, v in term_freq.items():
             if not isinstance(k, str) or not isinstance(v, float):
                 return None
-        for k, v in term_freq.items():
-            if not isinstance(k, str) or not isinstance(v, float):
-                return None
         tfidf_dict = {}
         for key, v in term_freq.items():
             if key in idf:
@@ -176,7 +170,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             else:
                 key_idf = math.log(47 / (0 + 1))
                 tfidf_dict[key] = v * key_idf
-            return (tfidf_dict)
+        return (tfidf_dict)
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -205,23 +199,20 @@ def calculate_expected_frequency(
             if not isinstance(k, str) or not isinstance(v, int):
                 return None
         # подумать как решить это по другому
-        doc_freqs_val = list(doc_freqs.values())
-        col_freqs_val = list(corpus_freqs.values())
-        words_in_doc = sum(doc_freqs_val)
-        words_in_col =  sum(col_freqs_val)
-        exp_freqs = {}
-        for key, val in corpus_freqs.items():
-            for i in range(doc_freqs_val):
-                l = words_in_doc - doc_freqs_val[i]
-                # l -  количество вхождений всех слов, кроме , в документ d
-                m = words_in_col - col_freqs_val[i]
-                # m - количество вхождений всех слов, кроме , в коллекцию документов D
-                j = doc_freqs_val[i]
-                # j - количество вхождений слова t  в документ d
-                k = col_freqs_val[i]
-                # k - количество вхождений слова t во все тексты коллекции D
-                exp = ((j + k) * (j * l))/ (j + k + l + m)
-                exp_freqs[key] = exp
+        words_in_doc = sum(doc_freqs.values())
+        words_in_col = sum(corpus_freqs.values())
+        exp_freqs ={}
+        for key, val in doc_freqs.items():
+            # l -  количество вхождений всех слов, кроме , в документ d
+            m = words_in_col - corpus_freqs.get(key)
+            # m - количество вхождений всех слов, кроме , в коллекцию документов D
+            l = words_in_doc - doc_freqs.get(key)
+            j = doc_freqs.get(key)
+            # j - количество вхождений слова t  в документ d
+            k = corpus_freqs.get(key)
+            # k - количество вхождений слова t во все тексты коллекции D
+            exp = ((j + k) * (j * l))/ (j + k + l + m)
+            exp_freqs[key] = exp
         return (exp_freqs)
     pass
 
