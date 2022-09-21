@@ -195,24 +195,62 @@ def calculate_expected_frequency(
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
-    Calculates chi-squared value for the tokens
-    based on their expected and observed frequency rates
+        Calculates chi-squared value for the tokens
+        based on their expected and observed frequency rates
 
-    Parameters:
-    expected (Dict): A dictionary with tokens and
-    its corresponding expected frequency
-    observed (Dict): A dictionary with tokens and
-    its corresponding observed frequency
+        Parameters:
+        expected (Dict): A dictionary with tokens and
+        its corresponding expected frequency
+        observed (Dict): A dictionary with tokens and
+        its corresponding observed frequency
 
-    Returns:
-    Dict: A dictionary with tokens and its corresponding chi-squared value
+        Returns:
+        Dict: A dictionary with tokens and its corresponding chi-squared value
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+        In case of corrupt input arguments, None is returned
+        """
+
+    if not isinstance(expected, dict) or not isinstance(observed, dict) or expected == {} or observed == {}:
+        return None
+
+    for key, value in expected.items():
+        if not isinstance(key, str) or not isinstance(value, float):
+            return None
+
+    for key, value in observed.items():
+        if not isinstance(key, str) or not isinstance(value, int):
+            return None
+
+    chi_values = {}
+    for key in expected.keys():
+        word_in_expected = expected.get(key)
+        word_in_observed = observed.get(key)
+        chi_values[key] = ((word_in_observed - word_in_expected)**2 / word_in_expected)
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
+    if not isinstance(chi_values, dict) or not isinstance(alpha, float) or chi_values == {}:
+        return None
+
+    for key, value in chi_values.items():
+        if not isinstance(key, str) or not isinstance(value, float):
+            return None
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha in criterion.keys():
+        significant_words = {}
+        for key, value in chi_values.items():
+            if value > criterion[alpha]:
+                significant_words[key] = value
+        return significant_words
+    else:
+        return None
+
+
+
+
+
+
     """
     Select those tokens from the token sequence that
     have a chi-squared value greater than the criterion
@@ -228,4 +266,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
+
     pass
