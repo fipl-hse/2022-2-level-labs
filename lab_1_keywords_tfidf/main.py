@@ -7,6 +7,10 @@ from math import log
 
 
 def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks weather object is list
+    that contains objects of certain type
+    """
     if isinstance(user_input, list):
         if user_input == [] and can_be_empty is False:
             return False
@@ -18,6 +22,10 @@ def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
 
 
 def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool):
+    """
+    Checks weather object is dictionary
+    hat has keys and values of certain type
+    """
     if isinstance(user_input, dict):
         if user_input == {} and can_be_empty is False:
             return False
@@ -29,6 +37,9 @@ def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool)
 
 
 def check_positive_int(user_input):
+    """
+    Checks weather object is int (not bool)
+    """
     if isinstance(user_input, int):
         if isinstance(user_input, bool):
             return False
@@ -39,6 +50,9 @@ def check_positive_int(user_input):
 
 
 def check_float(user_input):
+    """
+    Checks weather object is float
+    """
     if isinstance(user_input, float):
         return True
     return False
