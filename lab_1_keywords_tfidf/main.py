@@ -16,15 +16,15 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         list[str]: A sequence of lowercase tokens with no punctuation
         In case of corrupt input arguments, None is returned
         """
-    if isinstance(text, str):
-        lowered_text = text.lower()
-        for punctuation_mark in string.punctuation:
-            if punctuation_mark in lowered_text:
-                lowered_text = lowered_text.replace(punctuation_mark, '')
-        cleaned_text = lowered_text.strip().split()
-        return cleaned_text
-    else:
+    if not isinstance(text, str):
         return None
+    lowered_text = text.lower()
+    for punctuation_mark in string.punctuation:
+        if punctuation_mark in lowered_text:
+            lowered_text = lowered_text.replace(punctuation_mark, '')
+    cleaned_text = lowered_text.strip().split()
+    return cleaned_text
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:

@@ -39,38 +39,43 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     RESULT = None
-    tokens = frequencies = calculated_tf = calculated_tfidf = expected_frequency = top_chi = chi_values = None
+    TOKENS = \
+        FREQUENCIES = \
+        CALCULATED_TF = \
+        CALCULATED_TFIDF = \
+        EXPECTED_FREQUENCY = \
+        TOP_CHI = \
+        CHI_VALUES = None
 
-    if target_text:
-        tokens = clean_and_tokenize(target_text)
+    split_text = clean_and_tokenize(target_text)
 
-    if tokens and stop_words:
-        tokens = remove_stop_words(tokens, stop_words)
+    if split_text and stop_words:
+        TOKENS = remove_stop_words(split_text, stop_words)
 
-    if tokens:
-        frequencies = calculate_frequencies(tokens)
+    if TOKENS:
+        FREQUENCIES = calculate_frequencies(TOKENS)
 
-    if frequencies:
-        calculated_tf = calculate_tf(frequencies)
+    if FREQUENCIES:
+        CALCULATED_TF = calculate_tf(FREQUENCIES)
 
-    if calculated_tf and idf:
-        calculated_tfidf = calculate_tfidf(calculated_tf, idf)
+    if CALCULATED_TF and idf:
+        CALCULATED_TFIDF = calculate_tfidf(CALCULATED_TF, idf)
 
-    if calculated_tfidf:
-        print("The most frequent words by 'calculated_tfidf': ", get_top_n(calculated_tfidf, 10))
+    if CALCULATED_TFIDF:
+        print("The most frequent words by 'calculated_tfidf': ", get_top_n(CALCULATED_TFIDF, 10))
 
-    if frequencies and corpus_freqs:
-        expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
+    if FREQUENCIES and corpus_freqs:
+        EXPECTED_FREQUENCY = calculate_expected_frequency(FREQUENCIES, corpus_freqs)
 
-    if expected_frequency and frequencies:
-        chi_values = calculate_chi_values(expected_frequency, frequencies)
+    if EXPECTED_FREQUENCY and FREQUENCIES:
+        CHI_VALUES = calculate_chi_values(EXPECTED_FREQUENCY, FREQUENCIES)
 
-    if chi_values:
-        top_chi = get_top_n(chi_values, 10)
+    if CHI_VALUES:
+        TOP_CHI = get_top_n(CHI_VALUES, 10)
 
-    if top_chi:
-        print("The most frequent words by 'chi values': ", top_chi)
+    if TOP_CHI:
+        print("The most frequent words by 'chi values': ", TOP_CHI)
 
-    RESULT = top_chi
+    RESULT = TOP_CHI
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
