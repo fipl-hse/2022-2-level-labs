@@ -3,7 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-
+from operator import itemgetter
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -96,7 +96,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not (isinstance(frequencies, dict), isinstance(top, str)):
         'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
-
+    "If you want to conserve all the information from a dictionary when sorting it," \
+    " the typical first step is to call the .items() method on the dictionary. " \
+    "Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
+    "Tuple(кортеж) is a Python type that is an ordered collection of objects"
+    sorted_frequencies = dict(sorted(frequencies.items()))
+    'operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
+    'constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
+    'and fetches the n-th element out of it.'
+    List = sorted_frequencies[:top]
     pass
 
 
