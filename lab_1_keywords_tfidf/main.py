@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -22,7 +23,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     text = text.replace('\n', ' ').lower().strip()
     fin_text = ''
     for symbol in text:
-        if symbol.isalnum() == True or symbol == ' ':
+        if symbol.isalnum() is True or symbol == ' ':
             fin_text += symbol
     tokens = fin_text.split()
     return tokens
@@ -67,6 +68,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if not isinstance(tokens, list):
         return None
+
     frequencies = {}
     for i in tokens:
         freq = tokens.count(i)
@@ -90,6 +92,14 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(frequencies, dict) or not isinstance(top, int):
+        return None
+
+    top_list = []
+    for k in frequencies.keys():
+        top_list.append(k)
+
+    return top_list[:top]
     pass
 
 
@@ -106,6 +116,16 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(frequencies, dict):
+        return None
+
+    length = len(frequencies)
+    term_freq = {}
+    for k, v in frequencies.items():
+        tf = v / length
+        term_freq[k] = tf
+    return term_freq
+
     pass
 
 
@@ -123,6 +143,17 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(term_freq, dict) or not isinstance(idf, dict):
+        return None
+
+    for k, v in term_freq.items():
+        if k in idf.keys():
+            term_freq[k] = v * idf[k]
+        else:
+            term_freq[k] = v * math.log(47 / 1)
+
+    return term_freq
+
     pass
 
 
@@ -181,5 +212,3 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
-
-
