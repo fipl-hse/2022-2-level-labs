@@ -129,10 +129,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         my_top_list = []
         if top >= len(frequencies):
             top = len(frequencies)
-        for i in range(top):
+        while top:
             top_token = max(my_frequencies, key=my_frequencies.get)
             my_top_list.append(top_token)
             del my_frequencies[top_token]
+            top -= 1
         return my_top_list
     return None
 
