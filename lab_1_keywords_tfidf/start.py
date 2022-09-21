@@ -35,11 +35,11 @@ if __name__ == "__main__":
     tokens = main.clean_and_tokenize(target_text)
     tokens = main.remove_stop_words(tokens, stop_words)
     frequencies = main.calculate_frequencies(tokens)
-    print(f'Frequent words in freq_dict: {main.get_top_n(frequencies, 5)}')
+    print(f'Frequent words in freq_dict: {main.get_top_n(frequencies, 7)}')
     tf = main.calculate_tf(frequencies)
     tf_idf = main.calculate_tfidf(tf, idf)
     print(f'Frequent words in tfidf_dict: {main.get_top_n(tf_idf, 10)}')
 
-    # RESULT = None
-    # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    # assert RESULT, 'Keywords are not extracted'
+    RESULT = None
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Keywords are not extracted'
