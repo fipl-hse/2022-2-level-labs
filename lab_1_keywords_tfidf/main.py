@@ -172,7 +172,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True):
         tfidf_dict = {}
-        for word, freq in term_freq.items():
+        for word in term_freq.keys():
             if idf.get(word) is None:
                 idf_score = log(47 / (0 + 1))
             else:
@@ -201,12 +201,11 @@ def calculate_expected_frequency(
     if check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, True):
         dict_exp_freqs = {}
         for word, freq in doc_freqs.items():
-            doc_freq = doc_freqs.get(word, 0)
-            except_word_doc_freq = sum(doc_freqs.values()) - doc_freq
+            except_word_doc_freq = sum(doc_freqs.values()) - freq
             corpus_freq = corpus_freqs.get(word, 0)
             except_word_corpus_freq = sum(corpus_freqs.values()) - corpus_freq
-            dict_exp_freqs[word] = ((doc_freq + corpus_freq) * (doc_freq + except_word_doc_freq)) /\
-                                   (doc_freq + corpus_freq + doc_freq + except_word_doc_freq + except_word_corpus_freq)
+            dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) /\
+                                   (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
         return dict_exp_freqs
     return None
 
@@ -256,4 +255,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         for word, chi_value in chi_values.items():
             if chi_value >= alpha:
                 significant_words_dict[word] = chi_value
+        return significant_words_dict
     return None
