@@ -17,7 +17,17 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str):
+        print(None)
+    punc = '''1234567890!()[]{};:'"\,<>./?@#$%^&*_~'''
+    for elements in text:
+        if elements in punc:
+            text = text.replace(elements, '')
+    text = text.lower().split()
+    return text
+
+
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
