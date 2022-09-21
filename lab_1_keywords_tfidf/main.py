@@ -100,11 +100,17 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     " the typical first step is to call the .items() method on the dictionary. " \
     "Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
     "Tuple(кортеж) is a Python type that is an ordered collection of objects"
-    sorted_frequencies = dict(sorted(frequencies.items()))
+
     'operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
     'constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
     'and fetches the n-th element out of it.'
-    List = sorted_frequencies[:top]
+
+    "Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
+    "а не одно ключевое значение и" \
+    "это то, что operator.itemgetter(1) даст вам: функция, которая захватывает первый элемент из списка-подобного объекта."
+    List = dict(sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top])
+    "Не знаю, почему используется reverse=true"
+    return(List)
     pass
 
 
