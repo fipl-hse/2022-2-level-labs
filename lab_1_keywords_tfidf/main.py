@@ -186,7 +186,7 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
         # j = doc_freq; k = corpus_freqs[key] (0 if not there)
         # l = doc_total - doc_freq; m = corpus_total - corpus_freqs[key]
         # (j+k)*(j+l)/(j+k+l+m)
-        exp_freqs[key] = (doc_freq + corpus_freqs[key] if key in corpus_freqs.keys() else 0) \
+        exp_freqs[key] = (doc_freq + (corpus_freqs[key] if key in corpus_freqs.keys() else 0)) \
                          * doc_total / (doc_total + corpus_total)
     return exp_freqs
 
