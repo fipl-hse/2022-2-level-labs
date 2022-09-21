@@ -159,7 +159,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf_dict = {}
     for key in term_freq.keys():
-        tfidf_dict[key] = term_freq[key] * idf[key] if key in idf.keys() else term_freq[key] * math.log(47)
+        tfidf_dict[key] = term_freq[key] * (idf[key] if key in idf.keys() else math.log(47))
     return tfidf_dict
 
 
@@ -183,13 +183,11 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     corpus_total = sum(corpus_freqs.values())
     exp_freqs = {}
     for key, doc_freq in doc_freqs.items():
-        # j = doc_freq; k = corpus_freqs[key] (0 if does not appear in corpus)
+        # j = doc_freq; k = corpus_freqs[key] (0 if not there)
         # l = doc_total - doc_freq; m = corpus_total - corpus_freqs[key]
         # (j+k)*(j+l)/(j+k+l+m)
-        corpus_freq = 0
-        if key in corpus_freqs.keys():
-            corpus_freq = corpus_freqs[key]
-        exp_freqs[key] = (doc_freq + corpus_freq) * doc_total / (doc_total + corpus_total)
+        exp_freqs[key] = (doc_freq + corpus_freqs[key] if key in corpus_freqs.keys() else 0) \
+                         * doc_total / (doc_total + corpus_total)
     return exp_freqs
 
 
