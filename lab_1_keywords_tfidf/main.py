@@ -20,14 +20,10 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(text, str):
-        text_without_punctuation = ""
+        text_without_punctuation = ''
+        punctuation = '.,;:!?\'\"%$#@&*^<>-_'
         for i in text:
-            if i.isalpha():
-                text_without_punctuation += i
-            elif i == ' ':
-                text_without_punctuation += i
-            elif i.isdigit():
-                i = str(i)
+            if i not in punctuation:
                 text_without_punctuation += i
         text_low = text_without_punctuation.lower()
         final_text = text_low.split()
@@ -276,7 +272,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-
     pass
 
 
