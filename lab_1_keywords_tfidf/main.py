@@ -2,11 +2,11 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any
 from math import log
 
 
-def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
     Checks weather object is list
     that contains objects of certain type
@@ -21,7 +21,7 @@ def check_list(user_input, elements_type: type, can_be_empty: bool) -> bool:
     return False
 
 
-def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool):
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool):
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
@@ -36,7 +36,7 @@ def check_dict(user_input, key_type: type, value_type: type, can_be_empty: bool)
     return False
 
 
-def check_positive_int(user_input):
+def check_positive_int(user_input: Any):
     """
     Checks weather object is int (not bool)
     """
@@ -49,7 +49,7 @@ def check_positive_int(user_input):
     return False
 
 
-def check_float(user_input):
+def check_float(user_input: Any):
     """
     Checks weather object is float
     """
@@ -73,9 +73,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if isinstance(text, str):
         punctuation = '''!"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~'''
         my_text = ''
-        for i in text.lower().replace('\n', ' '):
-            if i not in punctuation:
-                my_text += i
+        for char in text.lower().replace('\n', ' '):
+            if char not in punctuation:
+                my_text += char
         my_text = my_text.split()
         return my_text
     return None
