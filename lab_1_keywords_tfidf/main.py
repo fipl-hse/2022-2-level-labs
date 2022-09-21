@@ -230,6 +230,22 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
+    """
+        Select those tokens from the token sequence that
+        have a chi-squared value greater than the criterion
+
+        Parameters:
+        chi_values (Dict): A dictionary with tokens and
+        its corresponding chi-squared value
+        alpha (float): Level of significance that controls critical value of chi-squared metric
+
+        Returns:
+        Dict: A dictionary with significant tokens
+        and its corresponding chi-squared value
+
+        In case of corrupt input arguments, None is returned
+        """
+
     if not isinstance(chi_values, dict) or not isinstance(alpha, float) or chi_values == {}:
         return None
 
@@ -245,26 +261,3 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         return significant_words
     else:
         return None
-
-
-
-
-
-
-    """
-    Select those tokens from the token sequence that
-    have a chi-squared value greater than the criterion
-
-    Parameters:
-    chi_values (Dict): A dictionary with tokens and
-    its corresponding chi-squared value
-    alpha (float): Level of significance that controls critical value of chi-squared metric
-
-    Returns:
-    Dict: A dictionary with significant tokens
-    and its corresponding chi-squared value
-
-    In case of corrupt input arguments, None is returned
-    """
-
-    pass
