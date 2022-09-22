@@ -12,7 +12,7 @@ jobs:
   install-dependencies:
     name: Installing dependencies
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v2
@@ -25,11 +25,10 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -37,13 +36,12 @@ jobs:
       - name: Confirming everything is OK
         run: |
           ls -la venv
-          ls -la venv/bin
 
   pr-name-check:
     name: PR name check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    timeout-minutes: 2
+    timeout-minutes: 5
     needs: [ install-dependencies ]
     env:
       PR_NAME: ${{ github.event.pull_request.title }}
@@ -60,19 +58,18 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: PR name check
         run: |
-          bash config/stage_1_style_tests/_stage_pr_name_check.sh "$PR_NAME" "$PR_AUTHOR"
+          bash config/venv_setup.sh && bash config/stage_1_style_tests/_stage_pr_name_check.sh "$PR_NAME" "$PR_AUTHOR"
 
   code-style:
     name: Code Style
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ install-dependencies ]
 
     steps:
@@ -86,19 +83,18 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Code Syle
         run: |
-          bash config/stage_1_style_tests/_stage_run_lint.sh
+          bash config/venv_setup.sh && bash config/stage_1_style_tests/_stage_run_lint.sh
 
   type-check:
     name: Check types
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ code-style ]
 
     steps:
@@ -112,19 +108,18 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Code Syle
         run: |
-          bash config/stage_1_style_tests/_stage_run_mypy.sh
+          bash config/venv_setup.sh && bash config/stage_1_style_tests/_stage_run_mypy.sh
 
   unittests:
     name: Unittests
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     needs: [ install-dependencies ]
 
     steps:
@@ -138,14 +133,13 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Run tests
         run: |
-          bash config/run_tests.sh
+          bash config/venv_setup.sh && bash config/run_tests.sh
 
   start:
     name: Check start.py
@@ -164,19 +158,18 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Run start
         run: |
-          bash config/run_start.sh
+          bash config/venv_setup.sh && bash config/run_start.sh
 
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     needs: [ unittests ]
 
     steps:
@@ -190,19 +183,18 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Run start
         run: |
-          bash config/collect_coverage/run_coverage.sh
+          bash config/venv_setup.sh && bash config/collect_coverage/run_coverage.sh
 
   spellcheck:
     name: Spellcheck
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ install-dependencies ]
     steps:
       - uses: actions/checkout@master
@@ -218,18 +210,17 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Spell check
         run: |
-          bash config/spellcheck/_stage_spellcheck.sh
+          bash config/venv_setup.sh && bash config/spellcheck/_stage_spellcheck.sh
   stubgen:
     name: Stub generation
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ spellcheck ]
     steps:
       - uses: actions/checkout@master
@@ -245,11 +236,10 @@ jobs:
         id: cache
         with:
           path: |
-            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-venv-
       - name: Stubgen check
         run: |
-          bash config/stage_1_style_tests/_stage_run_stubgen.sh
+          bash config/venv_setup.sh && bash config/stage_1_style_tests/_stage_run_stubgen.sh

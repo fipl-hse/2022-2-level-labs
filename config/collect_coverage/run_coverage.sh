@@ -2,6 +2,8 @@
 
 set -ex
 
+source venv/bin/activate
+
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
-venv/bin/python config/collect_coverage/coverage_analyzer.py
+python config/collect_coverage/coverage_analyzer.py

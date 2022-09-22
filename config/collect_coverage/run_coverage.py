@@ -19,8 +19,8 @@ class CoverageCreateReportError(Exception):
 
 def get_target_score(lab_path: Path) -> int:
     target_score_file_path = lab_path.joinpath('target_score.txt')
-    with open(target_score_file_path, 'r', encoding='utf-8') as target_score_file:
-        return int(target_score_file.readline())
+    with open(target_score_file_path, 'r', encoding='utf-8') as fd:
+        return int(fd.readline())
 
 
 def _run_console_tool(exe: str, /, *args: str, **kwargs: Any) -> subprocess.CompletedProcess:

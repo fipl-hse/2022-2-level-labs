@@ -2,11 +2,15 @@
 
 set -ex
 
+which python
+
 python -m pip install --upgrade pip
 python -m pip install virtualenv
 python -m virtualenv venv
 
-sleep 10
+source venv/bin/activate
 
-venv/bin/python -m pip install -r requirements.txt
-venv/bin/python -m pip install -r requirements_qa.txt
+which python
+
+python -m pip install -r requirements.txt
+python -m pip install -r requirements_qa.txt
