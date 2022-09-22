@@ -2,7 +2,7 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
