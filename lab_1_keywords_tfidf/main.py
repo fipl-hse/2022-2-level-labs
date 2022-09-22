@@ -41,8 +41,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and isinstance(stop_words, list) and type(tokens) == list[str] \
-            and type(stop_words) == list[str] and tokens != [] and stop_words != []:
+    if not isinstance(tokens, list) and not isinstance(stop_words, list) \
+            and not tokens and not all(isinstance(i, str) for i in tokens) \
+            and not stop_words and not all(isinstance(i, str) for i in stop_words):
         return None
     else:
         no_stop_words = []
@@ -64,13 +65,12 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and type(tokens) == list[str] and tokens != []:
+    if not isinstance(tokens, list) and not tokens and not all(isinstance(i, str) for i in tokens):
         return None
     else:
         token_freq = {}
         for word in tokens:
             token_freq[word] = token_freq.get(word, 0) + 1
-    #     d[key] = value, так добавляем в него элемент
         return token_freq
 
 
@@ -89,8 +89,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and isinstance(top, int) and type(frequencies) == dict[str, Union[int, float]]\
-            and frequencies != {} and top > 0:
+    if not isinstance(frequencies, dict) and not isinstance(top, int) and top <= 0 \
+            and not frequencies and not all(isinstance(k, str) for k in frequencies.keys()) \
+            and not all(isinstance(v, (int, float)) for v in frequencies.values()):
         return None
     else:
         top_dic = {}
@@ -116,13 +117,15 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and type(frequencies) == dict[str, int] and frequencies != {}:
+    if not isinstance(frequencies, dict) and not frequencies \
+            and not all(isinstance(k, str) for k in frequencies.keys()) \
+            and not all(isinstance(v, int) for v in frequencies.values()):
         return None
     else:
         tf_dic = {}
         n_d = sum(list(frequencies.values()))
         for k, v in frequencies.items():
-            tf_dic[k] = v/n_d
+            tf_dic[k] = v / n_d
         return tf_dic
 
 
@@ -140,16 +143,19 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(term_freq, dict) and isinstance(idf, dict) and type(term_freq) == dict[str, float] \
-            and type(idf) == dict[str, float] and term_freq != {} and idf != {}:
+    if not isinstance(term_freq, dict) and not isinstance(idf, dict) \
+            and not term_freq and not all(isinstance(k, str) for k in term_freq.keys()) \
+            and not all(isinstance(v, float) for v in term_freq.values()) \
+            and not idf and not all(isinstance(k, str) for k in idf.keys()) \
+            and not all(isinstance(v, float) for v in idf.values()):
         return None
     else:
         tfidf_dic = {}
         for key in term_freq.keys():
             if not idf[key] == 0:
-                tfidf_dic[key] = term_freq[key]*idf[key]
+                tfidf_dic[key] = term_freq[key] * idf[key]
             else:
-                tfidf_dic[key] = term_freq[key]*log(47)
+                tfidf_dic[key] = term_freq[key] * log(47)
         return tfidf_dic
 
 
@@ -169,14 +175,11 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    # $j$ - количество вхождений слова $t$ в документ $d$
-    # $k$ - количество вхождений слова $t$ во все тексты коллекции $D$
-    # $l$ - количество вхождений всех слов, кроме $t$, в документ $d$
-    # $m$ - количество вхождений всех слов, кроме $t$, в коллекцию документов $D$
-    # $$Expected = \frac {(a + b) \times(a + c)}{a + b + c + d}$$
-
-    if not isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and type(doc_freqs) == dict[str, int] \
-            and type(corpus_freqs) == dict[str, float] and doc_freqs != {} and corpus_freqs != {}:
+    if not isinstance(doc_freqs, dict) and not isinstance(corpus_freqs, dict) \
+            and not doc_freqs and not all(isinstance(k, str) for k in doc_freqs) \
+            and not all(isinstance(v, float) for v in doc_freqs.values()) \
+            and not corpus_freqs and not all(isinstance(k, str) for k in corpus_freqs.keys()) \
+            and not all(isinstance(v, float) for v in corpus_freqs.values()):
         return None
     else:
         expected_dic = {}
@@ -208,8 +211,11 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(expected, dict) and isinstance(observed, dict) and type(expected) == dict[str, float] \
-            and type(observed) == dict[str, int] and expected != {} and observed != {}:
+    if not isinstance(expected, dict) and not isinstance(observed, dict) \
+            and not expected and not all(isinstance(k, str) for k in expected.keys()) \
+            and not all(isinstance(v, float) for v in expected.values()) \
+            and not observed and not all(isinstance(k, str) for k in observed.keys()) \
+            and not all(isinstance(v, int) for v in observed.values()):
         return None
     else:
         chi_dic = {}
@@ -237,8 +243,10 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(chi_values, dict) and isinstance(alpha, float) and alpha != 0 \
-            and type(chi_values) == dict[str, float] and chi_values != {}:
+    if not isinstance(chi_values, dict) and not isinstance(alpha, float) \
+            and not chi_values and not all(isinstance(k, str) for k in chi_values.keys()) \
+            and not all(isinstance(v, float) for v in chi_values.values()) \
+            and alpha not in (0.05, 0.01, 0.001):
         return None
     else:
         significant_dic = {}
