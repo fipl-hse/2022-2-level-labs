@@ -1,4 +1,6 @@
 Андерсена
+аккаунт
+аватар
 Байт-код
 биграмм
 биграмма
@@ -27,6 +29,7 @@
 Интерпретируемость
 итерировании
 многострочной
+каком-то
 какие-либо
 каким-то
 какого-то
@@ -65,6 +68,7 @@
 реквеста
 релизов
 репозитории
+репозиторием
 Репозиторий
 репозиторию
 репозитория
@@ -125,6 +129,7 @@
 элементов-букв
 юнит
 Actions
+Access
 AndreiKashchikhin
 and
 admins
@@ -153,6 +158,7 @@ Frequency
 fipl-hse
 git
 Github
+gist
 IDF
 in
 Inverse
@@ -178,6 +184,8 @@ n-граммы
 N-ное
 Object-Oriented
 observed
+PAT
+Personal
 PyCharm
 pull
 Powerful
@@ -195,9 +203,11 @@ Requests
 Term
 times
 Tools
+Token
 TF
 TF-IDF
 TFIDF
 txt
 XX
 Windows
+workflow
