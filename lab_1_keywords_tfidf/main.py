@@ -18,7 +18,18 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    import re
+
+    if not isinstance(text, str):
+        return None
+
+    text = text.lower().strip()
+    text = re.sub(r'[^\w\s]', '', text)
+    tokens = text.split()
+
+    return tokens
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -34,7 +45,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(tokens, list):
+        return None
+    if not isinstance(stop_words, list):
+        return None
+
+    for token in tokens:
+        if token in stop_words:
+            tokens.remove(token)
+
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -49,7 +69,15 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(tokens, list):
+        return None
+
+    frequencies = {}
+    for token in tokens:
+        if token not in frequencies.keys():
+            frequencies[token] = tokens.count(token)
+
+    return frequencies
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -67,7 +95,23 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(frequencies, dict):
+        return None
+    if not isinstance(top, int):
+        return None
+
+    top_frequencies = sorted(frequencies.values(), reverse = True)[:top]
+    top_dict = {}
+    for i in top_frequencies:
+        for k in frequencies.keys():
+            if frequencies[k] == i and k not in top_dict.keys():
+                top_dict[k] = frequencies[k]
+                break
+    top_list = list(top_dict.keys())
+
+    return top_list
+
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
