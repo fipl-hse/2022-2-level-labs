@@ -9,10 +9,6 @@ on:
       - main
 
 jobs:
-  install-dependencies:
-    name: Installing dependencies
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
 
   pr-name-check:
     name: PR name check
