@@ -40,7 +40,6 @@ if __name__ == "__main__":
 
     no_stop_words = None
     freq_dict = None
-    top_n = 7
     tf_dict = None
     tf_idf = None
     clean_and_tokens = clean_and_tokenize(target_text)
@@ -50,7 +49,7 @@ if __name__ == "__main__":
 
     if no_stop_words:
         freq_dict = calculate_frequencies(no_stop_words)
-        print("Most frequent words in freq_dict:", get_top_n(freq_dict, top_n))
+        print("Most frequent words in freq_dict:", get_top_n(freq_dict, 7))
 
     if freq_dict:
         tf_dict = calculate_tf(freq_dict)
