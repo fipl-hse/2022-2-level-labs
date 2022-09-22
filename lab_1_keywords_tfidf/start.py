@@ -3,8 +3,14 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
-
+from main import (
+    clean_and_tokenize,
+    remove_stop_words,
+    calculate_frequencies,
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf,
+)
 
 if __name__ == "__main__":
 
@@ -32,14 +38,29 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokens = main.clean_and_tokenize(target_text)
-    tokens = main.remove_stop_words(tokens, stop_words)
-    frequencies = main.calculate_frequencies(tokens)
-    print(f'Frequent words in freq_dict: {main.get_top_n(frequencies, 7)}')
-    tf = main.calculate_tf(frequencies)
-    tf_idf = main.calculate_tfidf(tf, idf)
-    print(f'Frequent words in tfidf_dict: {main.get_top_n(tf_idf, 10)}')
+    no_stop_words = None
+    freq_dict = None
+    top_n = 7
+    tf_dict = None
+    tf_idf = None
+    split_words = clean_and_tokenize(target_text)
 
-    RESULT = None
+    if split_words:
+        no_stop_words = remove_stop_words(split_words, stop_words)
+
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
+        print("Most frequent words in freq_dict:", get_top_n(freq_dict, top_n))
+
+    if freq_dict:
+        tf_dict = calculate_tf(freq_dict)
+
+    if tf_dict:
+        tf_idf = calculate_tfidf(tf_dict, idf)
+
+    if tf_idf:
+        print("Most frequent words in tfidf_dict:", (get_top_n(tf_idf, 10)))
+
+    RESULT = get_top_n
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
