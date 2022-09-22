@@ -36,6 +36,7 @@ jobs:
       - name: Confirming everything is OK
         run: |
           ls -la venv
+          ls -la venv/bin
 
   pr-name-check:
     name: PR name check
