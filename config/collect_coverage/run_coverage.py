@@ -17,6 +17,12 @@ class CoverageCreateReportError(Exception):
     pass
 
 
+def get_target_score(lab_path: Path) -> int:
+    target_score_file_path = lab_path.joinpath('target_score.txt')
+    with open(target_score_file_path, 'r', encoding='utf-8') as fd:
+        return int(fd.readline())
+
+
 def _run_console_tool(exe: str, /, *args: str, **kwargs: Any) -> subprocess.CompletedProcess:
     kwargs_processed: list[str] = []
     for item in kwargs.items():
@@ -63,10 +69,11 @@ def run_coverage_collection(lab_path: Path, artifacts_path: Path) -> int:
     print(f'Processing {lab_path} ...')
 
     python_exe_path = choose_python_exe()
+    target_score = get_target_score(lab_path)
 
     res_process = _run_console_tool(str(python_exe_path), '-m', 'coverage',
                                     'run', '--include', f'{lab_path.name}/*.py', '-m', 'pytest', '-m',
-                                    lab_path.name,
+                                    f'{lab_path.name} and mark{target_score}',
                                     debug=False,
                                     cwd=str(lab_path.parent))
     if res_process.returncode != 0:
