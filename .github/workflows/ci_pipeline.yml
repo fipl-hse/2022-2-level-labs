@@ -30,7 +30,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Install dependencies
-#        if: steps.cache.outputs.cache-hit != 'true'
+        if: steps.cache.outputs.cache-hit != 'true'
         run: |
           bash config/venv_setup.sh
       - name: Confirming everything is OK
