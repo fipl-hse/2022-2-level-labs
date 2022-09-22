@@ -25,6 +25,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -59,6 +60,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -84,6 +86,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -109,6 +112,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -134,6 +138,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -159,6 +164,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -184,6 +190,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -211,6 +218,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
@@ -237,6 +245,7 @@ jobs:
         id: cache
         with:
           path: |
+            ${{ env.pythonLocation }}
             ./venv/
           key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
