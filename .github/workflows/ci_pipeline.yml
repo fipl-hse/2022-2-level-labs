@@ -27,9 +27,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Install dependencies
         if: steps.cache.outputs.cache-hit != 'true'
         run: |
@@ -62,10 +62,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: PR name check
         run: |
           bash config/stage_1_style_tests/_stage_pr_name_check.sh "$PR_NAME" "$PR_AUTHOR"
@@ -89,10 +88,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Code Syle
         run: |
           bash config/stage_1_style_tests/_stage_run_lint.sh
@@ -116,10 +114,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Code Syle
         run: |
           bash config/stage_1_style_tests/_stage_run_mypy.sh
@@ -143,10 +140,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Run tests
         run: |
           bash config/run_tests.sh
@@ -170,10 +166,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Run start
         run: |
           bash config/run_start.sh
@@ -197,10 +192,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Run start
         run: |
           bash config/collect_coverage/run_coverage.sh
@@ -226,10 +220,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Spell check
         run: |
           bash config/spellcheck/_stage_spellcheck.sh
@@ -254,10 +247,9 @@ jobs:
           path: |
             ${{ env.pythonLocation }}
             ./venv/
-          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
-            ${{ runner.os }}-venv-
-            ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+            ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
       - name: Stubgen check
         run: |
           bash config/stage_1_style_tests/_stage_run_stubgen.sh
