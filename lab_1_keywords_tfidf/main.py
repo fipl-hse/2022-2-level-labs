@@ -21,7 +21,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     else:
-        punctuation = '''!,()[]-{};:“'"”\<>./?@#$%^&*_~'''
+        punctuation = '''!,()[]-{};:“'"”\<>./?@#$%^&*~_'''
         for i in punctuation:
             text = text.replace(i, '')
         text = text.lower().split()
