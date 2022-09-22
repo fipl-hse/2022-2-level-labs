@@ -17,6 +17,11 @@ def type_of_elements(object, elem_type, key=str, value=int):
         return False
 
 
+def open_document():
+    with open("assets\Дюймовочка.txt", "r", encoding="utf-8") as file:
+        return file.read()
+
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -126,13 +131,12 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict) and type_of_elements(frequencies, tuple, str, int) and frequencies:
-        with open("assets\Дюймовочка.txt", "r", encoding="utf-8") as file:
-            words_in_text = clean_and_tokenize(file.read())
-            term_freq_dict = {}
-            for element in frequencies.items():
-                term_freq = element[1] / len(words_in_text)
-                term_freq_dict[element[0]] = term_freq
-            return term_freq_dict
+        words_in_text = clean_and_tokenize(open_document())
+        term_freq_dict = {}
+        for element in frequencies.items():
+            term_freq = element[1] / len(words_in_text)
+            term_freq_dict[element[0]] = term_freq
+        return term_freq_dict
     else:
         return None
 
@@ -181,16 +185,19 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
 
     In case of corrupt input arguments, None is returned
     """
-    # collection_words_input = 0
-    # for word in doc_freqs.values():
-    #     collection_words_input += word
-    # other_collection_words_input = 0
-    # for other_word in corpus_freqs.values():
-    #     other_collection_words_input += other_word
-    # for element in doc_freqs:
-    #     l = collection_words_input - element[1]
-    #     m = other_collection_words_input
-    pass
+    if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and type_of_elements(doc_freqs, tuple, str, int) \
+            and type_of_elements(corpus_freqs, tuple, str, int):
+        collection_words_input = sum(doc_freqs.values())
+        other_collection_words_input = sum(corpus_freqs.values())
+        expected_freq_dict = {}
+        for element in doc_freqs.items():
+            l = collection_words_input - element[1]
+            m = other_collection_words_input - corpus_freqs[element[0]]
+            expected_frequency = (element[1] + corpus_freqs[element[0]]) * (element[1] + l) / (element[1] + corpus_freqs[element[0]] + l + m)
+            expected_freq_dict[element[0]] = expected_frequency
+        return expected_freq_dict
+    else:
+        return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:

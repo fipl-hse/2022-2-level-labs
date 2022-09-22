@@ -7,7 +7,8 @@ from main import clean_and_tokenize, \
     remove_stop_words, \
     calculate_frequencies, \
     get_top_n, calculate_tf,\
-    calculate_tfidf
+    calculate_tfidf, \
+    calculate_expected_frequency
 
 if __name__ == "__main__":
 
@@ -47,7 +48,6 @@ tf = calculate_tf(frequency)
 top_of_words = get_top_n(frequency, 10)
 tfidf = calculate_tfidf(tf, idf)
 tfidf_top = get_top_n(tfidf, 10)
-print(tfidf_top)
-
-
+expected_frequency = calculate_expected_frequency(calculate_frequencies(cleaned_text), corpus_freqs)
+print(expected_frequency)
 
