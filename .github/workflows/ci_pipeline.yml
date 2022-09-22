@@ -26,7 +26,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Install dependencies
@@ -60,7 +60,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: PR name check
@@ -85,7 +85,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Code Syle
@@ -110,7 +110,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Code Syle
@@ -135,7 +135,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Run tests
@@ -160,7 +160,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Run start
@@ -185,7 +185,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Run start
@@ -212,7 +212,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Spell check
@@ -238,7 +238,7 @@ jobs:
         with:
           path: |
             ./venv/
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
+          key: ${{ env.pythonLocation }}-${{ runner.os }}-pip-${{ hashFiles('requirements*.txt') }}
           restore-keys: |
             ${{ runner.os }}-venv-
       - name: Stubgen check
