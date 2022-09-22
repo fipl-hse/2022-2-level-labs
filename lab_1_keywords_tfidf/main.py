@@ -90,6 +90,22 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
+    if not (isinstance(frequencies, dict) and isinstance(top, int) and top > 0 and frequencies and isinstance(top, bool) == False):
+        return None
+    items = frequencies.items()
+    for key, value in items:
+        if not isinstance(key, str):
+            return None
+        if not (isinstance(value, int) or isinstance(value, float)):
+            return None
+        sorted_items = dict(sorted(items, key=lambda item: item[1], reverse=True))
+        return list(sorted_items.keys())[0:top]
+
+
+
+
+
+
 
 
 
@@ -106,7 +122,15 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(frequencies, dict):
+        return None
+    tf_dict = {}
+    for key, value in frequencies.items():
+        if not isinstance(key, str):
+            return None
+        tf_dict[key] = value / sum(frequencies.values())
+    return tf_dict
+
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -123,7 +147,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def calculate_expected_frequency(
