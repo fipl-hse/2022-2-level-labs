@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 import math
-
+import re
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -20,14 +20,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    for i in text:
-        if not i.isalnum() and i != ' ' and i != '-':
-            text = text.replace(i, '')
-    text = text.lower()
-    text = text.split()
-    return text
-
-
+    match = re.findall(r'\b\w+[-]*\w+', text)
+    return match
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -109,11 +103,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     frequencies = dict(sort)
     new_dict = []
     for k in frequencies.keys():
-        new_dict += k
+        new_dict.append(k)
     if top > len(new_dict):
         return new_dict
     else:
-        return new_dict[:top]
+        return new_dict[:top] # исправить. выдает не слова а буквы
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -269,8 +263,11 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         for j in chi_values.values():
             if not isinstance(i, str) or not isinstance(j, float):
                 return None
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in criterion:
+        return None
     signific = {}
     for a, v in chi_values.items():  # а - ключи, v - значения
-        if v > alpha:
+        if v > criterion[alpha]:
             signific[a] = v
     return signific
