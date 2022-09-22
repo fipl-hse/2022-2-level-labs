@@ -4,8 +4,6 @@ set -ex
 
 echo "Running tests..."
 
-source venv/bin/activate
-
 FAILED=0
 LABS=$(cat config/labs.txt)
 
@@ -21,7 +19,7 @@ for LAB_NAME in $LABS; do
     continue
   fi
 
-	if ! python -m pytest -m "mark${TARGET_SCORE} and ${LAB_NAME}"; then
+	if ! venv/bin/python -m pytest -m "mark${TARGET_SCORE} and ${LAB_NAME}"; then
     	FAILED=1
 	fi
 done

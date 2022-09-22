@@ -5,8 +5,6 @@ set -ex
 echo -e '\n'
 echo 'Running stubgen check...'
 
-source venv/bin/activate
-
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
 FAILED=0
@@ -15,7 +13,7 @@ LABS=$(cat config/labs.txt)
 for LAB_NAME in $LABS; do
 	echo "Running stubgen for lab ${LAB_NAME}"
 
-  python ./config/generate_stubs/run_generator.py \
+  venv/bin/python ./config/generate_stubs/run_generator.py \
           --source_code_path ./${LAB_NAME}/main.py \
           --target_code_path ./build/stubs/main.py
 
