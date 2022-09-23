@@ -41,7 +41,7 @@ if clean_and_tokenize(target_text) != None and remove_stop_words(clean_and_token
         expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
         if expected_frequency != None:
             chi_value = calculate_chi_values(expected_frequency, frequency)
-            alpha = 0.05
+            alpha = 0.001
             if chi_value != None:
                 signific_words = extract_significant_words(chi_value, alpha)
                 print(get_top_n(signific_words, 10))

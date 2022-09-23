@@ -5,7 +5,6 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 import math
 import re
-
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -18,9 +17,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
+    text = text.lower()
+    text = text.replace('-', '')
     if not isinstance(text, str):
         return None
-    match = re.findall(r'\b\w+[-]*\w+', text)
+    match = re.findall(r'\b\w+', text)
     return match
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -195,10 +196,11 @@ def calculate_expected_frequency(
                 return None
     for i in corpus_freqs.keys():
         for j in corpus_freqs.values():
-            if not isinstance(i, str) or not isinstance(j, float):
+            if not isinstance(i, str) or not isinstance(j, int):
                 return None
     expected_freq = {}
     for e in doc_freqs.keys():
+        #e.lower()
         j = doc_freqs[e]
         k = corpus_freqs[e]
         l = 1 - doc_freqs[e]
