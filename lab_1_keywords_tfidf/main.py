@@ -4,6 +4,9 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 import math
+from string import punctuation
+# string punctuation - посмотреть, убирает знаки пунктуации
+# вернуть изменения в файле с семинарами
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -18,18 +21,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    else:
-        text = text.lower()
-        text = text.strip()
-        marks = ",.:;!?—-(){}[]&"   # исправить немного, чтобы в словах дефисы не убирал
-        # добавить удаление  пробелов рядом с пробелами
-        for i in text:
-            if i in marks:
-                text = text.replace(i, "")
-        words_list = text.split()
-        return (words_list)
-        print(words_list)
-
+    text = text.lower()
+    for i in text:
+        if i in punctuation:
+            text = text.replace(i, "")
+    words_list = text.split()
+    return words_list
+print(clean_and_tokenize(' The fi - rst% part><.  The sec&*ond p@art #.'))
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -42,15 +40,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     List[str]: Token sequence that does not include stop words
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list)  or not isinstance(stop_words, list):
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
     elif not tokens or not stop_words:
         return None
-    else:
-        for word in stop_words:
-            while word in tokens:
-                tokens.remove(word)   # апдейт кажется я починила но все равно нужно чекнуть (код пропускал некоторые слова)
-        return(tokens)
+    for word in stop_words:
+        while word in tokens:
+            tokens.remove(word)
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -71,11 +68,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     for i in tokens:
         if not isinstance(i, str):
             return None
-    else:
-        for i in tokens:
-            x = tokens.count(i)
-            frequencies[i] = x
-    return (frequencies)
+    for i in tokens:
+        x = tokens.count(i) # изменить название переменной х
+        frequencies[i] = x
+    return frequencies
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -93,21 +89,19 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    # изменить функцию, потому что на 7 шаге она не работает
     if not isinstance(frequencies, dict) or not isinstance(top, (int, float)):
         return None
+    freq_len = len(frequencies)
+    if top <= freq_len:    # исправить в соответветствии с комментарием ментора
+        """следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
+        если этого не писать будет по возрастанию)
+        и выдает лист ключей, которым эти значения принадлежат"""
+        # нужно лучше разобраться в функции sorted
+        # get возвращает значение по указанному ключу
+        top_list = sorted(frequencies, key=frequencies.get, reverse=True)[:top]
     else:
-        freq_len = len(frequencies)
-        if top <= freq_len:    # исправить в соответветствии с комментарием ментора
-            """следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
-             если этого не писать будет по возрастанию)
-             и выдает лист ключей, которым эти значения принадлежат"""
-            # нужно лучше разобраться в функции sorted
-            # get возвращает значение по указанному ключу
-            top_list = sorted(frequencies, key=frequencies.get, reverse=True)[:top]
-        else:
-            top_list = sorted(frequencies, key=frequencies.get, reverse=True)
-        return (top_list)
+        top_list = sorted(frequencies, key=frequencies.get, reverse=True)
+    return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -124,20 +118,17 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(frequencies, dict):
-        # добавить проверку на то, являются ли ключи строками а значения интами
-        # апдейт - сделано
         return None
     for k, v in frequencies.items():
         if not isinstance(k, str) or not isinstance(v, int):
             return None
-    else:
-        freq_values = list(frequencies.values())
-        words_num = sum(freq_values)
-        tf_dict = {}
-        for key, val in frequencies.items():
-            tf = val / words_num
-            tf_dict[key] = tf
-        return (tf_dict)
+    freq_values = list(frequencies.values())
+    words_num = sum(freq_values)
+    tf_dict = {}
+    for key, val in frequencies.items():
+        tf = val / words_num
+        tf_dict[key] = tf
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -154,28 +145,25 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    # я понятия не имею работает ли эта функция
     if not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
-    else:
-        for k, v in term_freq.items():
-            if not isinstance(k, str) or not isinstance(v, float):
-                return None
-        tfidf_dict = {}
-        for key, v in term_freq.items():
-            if key in idf:
-                tfidf_dict[key] = v * idf[key]
-                """в словарь со значениями tfidf добавляю слово, которое является ключом, и его значение,
-                равное произведению значений данных на входе словарей(если вдруг я забуду что тут происходит )"""
-            else:
-                key_idf = math.log(47 / (0 + 1))
-                tfidf_dict[key] = v * key_idf
-        return (tfidf_dict)
+    for k, v in term_freq.items():
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+    tfidf_dict = {}
+    for key, v in term_freq.items():
+        if key in idf:
+            tfidf_dict[key] = v * idf[key]
+            """в словарь со значениями tfidf добавляю слово, которое является ключом, и его значение,
+            равное произведению значений данных на входе словарей(если вдруг я забуду что тут происходит )"""
+        else:
+            key_idf = math.log(47 / (0 + 1))
+            tfidf_dict[key] = v * key_idf
+    return tfidf_dict
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
-    # я не знаю, работает ли эта функция
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -191,30 +179,28 @@ def calculate_expected_frequency(
     """
     if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
         return None
-    else:
-        for k, v in doc_freqs.items():
-            if not isinstance(k, str) or not isinstance(v, int):
-                return None
-        for k, v in corpus_freqs.items():
-            if not isinstance(k, str) or not isinstance(v, int):
-                return None
-        # подумать как решить это по другому
-        words_in_doc = sum(doc_freqs.values())
-        words_in_col = sum(corpus_freqs.values())
-        exp_freqs ={}
-        for key, val in doc_freqs.items():
-            # l -  количество вхождений всех слов, кроме , в документ d
-            m = words_in_col - corpus_freqs.get(key)
-            # m - количество вхождений всех слов, кроме , в коллекцию документов D
-            l = words_in_doc - doc_freqs.get(key)
-            j = doc_freqs.get(key)
-            # j - количество вхождений слова t  в документ d
-            k = corpus_freqs.get(key)
-            # k - количество вхождений слова t во все тексты коллекции D
-            exp = ((j + k) * (j * l))/ (j + k + l + m)
-            exp_freqs[key] = exp
-        return (exp_freqs)
-    pass
+    for k, v in doc_freqs.items():
+        if not isinstance(k, str) or not isinstance(v, int):
+            return None
+    for k, v in corpus_freqs.items():
+        if not isinstance(k, str) or not isinstance(v, int):
+            return None
+    # подумать как решить это по другому
+    words_in_doc = sum(doc_freqs.values())
+    words_in_col = sum(corpus_freqs.values())
+    exp_freqs ={}
+    for key, val in doc_freqs.items():
+        l = words_in_doc - doc_freqs.get(key)
+        # l -  количество вхождений всех слов, кроме , в документ d
+        m = words_in_col - corpus_freqs.get(key)
+        # m - количество вхождений всех слов, кроме , в коллекцию документов D
+        j = doc_freqs.get(key)
+        # j - количество вхождений слова t  в документ d
+        k = corpus_freqs.get(key)
+        # k - количество вхождений слова t во все тексты коллекции D
+    exp = ((j + k) * (j + l))/(j + k + l + m)
+    exp_freqs[key] = exp
+    return exp_freqs
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -233,8 +219,19 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
+    if not isinstance(expected, dict) or not isinstance(observed, dict):
+        return None
+    for k, v in expected.items():
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+    for k, v in observed.items():
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+    chi_values = {}
+    for key, val in expected.items():
+        chi_sq = (observed.get(key) - val)**2 / val
+        chi_values[key] = chi_sq
+    return chi_values   # где то есть ошибка, потому что числа неверные
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
@@ -252,5 +249,15 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-
-    pass
+    # есть ощущение что я неправильно реализовала функцию
+    # нужно брать альфу из критериона, это есть в чате в тг
+    if not isinstance(chi_values, dict) or not isinstance(alpha, float):
+        return None
+    for k, v in chi_values.items():
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+    significant_val = {}    # а может просто удалять элементы из словаря с хи если они меньше альфы?
+    for k, v in chi_values.items():
+        if v > alpha:
+            significant_val[k] = v
+    return significant_val
