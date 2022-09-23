@@ -62,12 +62,13 @@ if __name__ == "__main__":
     print(chi_values)
 
     CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    alpha = CRITERION.get(0.05)
-    significant_words = extract_significant_words(chi_values, alpha)
-    print(significant_words)
-
-    top_10_chi = get_top_n(significant_words, 10)
-    print(top_10_chi)
+    for i in CRITERION.keys():
+        alpha = i
+        significant_words = extract_significant_words(chi_values, alpha)
+        print(significant_words)
+        if len(significant_words) >= 10:
+            top_10_chi = get_top_n(significant_words, 10)
+            print(top_10_chi)
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
