@@ -133,7 +133,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         for word in term_freq.keys():
             if word not in idf.keys():
                 idf[word] = math.log(47)
-        for
 calculate_tfidf({'f':5.0, 't':6.7}, {'t':6.78})
 
     # """
