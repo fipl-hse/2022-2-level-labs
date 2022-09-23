@@ -21,7 +21,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return False
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool):
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
@@ -36,7 +36,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     return False
 
 
-def check_positive_int(user_input: Any):
+def check_positive_int(user_input: Any) -> bool:
     """
     Checks weather object is int (not bool)
     """
@@ -49,7 +49,7 @@ def check_positive_int(user_input: Any):
     return False
 
 
-def check_float(user_input: Any):
+def check_float(user_input: Any) -> bool:
     """
     Checks weather object is float
     """
@@ -76,8 +76,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         for char in text.lower().replace('\n', ' '):
             if char not in punctuation:
                 my_text += char
-        my_text = my_text.split()
-        return my_text
+        return my_text.split()
     return None
 
 
@@ -188,11 +187,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True):
         tfidf_dict = {}
         for word in term_freq.keys():
-            if idf.get(word) is None:
-                idf_score = log(47 / (0 + 1))
-            else:
-                idf_score = idf.get(word)
-            tfidf_dict[word] = term_freq.get(word) * idf_score
+            tfidf_dict[word] = term_freq.get(word, 0) * idf.get(word, log(47 / (0 + 1)))
         return tfidf_dict
     return None
 
