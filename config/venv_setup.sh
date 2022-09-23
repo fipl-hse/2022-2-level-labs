@@ -22,7 +22,9 @@ python -m virtualenv venv
 
 sleep 10
 
+source venv/bin/activate
+
 which python
 
-venv/bin/python -m pip install -r requirements.txt
-venv/bin/python -m pip install -r requirements_qa.txt
+python -m pip install -r requirements.txt
+python -m pip install -r requirements_qa.txt
