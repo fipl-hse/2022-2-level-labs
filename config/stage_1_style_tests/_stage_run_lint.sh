@@ -9,8 +9,10 @@ source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
-echo "$PYTHONPATH"
-echo "$PATH"
+echo "PYTHONPATH: $PYTHONPATH"
+echo "PATH $PATH"
+echo "WHICH PYTHON: "
+which python
 
 python -m pylint --rcfile config/stage_1_style_tests/.pylintrc config seminars
 

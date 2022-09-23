@@ -6,8 +6,10 @@ echo "Running tests..."
 
 source venv/bin/activate
 
-echo "$PYTHONPATH"
-echo "$PATH"
+echo "PYTHONPATH: $PYTHONPATH"
+echo "PATH $PATH"
+echo "WHICH PYTHON: "
+which python
 
 FAILED=0
 LABS=$(cat config/labs.txt)

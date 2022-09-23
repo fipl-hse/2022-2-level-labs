@@ -10,8 +10,10 @@ python -m virtualenv venv
 
 source venv/bin/activate
 
-echo "$PYTHONPATH"
-echo "$PATH"
+echo "PYTHONPATH: $PYTHONPATH"
+echo "PATH $PATH"
+echo "WHICH PYTHON: "
+which python
 
 which python
 

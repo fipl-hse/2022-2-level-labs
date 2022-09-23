@@ -7,8 +7,10 @@ echo 'Running stubgen check...'
 
 source venv/bin/activate
 
-echo "$PYTHONPATH"
-echo "$PATH"
+echo "PYTHONPATH: $PYTHONPATH"
+echo "PATH $PATH"
+echo "WHICH PYTHON: "
+which python
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 

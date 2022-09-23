@@ -10,8 +10,10 @@ source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
-echo "$PYTHONPATH"
-echo "$PATH"
+echo "PYTHONPATH: $PYTHONPATH"
+echo "PATH $PATH"
+echo "WHICH PYTHON: "
+which python
 
 LABS=$(cat config/labs.txt)
 WAS_FAILED=0
