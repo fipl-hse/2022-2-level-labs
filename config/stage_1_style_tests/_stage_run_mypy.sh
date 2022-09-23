@@ -5,7 +5,9 @@ set -ex
 echo -e '\n'
 echo 'Running mypy check...'
 
-venv/bin/python -m mypy config seminars
+source venv/bin/activate
+
+mypy config seminars
 
 FAILED=0
 LABS=$(cat config/labs.txt)
@@ -16,7 +18,7 @@ for LAB_NAME in $LABS; do
 
   if [[ ${TARGET_SCORE} -gt 7 ]]; then
     echo "Running mypy checks for marks 8 and 10"
-    venv/bin/python -m mypy ${LAB_NAME}
+    mypy ${LAB_NAME}
   fi
 
   if [[ $? -ne 0 ]]; then
