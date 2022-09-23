@@ -4,6 +4,11 @@ set -ex
 
 which python
 
+if [ -d "venv" ]; then
+  echo "VENV already exists."
+  exit 0
+fi
+
 python -m pip install --upgrade pip
 python -m pip install virtualenv
 python -m virtualenv venv
