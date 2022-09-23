@@ -95,7 +95,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if isinstance(frequencies, dict) and all(isinstance(i, str) for i in frequencies.keys()) and all(
             isinstance(i, Union[int, float]) for i in frequencies.values()) and len(
-            frequencies) != 0 and isinstance(top, int):
+            frequencies) != 0 and type(top) is int and top > 0:
         sorted_dict = {}
         for i in sorted(frequencies, key=frequencies.get, reverse=True):
             sorted_dict[i] = frequencies[i]
@@ -121,7 +121,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     if isinstance(frequencies, dict) and all(isinstance(i, str) for i in frequencies.keys()) and all(
             isinstance(i, int) for i in frequencies.values()) and len(frequencies) != 0:
         tf = {}
-        nd = len(frequencies)
+        nd = sum(frequencies.values())
         for i in frequencies.keys():
             nt = frequencies.get(i)
             token_tf = nt / nd
@@ -148,7 +148,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if isinstance(term_freq, dict) and all(isinstance(i, str) for i in term_freq.keys()) and all(
             isinstance(i, float) for i in term_freq.values()) and len(term_freq) != 0 and isinstance(
             idf, dict) and all(isinstance(i, str) for i in idf.keys()) and all(
-            isinstance(i, float) for i in idf.values()) and len(idf) != 0:
+            isinstance(i, float) for i in idf.values()):
         tfidf = {}
         for i in term_freq.keys():
             token_tf = term_freq.get(i)
@@ -182,7 +182,7 @@ def calculate_expected_frequency(
     if isinstance(doc_freqs, dict) and all(isinstance(i, str) for i in doc_freqs.keys()) and all(
             isinstance(i, int) for i in doc_freqs.values()) and len(doc_freqs) != 0 and isinstance(
             corpus_freqs, dict) and all(isinstance(i, str) for i in corpus_freqs.keys()) and all(
-            isinstance(i, int) for i in corpus_freqs.values()) and len(corpus_freqs) != 0:
+            isinstance(i, int) for i in corpus_freqs.values()):
         expected = {}
         for i in doc_freqs.keys():
             j = doc_freqs.get(i)
@@ -249,10 +249,14 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if isinstance(chi_values, dict) and all(isinstance(i, str) for i in chi_values.keys()) and all(
             isinstance(i, float) for i in chi_values.values()) and len(chi_values) != 0 and isinstance(
             alpha, float):
+        CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+        if alpha not in CRITERION.keys():
+            return None
+        alpha_criterion = CRITERION.get(alpha)
         significant_words = {}
         for i in chi_values.keys():
             token_key = chi_values.get(i)
-            if token_key >= alpha:
+            if token_key >= alpha_criterion:
                 significant_words[i] = token_key
         return significant_words
     else:
