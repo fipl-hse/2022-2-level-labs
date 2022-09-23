@@ -11,6 +11,9 @@ echo "PATH $PATH"
 echo "WHICH PYTHON: "
 which python
 
+echo "LS -LA venv/bin"
+ls -la venv/bin
+
 FAILED=0
 LABS=$(cat config/labs.txt)
 

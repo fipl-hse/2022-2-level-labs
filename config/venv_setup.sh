@@ -15,7 +15,8 @@ echo "PATH $PATH"
 echo "WHICH PYTHON: "
 which python
 
-which python
+echo "LS -LA venv/bin"
+ls -la venv/bin
 
 python -m pip install -r requirements.txt
 python -m pip install -r requirements_qa.txt

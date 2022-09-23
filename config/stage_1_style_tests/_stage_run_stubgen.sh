@@ -12,6 +12,9 @@ echo "PATH $PATH"
 echo "WHICH PYTHON: "
 which python
 
+echo "LS -LA venv/bin"
+ls -la venv/bin
+
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
 FAILED=0

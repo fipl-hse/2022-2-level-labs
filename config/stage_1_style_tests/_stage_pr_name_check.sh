@@ -11,4 +11,7 @@ echo "PATH $PATH"
 echo "WHICH PYTHON: "
 which python
 
+echo "LS -LA venv/bin"
+ls -la venv/bin
+
 python config/stage_1_style_tests/pr_name_check.py --pr-name="$1" --pr-author="$2"
