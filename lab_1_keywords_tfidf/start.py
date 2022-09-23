@@ -51,6 +51,7 @@ if __name__ == "__main__":
 
     if split_text and stop_words:
         TOKENS = remove_stop_words(split_text, stop_words)
+        print(TOKENS)
 
     if TOKENS:
         FREQUENCIES = calculate_frequencies(TOKENS)
