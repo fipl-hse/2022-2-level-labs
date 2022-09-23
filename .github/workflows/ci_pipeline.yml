@@ -12,7 +12,7 @@ jobs:
   install-dependencies:
     name: Installing dependencies
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
 
     steps:
       - uses: actions/checkout@v2
@@ -41,7 +41,7 @@ jobs:
     name: PR name check
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
-    timeout-minutes: 2
+    timeout-minutes: 5
     needs: [ install-dependencies ]
     env:
       PR_NAME: ${{ github.event.pull_request.title }}
@@ -69,7 +69,7 @@ jobs:
   code-style:
     name: Code Style
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ install-dependencies ]
 
     steps:
@@ -94,7 +94,7 @@ jobs:
   type-check:
     name: Check types
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ code-style ]
 
     steps:
@@ -119,7 +119,7 @@ jobs:
   unittests:
     name: Unittests
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     needs: [ install-dependencies ]
 
     steps:
@@ -169,7 +169,7 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
-    timeout-minutes: 2
+    timeout-minutes: 5
     needs: [ unittests ]
 
     steps:
@@ -194,7 +194,7 @@ jobs:
   spellcheck:
     name: Spellcheck
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ install-dependencies ]
     steps:
       - uses: actions/checkout@master
@@ -221,7 +221,7 @@ jobs:
   stubgen:
     name: Stub generation
     runs-on: ubuntu-latest
-    timeout-minutes: 1
+    timeout-minutes: 5
     needs: [ spellcheck ]
     steps:
       - uses: actions/checkout@master
