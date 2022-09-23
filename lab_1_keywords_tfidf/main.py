@@ -230,7 +230,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
         return None
     chi_dict = {}
     for word, freq in expected.items():
-        chi_dict[word] = ((observed.get(word) - freq) ** 2) / freq
+        chi_dict[word] = ((observed.get(word, 0) - freq) ** 2) / freq
     return chi_dict
 
 
@@ -256,7 +256,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         return None
     significant_words_dict = {}
     for word, chi_value in chi_values.items():
-        if chi_value >= criterion.get(alpha):
+        if chi_value >= criterion.get(alpha, 0):
             significant_words_dict[word] = chi_value
     return significant_words_dict
 
