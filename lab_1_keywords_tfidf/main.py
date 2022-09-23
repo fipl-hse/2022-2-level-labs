@@ -27,7 +27,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             text = text.replace(i, "")
     words_list = text.split()
     return words_list
-print(clean_and_tokenize(' The fi - rst% part><.  The sec&*ond p@art #.'))
+print(clean_and_tokenize(' The first% part><.  The sec&*ond p@art #.'))
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -189,17 +189,17 @@ def calculate_expected_frequency(
     words_in_doc = sum(doc_freqs.values())
     words_in_col = sum(corpus_freqs.values())
     exp_freqs ={}
-    for key, val in doc_freqs.items():
+    for key in doc_freqs:
         l = words_in_doc - doc_freqs.get(key)
-        # l -  количество вхождений всех слов, кроме , в документ d
+        # l -  количество вхождений всех слов, кроме t, в документ d
         m = words_in_col - corpus_freqs.get(key)
-        # m - количество вхождений всех слов, кроме , в коллекцию документов D
+        # m - количество вхождений всех слов, кроме t, в коллекцию документов D
         j = doc_freqs.get(key)
         # j - количество вхождений слова t  в документ d
         k = corpus_freqs.get(key)
         # k - количество вхождений слова t во все тексты коллекции D
-    exp = ((j + k) * (j + l))/(j + k + l + m)
-    exp_freqs[key] = exp
+        exp = ((j + k) * (j + l))/(j + k + l + m)
+        exp_freqs[key] = exp
     return exp_freqs
 
 
