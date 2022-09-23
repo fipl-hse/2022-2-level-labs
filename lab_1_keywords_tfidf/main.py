@@ -9,12 +9,14 @@ import math
 def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, not_empty: bool = False) -> bool:
     """
     Checks any type used in program. Also works for types of containers' content.
+
     Parameters:
     obj (Any): An object which type is checked
     exp_type (Any): A type we expect obj to be
     exp_cont (Any): A type we expect the content (elements for lists or keys for dictionaries) to be (optional)
     exp_val (Any): A type we expect the values in a dictionary to be (optional)
     not_empty (bool): If exp_type is a container, True stands for "it should not be empty" (optional)
+
     Returns:
     bool: True if obj (and its content if needed) has the expected type, False otherwise
     """
@@ -183,11 +185,10 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     corpus_total = sum(corpus_freqs.values())
     exp_freqs = {}
     for key, doc_freq in doc_freqs.items():
-        # j = doc_freq; k = corpus_freqs[key] (0 if not there)
+        # j = doc_freq;             k = corpus_freqs[key] (0 if not there)
         # l = doc_total - doc_freq; m = corpus_total - corpus_freqs[key]
-        # (j+k)*(j+l)/(j+k+l+m)
         exp_freqs[key] = (doc_freq + (corpus_freqs[key] if key in corpus_freqs.keys() else 0)) \
-                         * doc_total / (doc_total + corpus_total)
+                         * doc_total / (doc_total + corpus_total)  # (j+k)*(j+l)/(j+k+l+m)
     return exp_freqs
 
 
