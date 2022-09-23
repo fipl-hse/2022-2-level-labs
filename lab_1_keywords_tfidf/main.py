@@ -62,14 +62,13 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         index = 0
         while index < len(tokens):
             for stop_word in stop_words:
-                if tokens[index] == stop_word:
+                if tokens[index] is stop_word:
                     tokens.remove(stop_word)
                     index -= 1
                     break
             index += 1
         return tokens
-    else:
-        return None
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -84,16 +83,14 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     if correct_list(tokens, str):
         frequency_dict = {}
         for token in tokens:
-            if isinstance(token, str):
-                if token in frequency_dict.keys():
-                    frequency_dict[token] = 1 + frequency_dict[token]
-                else:
-                    frequency_dict[token] = 1
-            else:
+            if not isinstance(token, str):
                 return None
+            if token in frequency_dict.keys():
+                frequency_dict[token] = 1 + frequency_dict[token]
+            else:
+                frequency_dict[token] = 1
         return frequency_dict
-    else:
-        return None
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -248,7 +245,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
                 if value > criterion[alpha]:
                     significant_words[key] = value
             return significant_words
-        else:
-            return None
-    else:
         return None
+    return None
