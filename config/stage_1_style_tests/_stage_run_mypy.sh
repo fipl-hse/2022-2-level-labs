@@ -7,6 +7,9 @@ echo 'Running mypy check...'
 
 source venv/bin/activate
 
+echo "$PYTHONPATH"
+echo "$PATH"
+
 mypy config seminars
 
 FAILED=0

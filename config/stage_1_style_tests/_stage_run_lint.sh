@@ -9,6 +9,9 @@ source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
+echo "$PYTHONPATH"
+echo "$PATH"
+
 python -m pylint --rcfile config/stage_1_style_tests/.pylintrc config seminars
 
 FAILED=0

@@ -10,6 +10,9 @@ source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
+echo "$PYTHONPATH"
+echo "$PATH"
+
 LABS=$(cat config/labs.txt)
 WAS_FAILED=0
 

@@ -6,6 +6,9 @@ echo "Running tests..."
 
 source venv/bin/activate
 
+echo "$PYTHONPATH"
+echo "$PATH"
+
 FAILED=0
 LABS=$(cat config/labs.txt)
 

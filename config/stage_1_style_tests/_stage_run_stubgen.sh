@@ -7,6 +7,9 @@ echo 'Running stubgen check...'
 
 source venv/bin/activate
 
+echo "$PYTHONPATH"
+echo "$PATH"
+
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
 FAILED=0

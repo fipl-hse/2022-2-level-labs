@@ -10,6 +10,9 @@ python -m virtualenv venv
 
 source venv/bin/activate
 
+echo "$PYTHONPATH"
+echo "$PATH"
+
 which python
 
 python -m pip install -r requirements.txt
