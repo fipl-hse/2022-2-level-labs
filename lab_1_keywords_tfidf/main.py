@@ -93,9 +93,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) and all(isinstance(i, str) for i in frequencies.keys()) and all(
-            isinstance(i, Union[int, float]) for i in frequencies.values()) and len(
+    if isinstance(frequencies, dict) and all(isinstance(i, str) for i in frequencies.keys()) and len(
             frequencies) != 0 and type(top) is int and top > 0:
+        for i in frequencies.values():
+            if not isinstance(i, int) and not isinstance(i, float):
+                return None
         sorted_dict = {}
         for i in sorted(frequencies, key=frequencies.get, reverse=True):
             sorted_dict[i] = frequencies[i]
