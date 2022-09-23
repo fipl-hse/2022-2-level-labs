@@ -184,6 +184,7 @@ jobs:
           bash config/venv_setup.sh
       - name: Run start
         run: |
+          ls -la venv
           bash config/run_start.sh
 
   coverage:
@@ -213,6 +214,7 @@ jobs:
           bash config/venv_setup.sh
       - name: Run start
         run: |
+          ls -la venv
           bash config/collect_coverage/run_coverage.sh
 
   spellcheck:
@@ -244,6 +246,7 @@ jobs:
           bash config/venv_setup.sh
       - name: Spell check
         run: |
+          ls -la venv
           bash config/spellcheck/_stage_spellcheck.sh
 
   stubgen:
@@ -275,4 +278,5 @@ jobs:
           bash config/venv_setup.sh
       - name: Stubgen check
         run: |
+          ls -la venv
           bash config/stage_1_style_tests/_stage_run_stubgen.sh
