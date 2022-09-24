@@ -2,6 +2,7 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
+import string
 from typing import Optional, Union, Any
 import math
 
@@ -50,7 +51,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not check(text, str):
         return None
-    for bad_symbol in '.,:-!?;%<>&*@#()':
+    for bad_symbol in string.punctuation:
         text = text.replace(bad_symbol, '')
     text_split = text.lower().split()
     return text_split
