@@ -35,11 +35,11 @@ if __name__ == "__main__":
     text_without_punctuation = main.clean_and_tokenize(target_text)
     text_without_stop_words = main.remove_stop_words(text_without_punctuation, stop_words)
     words_with_frequencies = main.calculate_frequencies(text_without_stop_words)
-    expected_frequency = main.calculate_expected_frequency(words_with_frequencies, corpus_freqs)
-    chi = main.calculate_chi_values(expected_frequency, words_with_frequencies)
-    significant_words = main.extract_significant_words(chi, 0.05)
-    RESULT = main.get_top_n(significant_words, 10)
+    words_with_tf = main.calculate_tf(words_with_frequencies)
+    words_with_tfidf = main.calculate_tfidf(words_with_tf, idf)
+    RESULT = main.get_top_n(words_with_tfidf, 10)
     print(RESULT)
+
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
