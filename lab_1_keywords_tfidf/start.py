@@ -34,6 +34,9 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+    tokenized_text, frequencies, tf_calculated, tfidf_calculated, expected_frequency, \
+        chi_values, significant_words, RESULT = [None for not_undefined in range(8)]
+
     if target_text:
         tokenized_text = clean_and_tokenize(target_text)
     if tokenized_text and stop_words:
