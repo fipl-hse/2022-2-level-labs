@@ -4,7 +4,8 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 import math
-import re
+from string import punctuation
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -17,12 +18,14 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    text = text.lower()
-    text = text.replace('-', '')
     if not isinstance(text, str):
         return None
-    match = re.findall(r'\b\w+', text)
-    return match
+    text = text.lower()
+    for i in text:
+        if i in punctuation:
+            text = text.replace(i, '')
+    text = text.split()
+    return text
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -92,6 +95,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
+    if not frequencies or not top:
+        return None
     if not isinstance(top, int) or not isinstance(frequencies, dict):
         return None
     for i in frequencies.keys():
@@ -108,9 +113,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if top > len(new_dict):
         return new_dict
     else:
-        return new_dict[:top] # исправить. выдает не слова а буквы
-
-
+        return new_dict[:top]
+#print(get_top_n({'you': 1},2))
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
@@ -124,6 +128,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
+    if not frequencies or not isinstance(frequencies, dict):
+        return None
     for i in frequencies.keys():
         if not isinstance(i, str):
             return None
@@ -153,6 +159,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
+    if not term_freq:
+        return None
     if not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
     for key in term_freq.keys():
@@ -166,9 +174,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     new = {}
     for term_key in term_freq.keys():
         if term_key not in idf:
-            new[term_key] = term_freq[term_key] / math.log(47/1)
+            new[term_key] = term_freq[term_key] * math.log(47/1)
         else:
-            new [term_key] = term_freq[term_key] / idf[term_key]
+            new[term_key] = term_freq[term_key] * idf[term_key]
     return new
 
 
@@ -188,6 +196,8 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
+    if not doc_freqs:
+        return None
     if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
         return None
     for i in doc_freqs.keys():
@@ -199,13 +209,22 @@ def calculate_expected_frequency(
             if not isinstance(i, str) or not isinstance(j, int):
                 return None
     expected_freq = {}
+    all_doc = 0
+    for i in doc_freqs.keys():
+        all_doc += doc_freqs[i]
+    all_corpus = 0
+    for i in corpus_freqs.keys():
+        all_corpus += corpus_freqs[i]
     for e in doc_freqs.keys():
-        #e.lower()
         j = doc_freqs[e]
-        k = corpus_freqs[e]
-        l = 1 - doc_freqs[e]
-        m = 1 - corpus_freqs[e]
-        expected_freq[e] = ((j+k)*(j+l))/ (j+k+l+m)
+        l = all_doc - doc_freqs[e]
+        if e in corpus_freqs.keys():
+            k = corpus_freqs[e]
+            m = all_corpus - corpus_freqs[e]
+        else:
+            k = 0
+            m = all_corpus
+        expected_freq[e] = ((j+k)*(j+l)) / (j+k+l+m)
     return expected_freq
 
 
@@ -225,6 +244,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
+    if not expected or not observed:
+        return None
     if not isinstance(expected, dict) or not isinstance(observed, dict):
         return None
     for i in expected.keys():
@@ -259,6 +280,8 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
+    if not chi_values or not alpha:
+        return None
     if not isinstance(chi_values, dict) or not isinstance(alpha, float):
         return None
     for i in chi_values.keys():
