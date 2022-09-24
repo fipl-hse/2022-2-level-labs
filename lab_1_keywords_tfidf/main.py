@@ -26,6 +26,8 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Checks weather object is dictionary
     hat has keys and values of certain type
     """
+    if user_input is None:
+        return False
     if not isinstance(user_input, dict):
         return False
     if user_input == {} and can_be_empty is False:
@@ -136,8 +138,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not ((check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)) and
-            check_positive_int(top)):
+    checking_dict = check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)
+    if not (checking_dict and check_positive_int(top)):
         return None
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
 
