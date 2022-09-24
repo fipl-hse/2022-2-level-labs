@@ -26,7 +26,7 @@ def check_list_and_dict(check_object: Any, object_type: Any, token_type: Any, va
     return True
 
 
-def check_int(check_object: Any):
+def check_int(check_object: Any) -> bool:
     """
     Checks if an object is a positive integer.
     """
@@ -122,10 +122,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if check_list_and_dict(frequencies, dict, str, (int, float), False) and check_int(top):
-        sorted_dict = {}
-        for i in sorted(frequencies, key=frequencies.get, reverse=True):
-            sorted_dict[i] = frequencies[i]
-        top_n = list(sorted_dict.keys())[:top]
+        top_n = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)[:top]
         return top_n
     return None
 
@@ -147,7 +144,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         tf_dict = {}
         nd_freq = sum(frequencies.values())
         for i in frequencies.keys():
-            nt_freq = frequencies.get(i)
+            nt_freq = frequencies[i]
             token_tf = nt_freq / nd_freq
             tf_dict[i] = token_tf
         return tf_dict
@@ -172,9 +169,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             idf, dict, str, float):
         tfidf = {}
         for i in term_freq.keys():
-            token_tf = term_freq.get(i)
+            token_tf = term_freq[i]
             if i in idf.keys():
-                token_idf = idf.get(i)
+                token_idf = idf[i]
             else:
                 token_idf = log(47 / (0 + 1))
             token_tfidf = token_tf * token_idf
@@ -203,9 +200,9 @@ def calculate_expected_frequency(
             corpus_freqs, dict, str, int):
         expected = {}
         for i in doc_freqs.keys():
-            j_token = doc_freqs.get(i)
+            j_token = doc_freqs[i]
             if i in corpus_freqs.keys():
-                k_token = corpus_freqs.get(i)
+                k_token = corpus_freqs[i]
             else:
                 k_token = 0
             l_token = sum(doc_freqs.values()) - j_token
@@ -236,8 +233,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             observed, dict, str, int, False):
         chi_values = {}
         for i in expected.keys():
-            expected_token = expected.get(i)
-            observed_token = observed.get(i)
+            expected_token = expected[i]
+            observed_token = observed[i]
             chi = ((observed_token - expected_token) ** 2) / expected_token
             chi_values[i] = chi
         return chi_values
@@ -265,10 +262,10 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         if alpha not in criterion.keys():
             return None
-        alpha_criterion = criterion.get(alpha)
+        alpha_criterion = criterion[alpha]
         significant_words = {}
         for i in chi_values.keys():
-            token_key = chi_values.get(i)
+            token_key = chi_values[i]
             if token_key >= alpha_criterion:
                 significant_words[i] = token_key
         return significant_words
