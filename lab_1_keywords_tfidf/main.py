@@ -162,7 +162,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     tf_idf = {}
     for word in term_freq:
         if word not in idf.keys():
-                idf[word] = log(47 / (0 + 1))
+            idf[word] = log(47 / (0 + 1))
         tf_idf[word] = term_freq[word] * idf[word]
     print(tf_idf)
     return tf_idf
@@ -184,6 +184,8 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
+
+
 pass
 
 
@@ -223,28 +225,3 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
-
-# if (isinstance(doc_freqs, dict) and doc_freqs
-#             and all(isinstance(token, str) for token in doc_freqs.keys())
-#             and all(isinstance(freq, int) for freq in doc_freqs.values())
-#             and isinstance(corpus_freqs, dict)
-#             and all(isinstance(token, str) for token in corpus_freqs.keys())
-#             and all(isinstance(freq, int) for freq in corpus_freqs.values())):
-#
-#         expected_freq_dict = {}
-#
-#         for token, freq in doc_freqs.items():
-#
-#             if token not in corpus_freqs.keys():
-#                 corpus_freqs[token] = 0
-#
-#             collection_freq = corpus_freqs[token]
-#             partial_doc_words_sum = sum(doc_freqs.values()) - freq
-#             partial_collection_words_sum = sum(corpus_freqs.values()) - collection_freq
-#
-#             expected = (((freq + collection_freq) * (freq + partial_doc_words_sum)) /
-#                         (freq + collection_freq + partial_doc_words_sum + partial_collection_words_sum))
-#
-#             expected_freq_dict[token] = expected
-#         return expected_freq_dict
-#     return None
