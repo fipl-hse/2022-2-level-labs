@@ -8,6 +8,10 @@ from math import log
 
 def check_list_and_dict(check_object: Any, object_type: Any, token_type: Any, value_type: Any = None,
                         can_be_empty: bool = True) -> bool:
+    """
+    Checks if an object is a list or a dictionary and checks types of its elements.
+    Checks if the object is empty if necessary.
+    """
     if not isinstance(check_object, object_type):
         return False
     if not check_object and not can_be_empty:
@@ -23,6 +27,9 @@ def check_list_and_dict(check_object: Any, object_type: Any, token_type: Any, va
 
 
 def check_int(check_object: Any):
+    """
+    Checks if an object is a positive integer.
+    """
     if not isinstance(check_object, int) or isinstance(check_object, bool):
         return False
     if not check_object > 0:
