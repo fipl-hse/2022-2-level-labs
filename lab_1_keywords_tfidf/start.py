@@ -40,8 +40,7 @@ if __name__ == "__main__":
     frequencies = main.calculate_frequencies(tokens_no_sw)
     print(frequencies)
 
-    top = int(input("The number of words in the top list: "))
-    most_frequent = main.get_top_n(frequencies, top)
+    most_frequent = main.get_top_n(frequencies, 10)
     print(most_frequent)
 
     term_freq = main.calculate_tf(frequencies)
