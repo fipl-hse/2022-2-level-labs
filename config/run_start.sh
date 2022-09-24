@@ -2,11 +2,11 @@
 
 set -ex
 
-source venv/bin/activate
+#source venv/bin/activate
 
 echo "Running start.py checks..."
 
-source venv/bin/activate
+#source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 

@@ -4,7 +4,7 @@ set -ex
 
 echo "Running tests..."
 
-source venv/bin/activate
+#source venv/bin/activate
 
 FAILED=0
 LABS=$(cat config/labs.txt)
