@@ -60,6 +60,6 @@ if __name__ == "__main__":
     if tf_idf:
         print("Most frequent words in tfidf_dict:", (get_top_n(tf_idf, 10)))
 
-    RESULT = get_top_n
+    RESULT = tf_idf
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
