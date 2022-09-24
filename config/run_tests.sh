@@ -10,6 +10,8 @@ source venv/bin/activate
 
 which python
 
+exit 0
+
 FAILED=0
 LABS=$(cat config/labs.txt)
 
