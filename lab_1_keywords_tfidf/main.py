@@ -155,7 +155,7 @@ def calculate_expected_frequency(
             and all(isinstance(token, str) for token in corpus_freqs.keys())
             and all(isinstance(freq, int) for freq in corpus_freqs.values())):
 
-        expected_dict = {}
+        expected_freq_dict = {}
 
         for token, freq in doc_freqs.items():
 
@@ -169,8 +169,8 @@ def calculate_expected_frequency(
             expected = (((freq + collection_freq) * (freq + partial_doc_words_sum)) /
                         (freq + collection_freq + partial_doc_words_sum + partial_collection_words_sum))
 
-            expected_dict[token] = expected
-        return expected_dict
+            expected_freq_dict[token] = expected
+        return expected_freq_dict
     return None
 
 
@@ -197,11 +197,11 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             and all(isinstance(token, str) for token in observed.keys())
             and all(isinstance(freq, int) for freq in observed.values())):
 
-        chi_dict = {}
+        chi_val_dict = {}
         for token, freq in observed.items():
             chi = (((freq - expected[token]) ** 2) / (expected[token]))
-            chi_dict[token] = chi
-        return chi_dict
+            chi_val_dict[token] = chi
+        return chi_val_dict
     return None
 
 

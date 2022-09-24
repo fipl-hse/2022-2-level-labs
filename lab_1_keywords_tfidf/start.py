@@ -4,10 +4,15 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
-from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words,
-                                       calculate_frequencies, get_top_n, calculate_tf,
-                                       calculate_tfidf, calculate_expected_frequency,
-                                       calculate_chi_values, extract_significant_words)
+from lab_1_keywords_tfidf.main import (clean_and_tokenize,
+                                       remove_stop_words,
+                                       calculate_frequencies,
+                                       get_top_n,
+                                       calculate_tf,
+                                       calculate_tfidf,
+                                       calculate_expected_frequency,
+                                       calculate_chi_values,
+                                       extract_significant_words)
 
 
 if __name__ == "__main__":
@@ -50,11 +55,11 @@ if __name__ == "__main__":
 
     print(get_top_n(tfidf_dict, 10))
 
-    expected_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+    expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
-    chi_dict = calculate_chi_values(expected_dict, freq_dict)
+    chi_val_dict = calculate_chi_values(expected_freq_dict, freq_dict)
 
-    significant_chi_words = extract_significant_words(chi_dict, 0.05)
+    significant_chi_words = extract_significant_words(chi_val_dict, 0.05)
 
     num_significant_chi_words = get_top_n(significant_chi_words, 10)
     print(num_significant_chi_words)
