@@ -228,6 +228,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         significant_chi_words = {}
+
         for token, chi_val in chi_values.items():
             if chi_val >= criterion[alpha]:
                 significant_chi_words[token] = chi_val
