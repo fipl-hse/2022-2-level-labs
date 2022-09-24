@@ -46,10 +46,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         return None
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-    for word in stop_words:
-        while word in tokens:
-            tokens.remove(word)
-    return tokens
+    tokens_no_stop_words = []
+    for word in tokens:
+        if word not in stop_words:
+           tokens_no_stop_words.append(word)
+    return tokens_no_stop_words
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
