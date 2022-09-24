@@ -5,7 +5,7 @@ set -ex
 echo -e '\n'
 echo 'Running mypy check...'
 
-source venv/bin/activate
+#source venv/bin/activate
 
 mypy config seminars
 
