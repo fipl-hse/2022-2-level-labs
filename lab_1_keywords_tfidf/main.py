@@ -47,13 +47,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not isinstance(tokens, list) or not tokens:
         return None
-    if not isinstance(stop_words, list) or not stop_words:
+    if not isinstance(stop_words, list):
         return None
 
-
-    for s in  stop_words:
-        while s in tokens:
-            tokens.remove(s)
+    for stop_word in  stop_words:
+        if not isinstance(stop_word, str):
+            return None
+        while stop_word in tokens:
+            tokens.remove(stop_word)
 
     return tokens
 
@@ -75,6 +76,8 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     frequencies = {}
     for token in tokens:
+        if not isinstance(token, str):
+            return None
         if token not in frequencies.keys():
             frequencies[token] = tokens.count(token)
 
@@ -98,7 +101,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not isinstance(frequencies, dict) or not frequencies:
         return None
-    if not isinstance(top, int) or top <= 0:
+    if not isinstance(top, int) or top <= 0 or top is (True or False):
         return None
 
     top_frequencies = dict(sorted(frequencies.items(), reverse=True, key=lambda i: i[1])[:top])
@@ -124,9 +127,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         return None
 
     term_frequencies = {}
-    num_of_tokens = len(frequencies)
+    num_of_tokens = sum(frequencies.values())
 
     for token in frequencies.keys():
+        if not isinstance(token, str):
+            return None
         term_frequencies[token] = frequencies[token]/num_of_tokens
 
     return term_frequencies
@@ -148,7 +153,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not isinstance(term_freq, dict) or not term_freq:
         return None
-    if not isinstance(idf, dict) or not idf:
+    if not isinstance(idf, dict):
         return None
 
     tf_idf = {}
@@ -156,6 +161,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     from math import log
 
     for token in term_freq:
+        if not isinstance(token, str):
+            return None
         if token in idf:
             tf_idf[token] = term_freq[token] * idf[token]
         else:
