@@ -35,7 +35,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     Parameters:
     tokens (List[str]): Original token sequence
-    stop_words (List[str]: Tokens to exclude
+    stop_words (List[str]): Tokens to exclude
 
     Returns:
     List[str]: Token sequence that does not include stop words
@@ -119,12 +119,15 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict):
+    if not isinstance(frequencies, dict) or not frequencies:
         return None
+    for i in frequencies.keys():
+        if not isinstance(i, str):
+            return None
 
     term_freq = {}
     for k, v in frequencies.items():
-        term_freq[k] = v/len(frequencies)
+        term_freq[k] = v/sum(frequencies.values())
 
     return term_freq
 
@@ -143,15 +146,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(term_freq, dict) or not isinstance(idf, dict):
+    if not isinstance(term_freq, dict) or not isinstance(idf, dict) or not term_freq:
         return None
+    for i in term_freq.keys():
+        if not isinstance(i, str):
+            return None
 
     doc_freqs = {}
     for k, v in term_freq.items():
         if k in idf:
             doc_freqs[k] = v * idf[k]
         else:
-            doc_freqs[k] = math.log(47/(0+1))
+            doc_freqs[k] = v * math.log(47/1)
 
     return doc_freqs
 
