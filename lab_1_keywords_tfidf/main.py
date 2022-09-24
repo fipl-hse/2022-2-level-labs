@@ -17,11 +17,6 @@ def type_of_elements(object, elem_type, key=str, value=int):
         return False
 
 
-def open_document():
-    with open("assets\Дюймовочка.txt", "r", encoding="utf-8") as file:
-        return file.read()
-
-
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -37,7 +32,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     else:
-        punctuation = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+        punctuation = r'''!()-[]{};:'"\,<>./?@#$%^&*_~'''
         res = ""
         for element in text:
             if element not in punctuation:
@@ -59,14 +54,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and not isinstance(stop_words, list) and not tokens:
-        return None
-    else:
+    if isinstance(tokens, list) and isinstance(stop_words, list) and tokens:
         if type_of_elements(tokens, str) and type_of_elements(stop_words, str):
             tokens_cleaned = [key_word for key_word in tokens if key_word not in stop_words]
             return tokens_cleaned
-        else:
-            return None
+        return None
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -81,11 +74,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and not type_of_elements(tokens, str) and not tokens:
-        return None
-    else:
+    if isinstance(tokens, list) and type_of_elements(tokens, str) and tokens:
         frequency_dict = {token: tokens.count(token) for token in tokens}
         return frequency_dict
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -131,10 +123,10 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict) and type_of_elements(frequencies, tuple, str, int) and frequencies:
-        words_in_text = clean_and_tokenize(open_document())
         term_freq_dict = {}
+        length_of_the_text = sum(frequencies.values())
         for element in frequencies.items():
-            term_freq = element[1] / len(words_in_text)
+            term_freq = element[1] / length_of_the_text
             term_freq_dict[element[0]] = term_freq
         return term_freq_dict
     else:
@@ -157,16 +149,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if isinstance(term_freq, dict) and isinstance(idf, dict) and type_of_elements(term_freq, tuple, str, float)\
             and type_of_elements(idf, tuple, str, float) and term_freq:
-        tfidf_dict = {}
-        all_texts = 47
-        docs_with_word = 0
-        for element in term_freq.items():
-            if element not in idf.items():
-                tfidf = math.log(abs(all_texts)/(abs(docs_with_word) + 1))
-                tfidf_dict[element[0]] = tfidf
-            tfidf = element[1] * idf[element[0]]
-            tfidf_dict[element[0]] = tfidf
-        return tfidf_dict
+        max_idf = math.log(47 / 1)
+        tfidf = {term: term_f * idf.get(term, max_idf) for term, term_f in term_freq.items()}
+        return tfidf
     else:
         return None
 
@@ -186,18 +171,21 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
     In case of corrupt input arguments, None is returned
     """
     if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and type_of_elements(doc_freqs, tuple, str, int) \
-            and type_of_elements(corpus_freqs, tuple, str, int):
-        collection_words_input = sum(doc_freqs.values())
-        other_collection_words_input = sum(corpus_freqs.values())
+            and type_of_elements(corpus_freqs, tuple, str, int) and doc_freqs:
+        text_words_input = sum(doc_freqs.values())
+        collection_words_input = sum(corpus_freqs.values())
         expected_freq_dict = {}
         for element in doc_freqs.items():
-            l = collection_words_input - element[1]
-            m = other_collection_words_input - corpus_freqs[element[0]]
-            expected_frequency = (element[1] + corpus_freqs[element[0]]) * (element[1] + l) / (element[1] + corpus_freqs[element[0]] + l + m)
+            all_words_text = text_words_input - element[1]
+            # if not corpus_freqs and element[0] not in corpus_freqs.keys():
+            elem_from_corpus = corpus_freqs.get(element[0], 0)
+            # else:
+            #     elem_from_corpus = corpus_freqs[element[0]]
+            all_words_collection = collection_words_input - elem_from_corpus
+            expected_frequency = (element[1] + elem_from_corpus) * (element[1] + all_words_text) / (element[1] + elem_from_corpus + all_words_text + all_words_collection)
             expected_freq_dict[element[0]] = expected_frequency
         return expected_freq_dict
-    else:
-        return None
+    return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -216,7 +204,11 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(expected, dict) and isinstance(observed, dict) and type_of_elements(expected, tuple, str, float) and \
+            type_of_elements(observed, tuple, str, int) and expected and observed:
+        hi_sqrt_dict = {element: math.pow(observed[element] - expected[element], 2) / expected[element] for element in expected.keys()}
+        return hi_sqrt_dict
+    return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -235,4 +227,8 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(chi_values, dict) and isinstance(alpha, float) and type_of_elements(chi_values, tuple, str, float) and chi_values:
+        significant_words_dict = {element: chi_values[element] for element in chi_values.keys() if chi_values[element] > alpha}
+        if significant_words_dict:
+            return significant_words_dict
+    return None
