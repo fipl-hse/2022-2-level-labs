@@ -4,17 +4,9 @@ set -ex
 
 echo "Running tests..."
 
-which python
-
-ls -la venv/bin
-
 source venv/bin/activate
 
-ls -la venv/bin
-
 which python
-
-exit 0
 
 FAILED=0
 LABS=$(cat config/labs.txt)
