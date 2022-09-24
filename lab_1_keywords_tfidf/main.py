@@ -6,6 +6,7 @@ from typing import Optional, Union
 import math
 from string import punctuation
 
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -26,6 +27,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             text = text.replace(i, '')
     text = text.split()
     return text
+
+
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -97,7 +100,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not isinstance(top, int) or not isinstance(frequencies, dict):
+    if not type(top).__name__ == 'int' or not isinstance(frequencies, dict):
         return None
     for i in frequencies.keys():
         if not isinstance(i, str):
@@ -105,16 +108,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for i in frequencies.values():
         if not isinstance(i, int) and not isinstance(i, float):
             return None
-    sort = sorted(frequencies.items(), reverse=True, key=lambda x: x[1])
-    frequencies = dict(sort)
-    new_dict = []
-    for k in frequencies.keys():
-        new_dict.append(k)
-    if top > len(new_dict):
-        return new_dict
+    sorted_keys = sorted(frequencies, key=frequencies.get, reverse=True)
+    if top > len(frequencies):
+        return sorted_keys
     else:
-        return new_dict[:top]
-#print(get_top_n({'you': 1},2))
+        sorted_top = sorted_keys[:top]
+        return sorted_top
+# print(get_top_n({'you': 1, 'she': 3, 'he': 2},5))
+
+
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
@@ -216,15 +218,15 @@ def calculate_expected_frequency(
     for i in corpus_freqs.keys():
         all_corpus += corpus_freqs[i]
     for e in doc_freqs.keys():
-        j = doc_freqs[e]
-        l = all_doc - doc_freqs[e]
+        t_in_d = doc_freqs[e]
+        not_in_d = all_doc - doc_freqs[e]
         if e in corpus_freqs.keys():
-            k = corpus_freqs[e]
-            m = all_corpus - corpus_freqs[e]
+            t_in_all = corpus_freqs[e]
+            not_in_all = all_corpus - corpus_freqs[e]
         else:
-            k = 0
-            m = all_corpus
-        expected_freq[e] = ((j+k)*(j+l)) / (j+k+l+m)
+            t_in_all = 0
+            not_in_all = all_corpus
+        expected_freq[e] = ((t_in_d+t_in_all)*(t_in_d+not_in_d)) / (t_in_d+t_in_all+not_in_d+not_in_all)
     return expected_freq
 
 
@@ -292,7 +294,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if alpha not in criterion:
         return None
     signific = {}
-    for a, v in chi_values.items():  # а - ключи, v - значения
-        if v > criterion[alpha]:
-            signific[a] = v
+    for key, val in chi_values.items():
+        if val > criterion[alpha]:
+            signific[key] = val
     return signific
