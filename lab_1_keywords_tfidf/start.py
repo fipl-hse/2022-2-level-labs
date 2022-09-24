@@ -40,7 +40,7 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokenization, no_stop_words, freq_dict, tfidf_dict, exp_freq_dict, exp_freq_dict, chi_dict, tf_dict = None
+    no_stop_words, freq_dict, tf_dict, exp_freq_dict, chi_dict, tfidf_dict = [None for notdef in range(6)]
 
     tokenization = clean_and_tokenize(target_text)
 
