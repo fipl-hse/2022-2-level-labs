@@ -8,6 +8,10 @@ import string
 import math
 
 def dictionary_check(dictionary: dict, possible_type: type, empty = False) -> bool:
+    """
+    Сheck the correctness of a dictionary
+    And its elements
+    """
     if isinstance(dictionary, dict):
         if dictionary == {} and empty is False:
             return False
