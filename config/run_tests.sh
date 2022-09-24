@@ -4,11 +4,10 @@ set -ex
 
 echo "Running tests..."
 
+which python
+
 source venv/bin/activate
 
-echo "PYTHONPATH: $PYTHONPATH"
-echo "PATH $PATH"
-echo "WHICH PYTHON: "
 which python
 
 echo "LS -LA venv/bin"
