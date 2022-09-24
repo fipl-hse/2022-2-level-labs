@@ -9,14 +9,6 @@ source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
-echo "PYTHONPATH: $PYTHONPATH"
-echo "PATH $PATH"
-echo "WHICH PYTHON: "
-which python
-
-echo "LS -LA venv/bin"
-ls -la venv/bin
-
 python -m pylint --rcfile config/stage_1_style_tests/.pylintrc config seminars
 
 FAILED=0

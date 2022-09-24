@@ -6,8 +6,6 @@ echo "Running tests..."
 
 source venv/bin/activate
 
-which python
-
 FAILED=0
 LABS=$(cat config/labs.txt)
 

@@ -7,14 +7,6 @@ echo 'Running mypy check...'
 
 source venv/bin/activate
 
-echo "PYTHONPATH: $PYTHONPATH"
-echo "PATH $PATH"
-echo "WHICH PYTHON: "
-which python
-
-echo "LS -LA venv/bin"
-ls -la venv/bin
-
 mypy config seminars
 
 FAILED=0
