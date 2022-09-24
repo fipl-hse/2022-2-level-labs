@@ -29,7 +29,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             text = text.replace(i, "")
     words_list = text.split()
     return words_list
-print(clean_and_tokenize(' The first% part><.  The sec&*ond p@art #.'))
+
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -42,15 +42,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     List[str]: Token sequence that does not include stop words
     In case of corrupt input arguments, None is returned
     """
-    if not tokens or not stop_words:
+    if not tokens:
         return None
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
     for word in stop_words:
         while word in tokens:
-           tokens.remove(word)
+            tokens.remove(word)
     return tokens
-
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
@@ -95,7 +94,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not isinstance(frequencies, dict) or not isinstance(top, int):
+    if not isinstance(frequencies, dict) or not type(top) == int:   #если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     freq_len = len(frequencies)
     if top <= freq_len:    # исправить в соответветствии с комментарием ментора
@@ -153,7 +152,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not term_freq or not idf:
+    if not term_freq:
+        """здесь может быть пустой idf, тогда просто 
+        будет вычисление через логарифм, плюс код не 
+        проходил проверку если я не давала вписать пустой idf"""
         return None
     if not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
@@ -187,7 +189,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not doc_freqs or not corpus_freqs:
+    if not doc_freqs:
         return None
     if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
         return None
@@ -214,7 +216,6 @@ def calculate_expected_frequency(
     return exp_freqs
 
 
-
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates chi-squared value for the tokens
@@ -239,13 +240,14 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
         if not isinstance(key, str) or not isinstance(value, float):
             return None
     for key, value in observed.items():
-        if not isinstance(key, str) or not isinstance(value, float):
+        if not isinstance(key, str) or not isinstance(value, int):
             return None
     chi_values = {}
     for key, value in expected.items():
         chi_sq = (observed.get(key) - value)**2 / value
         chi_values[key] = chi_sq
     return chi_values   # где то есть ошибка, потому что числа неверные
+print(calculate_chi_values({'this': 0.1, 'is': 0.4, 'example': 0.2}, {'this': 1, 'is': 4, 'example': 2}))
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
@@ -265,6 +267,10 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     """
     # есть ощущение что я неправильно реализовала функцию
     # нужно брать альфу из критериона, это есть в чате в тг
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    crit_keys = list(criterion.keys())
+    if alpha not in crit_keys:
+        return None
     if not chi_values or not alpha:
         return None
     if not isinstance(chi_values, dict) or not isinstance(alpha, float):
@@ -272,8 +278,8 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     for key, value in chi_values.items():
         if not isinstance(key, str) or not isinstance(value, float):
             return None
-    significant_val = {}    # а может просто удалять элементы из словаря с хи если они меньше альфы?
-    for k, v in chi_values.items():
-        if v > alpha:
-            significant_val[k] = v
+    significant_val = {}
+    for key, value in chi_values.items():
+        if value > criterion.get(alpha):
+            significant_val[key] = value
     return significant_val
