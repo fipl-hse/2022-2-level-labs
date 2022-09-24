@@ -5,7 +5,8 @@ set -ex
 which python
 
 python -m pip install --upgrade pip
-python -m venv venv
+python -m pip install virtualenv==20.16.4
+python -m virtualenv venv
 
 source venv/bin/activate
 
