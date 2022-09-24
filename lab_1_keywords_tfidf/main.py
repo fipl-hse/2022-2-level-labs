@@ -73,8 +73,10 @@ def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
     if tokens_clean and isinstance(tokens_clean, list):
-        frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
-        return frequencies
+        for word in tokens_clean:
+            if isinstance(word, str):
+                frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
+                return frequencies
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
