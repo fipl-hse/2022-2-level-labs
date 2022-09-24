@@ -19,53 +19,54 @@ if __name__ == "__main__":
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
         target_text = file.read()
 
-    tokens = clean_and_tokenize(target_text)
-    print(tokens)
-
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
-
-    res_tokens = remove_stop_words(tokens, stop_words)
-    print(res_tokens)
-
-    frequencies = calculate_frequencies(res_tokens)
-    print(frequencies)
-
-    top_10 = get_top_n(frequencies, 10)
-    print(top_10)
-
-    tf = calculate_tf(frequencies)
-    print(tf)
 
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
-    tfidf = calculate_tfidf(tf, idf)
-    print(tfidf)
-
-    top_10_tfidf = get_top_n(tfidf, 10)
-    print(top_10_tfidf)
-
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    expected = calculate_expected_frequency(frequencies, corpus_freqs)
-    print(expected)
+    res_tokens, frequencies, tf, tfidf, expected, chi_values, \
+        significant_words, top_10_chi = [None for i in range(8)]
 
-    chi_values = calculate_chi_values(expected, frequencies)
-    print(chi_values)
+    tokens = clean_and_tokenize(target_text)
 
-    significant_words = extract_significant_words(chi_values, 0.05)
-    print(significant_words)
+    if tokens:
+        res_tokens = remove_stop_words(tokens, stop_words)
 
-    top_10_chi = get_top_n(significant_words, 10)
-    print(top_10_chi)
+    if res_tokens:
+        frequencies = calculate_frequencies(res_tokens)
+
+    if frequencies:
+        tf = calculate_tf(frequencies)
+
+    if tf and idf:
+        tfidf = calculate_tfidf(tf, idf)
+
+    if tfidf:
+        top_10_tfidf = get_top_n(tfidf, 10)
+        print(top_10_tfidf)
+
+    if frequencies and corpus_freqs:
+        expected = calculate_expected_frequency(frequencies, corpus_freqs)
+
+    if expected and frequencies:
+        chi_values = calculate_chi_values(expected, frequencies)
+
+    if chi_values:
+        significant_words = extract_significant_words(chi_values, 0.05)
+
+    if significant_words:
+        top_10_chi = get_top_n(significant_words, 10)
+        print(top_10_chi)
 
     RESULT = get_top_n(significant_words, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
