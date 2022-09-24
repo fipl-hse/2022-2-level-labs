@@ -94,7 +94,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not isinstance(frequencies, dict) or not type(top) == int:   #если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
+    if not isinstance(frequencies, dict) or not type(top) == int:   # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     freq_len = len(frequencies)
     if top <= freq_len:    # исправить в соответветствии с комментарием ментора
@@ -201,16 +201,20 @@ def calculate_expected_frequency(
             return None
     words_in_doc = sum(doc_freqs.values())
     words_in_col = sum(corpus_freqs.values())
-    exp_freqs ={}
+    exp_freqs = {}
     for key in doc_freqs:
         l = words_in_doc - doc_freqs.get(key)
         # l -  количество вхождений всех слов, кроме t, в документ d
-        m = words_in_col - corpus_freqs.get(key)
-        # m - количество вхождений всех слов, кроме t, в коллекцию документов D
         j = doc_freqs.get(key)
         # j - количество вхождений слова t  в документ d
-        k = corpus_freqs.get(key)
-        # k - количество вхождений слова t во все тексты коллекции D
+        if key in corpus_freqs.keys():
+            k = corpus_freqs.get(key)
+            # k - количество вхождений слова t во все тексты коллекции D
+            m = words_in_col - corpus_freqs.get(key)
+            # m - количество вхождений всех слов, кроме t, в коллекцию документов D
+        else:
+            k = 0
+            m = words_in_col - 0
         exp = ((j + k) * (j + l))/(j + k + l + m)
         exp_freqs[key] = exp
     return exp_freqs
@@ -246,8 +250,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     for key, value in expected.items():
         chi_sq = (observed.get(key) - value)**2 / value
         chi_values[key] = chi_sq
-    return chi_values   # где то есть ошибка, потому что числа неверные
-print(calculate_chi_values({'this': 0.1, 'is': 0.4, 'example': 0.2}, {'this': 1, 'is': 4, 'example': 2}))
+    return chi_values
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
