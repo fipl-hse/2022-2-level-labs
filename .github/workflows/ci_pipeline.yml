@@ -44,6 +44,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: PR name check
         run: |
           bash config/stage_1_style_tests/_stage_pr_name_check.sh "$PR_NAME" "$PR_AUTHOR"
@@ -62,6 +65,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Code Style
         run: |
           bash config/stage_1_style_tests/_stage_run_lint.sh
@@ -80,6 +86,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Code Style (Typings)
         run: |
           bash config/stage_1_style_tests/_stage_run_mypy.sh
@@ -98,6 +107,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Run tests
         run: |
           bash config/run_tests.sh
@@ -116,6 +128,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Run start
         run: |
           bash config/run_start.sh
@@ -134,6 +149,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Run start
         run: |
           bash config/collect_coverage/run_coverage.sh
@@ -154,6 +172,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Spell check
         run: |
           bash config/spellcheck/_stage_spellcheck.sh
@@ -174,6 +195,9 @@ jobs:
           python-version: '3.10'
           cache: 'pip'
           cache-dependency-path: '**/requirements*.txt'
+      - run: |
+          python -m pip install -r requirements.txt
+          python -m pip install -r requirements_qa.txt
       - name: Stubgen check
         run: |
           bash config/stage_1_style_tests/_stage_run_stubgen.sh
