@@ -75,9 +75,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     consisting of tokens with the largest frequency
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(frequencies, dict) and frequencies
+    if ((isinstance(frequencies, dict) and frequencies
             and all(isinstance(token, str) for token in frequencies.keys())
-            and all(isinstance(freq, (int, float)) for freq in frequencies.values())
+            and all(isinstance(freq, (int, float)) for freq in frequencies.values()))
             and isinstance(top, int) and top is not (True or False) and top > 0):
 
         sorted_words = [token for token, freq in sorted(frequencies.items(), key=lambda token: token[1], reverse=True)]
@@ -117,9 +117,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     Dict: A dictionary with tokens and its corresponding TF-IDF values
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(term_freq, dict) and term_freq
+    if ((isinstance(term_freq, dict) and term_freq
             and all(isinstance(token, str) for token in term_freq.keys())
-            and all(isinstance(tf, float) for tf in term_freq.values())
+            and all(isinstance(tf, float) for tf in term_freq.values()))
             and isinstance(idf, dict) and all(isinstance(token, str) for token in idf.keys())
             and all(isinstance(idf_val, float) for idf_val in idf.values())):
 
@@ -148,12 +148,12 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(doc_freqs, dict) and doc_freqs
+    if ((isinstance(doc_freqs, dict) and doc_freqs
             and all(isinstance(token, str) for token in doc_freqs.keys())
-            and all(isinstance(freq, int) for freq in doc_freqs.values())
-            and isinstance(corpus_freqs, dict)
-            and all(isinstance(token, str) for token in corpus_freqs.keys())
-            and all(isinstance(freq, int) for freq in corpus_freqs.values())):
+            and all(isinstance(freq, int) for freq in doc_freqs.values()))
+            and (isinstance(corpus_freqs, dict)
+                 and all(isinstance(token, str) for token in corpus_freqs.keys())
+                 and all(isinstance(freq, int) for freq in corpus_freqs.values()))):
 
         expected_freq_dict = {}
 
@@ -190,12 +190,12 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(expected, dict) and expected
+    if ((isinstance(expected, dict) and expected
             and all(isinstance(token, str) for token in expected.keys())
-            and all(isinstance(freq, float) for freq in expected.values())
-            and isinstance(observed, dict) and observed != {}
-            and all(isinstance(token, str) for token in observed.keys())
-            and all(isinstance(freq, int) for freq in observed.values())):
+            and all(isinstance(freq, float) for freq in expected.values()))
+            and (isinstance(observed, dict) and observed != {}
+                 and all(isinstance(token, str) for token in observed.keys())
+                 and all(isinstance(freq, int) for freq in observed.values()))):
 
         chi_val_dict = {}
         for token, freq in observed.items():
