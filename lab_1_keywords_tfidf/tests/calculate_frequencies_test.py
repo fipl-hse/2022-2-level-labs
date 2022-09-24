@@ -15,7 +15,6 @@ class CalculateFrequenciesTest(unittest.TestCase):
     """
 
     @pytest.mark.lab_1_keywords_tfidf
-    @pytest.mark.mark4
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
@@ -28,7 +27,6 @@ class CalculateFrequenciesTest(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
-    @pytest.mark.mark4
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
@@ -41,7 +39,6 @@ class CalculateFrequenciesTest(unittest.TestCase):
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
-    @pytest.mark.mark4
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
@@ -56,7 +53,6 @@ class CalculateFrequenciesTest(unittest.TestCase):
             self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
-    @pytest.mark.mark4
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
