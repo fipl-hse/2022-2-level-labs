@@ -5,7 +5,7 @@ set -ex
 echo -e '\n'
 echo 'Running stubgen check...'
 
-#source venv/bin/activate
+source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 

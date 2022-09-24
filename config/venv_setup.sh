@@ -6,9 +6,9 @@ which python
 
 python -m pip install --upgrade pip
 python -m pip install virtualenv==20.16.4
-python -m virtualenv venv --always-copy
+python -m virtualenv venv
 
-#source venv/bin/activate
+source venv/bin/activate
 
 which python
 

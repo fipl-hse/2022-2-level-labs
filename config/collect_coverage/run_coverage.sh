@@ -2,7 +2,7 @@
 
 set -ex
 
-#source venv/bin/activate
+source venv/bin/activate
 
 export PYTHONPATH="$(pwd):${PYTHONPATH}"
 
