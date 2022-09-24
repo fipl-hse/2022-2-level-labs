@@ -38,7 +38,7 @@ if __name__ == "__main__":
     words_with_tf = main.calculate_tf(words_with_frequencies)
     words_with_tfidf = main.calculate_tfidf(words_with_tf, idf)
     top_tfidf = main.get_top_n(words_with_tfidf, 10)
-    expected_frequency = main.calculate_expected_frequency(words_with_frequencies)
+    expected_frequency = main.calculate_expected_frequency(words_with_frequencies, corpus_freqs)
     chi = main.calculate_chi_values(expected_frequency, words_with_frequencies)
     significant_words = main.extract_significant_words(chi, 0.05)
     RESULT = main.get_top_n(significant_words, 10)
