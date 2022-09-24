@@ -49,7 +49,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     for elements in tokens:
         if elements not in stop_words:
             clean_text.append(elements)
-    return clean_text
+    return clean_text 
 
 
 
