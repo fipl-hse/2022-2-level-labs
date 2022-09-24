@@ -61,15 +61,12 @@ if __name__ == "__main__":
     chi_values = calculate_chi_values(expected, frequencies)
     print(chi_values)
 
-    CRITERION = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    for i in CRITERION.keys():
-        alpha = i
-        significant_words = extract_significant_words(chi_values, alpha)
-        print(significant_words)
-        if len(significant_words) >= 10:
-            top_10_chi = get_top_n(significant_words, 10)
-            print(top_10_chi)
+    significant_words = extract_significant_words(chi_values, 0.05)
+    print(significant_words)
 
-    RESULT = None
+    top_10_chi = get_top_n(significant_words, 10)
+    print(top_10_chi)
+
+    RESULT = get_top_n(significant_words, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
