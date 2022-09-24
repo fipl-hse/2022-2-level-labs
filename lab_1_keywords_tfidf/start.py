@@ -8,7 +8,9 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
     calculate_frequencies,
-    get_top_n
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf
 )
 
 if __name__ == "__main__":
@@ -39,8 +41,10 @@ if __name__ == "__main__":
 
     no_stop_words = None
     frequencies_dict = None
-    get_top_six = None
-    top = 6
+    get_top_five = None
+    count_tf = None
+    count_tfidf = None
+    top = 5
 
     split_text = clean_and_tokenize(target_text)
 
@@ -51,9 +55,14 @@ if __name__ == "__main__":
         frequencies_dict = calculate_frequencies(no_stop_words)
 
     if frequencies_dict:
-        get_top_six = get_top_n(frequencies_dict, top)
+        get_top_five = get_top_n(frequencies_dict, top)
 
+    if get_top_five:
+        count_tf = calculate_tf(frequencies_dict)
 
-    RESULT = get_top_six
+    if count_tf:
+        count_tfidf = calculate_tfidf(count_tf, idf)
+
+    RESULT = count_tf
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
