@@ -6,6 +6,8 @@ echo "Running tests..."
 
 source venv/bin/activate
 
+ls -la venv/bin
+
 FAILED=0
 LABS=$(cat config/labs.txt)
 
