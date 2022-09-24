@@ -35,6 +35,8 @@ if __name__ == "__main__":
 
     text_step1 = main.clean_and_tokenize(target_text)
     text_step2 = main.remove_stop_words(text_step1, stop_words)
+    text_step3 = main.calculate_frequencies(text_step2)
+    print(text_step3)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
