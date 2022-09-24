@@ -1,8 +1,10 @@
 """
 Frequency-driven keyword extraction starter
 """
+
 import json
 from pathlib import Path
+
 
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
@@ -12,6 +14,7 @@ from lab_1_keywords_tfidf.main import (
     calculate_tf,
     calculate_tfidf
 )
+
 
 if __name__ == "__main__":
 
@@ -39,12 +42,14 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+
     no_stop_words = None
     frequencies_dict = None
     get_top_five = None
     count_tf = None
     count_tfidf = None
     top = 5
+
 
     split_text = clean_and_tokenize(target_text)
 
