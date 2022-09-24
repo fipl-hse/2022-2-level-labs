@@ -46,19 +46,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if isinstance(tokens, list) and isinstance(stop_words, list):
         if stop_words != []:
-            for word in tokens:
-                if isinstance(word, str):
-                    for word1 in stop_words:
-                        if isinstance(word1, str):
-                            final_text = []
-                            for word3 in tokens:
-                                if word3 not in stop_words:
-                                    final_text += [word3]
-                            return final_text
-                        else:
-                            return None
-                else:
-                    return None
+            if (all(isinstance(word, str) for word in tokens)
+                    and all(isinstance(word, str) for word in stop_words)):
+                final_text = []
+                for word3 in tokens:
+                    if word3 not in stop_words:
+                        final_text += [word3]
+                return final_text
+            else:
+                return None
         else:
             final_text = []
             for word in tokens:
