@@ -1,10 +1,9 @@
-import math
-
 """
 Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -28,8 +27,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         text_low = text_without_punctuation.lower()
         final_text = text_low.split()
         return final_text
-    else:
-        return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
