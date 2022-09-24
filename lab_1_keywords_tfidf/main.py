@@ -234,7 +234,55 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
+        if None in doc_freqs.keys() or None in corpus_freqs.keys():
+            return None
+        else:
+            for k0, v0 in doc_freqs.items():
+                if isinstance(k0, str) and isinstance(v0, int):
+                    expected_freq = {}
+                    if corpus_freqs != {}:
+                        for k1, v1 in corpus_freqs.items():
+                            if isinstance(k1, str) and isinstance(v1, int):
+                                for k2, v2 in doc_freqs.items():
+                                    if k2 in corpus_freqs.keys():
+                                        j = v2
+                                        k = corpus_freqs[k2]
+                                        l = 0 - j
+                                        for i in doc_freqs.values():
+                                            l += i
+                                        m = 0 - k
+                                        for i in corpus_freqs.values():
+                                            m += i
+                                        expected_freq[k2] = (j + k) * (j + l) / (j + k + l + m)
+                                    else:
+                                        j = v2
+                                        k = 0
+                                        l = 0 - j
+                                        for i in doc_freqs.values():
+                                            l += i
+                                        m = 0
+                                        for i in corpus_freqs.values():
+                                            m += i
+                                        expected_freq[k2] = (j + k) * (j + l) / (j + k + l + m)
+                            else:
+                                return None
+                    else:
+                        expected_freq = {}
+                        for k2, v2 in doc_freqs.items():
+                            j = v2
+                            k = 0
+                            l = 0 - j
+                            for i in doc_freqs.values():
+                                l += i
+                            m = 0
+                            expected_freq[k2] = (j + k) * (j + l) / (j + k + l + m)
+                    return expected_freq
+
+                else:
+                    return None
+    else:
+        return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -253,7 +301,27 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(expected, dict) and isinstance(observed, dict):
+        if (all(isinstance(x, float) for x in expected.values())
+                and all(isinstance(x, int) for x in observed.values())):
+            if (all(isinstance(x, str) for x in expected.keys())
+                    and all(isinstance(x, str) for x in observed.keys())):
+                if expected != {} and observed != {}:
+                    final_dict = {}
+                    for k, v in expected.items():
+                        if k in observed.keys():
+                            final_dict[k] = pow((observed[k] - v), 2)/v
+                    return final_dict
+                else:
+                    return None
+            else:
+                return None
+        else:
+            return None
+    else:
+        return None
+
+
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -272,4 +340,29 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(chi_values, dict) and isinstance(alpha, float):
+        if (all(isinstance(x, str) for x in chi_values.keys())
+                and all(isinstance(x, float) for x in chi_values.values()) and chi_values != {}):
+            if alpha == 0.05 or alpha == 0.01 or alpha == 0.001:
+                final_dict = {}
+                if alpha == 0.05:
+                    a = 3.842
+                if alpha == 0.01:
+                    a = 6.635
+                if alpha == 0.001:
+                    a = 10.828
+                for k, v in chi_values.items():
+                    if v > a:
+                        final_dict[k] = v
+                return final_dict
+            else:
+                return None
+        else:
+            return None
+    else:
+        return None
+
+
+
+
+
