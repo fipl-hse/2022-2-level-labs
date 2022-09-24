@@ -136,7 +136,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not ((check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)) and check_positive_int(top)):
+    if not ((check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)) and
+            check_positive_int(top)):
         return None
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
 
@@ -259,5 +260,3 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         if chi_value >= criterion.get(alpha, 0):
             significant_words_dict[word] = chi_value
     return significant_words_dict
-
-
