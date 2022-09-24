@@ -50,6 +50,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
                 res_text += i
         tokens = res_text.replace('\n', ' ').split()
         return tokens
+    return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -72,6 +73,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             if i not in stop_words:
                 res_tokens.append(i)
         return res_tokens
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -94,6 +96,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             else:
                 frequencies[i] += 1
         return frequencies
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -117,6 +120,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             sorted_dict[i] = frequencies[i]
         top_n = list(sorted_dict.keys())[:top]
         return top_n
+    return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -140,6 +144,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             token_tf = nt_freq / nd_freq
             tf_dict[i] = token_tf
         return tf_dict
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -168,6 +173,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             token_tfidf = token_tf * token_idf
             tfidf[i] = token_tfidf
         return tfidf
+    return None
 
 
 def calculate_expected_frequency(
@@ -200,6 +206,7 @@ def calculate_expected_frequency(
             expected_token = ((j_token + k_token) * (j_token + l_token)) / (j_token + k_token + l_token + m_token)
             expected[i] = expected_token
         return expected
+    return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -227,6 +234,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             chi = ((observed_token - expected_token) ** 2) / expected_token
             chi_values[i] = chi
         return chi_values
+    return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -257,3 +265,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
             if token_key >= alpha_criterion:
                 significant_words[i] = token_key
         return significant_words
+    return None
