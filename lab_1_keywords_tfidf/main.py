@@ -69,7 +69,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     if isinstance(tokens, list) and len(tokens) != 0:
         dictionary = {}
         for word in tokens:
-            if type(word) == str:
+            if isinstance(word, str):
                 if word in dictionary.keys():
                     dictionary[word] += 1
                 else:
@@ -78,8 +78,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
                 return None
         print(dictionary)
         return dictionary
-    else:
-        return None
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -97,8 +96,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool) or not frequencies or top \
-            <= 0:
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool) or not frequencies or \
+            top <= 0:
         return None
     for i in frequencies.keys():
         if not isinstance(i, str):

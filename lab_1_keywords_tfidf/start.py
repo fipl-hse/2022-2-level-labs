@@ -38,28 +38,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    no_stop_words = None
-    freq_dict = None
-    tf_dict = None
-    tf_idf = None
-    clean_and_tokens = clean_and_tokenize(target_text)
+    NO_STOP_WORDS = None
+    FREQ_DICT = None
+    TF_DICT = None
+    TF_IDF = None
+    CLEAN_AND_TOKENS = clean_and_tokenize(target_text)
 
-    if clean_and_tokens:
-        no_stop_words = remove_stop_words(clean_and_tokens, stop_words)
+    if CLEAN_AND_TOKENS:
+        NO_STOP_WORDS = remove_stop_words(CLEAN_AND_TOKENS, stop_words)
 
-    if no_stop_words:
-        freq_dict = calculate_frequencies(no_stop_words)
-        print("Most frequent words in freq_dict:", get_top_n(freq_dict, 8))
+    if NO_STOP_WORDS:
+        FREQ_DICT = calculate_frequencies(NO_STOP_WORDS)
+        print("Most frequent words in freq_dict:", get_top_n(FREQ_DICT, 8))
 
-    if freq_dict:
-        tf_dict = calculate_tf(freq_dict)
+    if FREQ_DICT:
+        TF_DICT = calculate_tf(FREQ_DICT)
 
-    if tf_dict:
-        tf_idf = calculate_tfidf(tf_dict, idf)
+    if TF_DICT:
+        TF_IDF = calculate_tfidf(TF_DICT, idf)
 
-    if tf_idf:
-        print("Most frequent words in tfidf_dict:", (get_top_n(tf_idf, 10)))
+    if TF_IDF:
+        print("Most frequent words in tfidf_dict:", (get_top_n(TF_IDF, 10)))
 
-    RESULT = tf_idf
+    RESULT = TF_IDF
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
