@@ -67,10 +67,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         return None
     if not isinstance(tokens, list) or not tokens:
         return None
-    frequencies = {}
     for i in tokens:
         if not isinstance(i, str):
             return None
+    frequencies = {}
     for i in tokens:
         num = tokens.count(i)
         frequencies[i] = num
