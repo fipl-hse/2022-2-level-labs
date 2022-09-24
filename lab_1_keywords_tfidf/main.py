@@ -83,7 +83,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    sorted_frequencies = dict(sorted(frequencies.items(), key=lambda item: item[1]))
+    keys = sorted_frequencies.keys()
+    keys_lst = list(keys)
+    keys_lst.reverse()
+    top_n = keys_lst[:top]
+    return top_n
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
