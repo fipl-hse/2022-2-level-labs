@@ -3,7 +3,8 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-
+import re
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -18,7 +19,16 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    if not isinstance(text, str):
+        return None
+
+    text = text.lower().strip()
+    text = re.sub(r'[^\w\s]','', text)
+    tokens = text.split()
+
+    return tokens
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -34,7 +44,18 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None
+
+    for word in stop_words:
+        if not isinstance(word, str):
+            return None
+        while word in tokens:
+            tokens.remove(word)
+
+    return tokens
+
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -49,7 +70,18 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    if not isinstance(tokens, list):
+        return None
+
+    frequencies = {}
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+        frequencies[token] = tokens.count(token)
+
+    return frequencies
+
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -67,7 +99,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or top<=0 or len(frequencies)==0:
+        return None
+
+    frequencies_sorted = sorted(frequencies.items(), key=lambda x: -x[1])[:top]
+    most_frequent = list(dict(frequencies_sorted))
+    return most_frequent
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -83,7 +121,15 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    if not isinstance(frequencies, dict):
+        return None
+
+    term_freq = {}
+    for k, v in frequencies.items():
+        term_freq[k] = v/len(frequencies)
+
+    return term_freq
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -100,7 +146,17 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(term_freq, dict) or not isinstance(idf, dict):
+        return None
+
+    doc_freqs = {}
+    for k, v in term_freq.items():
+        if k in idf:
+            doc_freqs[k] = v * idf[k]
+        else:
+            doc_freqs[k] = math.log(47/(0+1))
+
+    return doc_freqs
 
 
 def calculate_expected_frequency(
