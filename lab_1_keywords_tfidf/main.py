@@ -26,8 +26,6 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     Checks weather object is dictionary
     hat has keys and values of certain type
     """
-    if user_input is None:
-        return False
     if not isinstance(user_input, dict):
         return False
     if user_input == {} and can_be_empty is False:
