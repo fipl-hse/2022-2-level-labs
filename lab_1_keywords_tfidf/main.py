@@ -235,52 +235,40 @@ def calculate_expected_frequency(
     In case of corrupt input arguments, None is returned
     """
     if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
-        if None in doc_freqs.keys() or None in corpus_freqs.keys():
-            return None
-        else:
-            for k0, v0 in doc_freqs.items():
-                if isinstance(k0, str) and isinstance(v0, int):
-                    expected_freq = {}
-                    if corpus_freqs != {}:
-                        for k1, v1 in corpus_freqs.items():
-                            if isinstance(k1, str) and isinstance(v1, int):
-                                for k2, v2 in doc_freqs.items():
-                                    if k2 in corpus_freqs.keys():
-                                        j = v2
-                                        k = corpus_freqs[k2]
-                                        l = 0 - j
-                                        for i in doc_freqs.values():
-                                            l += i
-                                        m = 0 - k
-                                        for i in corpus_freqs.values():
-                                            m += i
-                                        expected_freq[k2] = (j + k) * (j + l) / (j + k + l + m)
-                                    else:
-                                        j = v2
-                                        k = 0
-                                        l = 0 - j
-                                        for i in doc_freqs.values():
-                                            l += i
-                                        m = 0
-                                        for i in corpus_freqs.values():
-                                            m += i
-                                        expected_freq[k2] = (j + k) * (j + l) / (j + k + l + m)
-                            else:
-                                return None
-                    else:
-                        expected_freq = {}
-                        for k2, v2 in doc_freqs.items():
-                            j = v2
-                            k = 0
+        if (all(isinstance(x, str) for x in doc_freqs.keys())
+                and all(isinstance(x, str) for x in corpus_freqs.keys())):
+            if (all(isinstance(x, int) for x in doc_freqs.values())
+                    and all(isinstance(x, int) for x in corpus_freqs.values())):
+                if doc_freqs != {}:
+                    final = {}
+                    for k, v in doc_freqs.items():
+                        if k in corpus_freqs.keys():
+                            j = v
+                            k0 = corpus_freqs[k]
+                            l = 0 - j
+                            for i in doc_freqs.values():
+                                l += i
+                            m = 0 - k0
+                            for i in corpus_freqs.values():
+                                m += i
+                            final[k] = (j + k0) * (j + l) / (j + k0 + l + m)
+                        else:
+                            j = v
+                            k0 = 0
                             l = 0 - j
                             for i in doc_freqs.values():
                                 l += i
                             m = 0
-                            expected_freq[k2] = (j + k) * (j + l) / (j + k + l + m)
-                    return expected_freq
-
+                            for i in corpus_freqs.values():
+                                m += i
+                            final[k] = (j + k0) * (j + l) / (j + k0 + l + m)
+                    return final
                 else:
                     return None
+            else:
+                return None
+        else:
+            return None
     else:
         return None
 
