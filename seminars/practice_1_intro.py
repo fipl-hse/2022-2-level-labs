@@ -4,9 +4,6 @@ Seminar 1
 Running python application and debugging
 """
 
-changes
-
-
 # pylint: disable=invalid-name
 
 
