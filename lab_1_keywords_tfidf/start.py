@@ -35,7 +35,6 @@ if __name__ == "__main__":
     text_without_punctuation = main.clean_and_tokenize(target_text)
     text_without_stop_words = main.remove_stop_words(text_without_punctuation, stop_words)
     words_with_frequencies = main.calculate_frequencies(text_without_stop_words)
-
     expected_frequency = main.calculate_expected_frequency(words_with_frequencies, corpus_freqs)
     chi = main.calculate_chi_values(expected_frequency, words_with_frequencies)
     significant_words = main.extract_significant_words(chi, 0.05)
