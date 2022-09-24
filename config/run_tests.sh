@@ -6,9 +6,14 @@ echo "Running tests..."
 
 which python
 
+
+ls -la venv/bin
+
 cat venv/bin/activate
 
 source venv/bin/activate
+
+ls -la venv/bin
 
 which python
 
