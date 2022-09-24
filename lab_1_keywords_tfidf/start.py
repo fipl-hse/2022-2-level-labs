@@ -37,7 +37,12 @@ if __name__ == "__main__":
     words_with_frequencies = main.calculate_frequencies(text_without_stop_words)
     words_with_tf = main.calculate_tf(words_with_frequencies)
     words_with_tfidf = main.calculate_tfidf(words_with_tf, idf)
-    RESULT = main.get_top_n(words_with_tfidf, 10)
+    top_tfidf = main.get_top_n(words_with_tfidf)
+
+    expected_frequency = main.calculate_expected_frequency(words_with_frequencies)
+    chi = main.calculate_chi_values(expected_frequency, words_with_frequencies)
+    significant_words = main.extract_significant_words(chi, 0.05)
+    RESULT = main.get_top_n(significant_words)
     print(RESULT)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
