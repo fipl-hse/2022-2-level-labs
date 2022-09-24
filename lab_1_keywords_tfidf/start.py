@@ -42,7 +42,7 @@ if __name__ == "__main__":
     expected_frequency = main.calculate_expected_frequency(words_with_frequencies)
     chi = main.calculate_chi_values(expected_frequency, words_with_frequencies)
     significant_words = main.extract_significant_words(chi, 0.05)
-    RESULT = main.get_top_n(significant_words)
+    RESULT = main.get_top_n(significant_words, 10)
     print(RESULT)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
