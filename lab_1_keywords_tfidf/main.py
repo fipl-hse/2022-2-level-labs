@@ -100,7 +100,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if top <= freq_len:
         top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
     else:
-        top_list = sorted(frequencies, key=frequencies.get, reverse=True)
+        top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)]
     return top_list
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
