@@ -52,15 +52,16 @@ if __name__ == "__main__":
     if freq_dict:
         tf_dict = calculate_tf(freq_dict)
 
-    if freq_dict:
+    if freq_dict and tf_dict:
         tfidf_dict = calculate_tfidf(tf_dict, idf)
 
-    if tfidf_dict:
+    if tfidf_dict and freq_dict:
         exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
     if exp_freq_dict:
         chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
 
-    RESULT = get_top_n(chi_dict, 10)
+    if chi_dict:
+        RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
