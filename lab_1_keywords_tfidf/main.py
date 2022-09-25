@@ -104,7 +104,21 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    #это отношение числа вхождений некоторого слова к общему числу слов документа
+    total_value = 0
+    for value in frequencies.values():
+        total_value += value
+
+    term_frequencies_list = []
+    for value in frequencies.values():
+        term_frequency = value / total_value
+        term_frequencies_list.append(term_frequency)
+
+    keys = frequencies.keys()
+    keys_list = list(keys)
+
+    tf_dict = {keys_list[i]: term_frequencies_list[i] for i in range(len(keys_list))}
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
