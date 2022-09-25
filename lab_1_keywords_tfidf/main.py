@@ -93,7 +93,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not isinstance(frequencies, dict) or not type(top) == int:   # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
+    if not isinstance(frequencies, dict) or not type(top) == int:
+        # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     freq_len = len(frequencies)
     if top <= freq_len:
@@ -106,7 +107,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     else:
         top_list = sorted(frequencies, key=frequencies.get, reverse=True)
     return top_list
-
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
@@ -132,8 +132,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     words_num = sum(freq_values)
     tf_dict = {}
     for key, val in frequencies.items():
-        tf = val / words_num
-        tf_dict[key] = tf
+        term_f = val / words_num
+        tf_dict[key] = term_f
     return tf_dict
 
 
@@ -165,8 +165,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     for key, value in term_freq.items():
         if key in idf:
             tfidf_dict[key] = value * idf[key]
-            """в словарь со значениями tfidf добавляю слово, которое является ключом, и его значение,
-            равное произведению значений данных на входе словарей(если вдруг я забуду что тут происходит )"""
         else:
             key_idf = math.log(47 / (0 + 1))
             tfidf_dict[key] = value * key_idf
@@ -202,19 +200,19 @@ def calculate_expected_frequency(
     words_in_col = sum(corpus_freqs.values())
     exp_freqs = {}
     for key in doc_freqs:
-        l = words_in_doc - doc_freqs.get(key)
+        l_val = words_in_doc - doc_freqs.get(key)
         # l -  количество вхождений всех слов, кроме t, в документ d
-        j = doc_freqs.get(key)
+        j_val = doc_freqs.get(key)
         # j - количество вхождений слова t  в документ d
         if key in corpus_freqs.keys():
-            k = corpus_freqs.get(key)
+            k_val = corpus_freqs.get(key)
             # k - количество вхождений слова t во все тексты коллекции D
-            m = words_in_col - corpus_freqs.get(key)
+            m_val = words_in_col - corpus_freqs.get(key)
             # m - количество вхождений всех слов, кроме t, в коллекцию документов D
         else:
-            k = 0
-            m = words_in_col - 0
-        exp = ((j + k) * (j + l))/(j + k + l + m)
+            k_val = 0
+            m_val= words_in_col - 0
+        exp = ((j_val + k_val) * (j_val + l_val))/(j_val + k_val + l_val + m_val)
         exp_freqs[key] = exp
     return exp_freqs
 
