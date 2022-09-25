@@ -30,8 +30,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         clean_text = ''.join(clean_text_list)
         clean_text = clean_text.replace('  ', ' ')
         clean_text = clean_text.lower()
-        clean_text = clean_text.split()
-        return clean_text
+        clean_text_list_of_words = clean_text.split()
+        return clean_text_list_of_words
     return None
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
