@@ -44,7 +44,7 @@ if __name__ == "__main__":
     if target_text:
         clean_words = clean_and_tokenize(target_text)
 
-    if clean_words:
+    if clean_words and stop_words:
         no_stop_words = remove_stop_words(clean_words, stop_words)
 
     if no_stop_words:
@@ -58,7 +58,7 @@ if __name__ == "__main__":
         tfidf_dict = calculate_tfidf(tf_dict, idf)
         print(get_top_n(tfidf_dict, 10))
 
-    if tf_dict and corpus_freqs:
+    if freq_dict and corpus_freqs:
         expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
     if expected_freq_dict and freq_dict:
