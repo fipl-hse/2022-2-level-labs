@@ -19,15 +19,15 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(text, str):
-        clean_text = []
+        clean_text_list = []
         for element in text:
             if element not in '.,?!;:-()—"\'%#@*&$+=[]{}<>^~`|/':
-                clean_text.append(element)
-        if clean_text[0] == '':
-            clean_text.pop(0)
-        if clean_text[-1] == '':
-            clean_text.pop(-1)
-        clean_text = ''.join(clean_text)
+                clean_text_list.append(element)
+        if clean_text_list[0] == '':
+            clean_text_list.pop(0)
+        if clean_text_list[-1] == '':
+            clean_text_list.pop(-1)
+        clean_text = ''.join(clean_text_list)
         clean_text = clean_text.replace('  ', ' ')
         clean_text = clean_text.lower()
         clean_text = clean_text.split()
