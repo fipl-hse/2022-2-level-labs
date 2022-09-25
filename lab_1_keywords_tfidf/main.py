@@ -3,11 +3,14 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 import math
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import string
 
 
-def correct_list(list1: list, type1: type, empty=False) -> bool:
+def correct_list(list1: list, type1: Any, empty=False) -> bool:
+    """
+    Checks that type of 'list1' is list and verifies the contents of 'list1' with the type that the user specifies
+    """
     if isinstance(list1, list):
         if list1 == [] and empty is False:
             return False
@@ -18,7 +21,11 @@ def correct_list(list1: list, type1: type, empty=False) -> bool:
     return False
 
 
-def correct_dict(dictionary: dict, type1: type, type2: type, empty=False) -> bool:
+def correct_dict(dictionary: dict, type1: Any, type2: Any, empty=False) -> bool:
+    """
+    Checks that type of 'dictionary' is dict and verifies the contents of 'dictionary' with the type that
+    the user specifies
+    """
     if isinstance(dictionary, dict):
         if dictionary == {} and empty is False:
             return False
@@ -212,9 +219,9 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     if correct_dict(expected, str, float) and correct_dict(observed, str, float):
         chi_values = {}
-        for key in expected.keys():
-            word_in_expected = expected.get(key)
-            word_in_observed = observed.get(key)
+        for key in expected:
+            word_in_expected = expected[key]
+            word_in_observed = observed[key]
             chi_values[key] = ((word_in_observed - word_in_expected) ** 2 / word_in_expected)
         return chi_values
     return None
