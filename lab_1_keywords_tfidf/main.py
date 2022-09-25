@@ -96,6 +96,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or not type(top).__name__ == 'int':
         # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
+    for key, value in frequencies.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return None
     freq_len = len(frequencies)
     if top <= freq_len:
         top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
