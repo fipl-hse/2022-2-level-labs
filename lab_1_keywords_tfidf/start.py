@@ -3,7 +3,6 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from typing import Optional, Union
 
 from lab_1_keywords_tfidf.main import (clean_and_tokenize,
                                        remove_stop_words,
@@ -42,28 +41,35 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    clean_words = clean_and_tokenize(target_text)
+    if target_text:
+        clean_words = clean_and_tokenize(target_text)
 
-    no_stop_words = remove_stop_words(clean_words, stop_words)
+    if clean_words:
+        no_stop_words = remove_stop_words(clean_words, stop_words)
 
-    freq_dict = calculate_frequencies(no_stop_words)
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
 
-    top_words = get_top_n(freq_dict, 10)
+    if freq_dict:
+        top_words = get_top_n(freq_dict, 10)
+        tf_dict = calculate_tf(freq_dict)
 
-    tf_dict = calculate_tf(freq_dict)
+    if tf_dict and idf:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
+        print(get_top_n(tfidf_dict, 10))
 
-    tfidf_dict = calculate_tfidf(tf_dict, idf)
+    if tf_dict and corpus_freqs:
+        expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
-    print(get_top_n(tfidf_dict, 10))
+    if expected_freq_dict and freq_dict:
+        chi_val_dict = calculate_chi_values(expected_freq_dict, freq_dict)
 
-    expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+    if chi_val_dict:
+        significant_chi_words = extract_significant_words(chi_val_dict, 0.05)
 
-    chi_val_dict = calculate_chi_values(expected_freq_dict, freq_dict)
-
-    significant_chi_words = extract_significant_words(chi_val_dict, 0.05)
-
-    num_significant_chi_words = get_top_n(significant_chi_words, 10)
-    print(num_significant_chi_words)
+    if significant_chi_words:
+        num_significant_chi_words = get_top_n(significant_chi_words, 10)
+        print(num_significant_chi_words)
 
     RESULT = num_significant_chi_words
 
