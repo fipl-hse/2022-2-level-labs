@@ -36,7 +36,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (text and isinstance(text, str)):
+    if not text or not isinstance(text, str):
         return None
     text = text.lower()
     for element in string.punctuation:
@@ -58,7 +58,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not (tokens and isinstance(tokens, list)):
+    if not tokens or not isinstance(tokens, list):
         return None
     tokens_clean = [i for i in tokens if i not in stop_words]
     return tokens_clean
@@ -76,7 +76,7 @@ def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (tokens_clean and isinstance(tokens_clean, list)):
+    if not tokens_clean and not isinstance(tokens_clean, list):
         return None
     for word in tokens_clean:
         if isinstance(word, str):
@@ -99,9 +99,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (dictionary_check(frequencies, float)
-            and (not isinstance(top, bool)
-                 and isinstance(top, int) and not top <= 0)):
+    if not dictionary_check(frequencies, float)\
+            or not (not isinstance(top, bool) and isinstance(top, int) and not top <= 0):
         return None
     words = sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)
     top_five = words[:top]
