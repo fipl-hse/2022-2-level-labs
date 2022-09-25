@@ -66,7 +66,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(tokens, list):
+        for el in tokens:
+            isinstance(el, str)
+            return None
+    dictionary = {}
+
+
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
