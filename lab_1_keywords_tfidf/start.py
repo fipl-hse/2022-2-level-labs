@@ -51,10 +51,11 @@ if __name__ == "__main__":
     chi_values = main.calculate_chi_values(expected_frequencies, frequencies)
     print(chi_values)
     significant = main.extract_significant_words(chi_values, 0.05)
-    print(main.get_top_n(chi_values, 10))
+    top_chi = main.get_top_n(chi_values, 10)
+    print(top_chi)
 
 
-    RESULT = None
+    RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 
