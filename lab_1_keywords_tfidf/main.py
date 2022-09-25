@@ -111,7 +111,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                         sort_dictionaries_dct[word_two] = word_one
             top_lst = []
             count = 0
-            for word in sort_dictionaries_dct.keys():
+            for word in sort_dictionaries_dct:
                 top_lst += [word]
                 count += 1
                 if count == top:
@@ -196,36 +196,35 @@ def calculate_expected_frequency(
     """
     if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
         if (all(isinstance(x, str) for x in doc_freqs.keys())
-                and all(isinstance(x, str) for x in corpus_freqs.keys())):
-            if (all(isinstance(x, int) for x in doc_freqs.values())
-                    and all(isinstance(x, int) for x in corpus_freqs.values())):
-                if doc_freqs != {}:
-                    final = {}
-                    for key, value in doc_freqs.items():
-                        if key in corpus_freqs.keys():
-                            freq_one = value
-                            freq_two = corpus_freqs[key]
-                            total_one = 0 - freq_one
-                            for freq in doc_freqs.values():
-                                total_one += freq
-                            total_two = 0 - freq_two
-                            for freq in corpus_freqs.values():
-                                total_two += freq
-                            final[key] = ((freq_one + freq_two) * (freq_one + total_one) /
-                                          (freq_one + freq_two + total_one + total_two))
-                        else:
-                            freq_one = value
-                            freq_two = 0
-                            total_one = 0 - freq_one
-                            for freq in doc_freqs.values():
-                                total_one += freq
-                            total_two = 0
-                            for freq in corpus_freqs.values():
-                                total_two += freq
-                            final[key] = ((freq_one + freq_two) * (freq_one + total_one) /
-                                          (freq_one + freq_two + total_one + total_two))
-                    return final
-                return None
+                and all(isinstance(x, str) for x in corpus_freqs.keys())
+                and all(isinstance(x, int) for x in doc_freqs.values())
+                and all(isinstance(x, int) for x in corpus_freqs.values())):
+            if doc_freqs != {}:
+                final = {}
+                for key, value in doc_freqs.items():
+                    if key in corpus_freqs.keys():
+                        freq_one = value
+                        freq_two = corpus_freqs[key]
+                        total_one = 0 - freq_one
+                        for freq in doc_freqs.values():
+                            total_one += freq
+                        total_two = 0 - freq_two
+                        for freq in corpus_freqs.values():
+                            total_two += freq
+                        final[key] = ((freq_one + freq_two) * (freq_one + total_one) /
+                                      (freq_one + freq_two + total_one + total_two))
+                    else:
+                        freq_one = value
+                        freq_two = 0
+                        total_one = 0 - freq_one
+                        for freq in doc_freqs.values():
+                            total_one += freq
+                        total_two = 0
+                        for freq in corpus_freqs.values():
+                            total_two += freq
+                        final[key] = ((freq_one + freq_two) * (freq_one + total_one) /
+                                      (freq_one + freq_two + total_one + total_two))
+                return final
             return None
         return None
     return None
