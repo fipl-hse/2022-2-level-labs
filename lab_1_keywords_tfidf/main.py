@@ -59,8 +59,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
                 if word not in stop_words:
                     final_text += [word]
             return final_text
-    else:
-        return None
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -81,8 +80,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             for word in tokens:
                 frequency_dictionary.update({word: tokens.count(word)})
             return frequency_dictionary
-        else:
-            return None
     else:
         return None
 
@@ -149,8 +146,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
                 for key, value in frequencies.items():
                     frequencies[key] = value / all_words
                 return frequencies
-    else:
-        return None
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -182,9 +178,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                         else:
                             term_freq[key_two] = value_two * math.log(47 / 1)
                     return term_freq
-        else:
-            return None
-
     else:
         return None
 
@@ -236,8 +229,6 @@ def calculate_expected_frequency(
                             final[key] = ((freq_one + freq_two) * (freq_one + total_one) /
                                           (freq_one + freq_two + total_one + total_two))
                     return final
-                else:
-                    return None
             else:
                 return None
         else:
@@ -273,8 +264,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
                         if key in observed.keys():
                             final_dict[key] = pow((observed[key] - value), 2)/value
                     return final_dict
-                else:
-                    return None
             else:
                 return None
         else:
@@ -316,8 +305,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
                     if value > digit:
                         final_dict[key] = value
                 return final_dict
-            else:
-                return None
         else:
             return None
     else:
