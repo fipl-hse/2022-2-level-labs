@@ -67,7 +67,7 @@ if __name__ == "__main__":
     if WORDS_WITH_FREQUENCIES and corpus_freqs:
         WORDS_WITH_EXP_FREQ = calculate_expected_frequency(WORDS_WITH_FREQUENCIES, corpus_freqs)
 
-    if WORDS_WITH_FREQUENCIES and corpus_freqs:
+    if WORDS_WITH_EXP_FREQ and WORDS_WITH_FREQUENCIES:
         WORDS_WITH_CHI_VALUES = calculate_chi_values(WORDS_WITH_EXP_FREQ, WORDS_WITH_FREQUENCIES)
 
     if WORDS_WITH_CHI_VALUES:
