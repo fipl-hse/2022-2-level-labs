@@ -226,11 +226,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
         return None
     if not isinstance(observed, dict) or not observed:
         return None
-    for token in observed.keys():
-        if not isinstance(token, str):
-            return None
-    for i in observed.values():
-        if not isinstance(i, int):
+    for token, i in observed.items():
+        if not isinstance(token, str) or not isinstance(i, int):
             return None
     for i in expected.values():
         if not isinstance(i, float):
