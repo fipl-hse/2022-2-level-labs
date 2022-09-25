@@ -51,7 +51,6 @@ if __name__ == "__main__":
         freq_dict = calculate_frequencies(no_stop_words)
 
     if freq_dict:
-        top_words = get_top_n(freq_dict, 10)
         tf_dict = calculate_tf(freq_dict)
 
     if tf_dict and idf:
