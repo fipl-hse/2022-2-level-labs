@@ -105,9 +105,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for i in frequencies.values():
         if not isinstance(i, int) and not isinstance(i, float):
             return None
-        filtered_words = [word for word, freq in sorted(frequencies.items(), key=itemgetter(1), reverse=True)]
-        top_n = filtered_words[:top]
-        return top_n
+    filtered_words = [word for word, freq in sorted(frequencies.items(), key=itemgetter(1), reverse=True)]
+    top_n = filtered_words[:top]
+    return top_n
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -201,8 +201,9 @@ def calculate_expected_frequency(
         else:
             occur_collection = 0
             occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
-        expected_freq[word] = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
-                              (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
+        expected = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
+                   (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
+        expected_freq[word] = expected
     print(expected_freq)
     return expected_freq
 
@@ -233,7 +234,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             return None
     chi_values = {}
     for word, value in expected.items():
-        chi_values[word] = ((observed.get(word) - value) ** 2) / value
+        chi = ((observed.get(word) - value) ** 2) / value
+        chi_values[word] = chi
     print(chi_values)
     return chi_values
 
@@ -254,6 +256,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
+    significant_words = {}
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     criterion_list = list(criterion.keys())
     if not chi_values or not alpha or not isinstance(chi_values, dict) or not isinstance(alpha, float):
@@ -263,7 +266,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     for word, value in chi_values.items():
         if not isinstance(word, str) or not isinstance(value, float):
             return None
-    significant_words = {}
     for word, value in chi_values.items():
         if value > criterion.get(alpha):
             significant_words[word] = value
