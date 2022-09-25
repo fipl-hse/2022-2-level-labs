@@ -97,7 +97,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or not type(top) == int:   # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     freq_len = len(frequencies)
-    if top <= freq_len:    # исправить в соответветствии с комментарием ментора
+    if top <= freq_len:
         """следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
         если этого не писать будет по возрастанию)
         и выдает лист ключей, которым эти значения принадлежат"""
