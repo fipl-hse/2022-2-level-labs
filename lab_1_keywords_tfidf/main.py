@@ -126,8 +126,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             return None
 
     term_freq = {}
-    for k, v in frequencies.items():
-        term_freq[k] = v/sum(frequencies.values())
+    for token, value in frequencies.items():
+        term_freq[token] = value/sum(frequencies.values())
 
     return term_freq
 
@@ -153,11 +153,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             return None
 
     doc_freqs = {}
-    for k, v in term_freq.items():
-        if k in idf:
-            doc_freqs[k] = v * idf[k]
+    for token, value in term_freq.items():
+        if token in idf:
+            doc_freqs[token] = value * idf[token]
         else:
-            doc_freqs[k] = v * math.log(47/1)
+            doc_freqs[token] = value * math.log(47/1)
 
     return doc_freqs
 
@@ -191,14 +191,14 @@ def calculate_expected_frequency(
         if not corpus_freqs:
             expected[token] = value
         else:
-            j = doc_freqs[token]
-            l = sum(doc_freqs.values()) - j
+            j_doc = doc_freqs[token]
+            l_doc = sum(doc_freqs.values()) - j_doc
             if token in corpus_freqs:
-                k = corpus_freqs[token]
+                k_corp = corpus_freqs[token]
             else:
-                k = 0
-            m = sum(corpus_freqs.values()) - k
-            expected[token] = ((j + k) * (j + l)) / (j + k + l + m)
+                k_corp = 0
+            m_corp = sum(corpus_freqs.values()) - k_corp
+            expected[token] = ((j_doc + k_corp) * (j_doc + l_doc)) / (j_doc + k_corp + l_doc + m_corp)
     return expected
 
 
@@ -218,9 +218,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(expected, dict) or not expected:
-        return None
-    if not isinstance(observed, dict) or not observed:
+    if not isinstance(expected, dict) or not expected or not isinstance(observed, dict) or not observed:
         return None
     for token in expected.keys():
         if not isinstance(token, str):

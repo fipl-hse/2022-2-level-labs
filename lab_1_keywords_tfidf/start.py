@@ -67,5 +67,3 @@ if __name__ == "__main__":
     RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
-
