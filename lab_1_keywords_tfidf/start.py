@@ -3,7 +3,6 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
 
 
 if __name__ == "__main__":
@@ -31,6 +30,8 @@ if __name__ == "__main__":
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
+
+    import main
 
     text_without_punctuation = main.clean_and_tokenize(target_text)
     text_without_stop_words = main.remove_stop_words(text_without_punctuation, stop_words)
