@@ -47,7 +47,7 @@ if __name__ == "__main__":
         print("Частоты слов: {}".format(frequencies))
 
     if not frequencies:
-        return None
+        print(None)
     for k, v in frequencies.items():
         if isinstance(k, str) or isinstance(v, (int, float)):
             print(get_top_n(frequencies, 8))
