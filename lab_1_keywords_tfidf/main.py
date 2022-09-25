@@ -109,12 +109,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         if not isinstance(i, int) and not isinstance(i, float):
             return None
     sorted_keys = sorted(frequencies, key=frequencies.get, reverse=True)
-    if top > len(frequencies):
-        return sorted_keys
-    else:
-        sorted_top = sorted_keys[:top]
-        return sorted_top
-# print(get_top_n({'you': 1, 'she': 3, 'he': 2},5))
+    sorted_top = sorted_keys[:top]
+    return sorted_top
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -198,9 +194,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not doc_freqs:
-        return None
-    if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
+    if not doc_freqs or not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
         return None
     for i in doc_freqs.keys():
         for j in doc_freqs.values():
@@ -211,12 +205,8 @@ def calculate_expected_frequency(
             if not isinstance(i, str) or not isinstance(j, int):
                 return None
     expected_freq = {}
-    all_doc = 0
-    for i in doc_freqs.keys():
-        all_doc += doc_freqs[i]
-    all_corpus = 0
-    for i in corpus_freqs.keys():
-        all_corpus += corpus_freqs[i]
+    all_doc = sum(doc_freqs.values())
+    all_corpus = sum(corpus_freqs.values())
     for e in doc_freqs.keys():
         t_in_d = doc_freqs[e]
         not_in_d = all_doc - doc_freqs[e]
@@ -258,12 +248,12 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
         for j in observed.values():
             if not isinstance(i, str) or not isinstance(j, int):
                 return None
-    xi = {}
-    for a in expected.keys():
-        b = observed[a]
-        c = expected[a]
-        xi[a] = ((b - c) ** 2) / c
-    return xi
+    xi_val = {}
+    for keys in expected.keys():
+        obs_keys = observed[keys]
+        exp_keys = expected[keys]
+        xi_val[keys] = ((obs_keys - exp_keys) ** 2) / exp_keys
+    return xi_val
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:

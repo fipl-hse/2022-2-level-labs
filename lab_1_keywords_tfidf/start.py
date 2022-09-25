@@ -35,6 +35,7 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+    ALPHA = 0.001
     if clean_and_tokenize(target_text) and remove_stop_words(clean_and_tokenize(target_text), stop_words):
         cleaned = remove_stop_words(clean_and_tokenize(target_text), stop_words)  # a list of words w/o stop words
         frequency = calculate_frequencies(cleaned)
@@ -44,9 +45,8 @@ if __name__ == "__main__":
             expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
             if expected_frequency:
                 chi_value = calculate_chi_values(expected_frequency, frequency)
-                alpha = 0.001
                 if chi_value:
-                    signific_words = extract_significant_words(chi_value, alpha)
+                    signific_words = extract_significant_words(chi_value, ALPHA)
                     print(get_top_n(signific_words, 10))
     RESULT = signific_words
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
