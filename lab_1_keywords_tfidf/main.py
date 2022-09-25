@@ -112,7 +112,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if correct_dict(frequencies, str, float, False) and (not isinstance(top, bool) and isinstance(top, int) and not top <= 0):
+    if correct_dict(frequencies, str, float, False) and (not isinstance(top, bool) and isinstance(top, int)
+                                                         and not top <= 0):
         freq = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
         top_list = []
         for word in freq:
