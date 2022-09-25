@@ -12,10 +12,10 @@ def correct_list(list1: list, type1: Any, empty: bool) -> bool:
     Checks that type of 'list1' is list and verifies the contents of 'list1' with the type that the user specifies
     """
     if isinstance(list1, list):
-        if list1 == [] and empty is False:
+        if not list1 and not empty:
             return False
         for index in list1:
-            if isinstance(index, type1) is False:
+            if not isinstance(index, type1):
                 return False
         return True
     return False
@@ -27,7 +27,7 @@ def correct_dict(dictionary: dict, type1: Any, type2: Any, empty: bool) -> bool:
     the user specifies
     """
     if isinstance(dictionary, dict):
-        if dictionary == {} and empty is False:
+        if not dictionary and not empty:
             return False
         for key, value in dictionary.items():
             if not isinstance(key, type1) or not isinstance(value, (int, type2)) or isinstance(value, bool):
