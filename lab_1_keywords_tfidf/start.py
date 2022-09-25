@@ -46,11 +46,8 @@ if __name__ == "__main__":
         frequencies = calculate_frequencies(tokens)
         print("Частоты слов: {}".format(frequencies))
 
-    if not frequencies:
-        return None
-    for k, v in frequencies.items():
-        if isinstance(k, str) and isinstance(v, (int, float)):
-            print(get_top_n(frequencies, 8))
+    if frequencies:
+        print(get_top_n(frequencies, 8))
 
     if frequencies:
         term_freq = calculate_tf(frequencies)
