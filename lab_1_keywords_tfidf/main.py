@@ -3,7 +3,6 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-from collections import Counter
 import string
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -82,7 +81,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
                 items_are_str = False
 
     if tokens_list_is_list and items_are_str:
-        tokens_dict = Counter(tokens)
+        unique_tokens = set(tokens)
+        unique_tokens_list = list(unique_tokens)
+        counting_list = []
+        counting = 0
+        for item1 in unique_tokens_list:
+            for item in tokens:
+                if item1 == item:
+                    counting += 1
+            counting_list.append(counting)
+            counting = 0
+        tokens_dict = {unique_tokens_list[i]: counting_list[i] for i in range(len(unique_tokens_list))}
         return tokens_dict
     return None
 
