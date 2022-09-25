@@ -43,13 +43,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list) and not isinstance(stop_words, list):
-        return None
-    clean_text = []
-    for elements in tokens:
-        if elements not in stop_words:
-            clean_text.append(elements)
-    return clean_text 
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        for element in tokens:
+            if not isinstance(element, str):
+                return None
+        for element in stop_words:
+            if not isinstance(element, str):
+                return None
+    return [elements for elements in tokens if elements not in stop_words]
 
 
 
