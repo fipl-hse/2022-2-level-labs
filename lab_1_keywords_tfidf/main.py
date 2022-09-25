@@ -95,23 +95,21 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    if not isinstance(frequencies, dict) or not isinstance(top, int):
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
         return None
 
-    top_list = []
     for k, v in frequencies.items():
-        if not isinstance(k, str) or not isinstance(v, int | float):
+        if not isinstance(k, str) or not isinstance(v, int | float):  # or isinstance(v, bool):
             return None
         else:
-            top_list.append(k)
-
-    if top_list == []:
-        return None
-    else:
-        if top > 0:
-            return top_list[:top]
-        else:
-            return None
+            sorted_keys = sorted(frequencies, reverse = True, key=lambda word: frequencies[word])
+            if not sorted_keys:
+                return None
+            else:
+                if top > 0:
+                    return sorted_keys[:top]
+                else:
+                    return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
