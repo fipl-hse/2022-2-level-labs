@@ -56,6 +56,8 @@ if __name__ == "__main__":
 
     if tf_dict and idf:
         tfidf_dict = calculate_tfidf(tf_dict, idf)
+
+    if tfidf_dict:
         print(get_top_n(tfidf_dict, 10))
 
     if freq_dict and corpus_freqs:
