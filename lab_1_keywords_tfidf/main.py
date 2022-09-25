@@ -25,8 +25,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     for i in text:
         if i in punctuation:
             text = text.replace(i, '')
-    text = text.split()
-    return text
+    new_text = text.split()
+    return new_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -105,12 +105,14 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for i in frequencies.keys():
         if not isinstance(i, str):
             return None
-    for i in frequencies.values():
-        if not isinstance(i, int) and not isinstance(i, float):
+    for j in frequencies.values():
+        if not isinstance(j, int) and not isinstance(j, float):
             return None
-    sorted_keys = sorted(frequencies, key=frequencies.get, reverse=True)
-    sorted_top = sorted_keys[:top]
-    return sorted_top
+    sorted_dict = dict(sorted(frequencies.items(), key=lambda x: x[1], reverse=True))
+    sorted_top = []
+    for i in sorted_dict.keys():
+        sorted_top.append(i)
+    return sorted_top[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -131,8 +133,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     for i in frequencies.keys():
         if not isinstance(i, str):
             return None
-    for i in frequencies.values():
-        if not isinstance(i, int):
+    for j in frequencies.values():
+        if not isinstance(j, int):
             return None
     summa = 0  # количество слов
     freq_new = {}
