@@ -70,7 +70,14 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         for el in tokens:
             isinstance(el, str)
             return None
-    dictionary = {}
+    freq_dict = {}
+    for i in l:
+        if i in freq_dict.keys():
+            freq_dict[i] = 1 + freq_dict[i]
+        else:
+            freq_dict[i] = 1
+    return freq_dict
+
 
 
 
