@@ -3,7 +3,9 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
+from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
+                                       calculate_tf, calculate_tfidf, calculate_expected_frequency,
+                                       calculate_chi_values, extract_significant_words)
 
 if __name__ == "__main__":
 
@@ -31,37 +33,37 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokens = main.clean_and_tokenize(target_text)
+    tokens = clean_and_tokenize(target_text)
     print(tokens)
 
-    tokens_no_sw = main.remove_stop_words(tokens, stop_words)
+    tokens_no_sw = remove_stop_words(tokens, stop_words)
     print(tokens_no_sw)
 
-    frequencies = main.calculate_frequencies(tokens_no_sw)
+    frequencies = calculate_frequencies(tokens_no_sw)
     print(frequencies)
 
-    most_frequent = main.get_top_n(frequencies, 10)
+    most_frequent = get_top_n(frequencies, 10)
     print(most_frequent)
 
-    term_freq = main.calculate_tf(frequencies)
+    term_freq = calculate_tf(frequencies)
     print(term_freq)
 
-    doc_freqs = main.calculate_tfidf(term_freq, idf)
+    doc_freqs = calculate_tfidf(term_freq, idf)
     print(doc_freqs)
 
-    most_frequent_2 = main.get_top_n(doc_freqs, 10)
+    most_frequent_2 = get_top_n(doc_freqs, 10)
     print(most_frequent_2)
 
-    expected = main.calculate_expected_frequency(frequencies, corpus_freqs)
+    expected = calculate_expected_frequency(frequencies, corpus_freqs)
     print(expected)
 
-    chi_values = main.calculate_chi_values(expected, frequencies)
+    chi_values = calculate_chi_values(expected, frequencies)
     print (chi_values)
 
-    significant_words = main.extract_significant_words(chi_values, 0.05)
+    significant_words = extract_significant_words(chi_values, 0.05)
     print(significant_words)
 
-    top_chi = main.get_top_n(chi_values, 10)
+    top_chi = get_top_n(chi_values, 10)
     print (top_chi)
 
     RESULT = top_chi
