@@ -165,7 +165,28 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    total_doc = 0
+    for value in doc_freqs.values():
+        total_doc += value
+
+    total_corpus = 0
+    for value in corpus_freqs.values():
+        total_corpus += value
+
+    expected_list = []
+    for item in doc_freqs:
+        j = doc_freqs[item]
+        k = corpus_freqs[item]
+        l = total_doc - j
+        m = total_corpus - k
+        expected = (j + k) * (j + l) / (j + k + l + m)
+        expected_list.append(expected)
+
+    keys = doc_freqs.keys()
+    keys_list = list(keys)
+
+    expected_dict = {keys_list[i]: expected_list[i] for i in range(len(keys_list))}
+    return expected_dict
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:

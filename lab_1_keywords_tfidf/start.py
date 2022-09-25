@@ -41,6 +41,7 @@ if __name__ == "__main__":
     text_step6 = main.calculate_tfidf(text_step5, idf)
     #step 7
     print(main.get_top_n(text_step6, 10))
+    text_step8 = main.calculate_expected_frequency(text_step3, corpus_freqs)
 
     RESULT = main.get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
