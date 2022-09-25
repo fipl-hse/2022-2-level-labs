@@ -3,6 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
+import main
 
 
 if __name__ == "__main__":
@@ -34,3 +35,8 @@ if __name__ == "__main__":
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
+
+
+
+text = main.clean_and_tokenize(target_text)
+
