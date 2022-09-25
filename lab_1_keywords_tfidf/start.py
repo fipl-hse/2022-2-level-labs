@@ -39,8 +39,9 @@ if __name__ == "__main__":
     words_list = clean_and_tokenize(target_text)
     print("cписок слов: {} ".format(words_list))
 
-    tokens = remove_stop_words(words_list, stop_words)
-    print("слова без стоп-слов: {}".format(tokens))
+    if words_list:
+        tokens = remove_stop_words(words_list, stop_words)
+        print("слова без стоп-слов: {}".format(tokens))
 
     frequencies = calculate_frequencies(tokens)
     print("Частоты слов: {}".format(frequencies))
