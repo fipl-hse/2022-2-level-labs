@@ -3,7 +3,6 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
 
 
 if __name__ == "__main__":
@@ -32,12 +31,16 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    text_without_punctuation = main.clean_and_tokenize(target_text)
-    text_without_stop_words = main.remove_stop_words(text_without_punctuation, stop_words)
-    words_with_frequencies = main.calculate_frequencies(text_without_stop_words)
-    expect = main.calculate_expected_frequency(words_with_frequencies, corpus_freqs)
-    chi = main.calculate_chi_values(expect, words_with_frequencies)
-    significant = main.extract_significant_words(chi, 0.05)
-    RESULT = main.get_top_n(significant, 10)
+    from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
+                                            calculate_expected_frequency, extract_significant_words,
+                                            get_top_n, calculate_chi_values)
+
+    text_without_punctuation = clean_and_tokenize(target_text)
+    text_without_stop_words = remove_stop_words(text_without_punctuation, stop_words)
+    words_with_frequencies = calculate_frequencies(text_without_stop_words)
+    expect = calculate_expected_frequency(words_with_frequencies, corpus_freqs)
+    chi = calculate_chi_values(expect, words_with_frequencies)
+    significant = extract_significant_words(chi, 0.05)
+    RESULT = get_top_n(significant, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
