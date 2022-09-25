@@ -39,14 +39,10 @@ if __name__ == "__main__":
     text_step4 = main.get_top_n(text_step3, 10)
     text_step5 = main.calculate_tf(text_step3)
     text_step6 = main.calculate_tfidf(text_step5, idf)
-    RESULT = text_step6
-    print(text_step1)
-    print(text_step2)
-    print(text_step3)
-    print(text_step4)
-    print(text_step5)
-    print(text_step6)
+    #step 7
+    print(main.get_top_n(text_step6, 10))
 
+    RESULT = main.get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 
