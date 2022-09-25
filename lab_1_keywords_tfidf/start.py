@@ -50,8 +50,8 @@ if __name__ == "__main__":
         print(get_top_n(frequencies, 8))
 
     if frequencies:
-    term_freq = calculate_tf(frequencies)
-    print("term frequency: ", term_freq)
+        term_freq = calculate_tf(frequencies)
+        print("term frequency: ", term_freq)
 
     tf_idf = calculate_tfidf(term_freq, idf)
     print("tf_idf: ", tf_idf)
