@@ -33,14 +33,33 @@ if __name__ == "__main__":
 
     from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
                                             calculate_expected_frequency, extract_significant_words,
-                                            get_top_n, calculate_chi_values)
+                                            get_top_n, calculate_chi_values, calculate_tf, calculate_tfidf)
 
-    text_without_punctuation = clean_and_tokenize(target_text)
-    text_without_stop_words = remove_stop_words(text_without_punctuation, stop_words)
-    words_with_frequencies = calculate_frequencies(text_without_stop_words)
-    expect = calculate_expected_frequency(words_with_frequencies, corpus_freqs)
-    chi = calculate_chi_values(expect, words_with_frequencies)
-    significant = extract_significant_words(chi, 0.05)
-    RESULT = get_top_n(significant, 10)
+    text_without_punctuation = None
+    text_without_stop_words = None
+    words_with_frequencies = None
+    tf = None
+    tfidf = None
+    RESULT = None
+
+    if target_text:
+        text_without_punctuation = clean_and_tokenize(target_text)
+
+    if text_without_punctuation:
+        text_without_stop_words = remove_stop_words(text_without_punctuation, stop_words)
+
+    if text_without_stop_words:
+        words_with_frequencies = calculate_frequencies(text_without_stop_words)
+
+    if words_with_frequencies:
+        tf = calculate_tf(words_with_frequencies)
+
+    if tf and idf:
+        tfidf = calculate_tfidf(tf, idf)
+
+    if tfidf:
+        RESULT = get_top_n(tfidf, 10)
+        print(RESULT)
+
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
