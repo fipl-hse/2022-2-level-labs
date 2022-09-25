@@ -52,7 +52,19 @@ if __name__ == "__main__":
     most_frequent_2 = main.get_top_n(doc_freqs, 10)
     print(most_frequent_2)
 
-    RESULT = None
+    expected = main.calculate_expected_frequency(frequencies, corpus_freqs)
+    print(expected)
+
+    chi_values = main.calculate_chi_values(expected, frequencies)
+    print (chi_values)
+
+    significant_words = main.extract_significant_words(chi_values, 0.05)
+    print(significant_words)
+
+    top_chi = main.get_top_n(chi_values, 10)
+    print (top_chi)
+
+    RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 
