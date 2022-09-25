@@ -42,12 +42,14 @@ if __name__ == "__main__":
     if words_list:
         tokens = remove_stop_words(words_list, stop_words)
         print("слова без стоп-слов: {}".format(tokens))
+    if tokens:
+        frequencies = calculate_frequencies(tokens)
+        print("Частоты слов: {}".format(frequencies))
 
-    frequencies = calculate_frequencies(tokens)
-    print("Частоты слов: {}".format(frequencies))
+    if frequencies:
+        print(get_top_n(frequencies, 8))
 
-    print(get_top_n(frequencies, 8))
-
+    if frequencies:
     term_freq = calculate_tf(frequencies)
     print("term frequency: ", term_freq)
 
