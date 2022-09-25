@@ -135,17 +135,14 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict):
-        if None in frequencies.keys():
-            return None
-        else:
-            if (all(isinstance(word, str) for word in frequencies.keys())
-                    and all(isinstance(freq, int) for freq in frequencies.values())):
-                all_words = 0
-                for freq in frequencies.values():
-                    all_words += freq
-                for key, value in frequencies.items():
-                    frequencies[key] = value / all_words
-                return frequencies
+        if (all(isinstance(word, str) for word in frequencies.keys())
+                and all(isinstance(freq, int) for freq in frequencies.values())):
+            all_words = 0
+            for freq in frequencies.values():
+                all_words += freq
+            for key, value in frequencies.items():
+                frequencies[key] = value / all_words
+            return frequencies
     return None
 
 
@@ -293,7 +290,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if isinstance(chi_values, dict) and isinstance(alpha, float):
         if (all(isinstance(word, str) for word in chi_values.keys())
                 and all(isinstance(freq, float) for freq in chi_values.values()) and chi_values != {}):
-            if alpha == 0.05 or alpha == 0.01 or alpha == 0.001:
+            if alpha in [0.05, 0.01, 0.001]:
                 final_dict = {}
                 if alpha == 0.05:
                     digit = 3.842
