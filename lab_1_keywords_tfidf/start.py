@@ -3,7 +3,10 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from main import clean_and_tokenize, remove_stop_words, calculate_frequencies
+
+import top as top
+
+from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n
 
 if __name__ == "__main__":
 
@@ -41,3 +44,4 @@ print(remove_stop_words(tokens, stop_words))
 tokens = remove_stop_words(tokens, stop_words)
 print(calculate_frequencies(tokens))
 frequencies = calculate_frequencies(tokens)
+

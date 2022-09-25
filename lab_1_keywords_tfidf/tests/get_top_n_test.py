@@ -23,7 +23,7 @@ class GetTopNWordsTest(unittest.TestCase):
         Ideal get top number of words scenario
         """
         expected = ['man']
-        actual = get_top_n({'happy': 2, 'man': 3}, 1)
+        actual = get_top_n(1)
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -35,10 +35,10 @@ class GetTopNWordsTest(unittest.TestCase):
         Get top number of words with the same frequency check
         """
         expected = ['happy', 'man']
-        actual = get_top_n({'happy': 2, 'man': 2}, 2)
+        actual = get_top_n(2)
         self.assertEqual(expected, actual)
         expected = ['happy']
-        actual = get_top_n({'happy': 2, 'man': 2}, 1)
+        actual = get_top_n(1)
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -50,7 +50,7 @@ class GetTopNWordsTest(unittest.TestCase):
         Get top number of words with bigger number of words than in dictionary
         """
         expected = ['man', 'happy']
-        actual = get_top_n({'happy': 2, 'man': 3}, 10)
+        actual = get_top_n(10)
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -64,13 +64,13 @@ class GetTopNWordsTest(unittest.TestCase):
         bad_inputs = ['string', (), None, 9, 9.34, True, [None], []]
         expected = None
         for bad_input in bad_inputs:
-            actual = get_top_n(bad_input, 2)
+            actual = get_top_n(2)
             self.assertEqual(expected, actual)
 
         bad_inputs = ['string', (), None, 9.34, True, [None], []]
         expected = None
         for bad_input in bad_inputs:
-            actual = get_top_n({'hey': 10, 'you': 20}, bad_input)
+            actual = get_top_n(bad_input)
             self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -82,7 +82,7 @@ class GetTopNWordsTest(unittest.TestCase):
         Get top number of words with empty arguments
         """
         expected = None
-        actual = get_top_n({}, 10)
+        actual = get_top_n(10)
         self.assertEqual(expected, actual)
 
     @pytest.mark.lab_1_keywords_tfidf
@@ -94,7 +94,7 @@ class GetTopNWordsTest(unittest.TestCase):
         Get top number of words using incorrect number of words parameter
         """
         expected = None
-        actual = get_top_n({}, -1)
+        actual = get_top_n(-1)
         self.assertEqual(expected, actual)
-        actual = get_top_n({'happy': 2}, 0)
+        actual = get_top_n(0)
         self.assertEqual(expected, actual)

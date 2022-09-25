@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 import string
-
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -19,16 +19,16 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(text, str):
-        for punctuation in string.punctuation:
-            if punctuation in text:
-                text = text.strip()
-                text = text.replace('-', '')
-                text = text.replace('.', '')
-                text = text.replace(punctuation, '').lower().split()
-                return text
-        else:
-            return None
+    if not isinstance(text, str):
+        return None
+    for punctuation in string.punctuation:
+        if punctuation in text:
+            text = text.strip()
+            text = text.replace('-', '')
+            text = text.replace('.', '')
+            text = text.replace(punctuation, '').lower().split()
+            return text
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -66,23 +66,19 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if len(tokens) != 0 and isinstance(tokens, list):
-        freq_dictionary = {}
+    if not len(tokens) != 0 and not isinstance(tokens, list):
+        return None
+    else:
+        frequencies_dictionary = {}
         for element in tokens:
             if type(element) == str:
-                if element in freq_dictionary.keys():
-                    freq_dictionary[element] = 1 + freq_dictionary[element]
+                if element in frequencies_dictionary.keys():
+                    frequencies_dictionary[element] = 1 + frequencies_dictionary[element]
                 else:
-                    freq_dictionary[element] = 1
+                    frequencies_dictionary[element] = 1
             else:
                 return None
-        return freq_dictionary
-    else:
-        return None
-
-
-
-
+        return frequencies_dictionary
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -100,7 +96,16 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(frequencies, dict) and isinstance(top, int) and top > 0 and frequencies and isinstance(top, bool) == False):
+        return None
+    items = frequencies.items()
+    for key, value in items:
+        if not isinstance(key, str):
+            return None
+        if not (isinstance(value, int) or isinstance(value, float)):
+            return None
+        sorted_items = dict(sorted(items, key=lambda item: item[1], reverse=True))
+        return list(sorted_items.keys())[0:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -116,7 +121,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
