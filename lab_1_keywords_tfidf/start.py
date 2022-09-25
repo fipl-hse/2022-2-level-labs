@@ -53,20 +53,24 @@ if __name__ == "__main__":
         term_freq = calculate_tf(frequencies)
         print("term frequency: ", term_freq)
 
-    tf_idf = calculate_tfidf(term_freq, idf)
-    print("tf_idf: ", tf_idf)
+    if term_freq:
+        tf_idf = calculate_tfidf(term_freq, idf)
+        print("tf_idf: ", tf_idf)
 
-    print(get_top_n(tf_idf, 10))
+    if tf_idf:
+        print(get_top_n(tf_idf, 10))
 
-    expected = (calculate_expected_frequency(frequencies, corpus_freqs))
-    print("expected frequency: ", expected)
+    if frequencies:
+        expected = (calculate_expected_frequency(frequencies, corpus_freqs))
+        print("expected frequency: ", expected)
 
-    chi_values = (calculate_chi_values(expected, frequencies))
-    print("chi values: ", chi_values)
+    if expected and frequencies:
+        chi_values = (calculate_chi_values(expected, frequencies))
+        print("chi values: ", chi_values)
 
-    print(extract_significant_words(chi_values, 0.05))
-
-    print(get_top_n(chi_values, 10))
-    RESULT = get_top_n(chi_values, 10)
+    if chi_values:
+        print(extract_significant_words(chi_values, 0.05))
+        print(get_top_n(chi_values, 10))
+        RESULT = get_top_n(chi_values, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
