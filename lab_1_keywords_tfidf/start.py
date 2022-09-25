@@ -36,11 +36,13 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     ALPHA = 0.001
-    if clean_and_tokenize(target_text) and remove_stop_words(clean_and_tokenize(target_text), stop_words):
-        cleaned = remove_stop_words(clean_and_tokenize(target_text), stop_words)  # a list of words w/o stop words
+    tokenized = clean_and_tokenize(target_text)
+    if tokenized and remove_stop_words(tokenized, stop_words):
+        cleaned = remove_stop_words(tokenized, stop_words)  # a list of words w/o stop words
         frequency = calculate_frequencies(cleaned)
         if calculate_tf(frequency):
-            calculated_tfidf = calculate_tfidf(calculate_tf(frequency), idf)
+            calculated_tf = calculate_tf(frequency)
+            calculated_tfidf = calculate_tfidf(calculated_tf, idf)
             print(get_top_n(calculated_tfidf, 10))
             expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
             if expected_frequency:
