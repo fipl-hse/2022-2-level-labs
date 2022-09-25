@@ -5,8 +5,7 @@ import json
 from pathlib import Path
 
 from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
-    calculate_tf, calculate_tfidf
-# get_top_n, calculate_expected_frequency
+    calculate_tf, calculate_tfidf, get_top_n
 
 if __name__ == "__main__":
 
@@ -39,8 +38,7 @@ if __name__ == "__main__":
     frequencies_dict = calculate_frequencies(no_stopwords_list)
     tf_dict = calculate_tf(frequencies_dict)
     tfidf_dict = calculate_tfidf(tf_dict, idf)
-# print(get_top_n(tfidf_dict, 10))
-
-    RESULT = None
+    print(get_top_n(tfidf_dict, 10))
+    RESULT = get_top_n(tfidf_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
