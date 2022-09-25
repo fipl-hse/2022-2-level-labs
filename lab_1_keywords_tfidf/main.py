@@ -21,9 +21,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         text1 = text.lower()
         text2 = text1.translate(str.maketrans('', '', string.punctuation))
         lst = text2.split()
-        return lst
-
-    return None
+    else:
+        lst = None
+    return lst
 
 
 
@@ -40,23 +40,32 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
+    tokens_is_list = False
     tokens_are_str = True
-    for item in tokens:
-        if not isinstance(item, str):
-            tokens_are_str = False
-    stop_words_are_str = True
-    for item in stop_words:
-        if not isinstance(item, str):
-            stop_words_are_str = False
+    if isinstance(tokens, list):
+        tokens_is_list = True
+        for item in tokens:
+            if not isinstance(item, str):
+                tokens_are_str = False
 
-    if isinstance(tokens, list) and isinstance(stop_words, list) and tokens_are_str and stop_words_are_str:
+    stop_words_is_list = False
+    stop_words_are_str = True
+    if isinstance(stop_words, list):
+        stop_words_is_list = True
+        for item in stop_words:
+            if not isinstance(item, str):
+                stop_words_are_str = False
+
+    if tokens_is_list and stop_words_is_list and tokens_are_str and stop_words_are_str:
         lst = list()
         for item in tokens:
             if not item in stop_words:
                 lst.append(item)
-        return lst
 
-    return None
+    else:
+        lst = None
+
+    return lst
 
 
 
