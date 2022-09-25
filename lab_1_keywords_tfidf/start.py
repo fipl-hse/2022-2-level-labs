@@ -68,6 +68,6 @@ if __name__ == "__main__":
         top_10_chi = get_top_n(significant_words, 10)
         print(top_10_chi)
 
-    RESULT = get_top_n(significant_words, 10)
+        RESULT = get_top_n(significant_words, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
