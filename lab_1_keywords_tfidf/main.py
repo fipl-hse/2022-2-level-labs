@@ -183,9 +183,28 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-
-
-pass
+    if not doc_freqs or not isinstance(corpus_freqs, dict) or not isinstance(doc_freqs, dict):
+        return None
+    for word, value in corpus_freqs.items():
+        if not isinstance(word, str) or not isinstance(value, int):
+            return None
+    for word, value in doc_freqs.items():
+        if not isinstance(word, str) or not isinstance(value, int):
+            return None
+    expected_freq = {}
+    for word in doc_freqs:
+        occur_doc = doc_freqs.get(word)
+        occur_doc_except_word = sum(doc_freqs.values()) - occur_doc
+        if word in corpus_freqs.keys():
+            occur_collection = corpus_freqs.get(word)
+            occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
+        else:
+            occur_collection = 0
+            occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
+        expected_freq[word] = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
+                              (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
+    print(expected_freq)
+    return expected_freq
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -204,7 +223,19 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not expected or not observed or not isinstance(expected, dict) or not isinstance(observed, dict):
+        return None
+    for word, value in expected.items():
+        if not isinstance(word, str) or not isinstance(value, float):
+            return None
+    for word, value in observed.items():
+        if not isinstance(word, str) or not isinstance(value, int):
+            return None
+    chi_values = {}
+    for word, value in expected.items():
+        chi_values[word] = ((observed.get(word) - value) ** 2) / value
+    print(chi_values)
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -223,4 +254,18 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    criterion_list = list(criterion.keys())
+    if not chi_values or not alpha or not isinstance(chi_values, dict) or not isinstance(alpha, float):
+        return None
+    if alpha not in criterion_list:
+        return None
+    for word, value in chi_values.items():
+        if not isinstance(word, str) or not isinstance(value, float):
+            return None
+    significant_words = {}
+    for word, value in chi_values.items():
+        if value > criterion.get(alpha):
+            significant_words[word] = value
+    print(significant_words)
+    return significant_words
