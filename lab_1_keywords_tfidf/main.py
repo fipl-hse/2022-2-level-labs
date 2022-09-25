@@ -8,7 +8,7 @@ import math
 import string
 
 
-def dict_type_check(dictionary: dict, key_type, val_type) -> bool:
+def dict_type_check(dictionary: dict, key_type: Union[type, tuple], val_type: Union[type, tuple]) -> bool:
     """
     Checks whether the object is a dictionary and its keys and values are of the expected type
     Parameters:
