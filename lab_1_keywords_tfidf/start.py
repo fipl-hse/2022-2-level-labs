@@ -45,10 +45,10 @@ if __name__ == "__main__":
 
     NO_STOP_WORDS = None
     FREQUENCIES_DICT = None
-    GET_TOP_FIVE = None
+    GET_TOP_TEN = None
     COUNT_TF = None
     COUNT_TDIDF = None
-    TOP = 5
+    TOP = 10
 
 
     SPLIT_TEXT = clean_and_tokenize(target_text)
@@ -60,14 +60,19 @@ if __name__ == "__main__":
         FREQUENCIES_DICT = calculate_frequencies(NO_STOP_WORDS)
 
     if FREQUENCIES_DICT:
-        GET_TOP_FIVE = get_top_n(FREQUENCIES_DICT, TOP)
+        GET_TOP_TEN = get_top_n(FREQUENCIES_DICT, TOP)
 
-    if GET_TOP_FIVE:
+    if GET_TOP_TEN:
         COUNT_TF = calculate_tf(FREQUENCIES_DICT)
 
     if COUNT_TF:
         COUNT_TDIDF = calculate_tfidf(COUNT_TF, idf)
 
-    RESULT = COUNT_TDIDF
+    if COUNT_TDIDF:
+        GET_TOP_TEN = get_top_n(COUNT_TDIDF, TOP)
+
+    RESULT = GET_TOP_TEN
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
+
+    print(RESULT)
