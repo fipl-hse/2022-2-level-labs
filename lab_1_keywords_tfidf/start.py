@@ -39,17 +39,18 @@ if __name__ == "__main__":
     tokenized = clean_and_tokenize(target_text)
     if tokenized and remove_stop_words(tokenized, stop_words):
         cleaned = remove_stop_words(tokenized, stop_words)  # a list of words w/o stop words
-        frequency = calculate_frequencies(cleaned)
-        if calculate_tf(frequency):
-            calculated_tf = calculate_tf(frequency)
-            calculated_tfidf = calculate_tfidf(calculated_tf, idf)
-            print(get_top_n(calculated_tfidf, 10))
-            expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
-            if expected_frequency:
-                chi_value = calculate_chi_values(expected_frequency, frequency)
-                if chi_value:
-                    signific_words = extract_significant_words(chi_value, ALPHA)
-                    print(get_top_n(signific_words, 10))
+        if cleaned and calculate_frequencies(cleaned):
+            frequency = calculate_frequencies(cleaned)
+            if calculate_tf(frequency) and calculate_tfidf(calculated_tf, idf):
+                calculated_tf = calculate_tf(frequency)
+                calculated_tfidf = calculate_tfidf(calculated_tf, idf)
+                print(get_top_n(calculated_tfidf, 10))
+                expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
+                if expected_frequency:
+                    chi_value = calculate_chi_values(expected_frequency, frequency)
+                    if chi_value and extract_significant_words(chi_value, ALPHA):
+                        signific_words = extract_significant_words(chi_value, ALPHA)
+                        print(get_top_n(signific_words, 10))
     RESULT = signific_words
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
