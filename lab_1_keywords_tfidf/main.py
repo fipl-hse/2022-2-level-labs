@@ -18,19 +18,19 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(text, str):
-        'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
     'if var text is not a string - return None'
     text = text.lower()
     'make entire var text lowercase'
-    punctuation_symbols = '.,:-!?;%<>&*@#()' 'creating a var that has all the punctuation marks'
+    punctuation_symbols = '.,:-!?;%<>&*@#()'
+    #creating a var that has all the punctuation marks'
     for i in punctuation_symbols:
-        'go through each punctuation symbol and replace it in the text by noting'
+        #go through each punctuation symbol and replace it in the text by noting'
         text = text.replace(i, '')
     text_split = text.split()
-    'splits text by spaces'
+    #splits text by spaces'
     return text_split
-    pass
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -46,11 +46,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     if not (isinstance(tokens, list) and isinstance(stop_words, list)):
-        'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
     stop_words_removed = [x for x in tokens if x not in stop_words]
     return stop_words_removed
-    pass
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -66,7 +65,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(tokens, list):
-        'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
     Dict = {}
     for i in tokens:
@@ -75,7 +74,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         else:
             Dict[i] = 1
     return (Dict)
-    pass
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -94,24 +92,23 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if not (isinstance(frequencies, dict), isinstance(top, str)):
-        'The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
-    "If you want to conserve all the information from a dictionary when sorting it," \
-    " the typical first step is to call the .items() method on the dictionary. " \
-    "Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
-    "Tuple(кортеж) is a Python type that is an ordered collection of objects"
+    #If you want to conserve all the information from a dictionary when sorting it," \
+    # the typical first step is to call the .items() method on the dictionary. " \
+    #Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
+    #Tuple(кортеж) is a Python type that is an ordered collection of objects"
 
-    'operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
-    'constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
-    'and fetches the n-th element out of it.'
+    #operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
+    #constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
+    #and fetches the n-th element out of it.'
 
-    "Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
-    "а не одно ключевое значение и" \
-    "это то, что operator.itemgetter(1) даст вам: функция, которая захватывает первый элемент из списка-подобного объекта."
+    #Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
+    #а не одно ключевое значение и" \
+    #это то, что operator.itemgetter(1) даст вам: функция, которая захватывает первый элемент из списка-подобного объекта."
     List = dict(sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top])
-    "Не знаю, почему используется reverse=true"
+    #Не знаю, почему используется reverse=true"
     return(List)
-    pass
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
