@@ -43,31 +43,31 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
 
-    no_stop_words = None
-    frequencies_dict = None
-    get_top_five = None
-    count_tf = None
-    count_tfidf = None
-    top = 5
+    NO_STOP_WORDS = None
+    FREQUENCIES_DICT = None
+    GET_TOP_FIVE = None
+    COUNT_TF = None
+    COUNT_TDIDF = None
+    TOP = 5
 
 
-    split_text = clean_and_tokenize(target_text)
+    SPLIT_TEXT = clean_and_tokenize(target_text)
 
-    if split_text:
-        no_stop_words = remove_stop_words(split_text, stop_words)
+    if SPLIT_TEXT:
+        NO_STOP_WORDS = remove_stop_words(SPLIT_TEXT, stop_words)
 
-    if no_stop_words:
-        frequencies_dict = calculate_frequencies(no_stop_words)
+    if NO_STOP_WORDS:
+        FREQUENCIES_DICT = calculate_frequencies(NO_STOP_WORDS)
 
-    if frequencies_dict:
-        get_top_five = get_top_n(frequencies_dict, top)
+    if FREQUENCIES_DICT:
+        GET_TOP_FIVE = get_top_n(FREQUENCIES_DICT, TOP)
 
-    if get_top_five:
-        count_tf = calculate_tf(frequencies_dict)
+    if GET_TOP_FIVE:
+        COUNT_TF = calculate_tf(FREQUENCIES_DICT)
 
-    if count_tf:
-        count_tfidf = calculate_tfidf(count_tf, idf)
+    if COUNT_TF:
+        COUNT_TDIDF = calculate_tfidf(COUNT_TF, idf)
 
-    RESULT = count_tf
+    RESULT = COUNT_TDIDF
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
