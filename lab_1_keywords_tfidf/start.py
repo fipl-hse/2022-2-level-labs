@@ -45,6 +45,7 @@ if __name__ == "__main__":
     print(term_frequencies)
     tdidf = main.calculate_tfidf(term_frequencies, idf)
     print(tdidf)
+    print(main.get_top_n(tdidf, 10))
 
 
     RESULT = None
