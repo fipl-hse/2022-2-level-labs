@@ -32,7 +32,9 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
-                                            get_top_n, calculate_tf, calculate_tfidf)
+                                            get_top_n, calculate_tf, calculate_tfidf,
+                                           calculate_expected_frequency, calculate_chi_values,
+                                           extract_significant_words)
 
     TEXT_WITHOUT_PUNCTUATION = None
     TEXT_WITHOUT_STOP_WORDS = None
@@ -40,6 +42,9 @@ if __name__ == "__main__":
     TF = None
     TFIDF = None
     RESULT = None
+    WORDS_WITH_EXP_FREQ = None
+    WORDS_WITH_CHI_VALUES = None
+    SIGNIFICANT = None
 
     if target_text:
         TEXT_WITHOUT_PUNCTUATION = clean_and_tokenize(target_text)
@@ -57,7 +62,19 @@ if __name__ == "__main__":
         TFIDF = calculate_tfidf(TF, idf)
 
     if TFIDF:
-        RESULT = get_top_n(TFIDF, 10)
+        top_tfidf_words = get_top_n(TFIDF, 10)
+
+    if WORDS_WITH_FREQUENCIES and corpus_freqs:
+        WORDS_WITH_EXP_FREQ = calculate_expected_frequency(WORDS_WITH_FREQUENCIES, corpus_freqs)
+
+    if WORDS_WITH_FREQUENCIES and corpus_freqs:
+        WORDS_WITH_CHI_VALUES = calculate_chi_values(WORDS_WITH_EXP_FREQ, WORDS_WITH_FREQUENCIES)
+
+    if WORDS_WITH_CHI_VALUES:
+        SIGNIFICANT = extract_significant_words(WORDS_WITH_CHI_VALUES, 0.05)
+
+    if SIGNIFICANT:
+        RESULT = get_top_n(SIGNIFICANT, 10)
         print(RESULT)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
