@@ -196,14 +196,10 @@ def calculate_expected_frequency(
         # l -  количество вхождений всех слов, кроме t, в документ d
         j_val = doc_freqs.get(key)
         # j - количество вхождений слова t  в документ d
-        if key in corpus_freqs.keys():
-            k_val = corpus_freqs.get(key)
-            # k - количество вхождений слова t во все тексты коллекции D
-            m_val = words_in_col - corpus_freqs.get(key)
-            # m - количество вхождений всех слов, кроме t, в коллекцию документов D
-        else:
-            k_val = 0
-            m_val= words_in_col - 0
+        k_val = corpus_freqs.get(key,0)
+        # k - количество вхождений слова t во все тексты коллекции D
+        m_val = words_in_col - corpus_freqs.get(key,0)
+        # m - количество вхождений всех слов, кроме t, в коллекцию документов D
         exp = ((j_val + k_val) * (j_val + l_val))/(j_val + k_val + l_val + m_val)
         exp_freqs[key] = exp
     return exp_freqs
