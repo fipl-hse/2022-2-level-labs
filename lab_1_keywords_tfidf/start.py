@@ -3,7 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from lab_1_keywords_tfidf import main
+import main
 
 
 if __name__ == "__main__":
