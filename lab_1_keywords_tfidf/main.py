@@ -24,6 +24,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         if elements in punc:
             text = text.replace(elements, '')
     text = text.lower().split()
+    print('пум')
     return text
 
 
