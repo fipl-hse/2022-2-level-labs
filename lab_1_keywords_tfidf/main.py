@@ -104,7 +104,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    #СЌС‚Рѕ РѕС‚РЅРѕС€РµРЅРёРµ С‡РёСЃР»Р° РІС…РѕР¶РґРµРЅРёР№ РЅРµРєРѕС‚РѕСЂРѕРіРѕ СЃР»РѕРІР° Рє РѕР±С‰РµРјСѓ С‡РёСЃР»Сѓ СЃР»РѕРІ РґРѕРєСѓРјРµРЅС‚Р°
+    #это отношение числа вхождений некоторого слова к общему числу слов документа
     total_value = 0
     for value in frequencies.values():
         total_value += value
