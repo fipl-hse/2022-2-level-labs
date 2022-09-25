@@ -27,7 +27,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             fin_text += symbol
     tokens = fin_text.split()
     return tokens
-    pass
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -45,13 +44,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-    for i in tokens:
-        for j in stop_words:
-            if i == j:
-                while j in tokens:
-                    tokens.remove(i)
+    for i in tokens.copy():
+        if not isinstance(i, str):
+            return None
+        else:
+            if i in stop_words:
+                tokens.remove(i)
+
     return tokens
-    pass
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -71,10 +71,12 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     frequencies = {}
     for i in tokens:
-        freq = tokens.count(i)
-        frequencies[i] = freq
+        if not isinstance(i, str):
+            return None
+        else:
+            freq = tokens.count(i)
+            frequencies[i] = freq
     return frequencies
-    pass
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -92,15 +94,24 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
+
     if not isinstance(frequencies, dict) or not isinstance(top, int):
         return None
 
     top_list = []
-    for k in frequencies.keys():
-        top_list.append(k)
+    for k, v in frequencies.items():
+        if not isinstance(k, str) or not isinstance(v, int | float):
+            return None
+        else:
+            top_list.append(k)
 
-    return top_list[:top]
-    pass
+    if top_list == []:
+        return None
+    else:
+        if top > 0:
+            return top_list[:top]
+        else:
+            return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -119,14 +130,21 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     if not isinstance(frequencies, dict):
         return None
 
-    length = len(frequencies)
     term_freq = {}
+    length = 0
+
+    for k, v in frequencies.items():
+        if not isinstance(k, str) or not isinstance(v, int):
+            return None
+        else:
+            length = length + v
+
     for k, v in frequencies.items():
         tf = v / length
         term_freq[k] = tf
+
     return term_freq
 
-    pass
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -145,16 +163,27 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
+    if term_freq == {}:
+        return None
 
     for k, v in term_freq.items():
-        if k in idf.keys():
-            term_freq[k] = v * idf[k]
-        else:
+        if not isinstance(k, str) or not isinstance(v, float):
+            return None
+        if idf == {}:
             term_freq[k] = v * math.log(47 / 1)
+        else:
+            for k1, v1 in idf.items():
+                if not isinstance(k1, str) or not isinstance(v1, float):
+                    return None
+                else:
+                    if k == k1:
+                        term_freq[k] = v * idf[k]
+                        break
+                    else:
+                        term_freq[k] = v * math.log(47 / 1)
 
     return term_freq
 
-    pass
 
 
 def calculate_expected_frequency(
