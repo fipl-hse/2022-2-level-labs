@@ -76,7 +76,7 @@ def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not tokens_clean and not isinstance(tokens_clean, list):
+    if not isinstance(tokens_clean, list):
         return None
     for word in tokens_clean:
         if isinstance(word, str):
