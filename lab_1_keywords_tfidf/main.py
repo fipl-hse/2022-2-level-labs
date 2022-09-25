@@ -105,7 +105,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             if not isinstance(i, str):
                 return None
         for i in frequencies.values():
-            if not (isinstance(i, (int, float))):
+            if not isinstance(i, (int, float)):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
         top_n = []
@@ -221,7 +221,8 @@ def calculate_expected_frequency(
             word_in_corp = corpus_freqs[word]
             other_words_in_doc = sum(list(doc_freqs.values())) - word_in_doc
             other_words_in_corp = sum(list(corpus_freqs.values())) - word_in_corp
-            exp_freq = ((word_in_doc+word_in_corp)*(word_in_doc+other_words_in_doc)/(word_in_doc+word_in_corp+other_words_in_doc+other_words_in_corp))
+            exp_freq = ((word_in_doc+word_in_corp)*(word_in_doc+other_words_in_doc) /
+                        (word_in_doc+word_in_corp+other_words_in_doc+other_words_in_corp))
             expected[word] = exp_freq
         return expected
     return None
