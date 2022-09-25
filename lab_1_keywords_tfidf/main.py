@@ -5,7 +5,6 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 import math
 from string import punctuation
-# string punctuation - посмотреть, убирает знаки пунктуации
 # вернуть изменения в файле с семинарами
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
