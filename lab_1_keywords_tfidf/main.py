@@ -9,17 +9,17 @@ import math
 
 def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, not_empty: bool = False) -> bool:
     """
-    Checks any type used in program. Also works for types of containers' content.
+    Checks any type used in a program. Also works for types of lists' and dicts' content.
 
     Parameters:
     obj (Any): An object which type is checked
     exp_type (Any): A type we expect obj to be
     exp_cont (Any): A type we expect the content (elements for lists or keys for dictionaries) to be (optional)
     exp_val (Any): A type we expect the values in a dictionary to be (optional)
-    not_empty (bool): If exp_type is a container, True stands for "it should not be empty" (optional)
+    not_empty (bool): If exp_type is a list or a dict, True stands for "it should not be empty" (optional)
 
     Returns:
-    bool: True if obj (and its content if needed) has the expected type, False otherwise
+    bool: True if obj (and its content if needed) has the expected type and emptiness, False otherwise
     """
     return not (not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool)) \
         and not (exp_type in (list, dict) and not_empty and not obj) \
@@ -74,7 +74,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(tokens, list, str, not_empty=True):
+    if not check(tokens, list, str, True):
         return None
     return {token: tokens.count(token) for token in tokens}
 
