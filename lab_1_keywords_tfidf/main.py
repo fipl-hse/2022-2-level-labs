@@ -98,9 +98,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         return None
     freq_len = len(frequencies)
     if top <= freq_len:
-        """следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
+        """
+        следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
         если этого не писать будет по возрастанию)
-        и выдает лист ключей, которым эти значения принадлежат"""
+        и выдает лист ключей, которым эти значения принадлежат
+        """
         # нужно лучше разобраться в функции sorted
         # get возвращает значение по указанному ключу
         top_list = sorted(frequencies, key=frequencies.get, reverse=True)[:top]
@@ -152,9 +154,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     if not term_freq:
-        """здесь может быть пустой idf, тогда просто 
-        будет вычисление через логарифм, плюс код не 
-        проходил проверку если я не давала вписать пустой idf"""
         return None
     if not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
