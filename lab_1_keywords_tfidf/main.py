@@ -93,18 +93,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not isinstance(frequencies, dict) or not type(top) == int:
+    if not isinstance(frequencies, dict) or not type(top).__name__ == 'int':
         # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     freq_len = len(frequencies)
     if top <= freq_len:
-        """
-        следующая абракадабра сортирует значения функций по убыванию(reverse = true, 
-        если этого не писать будет по возрастанию)
-        и выдает лист ключей, которым эти значения принадлежат
-        """
-        # нужно лучше разобраться в функции sorted
-        # get возвращает значение по указанному ключу
         top_list = sorted(frequencies, key=frequencies.get, reverse=True)[:top]
     else:
         top_list = sorted(frequencies, key=frequencies.get, reverse=True)
