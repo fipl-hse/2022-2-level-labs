@@ -53,8 +53,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
                     if word3 not in stop_words:
                         final_text += [word3]
                 return final_text
-            else:
-                return None
         else:
             final_text = []
             for word in tokens:
@@ -83,6 +81,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             for word in tokens:
                 frequency_dictionary.update({word: tokens.count(word)})
             return frequency_dictionary
+        else:
+            return None
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -101,7 +103,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if (isinstance(frequencies, dict) and frequencies != {} and isinstance(top, int) and top > 0
-            and isinstance(top, bool) == False):
+            and isinstance(top, bool) is False):
         if (all(isinstance(word, str) for word in frequencies.keys())
                 and all(isinstance(freq, int | float) for freq in frequencies.values())):
             sort_dictionaries_lst = sorted(frequencies.values(), reverse=True)
@@ -118,8 +120,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                 if count == top:
                     break
             return top_lst
-        else:
-            return None
     else:
         return None
 
@@ -149,8 +149,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
                 for key, value in frequencies.items():
                     frequencies[key] = value / all_words
                 return frequencies
-            else:
-                return None
     else:
         return None
 
