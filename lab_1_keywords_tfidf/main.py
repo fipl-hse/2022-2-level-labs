@@ -96,10 +96,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    # if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool) or not frequencies or \
-    #         top <= 0:
-    #     return None
-    if not frequencies or not top or not isinstance(frequencies, dict) or not type(top) == int:
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool) or not frequencies or \
+            top <= 0:
         return None
     for i in frequencies.keys():
         if not isinstance(i, str):
@@ -194,17 +192,15 @@ def calculate_expected_frequency(
         if not isinstance(word, str) or not isinstance(value, int):
             return None
     expected_freq = {}
-    words_in_doc = sum(doc_freqs.values())
-    words_in_col = sum(corpus_freqs.values())
     for word in doc_freqs:
         occur_doc = doc_freqs.get(word)
-        occur_doc_except_word = words_in_doc - occur_doc
+        occur_doc_except_word = sum(doc_freqs.values()) - occur_doc
         if word in corpus_freqs.keys():
             occur_collection = corpus_freqs.get(word)
-            occur_collection_except_t = words_in_col - occur_collection
+            occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
         else:
             occur_collection = 0
-            occur_collection_except_t = words_in_col - occur_collection
+            occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
         expected = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
                    (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
         expected_freq[word] = expected
@@ -228,7 +224,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    chi_values = {}
     if not expected or not observed or not isinstance(expected, dict) or not isinstance(observed, dict):
         return None
     for word, value in expected.items():
@@ -237,6 +232,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     for word, value in observed.items():
         if not isinstance(word, str) or not isinstance(value, int):
             return None
+    chi_values = {}
     for word, value in expected.items():
         chi = ((observed.get(word) - value) ** 2) / value
         chi_values[word] = chi
