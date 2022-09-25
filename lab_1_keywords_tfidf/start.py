@@ -32,33 +32,32 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
-                                            calculate_expected_frequency, extract_significant_words,
-                                            get_top_n, calculate_chi_values, calculate_tf, calculate_tfidf)
+                                            get_top_n, calculate_tf, calculate_tfidf)
 
-    text_without_punctuation = None
-    text_without_stop_words = None
-    words_with_frequencies = None
-    tf = None
-    tfidf = None
+    TEXT_WITHOUT_PUNCTUATION = None
+    TEXT_WITHOUT_STOP_WORDS = None
+    WORDS_WITH_FREQUENCIES = None
+    TF = None
+    TFIDF = None
     RESULT = None
 
     if target_text:
-        text_without_punctuation = clean_and_tokenize(target_text)
+        TEXT_WITHOUT_PUNCTUATION = clean_and_tokenize(target_text)
 
-    if text_without_punctuation:
-        text_without_stop_words = remove_stop_words(text_without_punctuation, stop_words)
+    if TEXT_WITHOUT_PUNCTUATION:
+        TEXT_WITHOUT_STOP_WORDS = remove_stop_words(TEXT_WITHOUT_PUNCTUATION, stop_words)
 
-    if text_without_stop_words:
-        words_with_frequencies = calculate_frequencies(text_without_stop_words)
+    if TEXT_WITHOUT_STOP_WORDS:
+        WORDS_WITH_FREQUENCIES = calculate_frequencies(TEXT_WITHOUT_STOP_WORDS)
 
-    if words_with_frequencies:
-        tf = calculate_tf(words_with_frequencies)
+    if WORDS_WITH_FREQUENCIES:
+        TF = calculate_tf(WORDS_WITH_FREQUENCIES)
 
-    if tf and idf:
-        tfidf = calculate_tfidf(tf, idf)
+    if TF and idf:
+        TFIDF = calculate_tfidf(TF, idf)
 
-    if tfidf:
-        RESULT = get_top_n(tfidf, 10)
+    if TFIDF:
+        RESULT = get_top_n(TFIDF, 10)
         print(RESULT)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
