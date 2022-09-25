@@ -6,3 +6,4 @@ pymdown-extensions==9.5
 pyspelling==2.8.1
 pytest==6.2.5
 typed-argument-parser==1.7.2
+tqdm==4.64.1
