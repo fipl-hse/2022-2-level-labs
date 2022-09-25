@@ -124,7 +124,13 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    count = 0
+    for key, value in frequencies.items():
+        count += 1
+        return (count)
+    for key in frequencies.items():
+        return (dict)
+
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
