@@ -193,7 +193,7 @@ def calculate_expected_frequency(
             words_in_doc = sum(doc_freqs.values()) - value
             word_in_corpus = 0
             if key in corpus_freqs.keys():
-                word_in_corpus = corpus_freqs.get(key)
+                word_in_corpus = corpus_freqs[key]
             words_in_corpus = sum(corpus_freqs.values()) - word_in_corpus
             expected_freq[key] = ((value + word_in_corpus) * (value + words_in_doc)) / (
                     value + word_in_corpus + words_in_doc + words_in_corpus)
