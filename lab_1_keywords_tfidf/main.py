@@ -105,7 +105,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             if not isinstance(i, str):
                 return None
         for i in frequencies.values():
-            if not (isinstance(i, (int, float)):
+            if not (isinstance(i, (int, float))):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
         top_n = []
