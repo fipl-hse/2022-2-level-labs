@@ -35,7 +35,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     res_tokens, frequencies, tf, tfidf, expected, chi_values, \
-        significant_words, top_10_chi = [None for i in range(8)]
+        significant_words, RESULT = [None for i in range(8)]
 
     tokens = clean_and_tokenize(target_text)
 
