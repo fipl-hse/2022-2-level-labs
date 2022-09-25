@@ -102,7 +102,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if (isinstance(frequencies, dict) and frequencies != {} and isinstance(top, int) and top > 0
             and isinstance(top, bool) is False):
         if (all(isinstance(word, str) for word in frequencies.keys())
-                and all(isinstance(freq, int | float) for freq in frequencies.values())):
+                and all(isinstance(freq, (int, float)) for freq in frequencies.values())):
             sort_dictionaries_lst = sorted(frequencies.values(), reverse=True)
             sort_dictionaries_dct = {}
             for word_one in sort_dictionaries_lst:
@@ -138,11 +138,12 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         if (all(isinstance(word, str) for word in frequencies.keys())
                 and all(isinstance(freq, int) for freq in frequencies.values())):
             all_words = 0
+            final = {}
             for freq in frequencies.values():
                 all_words += freq
             for key, value in frequencies.items():
-                frequencies[key] = value / all_words
-            return frequencies
+                final[key] = value / all_words
+            return final
     return None
 
 
