@@ -19,7 +19,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-
     if not isinstance(text, str):
         return None
 

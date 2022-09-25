@@ -32,7 +32,6 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-
     tokens = main.clean_and_tokenize(target_text)
     print(tokens)
     cleaned_tokens = main.remove_stop_words(tokens, stop_words)
@@ -54,9 +53,6 @@ if __name__ == "__main__":
     top_chi = main.get_top_n(chi_values, 10)
     print(top_chi)
 
-
     RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
-
