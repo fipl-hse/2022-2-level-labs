@@ -4,6 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 import string
+import math
 
 
 
@@ -147,6 +148,19 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
+    if term_freq == {} or not isinstance(term_freq, dict) or not isinstance(idf, dict):
+        return None
+    idf_dict = {}
+    for key_freq, value_freq in term_freq.items():
+        if not isinstance(key_freq, str) or not isinstance(value_freq, float):
+            return None
+        if key_freq in idf.keys():
+            idf_dict[key_freq] = value_freq * idf[key_freq]
+        else:
+            idf_dict[key_freq] = value_freq * math.log(47)
+    return idf_dict
+
+
 
 
 
