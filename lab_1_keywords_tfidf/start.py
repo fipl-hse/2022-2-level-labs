@@ -37,8 +37,8 @@ if __name__ == "__main__":
 
     ALPHA = 0.001
     tokenized = clean_and_tokenize(target_text)
-    if tokenized and remove_stop_words(tokenized, stop_words):
-        cleaned = remove_stop_words(tokenized, stop_words)  # a list of words w/o stop words
+    if tokenized:
+        cleaned = remove_stop_words(tokenized, stop_words)
         if cleaned:
             frequency = calculate_frequencies(cleaned)
             if frequency:
