@@ -31,7 +31,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     return tokens
 
 
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -109,7 +108,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     return list(top_frequencies.keys())
 
 
-
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
@@ -171,7 +169,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     return tf_idf
 
 
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
@@ -188,7 +185,25 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(doc_freqs, dict) or not doc_freqs:
+        return None
+    if not isinstance(corpus_freqs, dict):
+        return None
+
+    expected_freqs = {}
+    for token in doc_freqs.keys():
+        if not isinstance(token, str):
+            return None
+        j = doc_freqs[token]
+        if token in corpus_freqs.keys():
+            k = corpus_freqs[token]
+        else:
+            k = 0
+        l = sum(doc_freqs.values()) - j
+        m = sum(corpus_freqs.values()) - k
+        expected_freqs[token] = (j+k)*(j+l)/(j+k+l+m)
+
+    return expected_freqs
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -207,7 +222,28 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(expected, dict) or not expected:
+        return None
+    if not isinstance(observed, dict) or not observed:
+        return None
+    for token in observed.keys():
+        if not isinstance(token, str):
+            return None
+    for i in observed.values():
+        if not isinstance(i, int):
+            return None
+    for i in expected.values():
+        if not isinstance(i, float):
+            return None
+
+    chi_values = {}
+
+    for token in expected.keys():
+        if not isinstance(token, str):
+            return None
+        chi_values[token] = (observed[token]-expected[token])**2 / expected[token]
+
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -226,4 +262,20 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if not isinstance(chi_values, dict) or not chi_values:
+        return None
+    if not isinstance(alpha, float) or not alpha or alpha not in criterion.keys():
+        return None
+
+    significant_words = {}
+
+    for token in chi_values:
+        if not isinstance(token, str):
+            return None
+        if not isinstance(chi_values[token], float):
+            return None
+        if chi_values[token] >= criterion[alpha]:
+            significant_words[token] = chi_values[token]
+
+    return significant_words

@@ -46,6 +46,12 @@ if __name__ == "__main__":
     tdidf = main.calculate_tfidf(term_frequencies, idf)
     print(tdidf)
     print(main.get_top_n(tdidf, 10))
+    expected_frequencies = main.calculate_expected_frequency(frequencies, corpus_freqs)
+    print(expected_frequencies)
+    chi_values = main.calculate_chi_values(expected_frequencies, frequencies)
+    print(chi_values)
+    significant = main.extract_significant_words(chi_values, 0.05)
+    print(main.get_top_n(chi_values, 10))
 
 
     RESULT = None
