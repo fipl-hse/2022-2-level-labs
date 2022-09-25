@@ -38,12 +38,14 @@ if __name__ == "__main__":
     text_step3 = main.calculate_frequencies(text_step2)
     text_step4 = main.get_top_n(text_step3, 10)
     text_step5 = main.calculate_tf(text_step3)
-    RESULT = text_step5
+    text_step6 = main.calculate_tfidf(text_step5, idf)
+    RESULT = text_step6
     print(text_step1)
     print(text_step2)
     print(text_step3)
     print(text_step4)
     print(text_step5)
+    print(text_step6)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

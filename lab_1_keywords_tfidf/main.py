@@ -135,7 +135,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    tfidf_list =[]
+    for item in term_freq.keys():
+        for item1 in idf.keys():
+            if item == item1:
+                tfidf = term_freq[item] * idf[item1]
+                tfidf_list.append(tfidf)
+
+    keys = term_freq.keys()
+    keys_list = list(keys)
+
+    tfidf_dict = {keys_list[i]: tfidf_list[i] for i in range(len(keys_list))}
+    return tfidf_dict
 
 
 def calculate_expected_frequency(
