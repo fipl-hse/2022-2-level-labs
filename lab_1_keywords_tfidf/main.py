@@ -192,9 +192,9 @@ def calculate_expected_frequency(
     words_in_col = sum(corpus_freqs.values())
     exp_freqs = {}
     for key in doc_freqs:
-        l_val = words_in_doc - doc_freqs.get(key)
+        l_val = words_in_doc - doc_freqs.get(key,0)
         # l -  количество вхождений всех слов, кроме t, в документ d
-        j_val = doc_freqs.get(key)
+        j_val = doc_freqs.get(key,0)
         # j - количество вхождений слова t  в документ d
         k_val = corpus_freqs.get(key,0)
         # k - количество вхождений слова t во все тексты коллекции D
@@ -233,7 +233,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             return None
     chi_values = {}
     for key, value in expected.items():
-        chi_sq = (observed.get(key) - value)**2 / value
+        chi_sq = (observed.get(key,0) - value)**2 / value
         chi_values[key] = chi_sq
     return chi_values
 
@@ -268,6 +268,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
             return None
     significant_val = {}
     for key, value in chi_values.items():
-        if value > criterion.get(alpha):
+        if value > criterion.get(alpha, 0):
             significant_val[key] = value
     return significant_val
