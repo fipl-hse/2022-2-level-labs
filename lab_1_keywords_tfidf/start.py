@@ -49,6 +49,9 @@ if __name__ == "__main__":
     doc_freqs = main.calculate_tfidf(term_freq, idf)
     print(doc_freqs)
 
+    most_frequent_2 = main.get_top_n(doc_freqs, 10)
+    print(most_frequent_2)
+
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
