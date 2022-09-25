@@ -3,7 +3,8 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-
+from math import log
+import re
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -18,8 +19,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-
-    import re
 
     if not isinstance(text, str):
         return None
@@ -49,7 +48,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     if not isinstance(stop_words, list):
         return None
 
-    for stop_word in  stop_words:
+    for stop_word in stop_words:
         if not isinstance(stop_word, str):
             return None
         while stop_word in tokens:
@@ -156,8 +155,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     tf_idf = {}
 
-    from math import log
-
     for token in term_freq:
         if not isinstance(token, str):
             return None
@@ -194,14 +191,15 @@ def calculate_expected_frequency(
     for token in doc_freqs.keys():
         if not isinstance(token, str):
             return None
-        j = doc_freqs[token]
+        token_in_doc = doc_freqs[token]
         if token in corpus_freqs.keys():
-            k = corpus_freqs[token]
+            token_in_corpus = corpus_freqs[token]
         else:
-            k = 0
-        l = sum(doc_freqs.values()) - j
-        m = sum(corpus_freqs.values()) - k
-        expected_freqs[token] = (j+k)*(j+l)/(j+k+l+m)
+            token_in_corpus = 0
+        doc_without_token = sum(doc_freqs.values()) - token_in_doc
+        corpus_without_token = sum(corpus_freqs.values()) - token_in_corpus
+        expected_freqs[token] = (token_in_doc+token_in_corpus)*(token_in_doc+doc_without_token) / \
+                                (token_in_doc+token_in_corpus+doc_without_token+corpus_without_token)
 
     return expected_freqs
 
