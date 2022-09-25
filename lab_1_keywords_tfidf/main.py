@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -20,7 +21,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if isinstance(text, str):
         clean_text = []
         for element in text:
-            if element not in '.,?!;:-()—"\'%#@*&$+=[]{}\<>^~`|/':
+            if element not in '.,?!;:-()—"\'%#@*&$+=[]{}<>^~`|/':
                 clean_text.append(element)
         if clean_text[0] == '':
             clean_text.pop(0)
@@ -31,6 +32,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         clean_text = clean_text.lower()
         clean_text = clean_text.split()
         return clean_text
+    return None
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -57,6 +59,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             if element not in stop_words:
                 clean_tokens.append(element)
         return clean_tokens
+    return None
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
@@ -80,6 +83,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
                 count_element = tokens.count(element)
                 words_and_frequencies[element] = count_element
         return words_and_frequencies
+    return None
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
@@ -101,7 +105,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             if not isinstance(i, str):
                 return None
         for i in frequencies.values():
-            if not (isinstance(i, int) or isinstance(i, float)):
+            if not (isinstance(i, (int, float)):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
         top_n = []
@@ -113,6 +117,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                 top_n.append(list(reversed_dict.keys())[i])
         if top_n:
             return top_n
+    return None
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
@@ -139,6 +144,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         for word, frequency in frequencies.items():
             words_tf[word] = frequency/word_sum
         return words_tf
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -155,7 +161,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    import math
     if term_freq and isinstance(term_freq, dict) and isinstance(idf, dict):
         for i in term_freq.keys():
             if not isinstance(i, str):
@@ -176,6 +181,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         for word, if_value in term_freq.items():
             tfidf_dict[word] = if_value * idf[word]
         return tfidf_dict
+    return None
 
 
 def calculate_expected_frequency(
@@ -211,13 +217,14 @@ def calculate_expected_frequency(
         for word, frequency in doc_freqs.items():
             if word not in corpus_freqs.keys():
                 corpus_freqs[word] = 0
-            j = frequency
-            k = corpus_freqs[word]
-            l = sum(list(doc_freqs.values())) - j
-            m = sum(list(corpus_freqs.values())) - k
-            exp_freq = ((j+k)*(j+l)/(j+k+l+m))
+            word_in_doc = frequency
+            word_in_corp = corpus_freqs[word]
+            other_words_in_doc = sum(list(doc_freqs.values())) - word_in_doc
+            other_words_in_corp = sum(list(corpus_freqs.values())) - word_in_corp
+            exp_freq = ((word_in_doc+word_in_corp)*(word_in_doc+other_words_in_doc)/(word_in_doc+word_in_corp+other_words_in_doc+other_words_in_corp))
             expected[word] = exp_freq
         return expected
+    return None
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -251,9 +258,10 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
                 return None
         chi_values_dict = {}
         for word, frequency in expected.items():
-            x2 = ((observed[word]-frequency)**2)/frequency
-            chi_values_dict[word] = x2
+            chi_square = ((observed[word]-frequency)**2)/frequency
+            chi_values_dict[word] = chi_square
         return chi_values_dict
+    return None
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -286,3 +294,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
                 if chi > criterion[alpha]:
                     words_dict[word] = chi
             return words_dict
+    return None
