@@ -120,7 +120,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (dictionary_check(frequencies, int)):
+    if not dictionary_check(frequencies, int):
         return None
     term_dict = {word: (numb / sum(frequencies.values())) for word, numb in frequencies.items()}
     return term_dict
@@ -140,7 +140,7 @@ def calculate_tfidf(term_dict: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not (dictionary_check(term_dict, float) and isinstance(idf, dict)):
+    if not dictionary_check(term_dict, float) or not isinstance(idf, dict):
         return None
     tfidf_dict = {}
     for word in term_dict:
