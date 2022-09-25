@@ -22,13 +22,13 @@ Running python application and debugging
 first_num = 15
 second_num = 0
 
-print(f'Numbers: {first_num} and {second_num}')
+print(f'Numbers: {first_num} and {1}')
 
 # Case1: the first exception trigger:
 # third_num = first_num / second_num
 
 # Fix the first exception:
-second_num = 5
+second_num = 6
 third_num = first_num / second_num
 print(f'Numbers: {first_num}, {second_num} and {third_num}')
 
