@@ -41,7 +41,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     text = text.lower()
     for element in string.punctuation:
         text = text.replace(element, '')
-    tokens = [element for element in text.split()]
+    tokens = text.split()
     return tokens
 
 
