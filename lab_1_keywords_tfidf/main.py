@@ -8,6 +8,23 @@ import math
 import string
 
 
+def dict_type_check(dictionary: dict, key_type, val_type) -> bool:
+    """
+    Checks whether the object is a dictionary and its keys and values are of the expected type
+    Parameters:
+    dictionary:
+    key_type: the expected key type
+    val_type: the expected value type
+    Returns:
+    bool: True if dictionary keys and values are of the expected type, False otherwise
+    """
+    if (isinstance(dictionary, dict)
+            and all(isinstance(key, key_type) for key in dictionary.keys())
+            and all(isinstance(value, val_type) for value in dictionary.values())):
+        return True
+    return False
+
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -75,9 +92,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     consisting of tokens with the largest frequency
     In case of corrupt input arguments, None is returned
     """
-    if ((isinstance(frequencies, dict) and frequencies
-            and all(isinstance(token, str) for token in frequencies.keys())
-            and all(isinstance(freq, (int, float)) for freq in frequencies.values()))
+    if (dict_type_check(frequencies, str, (int, float)) and frequencies
             and isinstance(top, int) and top is not (True or False) and top > 0):
 
         sorted_words = [token for token, freq in sorted(frequencies.items(), key=lambda token: token[1], reverse=True)]
@@ -96,10 +111,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     dict: A dictionary with tokens and corresponding term frequency score
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(frequencies, dict) and frequencies
-            and all(isinstance(token, str) for token in frequencies.keys())
-            and all(isinstance(freq, int) for freq in frequencies.values())):
-
+    if dict_type_check(frequencies, str, int):
         words_num = sum(frequencies.values())
         tf_dict = {token: (freq / words_num) for token, freq in frequencies.items()}
         return tf_dict
@@ -117,12 +129,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     Dict: A dictionary with tokens and its corresponding TF-IDF values
     In case of corrupt input arguments, None is returned
     """
-    if ((isinstance(term_freq, dict) and term_freq
-            and all(isinstance(token, str) for token in term_freq.keys())
-            and all(isinstance(tf, float) for tf in term_freq.values()))
-            and isinstance(idf, dict) and all(isinstance(token, str) for token in idf.keys())
-            and all(isinstance(idf_val, float) for idf_val in idf.values())):
-
+    if (dict_type_check(term_freq, str, float) and term_freq
+            and dict_type_check(idf, str, float)):
         tfidf_dict = {}
         for token in term_freq:
             if token not in idf.keys():
@@ -148,12 +156,8 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if ((isinstance(doc_freqs, dict) and doc_freqs
-            and all(isinstance(token, str) for token in doc_freqs.keys())
-            and all(isinstance(freq, int) for freq in doc_freqs.values()))
-            and (isinstance(corpus_freqs, dict)
-                 and all(isinstance(token, str) for token in corpus_freqs.keys())
-                 and all(isinstance(freq, int) for freq in corpus_freqs.values()))):
+    if (dict_type_check(doc_freqs, str, int) and doc_freqs
+            and dict_type_check(corpus_freqs, str, int)):
 
         expected_freq_dict = {}
 
@@ -190,12 +194,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if ((isinstance(expected, dict) and expected
-            and all(isinstance(token, str) for token in expected.keys())
-            and all(isinstance(freq, float) for freq in expected.values()))
-            and (isinstance(observed, dict) and observed != {}
-                 and all(isinstance(token, str) for token in observed.keys())
-                 and all(isinstance(freq, int) for freq in observed.values()))):
+    if (dict_type_check(expected, str, float) and expected
+            and dict_type_check(observed, str, int) and observed):
 
         chi_val_dict = {}
         for token, freq in observed.items():
@@ -221,14 +221,11 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if (isinstance(chi_values, dict) and chi_values
-        and all(isinstance(token, str) for token in chi_values.keys())
-        and all(isinstance(chi_val, float) for chi_val in chi_values.values())
+    if (dict_type_check(chi_values, str, float) and chi_values
         and alpha in [0.05, 0.01, 0.001]):
 
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         significant_chi_words = {}
-
         for token, chi_val in chi_values.items():
             if chi_val >= criterion[alpha]:
                 significant_chi_words[token] = chi_val
