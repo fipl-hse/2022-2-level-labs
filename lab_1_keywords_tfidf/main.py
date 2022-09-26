@@ -97,7 +97,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     for key, value in frequencies.items():
-        if not isinstance(key, str) or not isinstance(value, (int, float)):
+        if not isinstance(key, str) or not isinstance(value, (float, int)):
             return None
     freq_len = len(frequencies)
     if top <= freq_len:
