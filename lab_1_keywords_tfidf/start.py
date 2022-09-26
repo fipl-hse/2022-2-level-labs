@@ -73,8 +73,8 @@ if __name__ == "__main__":
 
     if CHI_VALUES:
         SIGNIFICANT_WORDS = extract_significant_words(CHI_VALUES, 0.001)
-        print("Most important chi-words:", get_top_n(SIGNIFICANT_WORDS, 10))
+        print("Most important chi-words:", get_top_n(CHI_VALUES, 10))
 
-    RESULT = get_top_n(SIGNIFICANT_WORDS, 10)
+    RESULT = get_top_n(CHI_VALUES, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
