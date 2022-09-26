@@ -221,15 +221,15 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     """
     if not expected or not observed or not isinstance(expected, dict) or not isinstance(observed, dict):
         return None
-    for word, value in observed.items():
-        if not isinstance(word, str) or not isinstance(value, int):
-            return None
     for word, value in expected.items():
         if not isinstance(word, str) or not isinstance(value, float):
             return None
+    for word, value in observed.items():
+        if not isinstance(word, str) or not isinstance(value, int):
+            return None
     chi_values = {}
     for word, value in expected.items():
-        chi_values[word] = (observed.get(word, 0) - value) ** 2 / value
+        chi_values[word] = ((observed.get(word, 0) - value) ** 2) / value
     print(chi_values)
     return chi_values
 
@@ -263,4 +263,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     for word, value in chi_values.items():
         if value > criterion.get(alpha, 0):
             significant_words[word] = value
+    print(significant_words)
     return significant_words
