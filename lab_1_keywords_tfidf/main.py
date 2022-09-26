@@ -104,17 +104,19 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         for i in frequencies.keys():
             if not isinstance(i, str):
                 return None
-        for i in frequencies.values():
+        freq_val = frequencies.values()
+        for i in freq_val:
             if not isinstance(i, (int, float)):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
         top_n = []
+        list_of_keys = list(reversed_dict.keys())
         if len(list(reversed_dict.keys())) < top:
-            for i in range(len(list(reversed_dict.keys()))):
-                top_n.append(list(reversed_dict.keys())[i])
+            for i in range(len(list_of_keys)):
+                top_n.append(list_of_keys[i])
         else:
             for i in range(top):
-                top_n.append(list(reversed_dict.keys())[i])
+                top_n.append(list_of_keys[i])
         if top_n:
             return top_n
     return None
