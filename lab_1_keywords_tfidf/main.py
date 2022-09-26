@@ -15,15 +15,14 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     list[str]: A sequence of lowercase tokens with no punctuation
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(text, str):
-        text = text.lower().strip()
-        for symbol in punctuation:
-            if symbol in text:
-                text = text.replace(symbol, '')
-        tokens = text.split()
-        return tokens
-    else:
+    if not isinstance(text, str):
         return None
+    text = text.lower().strip()
+    for symbol in punctuation:
+        if symbol in text:
+            text = text.replace(symbol, '')
+    tokens = text.split()
+    return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -36,17 +35,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     List[str]: Token sequence that does not include stop words
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and isinstance(stop_words, list):
-        for stop_word in stop_words:
-            if stop_word in tokens:
-                while stop_word in tokens:
-                    tokens.remove(stop_word)
-        return tokens
-    else:
+    if not (isinstance(tokens, list) and isinstance(stop_words, list)):
         return None
+    for stop_word in stop_words:
+        if stop_word in tokens:
+            while stop_word in tokens:
+                tokens.remove(stop_word)
+    return tokens
 
 
-def check_content(massive, type_name):
+def check_content(massive, type_name) -> Optional[bool]:
     """
        Checks if all elements in a sequence is the same type
        Parameters:
@@ -56,10 +54,9 @@ def check_content(massive, type_name):
        True
        In case of different types of elements, None is returned
        """
-    if massive and all(isinstance(el, type_name) for el in massive):
-        return True
-    else:
+    if not (massive and all(isinstance(el, type_name) for el in massive)):
         return None
+    return True
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -71,14 +68,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     Dict: {token: number of occurrences in the token sequence} dictionary
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and check_content(tokens, str):
-        frequencies = {}
-        for token in tokens:
-            occurance_number = tokens.count(token)
-            frequencies[token] = occurance_number
-        return frequencies
-    else:
+    if not (isinstance(tokens, list) and check_content(tokens, str)):
         return None
+    frequencies = {}
+    for token in tokens:
+        occurance_number = tokens.count(token)
+        frequencies[token] = occurance_number
+    return frequencies
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -95,55 +91,51 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not (isinstance(frequencies, dict) and isinstance(top, int) and top > 0):
         return None
-    else:
-        key_list = list(frequencies.keys())
-        value_list = list(frequencies.values())
-        if check_content(key_list, str) and (check_content(value_list, int) or check_content(value_list, float)):
-            value_list.sort(reverse=True)
-            top_list = []
+    key_list = list(frequencies.keys())
+    value_list = list(frequencies.values())
+    if check_content(key_list, str) and (check_content(value_list, int) or check_content(value_list, float)):
+        value_list.sort(reverse=True)
+        top_list = []
 
-            def get_token(top_list: list[str], frequencies: dict[str, Union[int, float]], value: int):
-                """
-                Extracts token from the frequencies dictionary by its number of occurance
-                Parameters:
-                top_list (list): list of tokens
-                frequencies (dict): frequencies (Dict): A dictionary with tokens and
-                its corresponding frequency
-                values (int): Number of occurance of the word
-                Returns:
-                str: A token which has mentioned occurance number
-                """
-                for k, v in frequencies.items():
-                    if v == value:
-                        if k in top_list:
-                            continue
-                        else:
-                            return k
+        def get_token(top_list: list[str], frequencies: dict[str, Union[int, float]], value: int) -> str:
+            """
+            Extracts token from the frequencies dictionary by its number of occurance
+            Parameters:
+            top_list (list): list of tokens
+            frequencies (dict): frequencies (Dict): A dictionary with tokens and
+            its corresponding frequency
+            values (int): Number of occurance of the word
+            Returns:
+            str: A token which has mentioned occurance number
+            """
+            for word, number in frequencies.items():
+                if number == value:
+                    if word in top_list:
+                        continue
+                    return word
 
-            def getting_list(length: int):
-                """
-                   Creates a certain number of most frequent tokens
-                   Parameters:
-                   length(int): Number of token to extract
-                   Returns:
-                   List[str]: Sequence of specified length
-                   consisting of tokens with the largest frequency
-                   In case of corrupt input arguments, None is returned
-                   """
-                if type(length) != int:
-                    return None
-                else:
-                    for i in range(length):
-                        token = get_token(top_list, frequencies, int(value_list[i]))
-                        top_list.append(token)
-                    return top_list
-            if len(top_list) != top:
-                if top > len(key_list):
-                    top_list = getting_list(len(key_list))
-                    return top_list
-                else:
-                    top_list = getting_list(top)
-                    return top_list
+        def getting_list(length: int) -> Optional[list[str]]:
+            """
+            Creates a certain number of most frequent tokens
+            Parameters:
+            length(int): Number of token to extract
+            Returns:
+            List[str]: Sequence of specified length
+            consisting of tokens with the largest frequency
+            In case of corrupt input arguments, None is returned
+            """
+            if not isinstance(length, int):
+                return None
+            for i in range(length):
+                token = get_token(top_list, frequencies, int(value_list[i]))
+                top_list.append(token)
+            return top_list
+        if len(top_list) != top:
+            if top > len(key_list):
+                top_list = getting_list(len(key_list))
+            else:
+                top_list = getting_list(top)
+            return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
