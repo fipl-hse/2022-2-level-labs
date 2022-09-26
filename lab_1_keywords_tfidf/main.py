@@ -5,28 +5,52 @@ Extract keywords based on frequency related metrics
 import re
 import string
 import math
-from typing import Optional, Union, Type, Any
+from typing import Optional, Union, Any
 
 
-def my_isinstance(instance, type_of_instance):
+def for_i_empty_cheker(collection: Any) -> bool:
+    return bool(collection and all(map(lambda x: bool(x), collection)))
+
+
+def my_isinstance(instance: Any,
+                  type_of_instance: Any) -> bool:
     """
     Distincts int and bool compared to built-in isinstance() function.
 
-    Solves case: isinstance(False/True, bool) -> True
+    Solves case: isinstance(False/True, int) -> True
     """
 
     if type_of_instance is int:
-        return not isinstance(instance, bool) and isinstance(instance, int)
+        return bool(not isinstance(instance, bool) and isinstance(instance, int))
     return isinstance(instance, type_of_instance)
 
 
-def for_i_type_checker(collection, type_of_instance):
+def for_i_type_checker(collection: Any,
+                       type_of_collection: Any,
+                       type_of_instance: Any) -> bool:
 
     """
-    Works like my_isinstance but for every collection's item
+    Acts like my_isinstance for every collection's item
     """
 
-    return all(map(lambda x: my_isinstance(x, type_of_instance), collection))
+    return (my_isinstance(collection, type_of_collection)
+            and all(map(lambda x: my_isinstance(x, type_of_instance), collection)))
+
+
+def is_dic_correct(dic, allow_false_items, key_type, value_type):
+    if my_isinstance(dic, dict):
+        keys = list(dic.keys())
+        values = list(dic.values())
+        is_empty = allow_false_items or bool(dic)
+        condition_2 = for_i_type_checker(keys, list, key_type)
+        condition_3 = for_i_type_checker(values, list, value_type)
+        if is_empty:
+            return bool(condition_2 and condition_3)
+        condition_5 = for_i_empty_cheker(keys)
+        condition_6 = for_i_empty_cheker(values)
+        return bool(condition_2 and condition_3 and
+                    condition_5 and condition_6 and is_empty)
+    return False
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -67,10 +91,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     condition_1 = (my_isinstance(tokens, list)
                    and
-                   bool(tokens))
+                   bool(tokens)) and for_i_empty_cheker(tokens)
 
-    condition_2 = (for_i_type_checker(tokens, str) and
-                   for_i_type_checker(stop_words, str))
+    condition_2 = (for_i_type_checker(tokens, list, str)) and for_i_type_checker(stop_words, list, str)
 
     condition_3 = (my_isinstance(stop_words, list))
 
@@ -95,13 +118,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
 
-    condit_1 = (my_isinstance(tokens, list)
-                and
-                bool(tokens))
+    condit_1 = ((tokens and my_isinstance(tokens, list))
+                and (bool((for_i_empty_cheker(tokens))
+                          and for_i_type_checker(tokens, list, str))))
 
-    condit_2 = (for_i_type_checker(tokens, str))
-
-    if condit_1 and condit_2:
+    if condit_1:
         frequencies = {i: tokens.count(i) for i in frozenset(tokens)}
         return frequencies
     return None
@@ -123,28 +144,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    freq_items = list(frequencies.items())
-
-    cond_1 = (my_isinstance(frequencies, dict)
-              and
-              my_isinstance(top, int))
-
-    cond_2 = for_i_type_checker(list(frequencies.keys()), str)
-
-    cond_3 = for_i_type_checker(list(frequencies.values()), int | float)
-
-    cond_4 = bool(frequencies) and bool(top)
-
-    if cond_1 and cond_2 and cond_3 and cond_4:
-        top_n = []
-        freq_items.sort(reverse=True, key=lambda pair: pair[1])
-        if top > len(freq_items):
-            top = len(freq_items)
-        slice_index = top - 1
-        for key_value in freq_items:
-            top_n.append(key_value[0])
-            if top_n.index(key_value[0]) == slice_index:
-                return top_n
+    if is_dic_correct(frequencies, False, str, int | float) and my_isinstance(top, int) and top > 0:
+        top_n = sorted(frequencies, key=lambda word: frequencies.get(word), reverse=True)[:top]
+        return top_n
     return None
 
 
@@ -162,20 +164,10 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
 
-    values = list(frequencies.values())
-
-    c_1 = (my_isinstance(frequencies, dict)
-           and
-           bool(frequencies))
-
-    c_2 = for_i_type_checker(list(frequencies.keys()), str)
-
-    c_3 = for_i_type_checker(values, int)
-
-    if c_1 and c_2 and c_3:
-
-        amount_of_words = sum(i for i in values)
-        tf_dict = {k: v/amount_of_words for k, v in list(frequencies.items())}
+    if is_dic_correct(frequencies, False, str, int):
+        values = list(frequencies.values())
+        amount_of_words = sum(values)
+        tf_dict = {k: v / amount_of_words for k, v in list(frequencies.items())}
         return tf_dict
     return None
 
@@ -194,23 +186,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    c_1 = (my_isinstance(term_freq, dict) and bool(term_freq)
-           and
-           my_isinstance(idf, dict)) and bool(idf)
 
-    c_2 = (for_i_type_checker(list(term_freq.keys()), str)
-           and
-           for_i_type_checker(list(term_freq.values()), float))
-
-    c_3 = (for_i_type_checker(list(idf.keys()), str)
-           and
-           for_i_type_checker(list(idf.values()), float))
-
-    keys_values_from_term_freq = list(term_freq.items())
-
-    if c_1 and c_2 and c_3:
-        tfidf_dict = {word: (tf*idf.get(word) if word is not None else math.log(tf*47))
-                      for word, tf in keys_values_from_term_freq}
+    if is_dic_correct(term_freq, False, str, float) and is_dic_correct(idf, True, str, float):
+        keys_term_freq = list(term_freq.keys())
+        tfidf_dict = {word: (term_freq.get(word) * idf.get(word, math.log(47 / 1)))
+                      for word in keys_term_freq}
         return tfidf_dict
     return None
 
@@ -232,37 +212,26 @@ def calculate_expected_frequency(
         In case of corrupt input arguments, None is returned
         """
 
-    doc_freq_keys = list(doc_freqs.keys())
-    corp_freq_keys = list(corpus_freqs.keys())
+    if is_dic_correct(doc_freqs, False, str, int) and is_dic_correct(corpus_freqs, True, str, int):
 
-    c_1 = (my_isinstance(doc_freqs, dict) and bool(doc_freqs)
-           and
-           my_isinstance(corpus_freqs, dict)) and bool(corpus_freqs)
-    c_2 = (for_i_type_checker(doc_freq_keys, str)
-           and
-           for_i_type_checker(list(doc_freqs.values()), int))
-    c_3 = (for_i_type_checker(corp_freq_keys, str)
-           and
-           for_i_type_checker(list(corpus_freqs.values()), int))
+        doc_freq_keys = list(doc_freqs.keys())
+        sum_of_occ_doc = (sum(doc_freqs.values()))
+        sum_of_occ_corp = (sum(corpus_freqs.values()))
 
-    if c_1 and c_2 and c_3:
+        expected = {}
 
-        j_occur_of_word_in_doc = lambda word: doc_freqs.get(word)
-        k_occur_of_word_in_corp = lambda word: corpus_freqs.get(word)
+        for word in doc_freq_keys:
+            j_occur_of_word_in_doc = doc_freqs.get(word)
+            k_occur_of_word_in_corp = corpus_freqs.get(word, 0)
+            l_occur_doc_except = (sum_of_occ_doc - j_occur_of_word_in_doc)
+            m_occur_corp_except = (sum_of_occ_corp - k_occur_of_word_in_corp)
 
-        sum_of_occ_doc = (sum(j_occur_of_word_in_doc(word) for word in doc_freq_keys))
-        sum_of_occ_corp = (sum(k_occur_of_word_in_corp(word) for word in corp_freq_keys))
+            expected_freq = (((j_occur_of_word_in_doc + k_occur_of_word_in_corp)
+                              * (j_occur_of_word_in_doc + l_occur_doc_except))
+                             / (j_occur_of_word_in_doc + k_occur_of_word_in_corp
+                                + l_occur_doc_except + m_occur_corp_except))
 
-        l_occur_doc_except = lambda word: (sum_of_occ_doc - j_occur_of_word_in_doc(word))
-        m_occur_corp_except = lambda word: (sum_of_occ_corp - k_occur_of_word_in_corp(word))
-
-        formula_expected_freq = (lambda word: ((j_occur_of_word_in_doc(word) + k_occur_of_word_in_corp(word)) *
-                                (j_occur_of_word_in_doc(word) + l_occur_doc_except(word))) /
-                                (j_occur_of_word_in_doc(word) + k_occur_of_word_in_corp(word) +
-                                    l_occur_doc_except(word) + m_occur_corp_except(word)))
-
-        expected = {word: formula_expected_freq(word) for word in doc_freq_keys}
-
+            expected[word] = expected_freq
         return expected
     return None
 
@@ -284,25 +253,9 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
 
-    list_observed_keys = list(observed.keys())
-
-    c_1 = (my_isinstance(expected, dict) and bool(expected)
-           and
-           my_isinstance(observed, dict)) and bool(observed)
-
-    c_2 = (for_i_type_checker(list(expected.keys()), str)
-           and
-           for_i_type_checker(list(expected.values()), float))
-
-    c_3 = (for_i_type_checker(list_observed_keys, str)
-           and
-           for_i_type_checker(list(observed.values()), int))
-
-    if c_1 and c_2 and c_3:
-
-        formula_chi_2 = lambda x: (pow(((observed.get(x)) - expected.get(x)), 2))/expected.get(x)
-
-        chi_values = {word: formula_chi_2(word) for word in list_observed_keys}
+    if is_dic_correct(expected, False, str, float) and is_dic_correct(observed, False, str, int):
+        formula_chi_2 = (lambda word: (pow((observed.get(word) - expected.get(word)), 2)) / expected.get(word))
+        chi_values = {word: formula_chi_2(word) for word in list(observed.keys())}
         return chi_values
     return None
 
@@ -324,22 +277,11 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
 
-    chi_keys = list(chi_values.keys())
-    criterion_dict = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    critical_point = criterion_dict.get(alpha)
-
-    c_1 = (my_isinstance(chi_values, dict) and bool(chi_values)
-           and
-           my_isinstance(alpha, float)
-           and
-           critical_point)
-
-    c_2 = (for_i_type_checker(chi_keys, str)
-           and
-           for_i_type_checker(list(chi_values.values()), float))
-
-    if c_1 and c_2:
-        significant_words = {word: chi_values.get(word) for word in chi_keys
-                             if chi_values.get(word) > critical_point}
-        return significant_words
+    if is_dic_correct(chi_values, False, str, float) and my_isinstance(alpha, float):
+        criterion_dict = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+        if criterion_dict.get(alpha):
+            chi_keys = list(chi_values.keys())
+            significant_words = {word: chi_values.get(word) for word in chi_keys
+                                 if chi_values.get(word) > criterion_dict.get(alpha)}
+            return significant_words
     return None
