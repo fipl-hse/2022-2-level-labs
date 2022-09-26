@@ -71,7 +71,7 @@ if __name__ == "__main__":
         CHI_VALUES = calculate_chi_values(EXPECTED_FREQUENCY, FREQ_DICT)
 
     if CHI_VALUES:
-        print(extract_significant_words(CHI_VALUES, 0.01))
+        print(extract_significant_words(CHI_VALUES, 0.001))
         print(get_top_n(CHI_VALUES, 10))
 
     RESULT = get_top_n(CHI_VALUES, 10)
