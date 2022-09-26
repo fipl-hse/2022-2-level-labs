@@ -49,7 +49,7 @@ if __name__ == "__main__":
     if not frequencies:
         print(None)
     for k, v in frequencies.items():
-        if not isinstance(k, str) or not isinstance(v, int):
+        if not isinstance(k, str) or not isinstance(v, (int, float)):
             print (None)
     print(get_top_n(frequencies, 8))
 
