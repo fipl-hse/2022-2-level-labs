@@ -3,7 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
+import main # type: ignore
 
 
 if __name__ == "__main__":
