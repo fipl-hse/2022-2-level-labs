@@ -14,14 +14,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
        list[str]: A sequence of lowercase tokens with no punctuation
        In case of corrupt input arguments, None is returned
        """
-    if type(text) == str:
+    if type(text) is str:
         target_text = text.lower().strip()
         symbols = """!()-[]{};?@#$%:'"\,./^&;*_><"""
         for symbol in target_text:
             if symbol in symbols:
                 target_text = target_text.replace(symbol, '')
-        target_text = target_text.split()
-        tokens = target_text
+        tokens = target_text.split()
         for word in tokens:
             if word == "' '":
                 tokens.remove(word)
@@ -85,25 +84,26 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if type(top) is not int or top <= 0:
+    if type(top) is not int or top == 0:
         return None
     if type(frequencies) is dict:
         if frequencies == {}:
             return None
-        for key in frequencies.keys():
-            if type(key) is not str:
-                return None
-        for value in frequencies.values():
-            if type(value) is not int or not float:
-                return None
-        if top >= len(frequencies):
-            most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-            return most_common
-        if top < len(frequencies):
-            most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-            most_common = list(most_common[:top])
-            frequencies = most_common
-            return frequencies
+        if (isinstance(key, str) for key in frequencies.keys()):
+            for value in frequencies.values():
+                if type(value) is int or float:
+                    if top >= len(frequencies):
+                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                        return most_common
+                    if top < len(frequencies):
+                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                        most_common = list(most_common[:top])
+                        frequencies = most_common
+                        return frequencies
+                else:
+                    return None
+        else:
+            return None
     else:
         return None
 
@@ -179,7 +179,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             return tfidf
     else:
         return None
-
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
