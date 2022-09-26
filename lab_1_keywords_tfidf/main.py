@@ -4,6 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 from operator import itemgetter
+import math
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -151,8 +152,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     else:
         return None
 
-
-
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
     Calculates TF-IDF score for each of the tokens
@@ -167,7 +166,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(term_freq, dict) and isinstance(idf , dict):
+        for k, v in term_freq.items():
+            if isinstance(k, str) and isinstance(v, (int, float)) and not v == 0:
+                for ky, vl in idf.items():
+                    if isinstance(ky, str) and isinstance(vl, (int, float)) and not vl == 0:
+                        return("пока не сделано")
+                    else:
+                        return None
+            else:
+                return None
+    else:
+        return None
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
