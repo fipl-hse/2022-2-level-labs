@@ -151,15 +151,14 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(term_freq, dict) and term_freq
-            and isinstance(idf, dict) and all(isinstance(word, str) for word in idf.keys())
-            and all(isinstance(word, str) for word in term_freq.keys())
-            and all(isinstance(t_f, float) for t_f in term_freq.values())
-            and all(isinstance(idf_value, float) for idf_value in idf.values())):
+    if not term_freq or not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
+    for key, value in term_freq.items():
+        if not isinstance(key, str) or not isinstance(value, float):
+            return None
     tf_idf = {}
     for word in term_freq:
-        if word not in idf.keys():
+        if word not in idf:
             idf[word] = log(47 / (0 + 1))
         tf_idf[word] = term_freq[word] * idf[word]
     print(tf_idf)
