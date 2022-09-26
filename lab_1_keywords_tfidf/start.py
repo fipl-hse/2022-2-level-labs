@@ -55,7 +55,7 @@ if __name__ == "__main__":
 
     if NO_STOP_WORDS:
         FREQ_DICT = calculate_frequencies(NO_STOP_WORDS)
-        print(f'Most frequent words in freq_dict: {get_top_n(FREQ_DICT, 8)}')
+        print(get_top_n(FREQ_DICT, 8))
 
     if FREQ_DICT:
         TF_DICT = calculate_tf(FREQ_DICT)
