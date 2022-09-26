@@ -141,7 +141,7 @@ def calculate_tfidf(term_dict: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not dictionary_check(term_dict, float, True) or not isinstance(idf, dict):
+    if not dictionary_check(term_dict, float, False) or not isinstance(idf, dict):
         return None
     tfidf_dict = {}
     for word in term_dict:
