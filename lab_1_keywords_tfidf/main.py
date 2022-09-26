@@ -14,6 +14,7 @@ def for_i_empty_cheker(collection: Any) -> bool:
 
 def my_isinstance(instance: Any,
                   type_of_instance: Any) -> bool:
+    
     """
     Distincts int and bool compared to built-in isinstance() function.
 
