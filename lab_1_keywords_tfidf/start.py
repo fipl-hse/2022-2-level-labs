@@ -1,8 +1,19 @@
 """
 Frequency-driven keyword extraction starter
 """
+
 import json
 from pathlib import Path
+
+
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words,
+    calculate_frequencies,
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf
+)
 
 
 if __name__ == "__main__":
@@ -31,6 +42,37 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
+
+    NO_STOP_WORDS = None
+    FREQUENCIES_DICT = None
+    GET_TOP_TEN = None
+    COUNT_TF = None
+    COUNT_TDIDF = None
+    TOP = 10
+
+
+    SPLIT_TEXT = clean_and_tokenize(target_text)
+
+    if SPLIT_TEXT:
+        NO_STOP_WORDS = remove_stop_words(SPLIT_TEXT, stop_words)
+
+    if NO_STOP_WORDS:
+        FREQUENCIES_DICT = calculate_frequencies(NO_STOP_WORDS)
+
+    if FREQUENCIES_DICT:
+        GET_TOP_TEN = get_top_n(FREQUENCIES_DICT, TOP)
+
+    if GET_TOP_TEN:
+        COUNT_TF = calculate_tf(FREQUENCIES_DICT)
+
+    if COUNT_TF:
+        COUNT_TDIDF = calculate_tfidf(COUNT_TF, idf)
+
+    if COUNT_TDIDF:
+        GET_TOP_TEN = get_top_n(COUNT_TDIDF, TOP)
+
+    RESULT = GET_TOP_TEN
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
+
+    print(RESULT)
