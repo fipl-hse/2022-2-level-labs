@@ -8,14 +8,14 @@ import string
 import math
 
 
-def dictionary_check(dictionary: dict, possible_type: type, empty=False) -> bool:
+def dictionary_check(dictionary: dict, possible_type: type, empty: bool) -> bool:
 
     """
     Сheck the correctness of a dictionary
     And its elements
     """
     if isinstance(dictionary, dict):
-        if dictionary == {} and empty is False:
+        if dictionary == {} and not empty:
             return False
         for key, value in dictionary.items():
             if not isinstance(key, str) or not isinstance(value, (int, possible_type)) or isinstance(value, bool):
@@ -100,7 +100,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not dictionary_check(frequencies, float)\
+    if not dictionary_check(frequencies, float, True)\
             or not (not isinstance(top, bool) and isinstance(top, int) and not top <= 0):
         return None
     words = sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)
@@ -121,7 +121,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not dictionary_check(frequencies, int):
+    if not dictionary_check(frequencies, int, True):
         return None
     term_dict = {word: (numb / sum(frequencies.values())) for word, numb in frequencies.items()}
     return term_dict
@@ -141,7 +141,7 @@ def calculate_tfidf(term_dict: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not dictionary_check(term_dict, float) or not isinstance(idf, dict):
+    if not dictionary_check(term_dict, float, True) or not isinstance(idf, dict):
         return None
     tfidf_dict = {}
     for word in term_dict:
