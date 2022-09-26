@@ -99,13 +99,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             top <= 0:
         return None
     for key, value in frequencies.items():
-        if not isinstance(key, str) or not isinstance(value, (float, int)):
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
             return None
     freqs_len = len(frequencies)
     if top <= freqs_len:
-        top_list = [(word) for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
+        top_list = [word for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
     else:
-        top_list = [(word) for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)]
+        top_list = [word for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)]
     return top_list
 
 
