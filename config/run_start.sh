@@ -16,6 +16,12 @@ WAS_FAILED=0
 for LAB_NAME in $LABS; do
 	echo "Running start.py checks for lab ${LAB_NAME}"
 
+  IS_ADMIN=$(python config/is_admin.py --pr_name "$1")
+	if [ "$REPOSITORY_TYPE" == "public" ] && [ "$IS_ADMIN" == 'YES' ] ; then
+	  echo '[skip-lab] option was enabled, skipping check...'
+	  continue
+	fi
+
 	if ! python ${LAB_NAME}/start.py;  then
     	WAS_FAILED=1
 	fi
