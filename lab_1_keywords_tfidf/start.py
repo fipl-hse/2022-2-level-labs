@@ -33,28 +33,18 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     tokens = main.clean_and_tokenize(target_text)
-    if tokens:
-        tokens_with_no_sw = main.remove_stop_words(tokens, stop_words)
-    if tokens_with_no_sw:
-        frequencies = main.calculate_frequencies(tokens_with_no_sw)
-    if frequencies:
-        most_popular_words = main.get_top_n(frequencies, 16)
+    tokens_with_no_sw = main.remove_stop_words(tokens, stop_words)
+    frequencies = main.calculate_frequencies(tokens_with_no_sw)
+    most_popular_words = main.get_top_n(frequencies, 16)
     print(most_popular_words)
-    if frequencies:
-        term_freq = main.calculate_tf(frequencies)
-    if term_freq:
-        tfidf_dict = main.calculate_tfidf(term_freq, idf)
-    if tfidf_dict:
-        top10_tfidf_dict = main.get_top_n(tfidf_dict, 10)
+    term_freq = main.calculate_tf(frequencies)
+    tfidf_dict = main.calculate_tfidf(term_freq, idf)
+    top10_tfidf_dict = main.get_top_n(tfidf_dict, 10)
     print(top10_tfidf_dict)
-    if frequencies:
-        expected = main.calculate_expected_frequency(frequencies, corpus_freqs)
-    if expected:
-        chi_values_dict = main.calculate_chi_values(expected, frequencies)
-    if chi_values_dict:
-        significant_words = main.extract_significant_words(chi_values_dict, 0.01)
-    if significant_words:
-        top10_chi_values_dict = main.get_top_n(significant_words, 10)
+    expected = main.calculate_expected_frequency(frequencies, corpus_freqs)
+    chi_values_dict = main.calculate_chi_values(expected, frequencies)
+    significant_words = main.extract_significant_words(chi_values_dict, 0.01)
+    top10_chi_values_dict = main.get_top_n(significant_words, 10)
     print(top10_chi_values_dict)
 
     RESULT = top10_chi_values_dict

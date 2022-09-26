@@ -101,12 +101,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
-        for i in frequencies.keys():
-            if not isinstance(i, str):
-                return None
-        freq_val = list(frequencies.values())
-        for i in freq_val:
-            if not isinstance(i, (int, float)):
+        for i, j in frequencies.items():
+            if not isinstance(i, str) and not isinstance(j, (int, float)):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
         top_n = []
