@@ -132,11 +132,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
     if frequencies and isinstance(frequencies, dict):
-        for i in frequencies.keys():
-            if not isinstance(i, str):
-                return None
-        for i in frequencies.values():
-            if not isinstance(i, int):
+        for i, j in frequencies.items():
+            if not isinstance(i, str) and not isinstance(j, int):
                 return None
         word_sum = sum(list(frequencies.values()))
         words_tf = {}
@@ -161,17 +158,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     if term_freq and isinstance(term_freq, dict) and isinstance(idf, dict):
-        for i in term_freq.keys():
-            if not isinstance(i, str):
+        for i, j in term_freq.items():
+            if not isinstance(i, str) and not isinstance(j, float):
                 return None
-        for i in term_freq.values():
-            if not isinstance(i, float):
-                return None
-        for i in idf.keys():
-            if not isinstance(i, str):
-                return None
-        for i in idf.values():
-            if not isinstance(i, float):
+        for i, j in idf.items():
+            if not isinstance(i, str) and not isinstance(j, float):
                 return None
         for word in term_freq.keys():
             if word not in idf.keys():
@@ -200,17 +191,11 @@ def calculate_expected_frequency(
     In case of corrupt input arguments, None is returned
     """
     if doc_freqs and isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
-        for i in doc_freqs.keys():
-            if not isinstance(i, str):
+        for i, j in doc_freqs.items():
+            if not isinstance(i, str) and not isinstance(j, int):
                 return None
-        for i in doc_freqs.values():
-            if not isinstance(i, int):
-                return None
-        for i in corpus_freqs.keys():
-            if not isinstance(i, str):
-                return None
-        for i in corpus_freqs.values():
-            if not isinstance(i, int):
+        for i, j in corpus_freqs.items():
+            if not isinstance(i, str) and not isinstance(j, int):
                 return None
         expected = {}
         for word, frequency in doc_freqs.items():
@@ -244,17 +229,11 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
     if expected and isinstance(expected, dict) and observed and isinstance(observed, dict):
-        for i in expected.keys():
-            if not isinstance(i, str):
+        for i, j in expected.items():
+            if not isinstance(i, str) and not isinstance(j, float):
                 return None
-        for i in expected.values():
-            if not isinstance(i, float):
-                return None
-        for i in observed.keys():
-            if not isinstance(i, str):
-                return None
-        for i in observed.values():
-            if not isinstance(i, int):
+        for i, j in observed.items():
+            if not isinstance(i, str) and not isinstance(j, int):
                 return None
         chi_values_dict = {}
         for word, frequency in expected.items():
@@ -281,11 +260,8 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     if chi_values and isinstance(chi_values, dict) and isinstance(alpha, float):
-        for i in chi_values.keys():
-            if not isinstance(i, str):
-                return None
-        for i in chi_values.values():
-            if not isinstance(i, float):
+        for i, j in chi_values.items():
+            if not isinstance(i, str) and not isinstance(j, float):
                 return None
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         if alpha in criterion.keys():
