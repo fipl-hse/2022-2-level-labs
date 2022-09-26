@@ -47,7 +47,6 @@ if __name__ == "__main__":
     TF_IDF = None
     EXPECTED_FREQUENCY = None
     CHI_VALUES = None
-    SIGNIFICANT_WORDS = None
     CLEAN_AND_TOKENS = clean_and_tokenize(target_text)
 
     if CLEAN_AND_TOKENS:
@@ -72,8 +71,8 @@ if __name__ == "__main__":
         CHI_VALUES = calculate_chi_values(EXPECTED_FREQUENCY, FREQ_DICT)
 
     if CHI_VALUES:
-        SIGNIFICANT_WORDS = extract_significant_words(CHI_VALUES, 0.001)
-        print("Most important chi-words:", get_top_n(CHI_VALUES, 10))
+        print(extract_significant_words(CHI_VALUES, 0.01))
+        print(get_top_n(CHI_VALUES, 10))
 
     RESULT = get_top_n(CHI_VALUES, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
