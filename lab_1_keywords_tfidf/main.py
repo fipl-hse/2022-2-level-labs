@@ -22,12 +22,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     tokens = text.split()
 
-    punctuation = [",.-!?'\"$%@#№*()[]{}+=:;^`~<>\\/|"]
+    punctuation = "!@#$%^&()*№[]{},.<>/?\\\"|':;=+"
     clean_tokens = []
     for word in tokens:
         for p in punctuation:
-            word = word.replace(p, '')
+            word = word.replace(p, "")
 
+        word = word.strip("-")
         if word != "":
             clean_tokens.append(word.lower())
 
