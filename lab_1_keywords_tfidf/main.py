@@ -109,9 +109,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             str: A token which has mentioned occurance number
             """
             for word, number in frequencies.items():
-                if number == value:
-                    if word in top_list:
-                        continue
+                if word not in top_list and number == value:
                     return word
 
         def getting_list(length: int) -> Optional[list[str]]:
@@ -126,7 +124,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             """
             if not isinstance(length, int):
                 return None
-            elif length is True:
+            if length is True:
                 return None
             for i in range(length):
                 token = get_token(top_list, frequencies, int(value_list[i]))
@@ -137,7 +135,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                 top_list = getting_list(len(key_list))
             else:
                 top_list = getting_list(top)
-            return top_list
+        return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
