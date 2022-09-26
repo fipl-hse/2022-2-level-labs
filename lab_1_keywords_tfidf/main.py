@@ -41,9 +41,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(tokens, list) and not isinstance(stop_words, list) \
-            and not tokens and not all(isinstance(i, str) for i in tokens) \
-            and not stop_words and not all(isinstance(i, str) for i in stop_words):
-        return None
+            and not tokens and not all(isinstance(i, str) for i in tokens):
+        if not stop_words and not all(isinstance(i, str) for i in stop_words):
+            return None
     no_stop_words = []
     for word in tokens:
         if word not in stop_words:
@@ -86,10 +86,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and not isinstance(top, int) and top <= 0 \
-            and not frequencies and not all(isinstance(k, str) for k in frequencies.keys()) \
-            and not all(isinstance(v, (int, float)) for v in frequencies.values()):
-        return None
+    if not isinstance(frequencies, dict) and not isinstance(top, int) and top <= 0:
+        if not frequencies and not all(isinstance(k, str) for k in frequencies.keys()) \
+                and not all(isinstance(v, (int, float)) for v in frequencies.values()):
+            return None
     top_dic = {}
     top_values = sorted(frequencies.values(), reverse=True)
     top_n_values = top_values[:top]
@@ -139,17 +139,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(term_freq, dict) and not isinstance(idf, dict) \
-            and not term_freq and not all(isinstance(k, str) for k in term_freq.keys()) \
-            and not all(isinstance(v, float) for v in term_freq.values()) \
-            and not idf and not all(isinstance(k, str) for k in idf.keys()) \
-            and not all(isinstance(v, float) for v in idf.values()):
-        return None
+            and not term_freq and not all(isinstance(k, str) for k in term_freq.keys()):
+        if not all(isinstance(v, float) for v in term_freq.values()) \
+                and not idf and not all(isinstance(k, str) for k in idf.keys()) \
+                and not all(isinstance(v, float) for v in idf.values()):
+            return None
     tfidf_dic = {}
     for key in term_freq.keys():
         if key in idf.keys():
             tfidf_dic[key] = term_freq[key] * idf[key]
         else:
-            tfidf_dic[key] = term_freq[key] * log(47)
+            idf[key] = log(47)
+            tfidf_dic[key] = term_freq[key] * idf[key]
     return tfidf_dic
 
 
@@ -170,11 +171,11 @@ def calculate_expected_frequency(
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(doc_freqs, dict) and not isinstance(corpus_freqs, dict) \
-            and not doc_freqs and not all(isinstance(k, str) for k in doc_freqs) \
-            and not all(isinstance(v, int) for v in doc_freqs.values()) \
-            and not corpus_freqs and not all(isinstance(k, str) for k in corpus_freqs.keys()) \
-            and not all(isinstance(v, int) for v in corpus_freqs.values()):
-        return None
+            and not doc_freqs and not all(isinstance(k, str) for k in doc_freqs):
+        if not all(isinstance(v, int) for v in doc_freqs.values()) \
+                and not corpus_freqs and not all(isinstance(k, str) for k in corpus_freqs.keys()) \
+                and not all(isinstance(v, int) for v in corpus_freqs.values()):
+            return None
     expected_dic = {}
     for keys, values in doc_freqs.items():
         if keys not in corpus_freqs:
@@ -205,11 +206,11 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(expected, dict) and not isinstance(observed, dict) \
-            and not expected and not all(isinstance(k, str) for k in expected.keys()) \
-            and not all(isinstance(v, float) for v in expected.values()) \
-            and not observed and not all(isinstance(k, str) for k in observed.keys()) \
-            and not all(isinstance(v, int) for v in observed.values()):
-        return None
+            and not expected and not all(isinstance(k, str) for k in expected.keys()):
+        if not all(isinstance(v, float) for v in expected.values()) \
+                and not observed and not all(isinstance(k, str) for k in observed.keys()) \
+                and not all(isinstance(v, int) for v in observed.values()):
+            return None
     chi_dic = {}
     for key in observed.keys():
         a = expected[key]
@@ -237,9 +238,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     """
     if not isinstance(chi_values, dict) and not isinstance(alpha, float) \
             and not chi_values and not all(isinstance(k, str) for k in chi_values.keys()) \
-            and not all(isinstance(v, float) for v in chi_values.values()) \
-            and alpha not in (0.05, 0.01, 0.001):
-        return None
+            and not all(isinstance(v, float) for v in chi_values.values()):
+        if alpha not in (0.05, 0.01, 0.001):
+            return None
     significant_dic = {}
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     alpha = criterion.get(alpha)
