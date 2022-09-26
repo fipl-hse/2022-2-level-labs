@@ -132,7 +132,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             frequencies_is_dict = True
             for item in frequencies.keys():
                 if not isinstance(item, str):
-                    items_are_str = False
+                    keys_are_str = False
             for item in frequencies.values():
                 if not isinstance(item, (int, float)):
                     values_are_int_or_float = False
@@ -237,8 +237,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             if not isinstance(item, float):
                 idf_values_are_float = False
 
-    if (term_freq_is_dict and keys_are_str and values_are_float and idf_is_dict
-            and idf_keys_are_str and idf_values_are_float):
+    if all(i is True for i in [term_freq_is_dict, keys_are_str, values_are_float, idf_is_dict,
+                               idf_keys_are_str, idf_values_are_float]):
         tfidf_list = []
         for item in term_freq.keys():
             if item in list(idf.keys()):
@@ -298,7 +298,8 @@ def calculate_expected_frequency(
             if not isinstance(item, int):
                 corpus_values_are_int = False
 
-    if doc_freqs_is_dict and keys_are_str and values_are_int and corpus_freqs_is_dict and corpus_keys_are_str and corpus_values_are_int:
+    if all(i is True for i in [doc_freqs_is_dict, keys_are_str, values_are_int,
+                               corpus_freqs_is_dict, corpus_keys_are_str, corpus_values_are_int]):
         total_doc = 0
         for value in doc_freqs.values():
             total_doc += value
@@ -309,11 +310,12 @@ def calculate_expected_frequency(
 
         expected_list = []
         for item in doc_freqs:
-            j = doc_freqs[item]
-            k = corpus_freqs[item]
-            l = total_doc - j
-            m = total_corpus - k
-            expected = (j + k) * (j + l) / (j + k + l + m)
+            doc_entry = doc_freqs[item]
+            corpus_entry = corpus_freqs[item]
+            other_words_doc_entry = total_doc - doc_entry
+            other_words_corpus_entry = total_corpus - corpus_entry
+            expected = ((doc_entry + corpus_entry) * (doc_entry + other_words_doc_entry) /
+                        (doc_entry + corpus_entry + other_words_doc_entry + other_words_corpus_entry))
             expected_list.append(expected)
 
         keys = doc_freqs.keys()

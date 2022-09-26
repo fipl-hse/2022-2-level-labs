@@ -1,9 +1,9 @@
 """
 Frequency-driven keyword extraction starter
 """
-import main
 from pathlib import Path
 import json
+import main
 
 if __name__ == "__main__":
 
@@ -54,4 +54,3 @@ if __name__ == "__main__":
     RESULT = main.get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
