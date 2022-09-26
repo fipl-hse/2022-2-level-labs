@@ -20,17 +20,18 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
-    'if var text is not a string - return None'
-    text = text.lower()
-    'make entire var text lowercase'
-    punctuation_symbols = '.,:-!?;%<>&*@#()'
-    #creating a var that has all the punctuation marks'
-    for i in punctuation_symbols:
-        #go through each punctuation symbol and replace it in the text by noting'
-        text = text.replace(i, '')
-    text_split = text.split()
-    #splits text by spaces'
-    return text_split
+    else:
+        #if var text is not a string - return None'
+        text = text.lower()
+        #make entire var text lowercase'
+        punctuation_symbols = '.,:-!?;%<>&*@#()'
+        # creating a var that has all the punctuation marks'
+        for i in punctuation_symbols:
+            # go through each punctuation symbol and replace it in the text by noting'
+            text = text.replace(i, '')
+        text_split = text.split()
+        # splits text by spaces'
+        return text_split
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -48,8 +49,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     if not (isinstance(tokens, list) and isinstance(stop_words, list)):
         #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
-    stop_words_removed = [x for x in tokens if x not in stop_words]
-    return stop_words_removed
+    else:
+        stop_words_removed = [x for x in tokens if x not in stop_words]
+        return stop_words_removed
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -64,17 +66,22 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens, list):
-        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
-        return None
-    Dict = {}
-    for i in tokens:
-        if i in Dict.keys():
-            Dict[i] = 1 + Dict[i]
-        else:
-            Dict[i] = 1
-    return (Dict)
+    if isinstance(tokens, list):
+        for i in tokens:
+            if isinstance(i, str):
+                Dict = {}
+                for i in tokens:
+                    if i in Dict.keys():
+                        Dict[i] = 1 + Dict[i]
+                    else:
+                        Dict[i] = 1
+                return (Dict)
+            else:
+                return None
+    #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
 
+    else:
+        return None
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
@@ -91,9 +98,18 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict), isinstance(top, str)):
-        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+    if isinstance(frequencies, dict) and isinstance(top, int):
+        for i in frequencies:
+            if isinstance(i, int) or isinstance(i, float):
+                list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
+                # Не знаю, почему используется reverse=true"
+                List = list_sorted[:top]
+                return (List)
+            else:
+                return None
+    else:
         return None
+
     #If you want to conserve all the information from a dictionary when sorting it," \
     # the typical first step is to call the .items() method on the dictionary. " \
     #Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
@@ -106,9 +122,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     #Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
     #а не одно ключевое значение и" \
     #это то, что operator.itemgetter(1) даст вам: функция, которая захватывает первый элемент из списка-подобного объекта."
-    List = dict(sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top])
-    #Не знаю, почему используется reverse=true"
-    return(List)
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
