@@ -213,49 +213,30 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-
-    idf_is_dict = False
-    idf_keys_are_str = True
-    idf_values_are_float = True
-    term_freq_is_dict = False
-    keys_are_str = True
-    values_are_float = True
     if isinstance(term_freq, dict) and len(term_freq) != 0:
-        term_freq_is_dict = True
-        for item in term_freq.keys():
-            if not isinstance(item, str):
-                keys_are_str = False
-        for item in term_freq.values():
-            if not isinstance(item, float):
-                values_are_float = False
-
+        for item in term_freq.items():
+            if not isinstance(item[0], str) or not isinstance(item[1], float):
+                return None
         if isinstance(idf, dict):
-            idf_is_dict = True
-            for item in idf.keys():
-                if not isinstance(item, str):
-                    idf_keys_are_str = False
-            for item in idf.values():
-                if not isinstance(item, float):
-                    idf_values_are_float = False
+            for item in idf.items():
+                if not isinstance(item[0], str) or not isinstance(item[1], float):
+                    return None
+            tfidf_list = []
+            for item in term_freq.keys():
+                if item in list(idf.keys()):
+                    for item1 in idf.keys():
+                        if item == item1:
+                            tfidf = term_freq[item] * idf[item1]
+                            tfidf_list.append(tfidf)
+                else:
+                    tfidf = term_freq[item] * math.log(47 / 1)
+                    tfidf_list.append(tfidf)
 
-    if all(i is True for i in [term_freq_is_dict, keys_are_str, values_are_float, idf_is_dict,
-                               idf_keys_are_str, idf_values_are_float]):
-        tfidf_list = []
-        for item in term_freq.keys():
-            if item in list(idf.keys()):
-                for item1 in idf.keys():
-                    if item == item1:
-                        tfidf = term_freq[item] * idf[item1]
-                        tfidf_list.append(tfidf)
-            else:
-                tfidf = term_freq[item] * math.log(47 / 1)
-                tfidf_list.append(tfidf)
+            keys = term_freq.keys()
+            keys_list = list(keys)
 
-        keys = term_freq.keys()
-        keys_list = list(keys)
-
-        tfidf_dict = {keys_list[i]: tfidf_list[i] for i in range(len(keys_list))}
-        return tfidf_dict
+            tfidf_dict = {keys_list[i]: tfidf_list[i] for i in range(len(keys_list))}
+            return tfidf_dict
     return None
 
 
