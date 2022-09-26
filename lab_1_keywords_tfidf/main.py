@@ -116,7 +116,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         if top_n:
             return top_n
     return None
-get_top_n({'g':5},2)
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
