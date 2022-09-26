@@ -13,7 +13,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if user_input == [] and can_be_empty is False:
+    if not user_input and can_be_empty is False:
         return False
     for element in user_input:
         if not isinstance(element, elements_type):
@@ -28,7 +28,7 @@ def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: 
     """
     if not isinstance(user_input, dict):
         return False
-    if user_input == {} and can_be_empty is False:
+    if not user_input and can_be_empty is False:
         return False
     for key, value in user_input.items():
         if not (isinstance(key, key_type) and isinstance(value, value_type)):
@@ -157,7 +157,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    tf_dict = {word: (frequency / sum(frequencies.values())) for word, frequency in frequencies.items()}
+    sum_freq = sum(frequencies.values())
+    tf_dict = {word: (frequency / sum_freq) for word, frequency in frequencies.items()}
     return tf_dict
 
 
@@ -179,12 +180,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf_dict = {}
     for word in term_freq.keys():
-        tfidf_dict[word] = term_freq.get(word, 0) * idf.get(word, log(47 / (0 + 1)))
+        tfidf_dict[word] = term_freq.get(word, 0) * idf.get(word, log(47))
     return tfidf_dict
 
 
 def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
