@@ -66,5 +66,3 @@ if __name__ == "__main__":
     RESULT = top_10_tfidf
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
-
