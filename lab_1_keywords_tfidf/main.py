@@ -10,13 +10,16 @@ import math
 
 def clean_and_tokenize(text:str) -> Optional[list[str]]:
     """
-      Removes punctuation, casts to lowercase, splits into tokens
-      Parameters:
-      text (str): Original text
-      Returns:
-      list[str]: A sequence of lowercase tokens with no punctuation
-      In case of corrupt input arguments, None is returned
-      """
+    Removes punctuation, casts to lowercase, splits into tokens
+
+    Parameters:
+    text (str): Original text
+
+    Returns:
+    list[str]: A sequence of lowercase tokens with no punctuation
+
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(text, str):
         return None
     text = text.translate(str.maketrans('', '', string.punctuation))
@@ -88,7 +91,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if not (isinstance(frequencies, dict) and isinstance(top, int)
-            and top > 0 and frequencies and isinstance(top, bool) is False):
+            and top > 0 and frequencies and  isinstance(top, bool) is False):
         return None
     items = frequencies.items()
     for key, value in items:
@@ -96,8 +99,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
         if not isinstance(value, (float, int)) :
             return None
-        sorted_items = dict(sorted(items, key=lambda item: item[1], reverse=True))
-        return list(sorted_items.keys())[0:top]
+        sorted_items = sorted(frequencies.keys(), key=lambda token: frequencies.get(token), reverse=True)[:top]
+        return sorted_items
 
 
 
@@ -120,7 +123,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict):
+    if not isinstance(frequencies, dict) and frequencies:
         return None
     tf_dict = {}
     for key, value in frequencies.items():
@@ -145,7 +148,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if term_freq == {} or not isinstance(term_freq, dict) or not isinstance(idf, dict):
+    if not term_freq or not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
     idf_dict = {}
     for key_freq, value_freq in term_freq.items():
