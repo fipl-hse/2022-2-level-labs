@@ -104,8 +104,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         for i in frequencies.keys():
             if not isinstance(i, str):
                 return None
-        freq_val = frequencies.values()
+        freq_val = list(frequencies.values())
         for i in freq_val:
+            print(type(i))
             if not isinstance(i, (int, float)):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
@@ -120,6 +121,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         if top_n:
             return top_n
     return None
+get_top_n({'g':5},2)
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
