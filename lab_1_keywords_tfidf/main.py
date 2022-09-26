@@ -26,7 +26,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     clean_tokens = []
     for word in tokens:
         for p in punctuation:
-            word = word.strip(p)
+            word = word.replace(p, '')
 
         if word != "":
             clean_tokens.append(word.lower())
