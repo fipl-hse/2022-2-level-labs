@@ -213,6 +213,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
+
+    idf_is_dict = False
+    idf_keys_are_str = True
+    idf_values_are_float = True
     term_freq_is_dict = False
     keys_are_str = True
     values_are_float = True
@@ -225,17 +229,14 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             if not isinstance(item, float):
                 values_are_float = False
 
-    idf_is_dict = False
-    idf_keys_are_str = True
-    idf_values_are_float = True
-    if isinstance(idf, dict):
-        idf_is_dict = True
-        for item in idf.keys():
-            if not isinstance(item, str):
-                idf_keys_are_str = False
-        for item in idf.values():
-            if not isinstance(item, float):
-                idf_values_are_float = False
+        if isinstance(idf, dict):
+            idf_is_dict = True
+            for item in idf.keys():
+                if not isinstance(item, str):
+                    idf_keys_are_str = False
+            for item in idf.values():
+                if not isinstance(item, float):
+                    idf_values_are_float = False
 
     if all(i is True for i in [term_freq_is_dict, keys_are_str, values_are_float, idf_is_dict,
                                idf_keys_are_str, idf_values_are_float]):
