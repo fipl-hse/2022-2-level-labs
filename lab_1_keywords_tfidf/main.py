@@ -102,7 +102,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
         for i, j in frequencies.items():
-            if not isinstance(i, str) and not isinstance(j, (int, float)):
+            if not isinstance(i, str) or not isinstance(j, (int, float)):
                 return None
         reversed_dict = dict(sorted(list(frequencies.items()), key=lambda c: c[1], reverse=True))
         top_n = []
@@ -133,7 +133,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if frequencies and isinstance(frequencies, dict):
         for i, j in frequencies.items():
-            if not isinstance(i, str) and not isinstance(j, int):
+            if not isinstance(i, str) or not isinstance(j, int):
                 return None
         word_sum = sum(list(frequencies.values()))
         words_tf = {}
@@ -159,10 +159,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if term_freq and isinstance(term_freq, dict) and isinstance(idf, dict):
         for i, j in term_freq.items():
-            if not isinstance(i, str) and not isinstance(j, float):
+            if not isinstance(i, str) or not isinstance(j, float):
                 return None
         for i, j in idf.items():
-            if not isinstance(i, str) and not isinstance(j, float):
+            if not isinstance(i, str) or not isinstance(j, float):
                 return None
         for word in term_freq.keys():
             if word not in idf.keys():
@@ -192,10 +192,10 @@ def calculate_expected_frequency(
     """
     if doc_freqs and isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict):
         for i, j in doc_freqs.items():
-            if not isinstance(i, str) and not isinstance(j, int):
+            if not isinstance(i, str) or not isinstance(j, int):
                 return None
         for i, j in corpus_freqs.items():
-            if not isinstance(i, str) and not isinstance(j, int):
+            if not isinstance(i, str) or not isinstance(j, int):
                 return None
         expected = {}
         for word, frequency in doc_freqs.items():
@@ -230,10 +230,10 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     """
     if expected and isinstance(expected, dict) and observed and isinstance(observed, dict):
         for i, j in expected.items():
-            if not isinstance(i, str) and not isinstance(j, float):
+            if not isinstance(i, str) or not isinstance(j, float):
                 return None
         for i, j in observed.items():
-            if not isinstance(i, str) and not isinstance(j, int):
+            if not isinstance(i, str) or not isinstance(j, int):
                 return None
         chi_values_dict = {}
         for word, frequency in expected.items():
@@ -261,7 +261,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     """
     if chi_values and isinstance(chi_values, dict) and isinstance(alpha, float):
         for i, j in chi_values.items():
-            if not isinstance(i, str) and not isinstance(j, float):
+            if not isinstance(i, str) or not isinstance(j, float):
                 return None
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         if alpha in criterion.keys():
