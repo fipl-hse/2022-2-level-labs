@@ -112,7 +112,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         top_n = []
         list_of_keys = list(reversed_dict.keys())
         if len(list(reversed_dict.keys())) < top:
-            for i in range(len(list_of_keys)):
+            for i, c in enumerate(list_of_keys):
                 top_n.append(list_of_keys[i])
         else:
             for i in range(top):
