@@ -35,38 +35,29 @@ if __name__ == "__main__":
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
+    if target_text:
+        words_list = clean_and_tokenize(target_text)
 
-    words_list = clean_and_tokenize(target_text)
-    print("cписок слов: {} ".format(words_list))
-
-    if words_list:
+    if words_list and stop_words:
         tokens = remove_stop_words(words_list, stop_words)
-        print("слова без стоп-слов: {}".format(tokens))
+
     if tokens:
         frequencies = calculate_frequencies(tokens)
-        print("Частоты слов: {}".format(frequencies))
-
-    if frequencies:
-        print(get_top_n(frequencies, 8))
 
     if frequencies:
         term_freq = calculate_tf(frequencies)
-        print("term frequency: ", term_freq)
 
     if term_freq:
         tf_idf = calculate_tfidf(term_freq, idf)
-        print("tf_idf: ", tf_idf)
 
     if tf_idf:
         print(get_top_n(tf_idf, 10))
 
     if frequencies:
         expected = (calculate_expected_frequency(frequencies, corpus_freqs))
-        print("expected frequency: ", expected)
 
     if expected and frequencies:
         chi_values = (calculate_chi_values(expected, frequencies))
-        print("chi values: ", chi_values)
 
     if chi_values:
         print(extract_significant_words(chi_values, 0.05))
