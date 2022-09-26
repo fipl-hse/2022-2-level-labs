@@ -52,6 +52,7 @@ if __name__ == "__main__":
     chi_values = calculate_chi_values(expected_frequencies, frequencies)
     print(chi_values)
     significant = extract_significant_words(chi_values, 0.05)
+    print(significant)
     top_chi = get_top_n(chi_values, 10)
     print(top_chi)
 
