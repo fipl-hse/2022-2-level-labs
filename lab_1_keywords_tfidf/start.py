@@ -35,7 +35,7 @@ if __name__ == "__main__":
     tokens = main.clean_and_tokenize(target_text)
     tokens = main.remove_stop_words(tokens, stop_words)
     frequencies = main.calculate_frequencies(tokens)
-    main.get_top_n(frequencies, 8)
+    main.get_top_n(frequencies, 10)
     term_freq = main.calculate_tf(frequencies)
     tfidf_dic = main.calculate_tfidf(term_freq, idf)
     print(main.get_top_n(tfidf_dic, 10))
