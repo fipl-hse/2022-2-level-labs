@@ -84,7 +84,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     consisting of tokens with the largest frequency
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict) and (isinstance(top, int) or isinstance(top, float))):
+    if not (isinstance(frequencies, dict) and isinstance(top, int) and top > 0):
         return None
     else:
         key_list = list(frequencies.keys())
@@ -102,10 +102,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                             return k
 
             def getting_list(length: int):
-                for i in range(length):
-                    token = get_token(top_list, frequencies, int(value_list[i]))
-                    top_list.append(token)
-                return top_list
+                if type(length) != int:
+                    return None
+                else:
+                    for i in range(length):
+                        token = get_token(top_list, frequencies, int(value_list[i]))
+                        top_list.append(token)
+                    return top_list
             if len(top_list) != top:
                 if top > len(key_list):
                     top_list = getting_list(len(key_list))
