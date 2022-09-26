@@ -19,12 +19,11 @@ def clean_and_tokenize(text:str) -> Optional[list[str]]:
       """
     if not isinstance(text, str):
         return None
-    else:
-        text = text.translate(str.maketrans('', '', string.punctuation))
-        text.strip()
-        text = text.lower()
-        text = text.split()
-        return text
+    text = text.translate(str.maketrans('', '', string.punctuation))
+    text.strip()
+    text = text.lower()
+    text = text.split()
+    return text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -42,12 +41,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not (isinstance(tokens, list) and isinstance(stop_words, list) and tokens):
         return None
-    else:
-        tokens_new = []
-        for i in tokens:
-            if i not in stop_words:
-                tokens_new.append(i)
-        return tokens_new
+    tokens_new = []
+    for i in tokens:
+        if i not in stop_words:
+            tokens_new.append(i)
+    return tokens_new
 
 
 
@@ -67,13 +65,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if not (isinstance(tokens, list) and tokens):
         return None
-    else:
-        for token in tokens:
-            if not isinstance(token, str):
-                return None
-            else:
-                frequency_dict = {i: tokens.count(i) for i in tokens}
-            return frequency_dict
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+        frequency_dict = {i: tokens.count(i) for i in tokens}
+        return frequency_dict
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -91,13 +87,14 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict) and isinstance(top, int) and top > 0 and frequencies and isinstance(top, bool) == False):
+    if not (isinstance(frequencies, dict) and isinstance(top, int)
+            and top > 0 and frequencies and isinstance(top, bool) == False):
         return None
     items = frequencies.items()
     for key, value in items:
         if not isinstance(key, str):
             return None
-        if not (isinstance(value, int) or isinstance(value, float)):
+        if not isinstance(value, (float, int)) :
             return None
         sorted_items = dict(sorted(items, key=lambda item: item[1], reverse=True))
         return list(sorted_items.keys())[0:top]
@@ -180,7 +177,8 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
