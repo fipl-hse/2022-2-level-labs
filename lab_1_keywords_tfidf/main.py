@@ -2,8 +2,8 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-import string
 from typing import Optional, Union, Any
+from string import punctuation
 import math
 
 
@@ -41,7 +41,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not check(text, str):
         return None
-    return ''.join(symbol for symbol in text if symbol not in string.punctuation).lower().split()
+    return ''.join(symbol for symbol in text if symbol not in punctuation).lower().split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -137,7 +137,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     return {key: term_freq[key] * (idf[key] if key in idf else math.log(47)) for key in term_freq}
 
 
-def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
+def calculate_expected_frequency(
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
