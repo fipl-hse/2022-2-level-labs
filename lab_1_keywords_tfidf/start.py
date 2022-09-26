@@ -60,9 +60,6 @@ if __name__ == "__main__":
         FREQUENCIES_DICT = calculate_frequencies(NO_STOP_WORDS)
 
     if FREQUENCIES_DICT:
-        GET_TOP_TEN = get_top_n(FREQUENCIES_DICT, TOP)
-
-    if GET_TOP_TEN:
         COUNT_TF = calculate_tf(FREQUENCIES_DICT)
 
     if COUNT_TF:
