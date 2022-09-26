@@ -190,13 +190,13 @@ def calculate_expected_frequency(
         if not isinstance(word, str) or not isinstance(value, int):
             return None
     words_in_doc = sum(doc_freqs.values())
-    words_in_col = sum(corpus_freqs.values())
+    words_in_coll = sum(corpus_freqs.values())
     expected_freq = {}
     for word in doc_freqs:
         occur_doc = doc_freqs.get(word, 0)
         occur_doc_except_word = words_in_doc - doc_freqs.get(word, 0)
         occur_collection = corpus_freqs.get(word, 0)
-        occur_collection_except_t = words_in_col - corpus_freqs.get(word, 0)
+        occur_collection_except_t = words_in_coll - corpus_freqs.get(word, 0)
         expected_freq[word] = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
                               (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
     print(expected_freq)
