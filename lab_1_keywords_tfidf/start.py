@@ -43,13 +43,13 @@ if __name__ == "__main__":
     print(main.get_top_n(text_step6, 10))
     text_step8 = main.calculate_expected_frequency(text_step3, corpus_freqs)
 
-    #print(text_step1)
-    #print(text_step2)
-    #print(text_step3)
-    #print(text_step4)
-    #print(text_step5)
-    #print(text_step6)
-    #print(text_step8)
+   #print(text_step1)
+   #print(text_step2)
+   #print(text_step3)
+   #print(text_step4)
+   #print(text_step5)
+   #print(text_step6)
+   #print(text_step8)
 
     RESULT = main.get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

@@ -275,55 +275,40 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    doc_freqs_is_dict = False
-    keys_are_str = True
-    values_are_int = True
+
     if isinstance(doc_freqs, dict):
-        doc_freqs_is_dict = True
-        for item in doc_freqs.keys():
-            if not isinstance(item, str):
-                keys_are_str = False
-        for item in doc_freqs.values():
-            if not isinstance(item, int):
-                values_are_int = False
+        for item in doc_freqs.items():
+            if not isinstance(item[0], str) or not isinstance(item[1], int):
+                return None
 
-    corpus_freqs_is_dict = False
-    corpus_keys_are_str = True
-    corpus_values_are_int = True
-    if isinstance(corpus_freqs, dict):
-        corpus_freqs_is_dict = True
-        for item in corpus_freqs.keys():
-            if not isinstance(item, str):
-                corpus_keys_are_str = False
-        for item in corpus_freqs.values():
-            if not isinstance(item, int):
-                corpus_values_are_int = False
+        if isinstance(corpus_freqs, dict):
+            for item in corpus_freqs.items():
+                if not isinstance(item[0], str) or not isinstance(item[1], int):
+                    return None
 
-    if all(i is True for i in [doc_freqs_is_dict, keys_are_str, values_are_int,
-                               corpus_freqs_is_dict, corpus_keys_are_str, corpus_values_are_int]):
-        total_doc = 0
-        for value in doc_freqs.values():
-            total_doc += value
+            total_doc = 0
+            for value in doc_freqs.values():
+                total_doc += value
 
-        total_corpus = 0
-        for value in corpus_freqs.values():
-            total_corpus += value
+            total_corpus = 0
+            for value in corpus_freqs.values():
+                total_corpus += value
 
-        expected_list = []
-        for item in doc_freqs:
-            doc_entry = doc_freqs[item]
-            corpus_entry = corpus_freqs[item]
-            other_words_doc_entry = total_doc - doc_entry
-            other_words_corpus_entry = total_corpus - corpus_entry
-            expected = ((doc_entry + corpus_entry) * (doc_entry + other_words_doc_entry) /
-                        (doc_entry + corpus_entry + other_words_doc_entry + other_words_corpus_entry))
-            expected_list.append(expected)
+            expected_list = []
+            for item in doc_freqs:
+                doc_entry = doc_freqs[item]
+                corpus_entry = corpus_freqs[item]
+                other_words_doc_entry = total_doc - doc_entry
+                other_words_corpus_entry = total_corpus - corpus_entry
+                expected = ((doc_entry + corpus_entry) * (doc_entry + other_words_doc_entry) /
+                            (doc_entry + corpus_entry + other_words_doc_entry + other_words_corpus_entry))
+                expected_list.append(expected)
 
-        keys = doc_freqs.keys()
-        keys_list = list(keys)
+            keys = doc_freqs.keys()
+            keys_list = list(keys)
 
-        expected_dict = {keys_list[i]: expected_list[i] for i in range(len(keys_list))}
-        return expected_dict
+            expected_dict = {keys_list[i]: expected_list[i] for i in range(len(keys_list))}
+            return expected_dict
     return None
 
 
