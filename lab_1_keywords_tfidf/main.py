@@ -17,8 +17,21 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-    #1
+    if not isinstance(text, str):
+        return None
+
+    tokens = text.split()
+
+    punctuation = [",.-!?'\"$%@#№*()[]{}+=:;^`~<>\\/|"]
+    clean_tokens = []
+    for word in tokens:
+        for p in punctuation:
+            word = word.strip(p)
+
+        if word != "":
+            clean_tokens.append(word.lower())
+
+    return clean_tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -34,7 +47,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(tokens, list) or not isinstance(stop_words, list) \
+            or any(not isinstance(item, str) for item in tokens) \
+            or any(not isinstance(item, str) for item in stop_words):
+        return None
+
+    return [word for word in tokens if word not in stop_words]
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -49,7 +67,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(tokens, list) or any(not isinstance(item, str) for item in tokens):
+        return None
+
+    freq = {}
+    for token in tokens:
+        if token in freq:
+            freq[token] += 1
+        else:
+            freq[token] = 1
+
+    return freq
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -67,7 +95,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(frequencies, dict) or not isinstance(top, int) \
+            or any(not isinstance(key, str) for key in frequencies) \
+            or any(not isinstance(val, float) and not isinstance(val, int) for val in frequencies.values()):
+        return None
+
+    sorted_words = sorted(((v, k) for k, v in frequencies.items()), reverse=True)
+    return [k for v, k in sorted_words[:top]]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -158,3 +192,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
+
