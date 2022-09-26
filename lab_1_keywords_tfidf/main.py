@@ -138,12 +138,18 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    count = 0
-    for key, value in frequencies.items():
-        count += 1
-        return (count)
-    for key in frequencies.items():
-        return (dict)
+    if isinstance(frequencies, dict):
+        for k, v in frequencies.items():
+            if isinstance(k, str) and isinstance(v, int):
+                sum_values = sum(frequencies.values())
+                tf_dict = dict(frequencies)
+                for i, j in tf_dict.items():
+                    tf_dict[i] = j / sum_values
+                return tf_dict
+            else:
+                return None
+    else:
+        return None
 
 
 
@@ -162,7 +168,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     pass
-
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
