@@ -230,6 +230,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     chi_values = {}
     for word, value in expected.items():
         chi_values[word] = ((observed.get(word, 0) - value) ** 2) / value
+    print(chi_values)
     return chi_values
 
 
