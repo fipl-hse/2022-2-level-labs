@@ -47,6 +47,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 
 def check_content(massive, type_name):
+    """
+       Checks if all elements in a sequence is the same type
+       Parameters:
+       massive: A sequence to check
+       type_name: name of type (str, int, etc)
+       Returns:
+       True
+       In case of different types of elements, None is returned
+       """
     if massive and all(isinstance(el, type_name) for el in massive):
         return True
     else:
@@ -93,7 +102,17 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             value_list.sort(reverse=True)
             top_list = []
 
-            def get_token(top_list: dict[str], frequencies: dict[str, Union[int, float]], value: int):
+            def get_token(top_list: list[str], frequencies: dict[str, Union[int, float]], value: int):
+                """
+                Extracts token from the frequencies dictionary by its number of occurance
+                Parameters:
+                top_list (list): list of tokens
+                frequencies (dict): frequencies (Dict): A dictionary with tokens and
+                its corresponding frequency
+                values (int): Number of occurance of the word
+                Returns:
+                str: A token which has mentioned occurance number
+                """
                 for k, v in frequencies.items():
                     if v == value:
                         if k in top_list:
@@ -102,6 +121,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                             return k
 
             def getting_list(length: int):
+                """
+                   Creates a certain number of most frequent tokens
+                   Parameters:
+                   length(int): Number of token to extract
+                   Returns:
+                   List[str]: Sequence of specified length
+                   consisting of tokens with the largest frequency
+                   In case of corrupt input arguments, None is returned
+                   """
                 if type(length) != int:
                     return None
                 else:
