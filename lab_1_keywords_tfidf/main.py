@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 
 
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -18,8 +19,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(text, str):
-        print(None)
-    punc = '''1234567890!()[]{};:'"\,<>./?@#$%^&*_~'''
+        return
+    punc = '''1234567890!()[]{};:'"\,<>./?@#$%^&*_~-'''
     for elements in text:
         if elements in punc:
             text = text.replace(elements, '')
@@ -97,7 +98,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if isinstance(frequencies, dict):
+        for i in frequencies:
+            isinstance(i, str)
+            return None
+
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
