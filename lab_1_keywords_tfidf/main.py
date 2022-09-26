@@ -98,12 +98,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict) and isinstance(top, int):
-        for i in frequencies:
-            if isinstance(i, int) or isinstance(i, float):
+    if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
+        for k, v in frequencies.items():
+            if isinstance(k, str) and isinstance(v, (int, float)) and top>=1:
                 list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
-                # Не знаю, почему используется reverse=true"
-                List = list_sorted[:top]
+                List_top = list_sorted[:top]
+                List = [i[0] for i in List_top]
                 return (List)
             else:
                 return None
