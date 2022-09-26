@@ -45,15 +45,15 @@ if __name__ == "__main__":
         calculated_tf = calculate_tf(frequency)
     if calculated_tf:
         calculated_tfidf = calculate_tfidf(calculated_tf, idf)
-    if calculated_tfidf:
+    if calculated_tfidf and frequency:
         print(get_top_n(calculated_tfidf, 10))
         expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
-    if expected_frequency:
+    if expected_frequency and frequency:
         chi_value = calculate_chi_values(expected_frequency, frequency)
     if chi_value:
         signific_words = extract_significant_words(chi_value, ALPHA)
     if signific_words:
         print(get_top_n(signific_words, 10))
-    RESULT = signific_words
+        RESULT = get_top_n(signific_words, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
