@@ -99,7 +99,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
         if not isinstance(value, (float, int)) :
             return None
-        sorted_items = sorted(frequencies.keys(), key=lambda token: frequencies.get(token), reverse=True)[:top]
+        sorted_items = sorted(frequencies.keys(), key=frequencies.get, reverse=True)[:top]
         return sorted_items
 
 
