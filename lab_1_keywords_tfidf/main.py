@@ -40,20 +40,18 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
        List[str]: Token sequence that does not include stop words
        In case of corrupt input arguments, None is returned
        """
-    if type(tokens) != list or type(stop_words) != list:
-        return None
+    if isinstance(tokens, list) and isinstance(stop_words, list):
+        if (isinstance(word1, str) for word1 in stop_words) and (isinstance(word2, str) for word2 in tokens):
+            new_tokens = []
+            for word3 in tokens:
+                if word3 not in stop_words:
+                    new_tokens += [word3]
+            tokens = new_tokens
+            return tokens
+        else:
+            return None
     else:
-        new_tokens = []
-        for word in tokens:
-            if type(word) is not str:
-                return None
-            if word not in stop_words:
-                new_tokens.append(word)
-        for word in stop_words:
-            if type(word) is not str:
-                return None
-    tokens = new_tokens
-    return tokens
+        return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -65,9 +63,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
        Dict: {token: number of occurrences in the token sequence} dictionary
        In case of corrupt input arguments, None is returned
        """
-    if type(tokens) is not list:
-        return None
-    else:
+    if isinstance(tokens, list):
         frequencies = {}
         for word in tokens:
             if type(word) is not str or word == "":
@@ -106,7 +102,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         if top < len(frequencies):
             most_common = sorted(frequencies, key=frequencies.get, reverse=True)
             most_common = list(most_common[:top])
-            return most_common
+            frequencies = most_common
+            return frequencies
     else:
         return None
 
@@ -121,6 +118,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
        dict: A dictionary with tokens and corresponding term frequency score
        In case of corrupt input arguments, None is returned
        """
+    term_freq = {}
     if type(frequencies) is dict:
         for key in frequencies.keys():
             if type(key) is not str:
@@ -130,7 +128,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             if type(value) is not int:
                 return None
             lenght += value
-        term_freq = {}
+
         for word in frequencies.keys():
             freq = frequencies[word]/lenght
             term_freq[word] = freq
@@ -183,8 +181,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
 
 
-def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
