@@ -64,18 +64,18 @@ if __name__ == "__main__":
         TF_IDF = calculate_tfidf(TF_DICT, idf)
 
     if TF_IDF:
-        print(f'Most frequent words in tfidf_dict: {get_top_n(TF_IDF, 10)}')
+        print(get_top_n(TF_IDF, 10))
 
-    if FREQ_DICT and corpus_freqs:
+    if FREQ_DICT:
         EXPECTED_FREQUENCY = calculate_expected_frequency(FREQ_DICT, corpus_freqs)
 
-    if EXPECTED_FREQUENCY:
+    if EXPECTED_FREQUENCY and FREQ_DICT:
         CHI_VALUES = calculate_chi_values(EXPECTED_FREQUENCY, FREQ_DICT)
 
     if CHI_VALUES:
         SIGNIFICANT_WORDS = extract_significant_words(CHI_VALUES, 0.001)
         print("Most important chi-words:", get_top_n(CHI_VALUES, 10))
 
-    RESULT = CHI_VALUES
+    RESULT = get_top_n(CHI_VALUES, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

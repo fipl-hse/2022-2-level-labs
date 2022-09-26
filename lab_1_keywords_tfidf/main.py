@@ -4,7 +4,6 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 from string import punctuation
-from operator import itemgetter
 from math import log
 
 
@@ -99,15 +98,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool) or not frequencies or \
             top <= 0:
         return None
-    for i in frequencies.keys():
-        if not isinstance(i, str):
+    for key, value in frequencies.items():
+        if not isinstance(key, str) or not isinstance(value, (float, int)):
             return None
-    for i in frequencies.values():
-        if not isinstance(i, int) and not isinstance(i, float):
-            return None
-    filtered_words = [word for word, freq in sorted(frequencies.items(), key=itemgetter(1), reverse=True)]
-    top_n = filtered_words[:top]
-    return top_n
+    freqs_len = len(frequencies)
+    if top <= freqs_len:
+        top_list = [(word) for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
+    else:
+        top_list = [(word) for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)]
+    return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -191,19 +190,16 @@ def calculate_expected_frequency(
     for word, value in doc_freqs.items():
         if not isinstance(word, str) or not isinstance(value, int):
             return None
+    words_in_doc = sum(doc_freqs.values())
+    words_in_col = sum(corpus_freqs.values())
     expected_freq = {}
     for word in doc_freqs:
-        occur_doc = doc_freqs.get(word)
-        occur_doc_except_word = sum(doc_freqs.values()) - occur_doc
-        if word in corpus_freqs.keys():
-            occur_collection = corpus_freqs.get(word)
-            occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
-        else:
-            occur_collection = 0
-            occur_collection_except_t = sum(corpus_freqs.values()) - occur_collection
-        expected = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
-                   (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
-        expected_freq[word] = expected
+        occur_doc = doc_freqs.get(word, 0)
+        occur_doc_except_word = words_in_doc - doc_freqs.get(word, 0)
+        occur_collection = corpus_freqs.get(word, 0)
+        occur_collection_except_t = words_in_col - corpus_freqs.get(word, 0)
+        expected_freq[word] = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
+                              (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
     print(expected_freq)
     return expected_freq
 
@@ -234,8 +230,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
             return None
     chi_values = {}
     for word, value in expected.items():
-        chi = ((observed.get(word) - value) ** 2) / value
-        chi_values[word] = chi
+        chi_values[word] = ((observed.get(word, 0) - value) ** 2) / value
     print(chi_values)
     return chi_values
 
@@ -267,7 +262,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         if not isinstance(word, str) or not isinstance(value, float):
             return None
     for word, value in chi_values.items():
-        if value > criterion.get(alpha):
+        if value > criterion.get(alpha, 0):
             significant_words[word] = value
     print(significant_words)
     return significant_words
