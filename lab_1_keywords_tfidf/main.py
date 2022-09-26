@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 import copy
 from typing import Optional, Union
 import string
+import math
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -215,7 +216,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     term_freq_is_dict = False
     keys_are_str = True
     values_are_float = True
-    if isinstance(term_freq, dict):
+    if isinstance(term_freq, dict) and len(term_freq) != 0:
         term_freq_is_dict = True
         for item in term_freq.keys():
             if not isinstance(item, str):
@@ -236,13 +237,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             if not isinstance(item, float):
                 idf_values_are_float = False
 
-    if term_freq_is_dict and keys_are_str and values_are_float and idf_is_dict and idf_keys_are_str and idf_values_are_float:
-        tfidf_list =[]
+    if (term_freq_is_dict and keys_are_str and values_are_float and idf_is_dict
+            and idf_keys_are_str and idf_values_are_float):
+        tfidf_list = []
         for item in term_freq.keys():
-            for item1 in idf.keys():
-                if item == item1:
-                    tfidf = term_freq[item] * idf[item1]
-                    tfidf_list.append(tfidf)
+            if item in list(idf.keys()):
+                for item1 in idf.keys():
+                    if item == item1:
+                        tfidf = term_freq[item] * idf[item1]
+                        tfidf_list.append(tfidf)
+            else:
+                tfidf = term_freq[item] * math.log(47 / 1)
+                tfidf_list.append(tfidf)
 
         keys = term_freq.keys()
         keys_list = list(keys)
