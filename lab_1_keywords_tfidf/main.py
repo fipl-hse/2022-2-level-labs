@@ -2,6 +2,7 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
+import copy
 from typing import Optional, Union
 import string
 
@@ -124,9 +125,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     keys_are_str = True
     values_are_int_or_float = True
     top_is_int = False
-    if isinstance(top, int):
+    if isinstance(top, int) and top > 0:
         top_is_int = True
-        if isinstance(frequencies, dict):
+        if isinstance(frequencies, dict) and len(frequencies) != 0:
             frequencies_is_dict = True
             for item in frequencies.keys():
                 if not isinstance(item, str):
@@ -135,12 +136,21 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                 if not isinstance(item, (int, float)):
                     values_are_int_or_float = False
 
-    if frequencies_is_dict and keys_are_str and values_are_int_or_float and top_is_int:
-        sorted_frequencies = dict(sorted(frequencies.items(), key=lambda item: item[1]))
-        keys = sorted_frequencies.keys()
-        keys_lst = list(keys)
-        keys_lst.reverse()
-        top_n = keys_lst[:top]
+    frequencies_copy = copy.deepcopy(frequencies)
+
+    if frequencies_is_dict and keys_are_str and values_are_int_or_float and top_is_int and not isinstance(top, bool):
+        key_lst = []
+        sorted_values = sorted(frequencies_copy.values())
+        sorted_values_list = list(sorted_values)
+        sorted_values_list.reverse()
+        for value in sorted_values_list:
+            for key in frequencies_copy.keys():
+                if frequencies_copy[key] == value:
+                    key_lst.append(key)
+                    frequencies_copy.pop(key)
+                    break
+        top_n = key_lst[:top]
+
         return top_n
     return None
 
