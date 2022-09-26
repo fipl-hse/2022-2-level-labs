@@ -2,12 +2,22 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
-
+from typing import Optional, Union, Any
+import string
+from string import punctuation
 
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
+    if isistance (text, str):
+        text = text.lower().strip()
+        for symbol in punctuation:
+            if symbol in text:
+                text = text.replace(symbol, ' ')
+            tokens = text.split()
+            return tokens
+    else:
+        return None
     """
     Removes punctuation, casts to lowercase, splits into tokens
 
@@ -23,6 +33,14 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
+    if isistance(tokens, list) and isinstance(stop_words, list):
+        for stop_word in stop_words:
+            while stop_word in tokens:
+                tokens.remove(stop_word)
+                return tokens
+    else:
+        return None
+
     """
     Excludes stop words from the token sequence
 
@@ -39,6 +57,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
+    frequences = {}
+    if isinstance(tokens, list):
+        for token in tokens:
+            occurance_number = token.count(token)
+            frequences[token] = occurance_number
+        return frequences
+    else:
+        return None
+
     """
     Composes a frequency dictionary from the token sequence
 
@@ -54,6 +81,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
+    if isinstance(frequencies, dict) and isinstance(top, int) and top >=1:
+        key_list = list(frequencies.keys())
+        value_list = list(frequencies.values())
+
+
     """
     Extracts a certain number of most frequent tokens
 
