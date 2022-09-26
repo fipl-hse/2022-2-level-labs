@@ -20,7 +20,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return
-    punc = '''1234567890!()[]{};:'"\,<>./?@#$%^&*_~-'''
+    punc = '''!()[]{};:'"\,<>./?@#$%^&*_~-'''
     for elements in text:
         if elements in punc:
             text = text.replace(elements, '')
@@ -45,13 +45,13 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     if isinstance(tokens, list) and isinstance(stop_words, list):
-        for element in tokens:
-            if not isinstance(element, str):
+        for i in tokens:
+            if not isinstance(i, str):
                 return None
-        for element in stop_words:
-            if not isinstance(element, str):
+        for i in stop_words:
+            if not isinstance(i, str):
                 return None
-    return [elements for elements in tokens if elements not in stop_words]
+        return [elements for elements in tokens if elements not in stop_words]
 
 
 
