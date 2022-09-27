@@ -23,37 +23,15 @@ if __name__ == "__main__":
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
         target_text = file.read()
 
-    tokens = clean_and_tokenize(target_text)
-    print(tokens)
-
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
 
-    rem_tokens = remove_stop_words(tokens, stop_words)
-    print(rem_tokens)
-
-    frequencies = calculate_frequencies(rem_tokens)
-    print(frequencies)
-
-    top_10_words = get_top_n(frequencies, 10)
-    print(top_10_words)
-
-    tf = calculate_tf(frequencies)
-    print(tf)
-
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
-
-
-    tfidf = calculate_tfidf(tf, idf)
-    print(tfidf)
-
-    top_10_tfidf = get_top_n(tfidf, 10)
-    print(top_10_tfidf)
 
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
@@ -61,8 +39,31 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
 
+    NO_STOP_WORDS = None
+    FREQ_DICT = None
+    TF_DICT = None
+    TF_IDF = None
+    CLEAN_AND_TOKENS = clean_and_tokenize(target_text)
 
 
-    RESULT = top_10_tfidf
+
+    if CLEAN_AND_TOKENS:
+        NO_STOP_WORDS = remove_stop_words(CLEAN_AND_TOKENS, stop_words)
+
+    if NO_STOP_WORDS:
+        FREQ_DICT = calculate_frequencies(NO_STOP_WORDS)
+
+    if FREQ_DICT:
+        TF_DICT = calculate_tf(FREQ_DICT)
+
+    if TF_DICT:
+        TF_IDF = calculate_tfidf(TF_DICT, idf)
+
+    if TF_IDF:
+        print(get_top_n(TF_IDF, 10))
+
+
+
+    RESULT = get_top_n
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
