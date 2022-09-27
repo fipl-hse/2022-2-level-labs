@@ -38,7 +38,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
         if term_freq is not None and idf is not None:
             tfidf = calculate_tfidf(term_freq, idf)
-            if frequencies.get is not None and idf is not None:
+            if frequencies.get is not None and idf is not None and frequencies is not None:
                 RESULT = get_top_n(tfidf, 10)
     print("Top 10 most common words in the text: ", RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
