@@ -47,9 +47,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     for i in tokens.copy():
         if not isinstance(i, str):
             return None
-        else:
-            if i in stop_words:
-                tokens.remove(i)
+        if i in stop_words:
+            tokens.remove(i)
 
     return tokens
 
@@ -73,9 +72,9 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     for i in tokens:
         if not isinstance(i, str):
             return None
-        else:
-            freq = tokens.count(i)
-            frequencies[i] = freq
+        freq = tokens.count(i)
+        frequencies[i] = freq
+
     return frequencies
 
 
@@ -101,15 +100,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for k, val in frequencies.items():
         if not isinstance(k, str) or not isinstance(val, int | float):  # or isinstance(v, bool):
             return None
-        else:
-            sorted_keys = sorted(frequencies, reverse=True, key=lambda word: frequencies[word])
-            if not sorted_keys:
-                return None
-            else:
-                if top > 0:
-                    return sorted_keys[:top]
-                else:
-                    return None
+        sorted_keys = sorted(frequencies, reverse=True, key=lambda word: frequencies[word])
+        if not sorted_keys:
+            return None
+        if top > 0:
+            return sorted_keys[:top]
+        return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -134,8 +130,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     for k, val in frequencies.items():
         if not isinstance(k, str) or not isinstance(val, int):
             return None
-        else:
-            length = length + val
+        length = length + val
 
     for k, val in frequencies.items():
         term_f = val / length
@@ -172,13 +167,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             for key1, val1 in idf.items():
                 if not isinstance(key1, str) or not isinstance(val1, float):
                     return None
-                else:
-                    if k == key1:
-                        term_freq[k] = val * idf[k]
-                        break
-                    else:
-                        term_freq[k] = val * math.log(47 / 1)
-
+                if k == key1:
+                    term_freq[k] = val * idf[k]
+                    break
+                term_freq[k] = val * math.log(47 / 1)
     return term_freq
 
 
