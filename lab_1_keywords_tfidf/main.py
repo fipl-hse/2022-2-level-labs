@@ -48,8 +48,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             tokens = new_tokens
             return tokens
         return None
-    else:
-        return None
+    return None
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -161,14 +160,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                         max_idf = math.log(47)
                         tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
                         return tfidf
-                else:
-                    return None
-            else:
                 return None
-        else:
             return None
-    else:
         return None
+    return None
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
