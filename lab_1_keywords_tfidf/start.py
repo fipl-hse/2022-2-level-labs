@@ -43,7 +43,7 @@ if __name__ == "__main__":
         term_freq = calculate_tf(frequencies)
     if term_freq or idf:
         tfidf_res = calculate_tfidf(term_freq, idf)
-    RESULT = print(get_top_n(tfidf_res, 10))
+        RESULT = print(get_top_n(tfidf_res, 10))
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
