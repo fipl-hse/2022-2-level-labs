@@ -6,13 +6,10 @@ from pathlib import Path
 from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
                                        calculate_tf, calculate_tfidf)
 
-
 if __name__ == "__main__":
-
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
-
 
     # reading the text from which keywords are going to be extracted
     TARGET_TEXT_PATH = ASSETS_PATH / 'Дюймовочка.txt'
@@ -30,7 +27,6 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
         term_freq = calculate_tf(frequencies)
-
 
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'

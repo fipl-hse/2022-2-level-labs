@@ -66,8 +66,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             else:
                 return None
         return frequencies
-    else:
-        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -83,7 +81,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         In case of corrupt input arguments, None is returned
         """
     if isinstance(top, int) and top > 0 and top is not True and isinstance(frequencies, dict) and frequencies != {}:
-        if (all(isinstance(key, str) and key is not None and type(key) != bool for key in frequencies.keys())
+        if (all(isinstance(key, str) and key is not None and not isinstance(key, bool) for key in frequencies.keys())
                 and all((isinstance(value, int or float) for value in frequencies.values()))):
             if top >= len(frequencies):
                 most_common = sorted(frequencies, key=frequencies.get, reverse=True)
@@ -110,23 +108,21 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
        In case of corrupt input arguments, None is returned
        """
     term_freq = {}
-    if type(frequencies) is dict:
+    if isinstance(frequencies, dict):
         for key in frequencies.keys():
-            if type(key) is not str:
+            if not isinstance(key, str):
                 return None
         lenght = 0
         for value in frequencies.values():
-            if type(value) is not int:
+            if not isinstance(value, int):
                 return None
             lenght += value
-
         for word in frequencies.keys():
             freq = frequencies[word] / lenght
             term_freq[word] = freq
         return term_freq
     else:
         return None
-
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
