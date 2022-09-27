@@ -32,7 +32,6 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
     tokens = clean_and_tokenize(target_text)
     if tokens and stop_words:
         cleaned_tokens = remove_stop_words(tokens, stop_words)
