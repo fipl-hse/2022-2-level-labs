@@ -18,9 +18,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt arguments, None is returned
     """
     if isinstance(text, str):
-        for x in text:
-            if x in string.punctuation:
-                text = text.replace(x, '')
+        for i in text:
+            if i in string.punctuation:
+                text = text.replace(i, '')
         return text.lower().split()
     return None
 
@@ -41,16 +41,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not isinstance(stop_words, list) or not isinstance(tokens, list):
         return None
-    for x in tokens:
-        if not isinstance(x, str):
+    for i in tokens:
+        if not isinstance(i, str):
             return None
-    for x in stop_words:
-        if not isinstance(x, str):
+    for i in stop_words:
+        if not isinstance(i, str):
             return None
     clean_tokens = []
-    for x in tokens:
-        if x not in stop_words:
-            clean_tokens.append(x)
+    for i in tokens:
+        if i not in stop_words:
+            clean_tokens.append(i)
     return clean_tokens
 
 
@@ -69,11 +69,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     dictionary = dict()
     if not isinstance(tokens, list) or tokens == []:
         return None
-    for x in tokens:
-        if not isinstance(x, str):
+    for i in tokens:
+        if not isinstance(i, str):
             return None
-        y = tokens.count(x)
-        dictionary[x] = y
+        number = tokens.count(i)
+        dictionary[i] = number
     return dictionary
 
 
@@ -96,13 +96,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         return None
     if top <= 0:
         return None
-    for x in frequencies.items():
-        if not isinstance(x[0], str) or not isinstance(x[1], (int, float)):
+    for i in frequencies.items():
+        if not isinstance(i[0], str) or not isinstance(i[1], (int, float)):
             return None
     sorted_list = []
     sort = sorted(frequencies.items(), reverse=True, key=lambda x: x[1])
-    for x in sort:
-        sorted_list.append(x[0])
+    for i in sort:
+        sorted_list.append(i[0])
     if top > len(frequencies):
         top = len(frequencies)
     return sorted_list[:top]
@@ -123,13 +123,13 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if not isinstance(frequencies, dict):
         return None
-    for x in frequencies.items():
-        if not isinstance(x[0], str) or not isinstance(x[1], int):
+    for i in frequencies.items():
+        if not isinstance(i[0], str) or not isinstance(i[1], int):
             return None
     tf_dict = {}
-    nd = sum(frequencies.values())
-    for x in frequencies.keys():
-        tf_dict[x] = frequencies[x] / int(nd)
+    Nd = sum(frequencies.values())
+    for i in frequencies.keys():
+        tf_dict[i] = frequencies[i] / int(Nd)
     return tf_dict
 
 
@@ -150,19 +150,19 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not isinstance(term_freq, dict) or not isinstance(idf, dict) or term_freq == {}:
         return None
-    for x in term_freq.items():
-        if not isinstance(x[0], str) or not isinstance(x[1], float):
+    for i in term_freq.items():
+        if not isinstance(i[0], str) or not isinstance(i[1], float):
             return None
-    for x in idf.items():
-        if not isinstance(x[0], str) or not isinstance(x[1], float):
+    for i in idf.items():
+        if not isinstance(i[0], str) or not isinstance(i[1], float):
             return None
     TFIDF_dictionary = {}
-    for x in term_freq.keys():
-        if x in idf.keys():
-            TFIDF = term_freq[x] * idf[x]
+    for i in term_freq.keys():
+        if i in idf.keys():
+            TF_IDF = term_freq[i] * idf[i]
         else:
-            TFIDF = term_freq[x] * math.log(47 / (0 + 1))
-        TFIDF_dictionary[x] = TFIDF
+            TF_IDF = term_freq[i] * math.log(47 / (0 + 1))
+        TFIDF_dictionary[i] = TF_IDF
     return TFIDF_dictionary
 
 
