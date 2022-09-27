@@ -26,6 +26,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             if word == "' '":
                 tokens.remove(word)
         return tokens
+    return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -67,6 +68,8 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             else:
                 return None
         return frequencies
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -83,24 +86,22 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         """
     if (isinstance(top, int) and top > 0 and isinstance(top, bool) is not True and isinstance(frequencies, dict)
             and frequencies != {}):
-        if (isinstance(key, str) for key in frequencies.keys()):
-            for value in frequencies.values():
-                if isinstance(value, (int, float)):
-                    if top >= len(frequencies):
-                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                        return most_common
-                    if top < len(frequencies):
-                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                        most_common = list(most_common[:top])
-                        frequencies = most_common
-                        return frequencies
-                else:
-                    return None
+        for value in frequencies.values():
+            if isinstance(value, (int, float)):
+                if top >= len(frequencies):
+                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                    return most_common
+                if top < len(frequencies):
+                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                    most_common = list(most_common[:top])
+                    frequencies = most_common
+                    return frequencies
+            else:
+                return None
         else:
             return None
     else:
         return None
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -127,6 +128,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             freq = frequencies[word] / lenght
             term_freq[word] = freq
         return term_freq
+    else:
+        return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
