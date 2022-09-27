@@ -63,7 +63,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         for word in tokens:
             if isinstance(word, str) and word != "":
                 frequencies[word] = tokens.count(word)
+            else:
+                return None
         return frequencies
+    else:
+        return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -78,21 +82,17 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if isinstance(top, int) and top != 0 and isinstance(frequencies, dict) and frequencies != {}:
-        if (isinstance(key, str) for key in frequencies.keys()):
-            if (isinstance(value, int or float) for value in frequencies.values()):
-                if top >= len(frequencies):
-                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                    return most_common
-                if top < len(frequencies):
-                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                    most_common = list(most_common[:top])
-                    frequencies = most_common
-                    return frequencies
-                else:
-                    return None
-            else:
-                return None
+    if isinstance(top, int) and top > 0 and top is not True and isinstance(frequencies, dict) and frequencies != {}:
+        if (all(isinstance(key, str) and key is not None and type(key) != bool for key in frequencies.keys())
+                and all((isinstance(value, int or float) for value in frequencies.values()))):
+            if top >= len(frequencies):
+                most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                return most_common
+            if top < len(frequencies):
+                most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                most_common = list(most_common[:top])
+                frequencies = most_common
+                return frequencies
         else:
             return None
     else:
@@ -110,17 +110,23 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
        In case of corrupt input arguments, None is returned
        """
     term_freq = {}
-    if isinstance(frequencies, dict):
+    if type(frequencies) is dict:
+        for key in frequencies.keys():
+            if type(key) is not str:
+                return None
         lenght = 0
-        if (isinstance(key, str) for key in frequencies.keys()):
-            for value in frequencies.values():
-                if isinstance(value, int):
-                    lenght += value
-                lenght += value
-            for word in frequencies.keys():
-                freq = frequencies[word] / lenght
-                term_freq[word] = freq
-            return term_freq
+        for value in frequencies.values():
+            if type(value) is not int:
+                return None
+            lenght += value
+
+        for word in frequencies.keys():
+            freq = frequencies[word] / lenght
+            term_freq[word] = freq
+        return term_freq
+    else:
+        return None
+
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -149,11 +155,16 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                 if idf == {}:
                     for word, word_freq in term_freq.items():
                         tfidf[word] = word_freq * math.log(47)
+                    return tfidf
                 for word in idf.values():
                     if word == 0:
                         max_idf = math.log(47)
                         tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
                         return tfidf
+            else:
+                return None
+        else:
+            return None
     else:
         return None
 
