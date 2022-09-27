@@ -100,7 +100,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     return None
 
 
-
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
        Calculates Term Frequency score for each word in a token sequence
@@ -140,28 +139,26 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         In case of corrupt input arguments, None is returned
         """
 
-    if isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq != {}:
-        if (all(isinstance(key, str) for key in term_freq.keys())
-                and all(isinstance(value, float) for value in term_freq.values())):
-            if (all(isinstance(key, str) for key in idf.keys())
-                    and all(isinstance(value, float) for value in idf.values())):
-                tfidf = {}
-                for word in idf.keys():
-                    if word not in idf.keys():
-                        idf_meaning = math.log(47)
-                        idf[word] = idf_meaning
-                        return idf
-                if idf == {}:
-                    for word, word_freq in term_freq.items():
-                        tfidf[word] = word_freq * math.log(47)
+    if (isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq != {}
+            and (all(isinstance(key, str) for key in term_freq.keys())
+                 and all(isinstance(value, float) for value in term_freq.values()))):
+        if (all(isinstance(key, str) for key in idf.keys())
+                and all(isinstance(value, float) for value in idf.values())):
+            tfidf = {}
+            for word in idf.keys():
+                if word not in idf.keys():
+                    idf_meaning = math.log(47)
+                    idf[word] = idf_meaning
+                    return idf
+            if idf == {}:
+                for word, word_freq in term_freq.items():
+                    tfidf[word] = word_freq * math.log(47)
+                return tfidf
+            for word in idf.values():
+                if word == 0:
+                    max_idf = math.log(47)
+                    tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
                     return tfidf
-                for word in idf.values():
-                    if word == 0:
-                        max_idf = math.log(47)
-                        tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
-                        return tfidf
-                return None
-            return None
         return None
     return None
 
