@@ -130,7 +130,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     dictionary = {}
     all_instances = sum(frequencies.values())
     for i in frequencies.keys():
-        dictionary[i] = frequencies[i] / int(all_instances)
+        dictionary[i] = frequencies[i] / all_instances
     return dictionary
 
 
@@ -157,12 +157,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         if not isinstance(i[0], str) or not isinstance(i[1], float):
             return None
     dictionary = {}
-    for i in term_freq.keys():
-        if i in idf.keys():
-            tfidf = term_freq[i] * idf[i]
+    for key in term_freq.keys():
+        if key in idf.keys():
+            tfidf = term_freq[key] * idf[key]
         else:
-            tfidf = term_freq[i] * math.log(47 / (0 + 1))
-        dictionary[i] = tfidf
+            tfidf = term_freq[key] * math.log(47 / (0 + 1))
+        dictionary[key] = tfidf
     return dictionary
 
 
