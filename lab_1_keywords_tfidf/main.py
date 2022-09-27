@@ -92,7 +92,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if not (isinstance(frequencies, dict) and isinstance(top, int)
-            and top > 0 and frequencies and  isinstance(top, bool) is False):
+            and top > 0 and frequencies and not isinstance(top, bool)):
         return None
     items = frequencies.items()
     for key, value in items:
