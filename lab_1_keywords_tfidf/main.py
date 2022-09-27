@@ -11,14 +11,14 @@ def correct_list(list1: list, type1: Any, empty: bool) -> bool:
     """
     Checks that type of 'list1' is list and verifies the contents of 'list1' with the type that the user specifies
     """
-    if isinstance(list1, list):
-        if not list1 and not empty:
+    if not isinstance(list1, list):
+        return False
+    if not list1 and not empty:
+        return False
+    for index in list1:
+        if not isinstance(index, type1):
             return False
-        for index in list1:
-            if not isinstance(index, type1):
-                return False
-        return True
-    return False
+    return True
 
 
 def correct_dict(dictionary: dict, type1: Any, type2: Any, empty: bool) -> bool:
@@ -26,14 +26,14 @@ def correct_dict(dictionary: dict, type1: Any, type2: Any, empty: bool) -> bool:
     Checks that type of 'dictionary' is dict and verifies the contents of 'dictionary' with the type that
     the user specifies
     """
-    if isinstance(dictionary, dict):
-        if not dictionary and not empty:
+    if not isinstance(dictionary, dict):
+        return False
+    if not dictionary and not empty:
+        return False
+    for key, value in dictionary.items():
+        if not isinstance(key, type1) or not isinstance(value, (int, type2)) or isinstance(value, bool):
             return False
-        for key, value in dictionary.items():
-            if not isinstance(key, type1) or not isinstance(value, (int, type2)) or isinstance(value, bool):
-                return False
-        return True
-    return False
+    return True
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -47,12 +47,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         """
     if not isinstance(text, str):
         return None
-    lowered_text = text.lower()
+    lowered_text = text.lower().strip()
     for punctuation_mark in string.punctuation:
         if punctuation_mark in lowered_text:
-            lowered_text = lowered_text.replace(punctuation_mark, '')
-    cleaned_text = lowered_text.strip().split()
-    return cleaned_text
+            lowered_text = lowered_text.replace(punctuation_mark, '').split()
+        return lowered_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -65,17 +64,17 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         List[str]: Token sequence that does not include stop words
         In case of corrupt input arguments, None is returned
         """
-    if correct_list(tokens, str, False) and correct_list(stop_words, str, True):
-        index = 0
-        while index < len(tokens):
-            for stop_word in stop_words:
-                if tokens[index] is stop_word:
-                    tokens.remove(stop_word)
-                    index -= 1
-                    break
-            index += 1
-        return tokens
-    return None
+    if not correct_list(tokens, str, False) or not correct_list(stop_words, str, True):
+        return None
+    index = 0
+    while index < len(tokens):
+        for stop_word in stop_words:
+            if tokens[index] is stop_word:
+                tokens.remove(stop_word)
+                index -= 1
+                break
+        index += 1
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -87,17 +86,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         Dict: {token: number of occurrences in the token sequence} dictionary
         In case of corrupt input arguments, None is returned
         """
-    if correct_list(tokens, str, False):
-        frequency_dict = {}
-        for token in tokens:
-            if not isinstance(token, str):
-                return None
-            if token in frequency_dict.keys():
-                frequency_dict[token] = 1 + frequency_dict[token]
-            else:
-                frequency_dict[token] = 1
-        return frequency_dict
-    return None
+    if not correct_list(tokens, str, False):
+        return None
+    frequency_dict = {}
+    for token in tokens:
+        if not isinstance(token, str):
+            return None
+        if token in frequency_dict.keys():
+            frequency_dict[token] = 1 + frequency_dict[token]
+        else:
+            frequency_dict[token] = 1
+    return frequency_dict
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -112,16 +111,16 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if correct_dict(frequencies, str, float, False) and (not isinstance(top, bool) and isinstance(top, int)
-                                                         and not top <= 0):
-        freq = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
-        top_list = []
-        for word in freq:
-            top_list.append(word[0])
-        if len(freq) >= top:
-            top_list = top_list[:top]
-        return top_list
-    return None
+    if not correct_dict(frequencies, str, float, False) or not (not isinstance(top, bool) and isinstance(top, int) and
+                                                                not top <= 0):
+        return None
+    freq = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
+    top_list = []
+    for word in freq:
+        top_list.append(word[0])
+    if len(freq) >= top:
+        top_list = top_list[:top]
+    return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -136,13 +135,13 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         """
     all_words = 0
     new_dict = {}
-    if correct_dict(frequencies, str, int, False):
-        for value in frequencies.values():
-            all_words += value
-        for key in frequencies.keys():
-            new_dict[key] = frequencies[key] / all_words
-        return new_dict
-    return None
+    if not correct_dict(frequencies, str, int, False):
+        return None
+    for value in frequencies.values():
+        all_words += value
+    for key in frequencies.keys():
+        new_dict[key] = frequencies[key] / all_words
+    return new_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -159,15 +158,15 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
         In case of corrupt input arguments, None is returned
         """
-    if correct_dict(term_freq, str, float, False) and correct_dict(idf, str, float, True):
-        final_dict = {}
-        for key_freq, value_freq in term_freq.items():
-            if key_freq in idf:
-                final_dict[key_freq] = value_freq * idf[key_freq]
-            else:
-                final_dict[key_freq] = value_freq * math.log(47)
-        return final_dict
-    return None
+    if not correct_dict(term_freq, str, float, False) or not correct_dict(idf, str, float, True):
+        return None
+    final_dict = {}
+    for key_freq, value_freq in term_freq.items():
+        if key_freq in idf:
+            final_dict[key_freq] = value_freq * idf[key_freq]
+        else:
+            final_dict[key_freq] = value_freq * math.log(47)
+    return final_dict
 
 
 def calculate_expected_frequency(
