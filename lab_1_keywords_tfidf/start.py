@@ -41,7 +41,7 @@ if __name__ == "__main__":
         frequencies = calculate_frequencies(cleaned_tokens)
     if frequencies:
         term_freq = calculate_tf(frequencies)
-    if term_freq and idf:
+    if term_freq:
         tfidf_res = calculate_tfidf(term_freq, idf)
         RESULT = print(get_top_n(tfidf_res, 10))
 
