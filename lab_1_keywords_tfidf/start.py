@@ -44,6 +44,6 @@ if __name__ == "__main__":
         tfidf_dict = calculate_tfidf(tf_dict, idf)
     if tfidf_dict:
         print(get_top_n(tfidf_dict, 10))
-    RESULT = get_top_n(tfidf_dict, 10)
+        RESULT = get_top_n(tfidf_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
