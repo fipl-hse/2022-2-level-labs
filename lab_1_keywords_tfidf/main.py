@@ -93,8 +93,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                 if top < len(frequencies):
                     most_common = sorted(frequencies, key=frequencies.get, reverse=True)
                     most_common = list(most_common[:top])
-                    frequencies = most_common
-                    return frequencies
+                    return most_common
             else:
                 return None
     return None
@@ -154,8 +153,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                 for word, word_freq in term_freq.items():
                     tfidf[word] = word_freq * math.log(47)
                 return tfidf
-            for word in idf.values():
-                if word == 0:
+            for number in idf.values():
+                if number == 0:
                     max_idf = math.log(47)
                     tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
                     return tfidf
