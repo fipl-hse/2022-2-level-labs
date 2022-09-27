@@ -5,6 +5,7 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 from string import punctuation
 from math import log
+from operator import itemgetter
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -103,9 +104,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
     freqs_len = len(frequencies)
     if top <= freqs_len:
-        top_list = [word for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
+        top_list = [word for (word, value) in sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top]]
     else:
-        top_list = [word for (word, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)]
+        top_list = [word for (word, value) in sorted(frequencies.items(), key=itemgetter(1), reverse=True)]
     return top_list
 
 
