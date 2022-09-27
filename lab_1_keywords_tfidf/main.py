@@ -5,6 +5,16 @@ Extract keywords based on frequency related metrics
 import math
 from typing import Optional, Union
 
+# def dict_check():
+#     if isinstance(dictionary, dict) and all(isinstance(k, str) for k in dictionary.keys() and )
+#         return False
+#     if not smth:
+#         return False
+#     for k, v in smth.items():
+#         if not isinstance(k, str) and :
+#             return
+
+
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -39,7 +49,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             In case of corrupt input arguments, None is returned
         """
 
-    if isinstance(tokens, list) and isinstance(stop_words, list):
+    if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(token, str) for token in tokens):
         no_stwords = [word for word in tokens if word not in stop_words]
 
 
@@ -142,7 +152,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     if not isinstance(frequencies, dict) and not all(isinstance(key, str) for key in frequencies.keys()) and not all(isinstance(value, (int, float)) for value in frequencies.values()):
         return None
     count_values = sum(frequencies.values())
-    tf_dict = { k: (v/count_values) for k, v in frequencies.items()}
+    tf_dict = {k: (v/count_values) for k, v in frequencies.items()}
     return tf_dict
 
     # for key, value in frequencies.items():
@@ -192,6 +202,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
+    # if not (isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and all(isinstance(k,))):
+    #     return None
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus

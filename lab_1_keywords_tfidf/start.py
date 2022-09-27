@@ -48,6 +48,7 @@ if __name__ == "__main__":
 
     tf_idf = calculate_tfidf(tf_calculation, idf)
     print(tf_idf)
+    print(get_top_n(tf_idf, 10))
 
 
 
