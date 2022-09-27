@@ -72,7 +72,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         if not isinstance(token, str):
             return None
         frequency_dict = {i: tokens.count(i) for i in tokens}
-        return frequency_dict
+    return frequency_dict
 
 
 
@@ -101,7 +101,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         if not isinstance(value, (float, int)) :
             return None
         sorted_items = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)[:top]
-        return sorted_items
+    return sorted_items
 
 
 
