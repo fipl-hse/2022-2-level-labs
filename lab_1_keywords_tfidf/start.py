@@ -37,9 +37,9 @@ if __name__ == "__main__":
     tokens = clean_and_tokenize(target_text)
     cleaned_tokens = remove_stop_words(tokens, stop_words)
     frequencies = calculate_frequencies(cleaned_tokens)
-    top_list = get_top_n(frequencies, 10)
-    term_freq = calculate_tf(top_list)
-    print(calculate_tfidf(term_freq, idf))
+    term_freq = calculate_tf(frequencies)
+    tfidf_res = calculate_tfidf(term_freq, idf)
+    print(get_top_n(tfidf_res, 10))
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
