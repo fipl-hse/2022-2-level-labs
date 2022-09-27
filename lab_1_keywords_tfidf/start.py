@@ -33,8 +33,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     RESULT = None
-    if target_text:
-        tokens = clean_and_tokenize(target_text)
+    tokens = clean_and_tokenize(target_text)
     if tokens and stop_words:
         cleaned_tokens = remove_stop_words(tokens, stop_words)
     if cleaned_tokens:
