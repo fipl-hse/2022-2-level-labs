@@ -125,7 +125,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict):
+    if not (isinstance(frequencies, dict) and frequencies):
         return None
     tf_dict = {}
     for key, value in frequencies.items():
