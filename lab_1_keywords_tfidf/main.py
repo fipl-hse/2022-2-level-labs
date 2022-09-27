@@ -5,6 +5,8 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union
 import string
 import math
+
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -23,7 +25,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
                 text = text.replace(i, '')
         return text.lower().split()
     return None
-
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -126,12 +127,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     for i in frequencies.items():
         if not isinstance(i[0], str) or not isinstance(i[1], int):
             return None
-    tf_dict = {}
-    nd = sum(frequencies.values())
+    dictionary = {}
+    all_instances = sum(frequencies.values())
     for i in frequencies.keys():
-        tf_dict[i] = frequencies[i] / int(nd)
-    return tf_dict
-
+        dictionary[i] = frequencies[i] / int(all_instances)
+    return dictionary
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -164,8 +164,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             tfidf = term_freq[i] * math.log(47 / (0 + 1))
         dictionary[i] = tfidf
     return dictionary
-
-
 
 
 def calculate_expected_frequency(
