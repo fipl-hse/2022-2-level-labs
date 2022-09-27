@@ -38,32 +38,38 @@ def correct_dict(dictionary: dict, type1: Any, type2: Any, empty: bool) -> bool:
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
-        Removes punctuation, casts to lowercase, splits into tokens
-        Parameters:
-        text (str): Original text
-        Returns:
-        list[str]: A sequence of lowercase tokens with no punctuation
-        In case of corrupt input arguments, None is returned
-        """
+    Removes punctuation, casts to lowercase, splits into tokens
+
+    Parameters:
+    text (str): Original text
+
+    Returns:
+    list[str]: A sequence of lowercase tokens with no punctuation
+
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(text, str):
         return None
-    lowered_text = text.lower().strip()
+    lowered_text = text.lower()
     for punctuation_mark in string.punctuation:
         if punctuation_mark in lowered_text:
-            lowered_text = lowered_text.replace(punctuation_mark, '').split()
-        return lowered_text
+            lowered_text = lowered_text.replace(punctuation_mark, '')
+    return lowered_text.strip().split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
-        Excludes stop words from the token sequence
-        Parameters:
-        tokens (List[str]): Original token sequence
-        stop_words (List[str]: Tokens to exclude
-        Returns:
-        List[str]: Token sequence that does not include stop words
-        In case of corrupt input arguments, None is returned
-        """
+    Excludes stop words from the token sequence
+
+    Parameters:
+    tokens (List[str]): Original token sequence
+    stop_words (List[str]: Tokens to exclude
+
+    Returns:
+    List[str]: Token sequence that does not include stop words
+
+    In case of corrupt input arguments, None is returned
+    """
     if not correct_list(tokens, str, False) or not correct_list(stop_words, str, True):
         return None
     index = 0
@@ -79,13 +85,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
-        Composes a frequency dictionary from the token sequence
-        Parameters:
-        tokens (List[str]): Token sequence to count frequencies for
-        Returns:
-        Dict: {token: number of occurrences in the token sequence} dictionary
-        In case of corrupt input arguments, None is returned
-        """
+    Composes a frequency dictionary from the token sequence
+
+    Parameters:
+    tokens (List[str]): Token sequence to count frequencies for
+
+    Returns:
+    Dict: {token: number of occurrences in the token sequence} dictionary
+
+    In case of corrupt input arguments, None is returned
+    """
     if not correct_list(tokens, str, False):
         return None
     frequency_dict = {}
@@ -101,16 +110,19 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
-        Extracts a certain number of most frequent tokens
-        Parameters:
-        frequencies (Dict): A dictionary with tokens and
-        its corresponding frequency values
-        top (int): Number of token to extract
-        Returns:
-        List[str]: Sequence of specified length
-        consisting of tokens with the largest frequency
-        In case of corrupt input arguments, None is returned
-        """
+    Extracts a certain number of most frequent tokens
+
+    Parameters:
+    frequencies (Dict): A dictionary with tokens and
+    its corresponding frequency values
+    top (int): Number of token to extract
+
+    Returns:
+    List[str]: Sequence of specified length
+    consisting of tokens with the largest frequency
+
+    In case of corrupt input arguments, None is returned
+    """
     if not correct_dict(frequencies, str, float, False) or not (not isinstance(top, bool) and isinstance(top, int) and
                                                                 not top <= 0):
         return None
@@ -125,14 +137,17 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
-        Calculates Term Frequency score for each word in a token sequence
-        based on the raw frequency
-        Parameters:
-        frequencies (Dict): Raw number of occurrences for each of the tokens
-        Returns:
-        dict: A dictionary with tokens and corresponding term frequency score
-        In case of corrupt input arguments, None is returned
-        """
+    Calculates Term Frequency score for each word in a token sequence
+    based on the raw frequency
+
+    Parameters:
+    frequencies (Dict): Raw number of occurrences for each of the tokens
+
+    Returns:
+    dict: A dictionary with tokens and corresponding term frequency score
+
+    In case of corrupt input arguments, None is returned
+    """
     all_words = 0
     new_dict = {}
     if not correct_dict(frequencies, str, int, False):
@@ -146,18 +161,18 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
-        Calculates TF-IDF score for each of the tokens
-        based on its TF and IDF scores
+    Calculates TF-IDF score for each of the tokens
+    based on its TF and IDF scores
 
-        Parameters:
-        term_freq (Dict): A dictionary with tokens and its corresponding TF values
-        idf (Dict): A dictionary with tokens and its corresponding IDF values
+    Parameters:
+    term_freq (Dict): A dictionary with tokens and its corresponding TF values
+    idf (Dict): A dictionary with tokens and its corresponding IDF values
 
-        Returns:
-        Dict: A dictionary with tokens and its corresponding TF-IDF values
+    Returns:
+    Dict: A dictionary with tokens and its corresponding TF-IDF values
 
-        In case of corrupt input arguments, None is returned
-        """
+    In case of corrupt input arguments, None is returned
+    """
     if not correct_dict(term_freq, str, float, False) or not correct_dict(idf, str, float, True):
         return None
     final_dict = {}
@@ -170,22 +185,21 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
-        Calculates expected frequency for each of the tokens based on its
-        Term Frequency score for both target document and general corpus
+    Calculates expected frequency for each of the tokens based on its
+    Term Frequency score for both target document and general corpus
 
-        Parameters:
-        doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
-        corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
+    Parameters:
+    doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
+    corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
 
-        Returns:
-        Dict: A dictionary with tokens and its corresponding expected frequency
+    Returns:
+    Dict: A dictionary with tokens and its corresponding expected frequency
 
-        In case of corrupt input arguments, None is returned
-        """
-
+    In case of corrupt input arguments, None is returned
+    """
     if correct_dict(doc_freqs, str, int, False) and correct_dict(corpus_freqs, str, int, True):
         expected_freq = {}
         for key, value in doc_freqs.items():
@@ -202,21 +216,20 @@ def calculate_expected_frequency(
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
-        Calculates chi-squared value for the tokens
-        based on their expected and observed frequency rates
+    Calculates chi-squared value for the tokens
+    based on their expected and observed frequency rates
 
-        Parameters:
-        expected (Dict): A dictionary with tokens and
-        its corresponding expected frequency
-        observed (Dict): A dictionary with tokens and
-        its corresponding observed frequency
+    Parameters:
+    expected (Dict): A dictionary with tokens and
+    its corresponding expected frequency
+    observed (Dict): A dictionary with tokens and
+    its corresponding observed frequency
 
-        Returns:
-        Dict: A dictionary with tokens and its corresponding chi-squared value
+    Returns:
+    Dict: A dictionary with tokens and its corresponding chi-squared value
 
-        In case of corrupt input arguments, None is returned
-        """
-
+    In case of corrupt input arguments, None is returned
+    """
     if correct_dict(expected, str, float, False) and correct_dict(observed, str, float, False):
         chi_values = {}
         for key in expected:
@@ -229,21 +242,20 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
-        Select those tokens from the token sequence that
-        have a chi-squared value greater than the criterion
+    Select those tokens from the token sequence that
+    have a chi-squared value greater than the criterion
 
-        Parameters:
-        chi_values (Dict): A dictionary with tokens and
-        its corresponding chi-squared value
-        alpha (float): Level of significance that controls critical value of chi-squared metric
+    Parameters:
+    chi_values (Dict): A dictionary with tokens and
+    its corresponding chi-squared value
+    alpha (float): Level of significance that controls critical value of chi-squared metric
 
-        Returns:
-        Dict: A dictionary with significant tokens
-        and its corresponding chi-squared value
+    Returns:
+    Dict: A dictionary with significant tokens
+    and its corresponding chi-squared value
 
-        In case of corrupt input arguments, None is returned
-        """
-
+    In case of corrupt input arguments, None is returned
+    """
     if correct_dict(chi_values, str, float, False) and isinstance(alpha, float):
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         if alpha in criterion.keys():
