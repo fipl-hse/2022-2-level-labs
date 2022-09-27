@@ -22,11 +22,11 @@ def clean_and_tokenize(text:str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    text = text.translate(str.maketrans('', '', string.punctuation))
-    text.strip()
-    text = text.lower()
-    text = text.split()
-    return text
+    text_punctuation = text.translate(str.maketrans('', '', string.punctuation))
+    text_strip = text_punctuation.strip()
+    text_lower = text_strip.lower()
+    lst = text_lower.split()
+    return lst
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -73,6 +73,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             return None
         frequency_dict = {i: tokens.count(i) for i in tokens}
         return frequency_dict
+    return
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -99,8 +100,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
         if not isinstance(value, (float, int)) :
             return None
-        sorted_items = sorted(frequencies.keys(), key=frequencies.get, reverse=True)[:top]
+        sorted_items = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)[:top]
         return sorted_items
+    return
 
 
 
