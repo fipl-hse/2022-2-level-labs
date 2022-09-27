@@ -188,13 +188,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             if word not in idf:
                 tfidf_d[word] = math.log(47/1)
             tfidf_d[word] = term_freq[word]*idf[word]
-            return tfidf_d
-
-
-
-
-
-
+    return tfidf_d
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
