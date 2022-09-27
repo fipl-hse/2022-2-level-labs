@@ -48,5 +48,3 @@ if __name__ == "__main__":
     RESULT = key_words
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
-
