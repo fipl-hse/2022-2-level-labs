@@ -98,10 +98,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                     return frequencies
             else:
                 return None
-        else:
-            return None
-    else:
-        return None
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -128,8 +125,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             freq = frequencies[word] / lenght
             term_freq[word] = freq
         return term_freq
-    else:
-        return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
