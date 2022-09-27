@@ -23,8 +23,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     text = text.lower()
-    for i in text:
-        if i in punctuation:
+    for i in punctuation:
+        if i in text:
             text = text.replace(i, "")
     words_list = text.split()
     return words_list
@@ -45,10 +45,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         return None
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-    for word in stop_words:
-        while word in tokens:
-            tokens.remove(word)
-    return tokens
+    no_stop_words = []
+    for word in tokens:
+        if word not in stop_words:
+            no_stop_words.append(word)
+    return no_stop_words
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
@@ -96,14 +97,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or not type(top).__name__ == 'int':
         # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
+    if top < 0:
+        return None
     for key, value in frequencies.items():
         if not isinstance(key, str) or not isinstance(value, (float, int)):
             return None
-    freq_len = len(frequencies)
-    if top <= freq_len:
-        top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
-    else:
-        top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)]
+    top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
+
     return top_list
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -262,15 +262,15 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     crit_keys = list(criterion.keys())
     if alpha not in crit_keys:
         return None
-    if not chi_values or not alpha:
+    if not chi_values:
         return None
-    if not isinstance(chi_values, dict) or not isinstance(alpha, float):
+    if not isinstance(chi_values, dict):
         return None
     for key, value in chi_values.items():
         if not isinstance(key, str) or not isinstance(value, float):
             return None
     significant_val = {}
     for key, value in chi_values.items():
-        if value > criterion.get(alpha, 0):
+        if value > criterion[alpha]:
             significant_val[key] = value
     return significant_val
