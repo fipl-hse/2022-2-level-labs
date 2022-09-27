@@ -14,9 +14,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
        list[str]: A sequence of lowercase tokens with no punctuation
        In case of corrupt input arguments, None is returned
        """
-    if type(text) is str:
+    if isinstance(text, str):
         target_text = text.lower().strip()
-        symbols = """!()-[]{};?@#$%:'"\,./^&;*_><"""
+        symbols = """!()-[]{};?@#$%:'",.^&;*_><"""
         for symbol in target_text:
             if symbol in symbols:
                 target_text = target_text.replace(symbol, '')
@@ -25,8 +25,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             if word == "' '":
                 tokens.remove(word)
         return tokens
-    else:
-        return None
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -47,8 +45,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
                     new_tokens += [word3]
             tokens = new_tokens
             return tokens
-        else:
-            return None
     else:
         return None
 
@@ -65,9 +61,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     if isinstance(tokens, list):
         frequencies = {}
         for word in tokens:
-            if type(word) is not str or word == "":
-                return None
-            else:
+            if isinstance(word, str) and word != "":
                 frequencies[word] = tokens.count(word)
         return frequencies
 
@@ -84,24 +78,21 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if type(top) is not int or top == 0:
-        return None
-    if type(frequencies) is dict:
-        if frequencies == {}:
-            return None
+    if isinstance(top, int) and top != 0 and isinstance(frequencies, dict) and frequencies != {}:
         if (isinstance(key, str) for key in frequencies.keys()):
-            for value in frequencies.values():
-                if type(value) is int or float:
-                    if top >= len(frequencies):
-                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                        return most_common
-                    if top < len(frequencies):
-                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                        most_common = list(most_common[:top])
-                        frequencies = most_common
-                        return frequencies
+            if (isinstance(value, int or float) for value in frequencies.values()):
+                if top >= len(frequencies):
+                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                    return most_common
+                if top < len(frequencies):
+                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                    most_common = list(most_common[:top])
+                    frequencies = most_common
+                    return frequencies
                 else:
                     return None
+            else:
+                return None
         else:
             return None
     else:
@@ -119,25 +110,21 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
        In case of corrupt input arguments, None is returned
        """
     term_freq = {}
-    if type(frequencies) is dict:
-        for key in frequencies.keys():
-            if type(key) is not str:
-                return None
+    if isinstance(frequencies, dict):
         lenght = 0
-        for value in frequencies.values():
-            if type(value) is not int:
-                return None
-            lenght += value
-
-        for word in frequencies.keys():
-            freq = frequencies[word]/lenght
-            term_freq[word] = freq
-        return term_freq
-    else:
-        return None
+        if (isinstance(key, str) for key in frequencies.keys()):
+            for value in frequencies.values():
+                if isinstance(value, int):
+                    lenght += value
+                lenght += value
+            for word in frequencies.keys():
+                freq = frequencies[word] / lenght
+                term_freq[word] = freq
+            return term_freq
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
+    import math
     """
        Calculates TF-IDF score for each of the tokens
        based on its TF and IDF scores
@@ -148,40 +135,31 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
        Dict: A dictionary with tokens and its corresponding TF-IDF values
        In case of corrupt input arguments, None is returned
        """
-    import math
-    if type(term_freq) is dict and type(idf) is dict and term_freq != {}:
-        for key in term_freq.keys():
-            if type(key) is not str:
-                return None
-        for value in term_freq.values():
-            if type(value) is not float:
-                return None
-        for key in idf.keys():
-            if type(key) is not str:
-                return None
-        for value in idf.values():
-            if type(value) is not float:
-                return None
-        else:
-            tfidf = {}
-            for word in idf.keys():
-                if word not in idf.keys():
-                    idf_meaning = math.log(47)
-                    idf[word] = idf_meaning
-            if idf == {}:
-                for word, word_freq in term_freq.items():
-                    tfidf[word] = word_freq * math.log(47)
-            for word in idf.values():
-                if word == 0:
-                    max_idf = math.log(47)
-                    tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
-                    return tfidf
-            return tfidf
+
+    if isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq != {}:
+        if (all(isinstance(key, str) for key in term_freq.keys())
+                and all(isinstance(value, float) for value in term_freq.values())):
+            if (all(isinstance(key, str) for key in idf.keys())
+                    and all(isinstance(value, float) for value in idf.values())):
+                tfidf = {}
+                for word in idf.keys():
+                    if word not in idf.keys():
+                        idf_meaning = math.log(47)
+                        idf[word] = idf_meaning
+                if idf == {}:
+                    for word, word_freq in term_freq.items():
+                        tfidf[word] = word_freq * math.log(47)
+                for word in idf.values():
+                    if word == 0:
+                        max_idf = math.log(47)
+                        tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
+                        return tfidf
     else:
         return None
 
+
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
-) -> Optional[dict[str, float]]:
+                                 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
