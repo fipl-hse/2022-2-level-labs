@@ -6,7 +6,7 @@ from pathlib import Path
 
 import top as top
 
-from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n
+from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf
 
 if __name__ == "__main__":
 
@@ -44,4 +44,9 @@ print(remove_stop_words(tokens, stop_words))
 tokens = remove_stop_words(tokens, stop_words)
 print(calculate_frequencies(tokens))
 frequencies = calculate_frequencies(tokens)
-
+top_words = get_top_n(frequencies, 10)
+print(top_words)
+tf_calculation = calculate_tf(frequencies)
+print(tf_calculation)
+tf_idf = calculate_tfidf(tf_calculation, idf)
+print(tf_idf)

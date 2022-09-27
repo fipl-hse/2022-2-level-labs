@@ -3,8 +3,8 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-import string
 import math
+import string
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -44,14 +44,15 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) or isinstance(stop_words, list):
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+        return None
+    else:
         tokens_without_sw = []
         for words in tokens:
             if words not in stop_words:
                 tokens_without_sw.append(words)
         return tokens_without_sw
-    else:
-        return None
+
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -68,17 +69,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if not len(tokens) != 0 and not isinstance(tokens, list):
         return None
-    else:
-        frequencies_dictionary = {}
-        for element in tokens:
-            if type(element) == str:
-                if element in frequencies_dictionary.keys():
-                    frequencies_dictionary[element] = 1 + frequencies_dictionary[element]
-                else:
-                    frequencies_dictionary[element] = 1
-            else:
-                return None
-        return frequencies_dictionary
+
+    frequencies_dictionary = {}
+    for element in tokens:
+        if type(element) != str:
+            return None
+        if element in frequencies_dictionary.keys():
+            frequencies_dictionary[element] += 1
+        else:
+            frequencies_dictionary[element] = 1
+
+    return frequencies_dictionary
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -96,16 +97,19 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict) and isinstance(top, int) and top > 0 and frequencies and isinstance(top, bool) == False):
+    if not isinstance(frequencies, dict) and not isinstance(top, int) and not isinstance(top, bool) and not top > 0:
         return None
-    items = frequencies.items()
-    for key, value in items:
-        if not isinstance(key, str):
+    for key, value in frequencies.items():
+        if not (key, str) or not isinstance(value, (float, int)):
             return None
-        if not (isinstance(value, int) or isinstance(value, float)):
-            return None
-        sorted_items = dict(sorted(items, key=lambda item: item[1], reverse=True))
-        return list(sorted_items.keys())[0:top]
+        list_length = len(frequencies)
+        if top <= list_length:
+            top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)[:top]]
+        else:
+            top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)]
+
+        return top_list
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -121,7 +125,14 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-
+    if not isinstance(frequencies, dict):
+        return None
+    term_frequency_dict = {}
+    for key, value in frequencies.items():
+        if not isinstance(key, str):
+            return None
+        term_frequency_dict[key] = value / sum(frequencies.values())
+    return term_frequency_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -138,7 +149,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if term_freq == {} or not isinstance(term_freq, dict) or not isinstance(idf, dict):
+        return None
+    tfidf_dict = {}
+    for key_frequencies, value_frequencies in term_freq.items():
+        if not isinstance(key_frequencies, str) or not isinstance(value_frequencies, float):
+            return None
+        if key_frequencies in idf:
+            tfidf_dict[key_frequencies] = value_frequencies * idf[key_frequencies]
+        else:
+            tfidf_dict[key_frequencies] = value_frequencies * math.log(47)
+    return tfidf_dict
+
 
 
 def calculate_expected_frequency(
