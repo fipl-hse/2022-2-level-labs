@@ -98,11 +98,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
         return None
 
-    for k, v in frequencies.items():
-        if not isinstance(k, str) or not isinstance(v, int | float):  # or isinstance(v, bool):
+    for k, val in frequencies.items():
+        if not isinstance(k, str) or not isinstance(val, int | float):  # or isinstance(v, bool):
             return None
         else:
-            sorted_keys = sorted(frequencies, reverse = True, key=lambda word: frequencies[word])
+            sorted_keys = sorted(frequencies, reverse=True, key=lambda word: frequencies[word])
             if not sorted_keys:
                 return None
             else:
@@ -131,18 +131,17 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     term_freq = {}
     length = 0
 
-    for k, v in frequencies.items():
-        if not isinstance(k, str) or not isinstance(v, int):
+    for k, val in frequencies.items():
+        if not isinstance(k, str) or not isinstance(val, int):
             return None
         else:
-            length = length + v
+            length = length + val
 
-    for k, v in frequencies.items():
-        tf = v / length
-        term_freq[k] = tf
+    for k, val in frequencies.items():
+        term_f = val / length
+        term_freq[k] = term_f
 
     return term_freq
-
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -164,24 +163,23 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if term_freq == {}:
         return None
 
-    for k, v in term_freq.items():
-        if not isinstance(k, str) or not isinstance(v, float):
+    for k, val in term_freq.items():
+        if not isinstance(k, str) or not isinstance(val, float):
             return None
         if idf == {}:
-            term_freq[k] = v * math.log(47 / 1)
+            term_freq[k] = val * math.log(47 / 1)
         else:
-            for k1, v1 in idf.items():
-                if not isinstance(k1, str) or not isinstance(v1, float):
+            for key1, val1 in idf.items():
+                if not isinstance(key1, str) or not isinstance(val1, float):
                     return None
                 else:
-                    if k == k1:
-                        term_freq[k] = v * idf[k]
+                    if k == key1:
+                        term_freq[k] = val * idf[k]
                         break
                     else:
-                        term_freq[k] = v * math.log(47 / 1)
+                        term_freq[k] = val * math.log(47 / 1)
 
     return term_freq
-
 
 
 def calculate_expected_frequency(
