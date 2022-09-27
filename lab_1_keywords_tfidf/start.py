@@ -34,11 +34,16 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     tokens_list = clean_and_tokenize(target_text)
-    no_stopwords_list = remove_stop_words(tokens_list, stop_words)
-    frequencies_dict = calculate_frequencies(no_stopwords_list)
-    tf_dict = calculate_tf(frequencies_dict)
-    tfidf_dict = calculate_tfidf(tf_dict, idf)
-    print(get_top_n(tfidf_dict, 10))
+    if tokens_list:
+        no_stopwords_list = remove_stop_words(tokens_list, stop_words)
+    if no_stopwords_list:
+        frequencies_dict = calculate_frequencies(no_stopwords_list)
+    if frequencies_dict:
+        tf_dict = calculate_tf(frequencies_dict)
+    if tf_dict:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
+    if tfidf_dict:
+        print(get_top_n(tfidf_dict, 10))
     RESULT = get_top_n(tfidf_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
