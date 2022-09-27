@@ -47,6 +47,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
                     new_tokens += [word3]
             tokens = new_tokens
             return tokens
+        return None
     else:
         return None
 
@@ -68,8 +69,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             else:
                 return None
         return frequencies
-    else:
-        return None
+    return None
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -98,6 +98,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
                     return frequencies
             else:
                 return None
+    return None
 
 
 
@@ -125,6 +126,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             freq = frequencies[word] / lenght
             term_freq[word] = freq
         return term_freq
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -159,6 +161,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                         max_idf = math.log(47)
                         tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
                         return tfidf
+                else:
+                    return None
             else:
                 return None
         else:
