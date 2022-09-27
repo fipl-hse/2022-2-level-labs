@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+import math
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -80,21 +81,26 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         consisting of tokens with the largest frequency
         In case of corrupt input arguments, None is returned
         """
-    if isinstance(top, int) and top > 0 and top is not True and isinstance(frequencies, dict) and frequencies != {}:
-        if (all(isinstance(key, str) and key is not None and not isinstance(key, bool) for key in frequencies.keys())
-                and all((isinstance(value, int or float) for value in frequencies.values()))):
-            if top >= len(frequencies):
-                most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                return most_common
-            if top < len(frequencies):
-                most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                most_common = list(most_common[:top])
-                frequencies = most_common
-                return frequencies
+    if (isinstance(top, int) and top > 0 and isinstance(top, bool) is not True and isinstance(frequencies, dict)
+            and frequencies != {}):
+        if (isinstance(key, str) for key in frequencies.keys()):
+            for value in frequencies.values():
+                if isinstance(value, (int, float)):
+                    if top >= len(frequencies):
+                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                        return most_common
+                    if top < len(frequencies):
+                        most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                        most_common = list(most_common[:top])
+                        frequencies = most_common
+                        return frequencies
+                else:
+                    return None
         else:
             return None
     else:
         return None
+
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -121,22 +127,19 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             freq = frequencies[word] / lenght
             term_freq[word] = freq
         return term_freq
-    else:
-        return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
-    import math
     """
-       Calculates TF-IDF score for each of the tokens
-       based on its TF and IDF scores
-       Parameters:
-       term_freq (Dict): A dictionary with tokens and its corresponding TF values
-       idf (Dict): A dictionary with tokens and its corresponding IDF values
-       Returns:
-       Dict: A dictionary with tokens and its corresponding TF-IDF values
-       In case of corrupt input arguments, None is returned
-       """
+        Calculates TF-IDF score for each of the tokens
+        based on its TF and IDF scores
+        Parameters:
+        term_freq (Dict): A dictionary with tokens and its corresponding TF values
+        idf (Dict): A dictionary with tokens and its corresponding IDF values
+        Returns:
+        Dict: A dictionary with tokens and its corresponding TF-IDF values
+        In case of corrupt input arguments, None is returned
+        """
 
     if isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq != {}:
         if (all(isinstance(key, str) for key in term_freq.keys())
@@ -148,6 +151,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                     if word not in idf.keys():
                         idf_meaning = math.log(47)
                         idf[word] = idf_meaning
+                        return idf
                 if idf == {}:
                     for word, word_freq in term_freq.items():
                         tfidf[word] = word_freq * math.log(47)
