@@ -113,6 +113,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             top_n.append(list_of_keys[number])
     if top_n:
         return top_n
+    return None
+
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
@@ -267,3 +269,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
             if chi > criterion[alpha]:
                 words_dict[word] = chi
         return words_dict
+    return None
