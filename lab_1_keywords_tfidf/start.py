@@ -3,8 +3,9 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
+from main import clean_and_tokenize
+from main import remove_stop_words
 
-# чтобы добраться до дома дурака. Тук-тук!
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
@@ -15,11 +16,13 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH = ASSETS_PATH / 'Дюймовочка.txt'
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
         target_text = file.read()
+    clean_and_tokenize(target_text)
 
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
+    remove_stop_words(clean_and_tokenize(target_text), stop_words)
 
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'

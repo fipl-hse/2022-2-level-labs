@@ -4,10 +4,42 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 
-# Зачем курица перешла дорогу?
+
+def check_input_type(check_arg, check_type, check_token=None, check_value=None, check_if_not_empty=False):
+    if not isinstance(check_arg, check_type):
+        return False
+    if not check_arg and check_if_not_empty:
+        return False
+    if check_type == list:
+        for i in check_arg:
+            if not isinstance(i, check_token):
+                break
+            else:
+                return True
+    if check_type == dict:
+        for i in check_value:
+            if not isinstance(i, check_value):
+                break
+            else:
+                return True
+
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
-    """
-    Removes punctuation, casts to lowercase, splits into tokens
+    if not check_input_type(text, str):
+        return None
+    else:
+        text_small = text.lower().strip()
+        tokens_str = ''
+        for i in text_small:
+            if i.isalpha() is True or i == ' ' or i == '\n':
+                tokens_str += i
+            else:
+                continue
+        tokens = tokens_str.split()
+        return tokens
+
+
+""" Removes punctuation, casts to lowercase, splits into tokens
 
     Parameters:
     text (str): Original text
@@ -15,14 +47,24 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     Returns:
     list[str]: A sequence of lowercase tokens with no punctuation
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    In case of corrupt input arguments, None is returned """
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
-    """
-    Excludes stop words from the token sequence
+    if not check_input_type(tokens, list, str, check_if_not_empty=True) or \
+            not check_input_type(stop_words, list, str, check_if_not_empty=True):
+        return None
+    else:
+        no_stop_words = []
+        for x in tokens:
+            if x not in stop_words:
+                no_stop_words.append(x)
+            else:
+                continue
+        return no_stop_words
+
+
+""" Excludes stop words from the token sequence
 
     Parameters:
     tokens (List[str]): Original token sequence
@@ -31,14 +73,20 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     Returns:
     List[str]: Token sequence that does not include stop words
 
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    In case of corrupt input arguments, None is returned """
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
-    """
-    Composes a frequency dictionary from the token sequence
+    if not check_input_type(tokens, list, str, check_if_not_empty=True):
+        return None
+    else:
+        tokens_freqs = {}
+        for i in tokens:
+            tokens_freqs[i] = tokens.count(i)
+        return tokens_freqs
+
+
+""" Composes a frequency dictionary from the token sequence
 
     Parameters:
     tokens (List[str]): Token sequence to count frequencies for
@@ -46,14 +94,21 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     Returns:
     Dict: {token: number of occurrences in the token sequence} dictionary
 
-    In case of corrupt input arguments, None is returned
+    In case of corrupt input arguments, None is returned 
     """
-    pass
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    """
-    Extracts a certain number of most frequent tokens
+    if not check_input_type(frequencies, dict, str, Union[int, float], check_if_not_empty=True) \
+            or not check_input_type(top, int):
+        return None
+    else:
+        sorted_tokens_freqs = {k: v for k, v in sorted(frequencies.items(), key=lambda item: item[1], reverse=True)}
+        top_freqs_words = list(sorted_tokens_freqs.keys())[:top]
+        return top_freqs_words
+
+
+""" Extracts a certain number of most frequent tokens
 
     Parameters:
     frequencies (Dict): A dictionary with tokens and
@@ -66,11 +121,20 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    pass
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
-    """
+    if not check_input_type(frequencies, dict, str, int, check_if_not_empty=True):
+        return None
+    else:
+        term_freq = {}
+        for k, v in frequencies.items():
+            new_v = v / sum(frequencies.values())
+            term_freq[k] = new_v
+        return term_freq
+
+
+"""
     Calculates Term Frequency score for each word in a token sequence
     based on the raw frequency
 
@@ -82,11 +146,21 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
-    """
+    if not check_input_type(term_freq, dict, str, float, check_if_not_empty=True) \
+            or not check_input_type(idf, dict, str, float, check_if_not_empty=True):
+        return None
+    else:
+        for k in idf.keys():
+            tf_idf_v = idf[k] * term_freq[k]
+            term_freq.update({k: tf_idf_v})
+            print(get_top_n(term_freq, 10))
+        return term_freq
+
+
+"""
     Calculates TF-IDF score for each of the tokens
     based on its TF and IDF scores
 
@@ -99,7 +173,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
 
 
 def calculate_expected_frequency(
