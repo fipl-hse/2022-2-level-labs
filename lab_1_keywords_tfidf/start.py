@@ -4,7 +4,7 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
-from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
+from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
     calculate_tf, calculate_tfidf, get_top_n
 
 if __name__ == "__main__":
