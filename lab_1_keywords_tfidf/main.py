@@ -4,6 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
 import math
+from string import punctuation
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -20,7 +21,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    punctuation = '''!,()[]-{};:“'"”\<>./?@#$%^&*~_'''
     for i in punctuation:
         text = text.replace(i, '')
     text = text.lower().split()
