@@ -19,12 +19,12 @@ if __name__ == "__main__":
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
-        tokens = clean_and_tokenize(target_text)
-        if tokens is not None and stop_words is not None:
-            remove_stop_words(tokens, stop_words)
-        tokens = remove_stop_words(tokens, stop_words)
-        if tokens is not None:
-            frequencies = calculate_frequencies(tokens)
+        if target_text is not None:
+            tokens = clean_and_tokenize(target_text)
+            if tokens is not None and stop_words is not None:
+                remove_stop_words(tokens, stop_words)
+                tokens = remove_stop_words(tokens, stop_words)
+                frequencies = calculate_frequencies(tokens)
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
@@ -38,7 +38,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
         if term_freq is not None and idf is not None:
             tfidf = calculate_tfidf(term_freq, idf)
-            if frequencies.get is not None:
+            if frequencies.get is not None and idf is not None:
                 RESULT = get_top_n(tfidf, 10)
     print("Top 10 most common words in the text: ", RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

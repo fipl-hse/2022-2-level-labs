@@ -87,14 +87,9 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and frequencies != {}):
         for value in frequencies.values():
             if isinstance(value, (int, float)):
-                if top >= len(frequencies):
-                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                    return most_common
-                if top < len(frequencies):
-                    most_common = sorted(frequencies, key=frequencies.get, reverse=True)
-                    most_common = list(most_common[:top])
-                    return most_common
-                return None
+                most_common = sorted(frequencies, key=frequencies.get, reverse=True)
+                most_common = most_common[:top]
+                return most_common
             return None
     return None
 
