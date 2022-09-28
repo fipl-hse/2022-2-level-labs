@@ -32,7 +32,6 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    # print(get_top_n({'happy': 2, 'man': 3}, 1))
 
     # clean_tokens = clean_and_tokenize(target_text)
     # # print(clean_tokens)
