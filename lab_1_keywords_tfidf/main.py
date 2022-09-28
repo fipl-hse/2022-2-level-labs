@@ -22,18 +22,16 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
-    else:
-        # if var text is not a string - return None
-        text = text.lower()
-        # make entire var text lowercase'
-        punctuation_symbols = '.,:-!?;%<>&*@#()'
-        # creating a var that has all the punctuation marks'
-        for punct in punctuation_symbols:
-            # go through each punctuation symbol and replace it in the text by noting
-            text = text.replace(punct, '')
-        text_split = text.split()
-        # splits text by spaces'
-        return text_split
+    text = text.lower()
+    # make entire var text lowercase'
+    punctuation_symbols = '.,:-!?;%<>&*@#()'
+    # creating a var that has all the punctuation marks'
+    for punct in punctuation_symbols:
+        # go through each punctuation symbol and replace it in the text by noting
+        text = text.replace(punct, '')
+    text_split = text.split()
+    # splits text by spaces'
+    return text_split
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -52,9 +50,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     if not (isinstance(tokens, list) and isinstance(stop_words, list)):
         # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
-    else:
-        stop_words_removed = [x for x in tokens if x not in stop_words]
-        return stop_words_removed
+    stop_words_removed = [x for x in tokens if x not in stop_words]
+    return stop_words_removed
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -81,7 +78,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
                 return dict_of_occ
             else:
                 return None
-    # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+    # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'fel
     else:
         return None
 
@@ -233,18 +230,18 @@ def calculate_expected_frequency(
         if key in corpus_freqs:
             j = doc_freqs[key]
             k = corpus_freqs[key]
-            el = sum(doc_freqs.values())-j
-            em = sum(corpus_freqs.values())-k
-            expected_dict[key] = ((j+k)*(j+el))/(j+k+el+em)
+            all_except_t_l = sum(doc_freqs.values())-j
+            all_except_t_m = sum(corpus_freqs.values())-k
+            expected_dict[key] = ((j+k)*(j+all_except_t_l))/(j+k+all_except_t_l+all_except_t_m)
         else:
             if len(corpus_freqs) == 0:
                 expected_dict[key] = doc_freqs[key]
             else:
                 j = doc_freqs[key]
                 k = 0
-                el = sum(doc_freqs.values()) - j
-                em = sum(corpus_freqs.values()) - k
-                expected_dict[key] = ((j + k) * (j + el)) / (j + k + el + em)
+                all_except_t_l = sum(doc_freqs.values()) - j
+                all_except_t_m = sum(corpus_freqs.values()) - k
+                expected_dict[key] = ((j + k) * (j + all_except_t_l)) / (j + k + all_except_t_l + all_except_t_m)
     return expected_dict
 
 
