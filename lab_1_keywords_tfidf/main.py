@@ -2,11 +2,11 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import math
 
 
-def type_of_elements(object, elem_type, key=str, value=int):
+def type_of_elements(object: Any, elem_type: Any, key=str, value=int) -> bool:
     """
     Checks the type of elements in a collection
     """
@@ -191,10 +191,7 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
         expected_freq_dict = {}
         for element in doc_freqs.items():
             all_words_text = text_words_input - element[1]
-            # if not corpus_freqs and element[0] not in corpus_freqs.keys():
             elem_from_corpus = corpus_freqs.get(element[0], 0)
-            # else:
-            #     elem_from_corpus = corpus_freqs[element[0]]
             all_words_collection = collection_words_input - elem_from_corpus
             expected_frequency = (
                 (element[1] + elem_from_corpus)
