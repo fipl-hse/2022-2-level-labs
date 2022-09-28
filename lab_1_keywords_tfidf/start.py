@@ -52,5 +52,6 @@ tfidf = calculate_tfidf(tf, idf)
 tfidf_top = get_top_n(tfidf, 10)
 expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
 a = calculate_chi_values(expected_frequency, frequency)
-
-print(CRITERION)
+# b = extract_significant_words(a, alpha)
+# print(a)
+print(not False)

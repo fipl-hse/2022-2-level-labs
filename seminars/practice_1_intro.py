@@ -28,11 +28,7 @@ print(f'Numbers: {first_num} and {second_num}')
 # third_num = first_num / second_num
 
 # Fix the first exception:
-<<<<<<< Updated upstream
 second_num = 6
-=======
-second_num = 0
->>>>>>> Stashed changes
 third_num = first_num / second_num
 print(f'Numbers: {first_num}, {second_num} and {third_num}')
 

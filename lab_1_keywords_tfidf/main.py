@@ -227,8 +227,17 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(chi_values, dict) and isinstance(alpha, float) and type_of_elements(chi_values, tuple, str, float) and chi_values:
-        significant_words_dict = {element: chi_values[element] for element in chi_values.keys() if chi_values[element] > alpha}
-        if significant_words_dict:
-            return significant_words_dict
-    return None
+    if isinstance(chi_values, dict) and isinstance(alpha, float) and \
+       type_of_elements(chi_values, tuple, str, float) and chi_values:
+        criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+        if alpha not in criterion.keys():
+            return None
+        chi_squar_limit = criterion[alpha]
+        significant_words_dict = {}
+        for word, chi_value in chi_values.items():
+            if chi_value >= chi_squar_limit:
+                significant_words_dict[word] = chi_value
+        return significant_words_dict
+
+    else:
+        return None
