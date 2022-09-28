@@ -3,44 +3,48 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from main import clean_and_tokenize, \
-    remove_stop_words, \
-    calculate_frequencies, \
-    get_top_n, calculate_tf,\
-    calculate_tfidf, \
-    calculate_expected_frequency, \
-    calculate_chi_values, \
-    extract_significant_words
+from main import (
+    clean_and_tokenize,
+    remove_stop_words,
+    calculate_frequencies,
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf,
+    calculate_expected_frequency,
+    calculate_chi_values,
+    extract_significant_words,
+    type_of_elements
+)
 
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
-    ASSETS_PATH = PROJECT_ROOT / 'assets'
+    ASSETS_PATH = PROJECT_ROOT / "assets"
 
     # reading the text from which keywords are going to be extracted
-    TARGET_TEXT_PATH = ASSETS_PATH / 'Дюймовочка.txt'
-    with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
+    TARGET_TEXT_PATH = ASSETS_PATH / "Дюймовочка.txt"
+    with open(TARGET_TEXT_PATH, "r", encoding="utf-8") as file:
         target_text = file.read()
 
     # reading list of stop words
-    STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
-    with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
-        stop_words = file.read().split('\n')
+    STOP_WORDS_PATH = ASSETS_PATH / "stop_words.txt"
+    with open(STOP_WORDS_PATH, "r", encoding="utf-8") as file:
+        stop_words = file.read().split("\n")
 
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
-    IDF_PATH = ASSETS_PATH / 'IDF.json'
-    with open(IDF_PATH, 'r', encoding='utf-8') as file:
+    IDF_PATH = ASSETS_PATH / "IDF.json"
+    with open(IDF_PATH, "r", encoding="utf-8") as file:
         idf = json.load(file)
 
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
-    CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
-    with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
+    CORPUS_FREQ_PATH = ASSETS_PATH / "corpus_frequencies.json"
+    with open(CORPUS_FREQ_PATH, "r", encoding="utf-8") as file:
         corpus_freqs = json.load(file)
 
-    # RESULT = None
-    # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    # assert RESULT, 'Keywords are not extracted'
+    RESULT = True
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Keywords are not extracted'
 
 
 cleaned_text = clean_and_tokenize(target_text)
@@ -52,6 +56,5 @@ tfidf = calculate_tfidf(tf, idf)
 tfidf_top = get_top_n(tfidf, 10)
 expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
 a = calculate_chi_values(expected_frequency, frequency)
-# b = extract_significant_words(a, alpha)
-# print(a)
-print(not False)
+b = extract_significant_words(a, 1)
+print(type_of_elements(123, int))

@@ -7,11 +7,15 @@ import math
 
 
 def type_of_elements(object, elem_type, key=str, value=int):
+    """
+    Checks the type of elements in a collection
+    """
     if all(isinstance(element, elem_type) for element in object):
         return True
     elif isinstance(object, dict):
-        if all(isinstance(element, key) for element in object.keys()) and \
-                all(isinstance(element, value) for element in object.values()):
+        if all(isinstance(element, key) for element in object.keys()) and all(
+            isinstance(element, value) for element in object.values()
+        ):
             return True
     else:
         return False
@@ -32,7 +36,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     else:
-        punctuation = r'''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+        punctuation = r"""!()-[]{};:'"\,<>./?@#$%^&*_~"""
         res = ""
         for element in text:
             if element not in punctuation:
@@ -147,8 +151,13 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(term_freq, dict) and isinstance(idf, dict) and type_of_elements(term_freq, tuple, str, float)\
-            and type_of_elements(idf, tuple, str, float) and term_freq:
+    if (
+        isinstance(term_freq, dict)
+        and isinstance(idf, dict)
+        and type_of_elements(term_freq, tuple, str, float)
+        and type_of_elements(idf, tuple, str, float)
+        and term_freq
+    ):
         max_idf = math.log(47 / 1)
         tfidf = {term: term_f * idf.get(term, max_idf) for term, term_f in term_freq.items()}
         return tfidf
@@ -170,8 +179,13 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and type_of_elements(doc_freqs, tuple, str, int) \
-            and type_of_elements(corpus_freqs, tuple, str, int) and doc_freqs:
+    if (
+        isinstance(doc_freqs, dict)
+        and isinstance(corpus_freqs, dict)
+        and type_of_elements(doc_freqs, tuple, str, int)
+        and type_of_elements(corpus_freqs, tuple, str, int)
+        and doc_freqs
+    ):
         text_words_input = sum(doc_freqs.values())
         collection_words_input = sum(corpus_freqs.values())
         expected_freq_dict = {}
@@ -182,7 +196,11 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
             # else:
             #     elem_from_corpus = corpus_freqs[element[0]]
             all_words_collection = collection_words_input - elem_from_corpus
-            expected_frequency = (element[1] + elem_from_corpus) * (element[1] + all_words_text) / (element[1] + elem_from_corpus + all_words_text + all_words_collection)
+            expected_frequency = (
+                (element[1] + elem_from_corpus)
+                * (element[1] + all_words_text)
+                / (element[1] + elem_from_corpus + all_words_text + all_words_collection)
+            )
             expected_freq_dict[element[0]] = expected_frequency
         return expected_freq_dict
     return None
@@ -204,9 +222,18 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(expected, dict) and isinstance(observed, dict) and type_of_elements(expected, tuple, str, float) and \
-            type_of_elements(observed, tuple, str, int) and expected and observed:
-        hi_sqrt_dict = {element: math.pow(observed[element] - expected[element], 2) / expected[element] for element in expected.keys()}
+    if (
+        isinstance(expected, dict)
+        and isinstance(observed, dict)
+        and type_of_elements(expected, tuple, str, float)
+        and type_of_elements(observed, tuple, str, int)
+        and expected
+        and observed
+    ):
+        hi_sqrt_dict = {
+            element: math.pow(observed[element] - expected[element], 2) / expected[element]
+            for element in expected.keys()
+        }
         return hi_sqrt_dict
     return None
 
@@ -227,8 +254,12 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(chi_values, dict) and isinstance(alpha, float) and \
-       type_of_elements(chi_values, tuple, str, float) and chi_values:
+    if (
+        isinstance(chi_values, dict)
+        and isinstance(alpha, float)
+        and type_of_elements(chi_values, tuple, str, float)
+        and chi_values
+    ):
         criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
         if alpha not in criterion.keys():
             return None
