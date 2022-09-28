@@ -139,18 +139,21 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(frequencies, dict):
-        for k, v in frequencies.items():
-            if isinstance(k, str) and isinstance(v, int):
-                sum_values = sum(frequencies.values())
-                tf_dict = dict(frequencies)
-                for i, j in tf_dict.items():
-                    tf_dict[i] = j / sum_values
-                return tf_dict
-            else:
-                return None
-    else:
+
+    if not isinstance(frequencies, dict):
         return None
+    for key in frequencies.keys():
+        if not isinstance(key, str):
+            return None
+    for value in frequencies.values():
+        if not isinstance(value, int):
+            return None
+
+    sum_values = sum(frequencies.values())
+    tf_dict = dict(frequencies)
+    for i, j in tf_dict.items():
+        tf_dict[i] = j / sum_values
+    return tf_dict
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
@@ -166,50 +169,32 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    '''
-    if isinstance(term_freq, dict) and isinstance(idf , dict):
-        for k, v in term_freq.items():
-            if isinstance(k, str) and isinstance(v, (int, float)) and not v == 0:
-                for ky, vl in idf.items():
-                    if isinstance(ky, str) and isinstance(vl, (int, float)) and not vl == 0:
-                        tfidf_dict = {}
-                        for token in term_freq.keys():
-                            if token not in idf.keys():
-                                tfidf_dict[token] = term_freq[token] * math.log(47 / 1)
-                            else:
-                                tfidf_dict[token] = term_freq[token] * idf[token]
-                        return(tfidf_dict)
-                    else:
-                        return None
-            else:
-                return None
-    else:
+    if not isinstance(term_freq, dict) or len(term_freq) == 0:
         return None
-    '''
-
-    if not isinstance(term_freq, dict) or not isinstance(idf, dict):
+    for key in term_freq.keys():
+        if not isinstance(key, str):
+            return None
+    for value in term_freq.values():
+        if not isinstance(value, float):
+            return None
+    if not isinstance(idf, dict):
         return None
-    else:
-        for key, value in term_freq.items():
-            if not isinstance(key, str) or not isinstance(value, float) or isinstance(key, bool) or len(key) == 0:
-                return None
-            else:
-                for key, value in idf.items():
-                    if not isinstance(key, str) or not isinstance(value, float) or isinstance(key, bool) or len(key) == 0:
-                        return None
-                    else:
-                        tfidf_dict = {}
-                        for token in term_freq.keys():
-                            if token not in idf.keys():
-                                idf[token] = math.log(47)
-                                tfidf_dict[token] = term_freq[token] * idf[token]
-                            else:
-                                idf[token] = idf[token]
-                                tfidf_dict[token] = term_freq[token] * idf[token]
-                        return(tfidf_dict)
+    for key in idf.keys():
+        if not isinstance(key, str):
+            return None
+    for value in idf.values():
+        if not isinstance(value, float):
+            return None
 
-
-
+    tfidf_dict = {}
+    for token in term_freq.keys():
+        if token not in idf.keys():
+            idf[token] = math.log(47)
+            tfidf_dict[token] = term_freq[token] * idf[token]
+        else:
+            idf[token] = idf[token]
+            tfidf_dict[token] = term_freq[token] * idf[token]
+    return (tfidf_dict)
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
