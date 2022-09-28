@@ -37,7 +37,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     return None
 
 
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
             Excludes stop words from the token sequence
@@ -50,10 +49,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         """
 
     if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(token, str) for token in tokens):
-        no_stwords = [word for word in tokens if word not in stop_words]
-
-
-        return no_stwords
+        no_stopwords = [word for word in tokens if word not in stop_words]
+        return no_stopwords
 
     return None
 
@@ -85,8 +82,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     return None
 
 
-
-
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
         Extracts a certain number of most frequent tokens
@@ -109,30 +104,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
         lst_len = len(frequencies)
         if top <= lst_len:
-            top_lst = [i for i in sorted(frequencies.items(), key = lambda para: para[1], reverse=True)[:top]]
+            top_lst = [i for i in sorted(frequencies.items(), key=lambda para: para[1], reverse=True)[:top]]
         else:
             top_lst = [i for i in sorted(frequencies.items(), key=lambda para: para[1], reverse=True)]
 
         return top_lst
-
-
-    #  = []
-    # for i in sorted(frequencies.items(), key = lambda para: para[1], reverse=True):
-    #     clean_lst += i
-    #     return lst
-        # for val in frequencies.values():
-            # if not isinstance(val, float) or not isinstance(val, int):
-            #     return None
-            # else:
-    #     frequencies = [k: frequencies[k] for k in sorted(frequencies, key=frequencies.get, reverse=True)]
-    #     frequencies1 = frequencies[:top]
-    #     return frequencies1
-    # new = [frequencies]
-
-    # top_words = get_top_n(dict_repetitions)
-    # print(top_words)
-
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -154,24 +130,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     count_values = sum(frequencies.values())
     tf_dict = {k: (v/count_values) for k, v in frequencies.items()}
     return tf_dict
-
-    # for key, value in frequencies.items():
-    #     if not isinstance(key, str) and not isinstance(value, (int, float)):
-    #         return None
-    #     tf_dict[key] = value / count_values
-
-
-
-
-        # lst_frequencies = list(frequencies.values)
-        # words = 0
-        # for val in lst_frequencies:
-        #     words += val
-        #     tf_dict = {}
-        #     for k, v in frequencies.items():
-        #         tf = v/words
-        #         tf_dict[key] = tf
-        #         return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -202,8 +160,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
-    # if not (isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict) and all(isinstance(k,))):
-    #     return None
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -256,4 +212,3 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     pass
-
