@@ -22,7 +22,6 @@ if __name__ == "__main__":
         if target_text is not None:
             tokens = clean_and_tokenize(target_text)
             if tokens is not None and stop_words is not None:
-                remove_stop_words(tokens, stop_words)
                 tokens = remove_stop_words(tokens, stop_words)
                 frequencies = calculate_frequencies(tokens)
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
@@ -40,6 +39,7 @@ if __name__ == "__main__":
             tfidf = calculate_tfidf(term_freq, idf)
             if frequencies.get is not None and idf is not None and frequencies is not None:
                 RESULT = get_top_n(tfidf, 10)
-    print("Top 10 most common words in the text: ", RESULT)
+                if RESULT is not None:
+                    print("Top 10 most common words in the text: ", RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
