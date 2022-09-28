@@ -96,13 +96,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) or not isinstance(top, int) \
+    if not isinstance(frequencies, dict) or type(top) != int  \
             or any(not isinstance(key, str) for key in frequencies) \
-            or any(not isinstance(val, float) and not isinstance(val, int) for val in frequencies.values()):
+            or any(not (isinstance(val, float) or isinstance(val, int)) for val in frequencies.values())\
+            or len(frequencies) == 0 or top <= 0:
         return None
 
     return [k for v, k in (sorted([(-v, k) for k, v in frequencies.items()]))[:top]]
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
