@@ -81,20 +81,20 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     pass
 
     def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
-    # """"
-    # Extracts a certain number of most frequent tokens
-    #
-    # Parameters:
-    # frequencies (Dict): A dictionary with tokens and
-    # its corresponding frequency values
-    # top (int): Number of token to extract
-    #
-    # Returns:
-    # List[str]: Sequence of specified length
-    # consisting of tokens with the largest frequency
-    #
-    # In case of corrupt input arguments, None is returned
-    # """
+        """"
+        Extracts a certain number of most frequent tokens
+
+        Parameters:
+        frequencies (Dict): A dictionary with tokens and
+        its corresponding frequency values
+        top (int): Number of token to extract
+
+        Returns:
+        List[str]: Sequence of specified length
+        consisting of tokens with the largest frequency
+
+        In case of corrupt input arguments, None is returned
+        """
         if not (isinstance(frequencies, dict) and top != int):
             return None
         key_list = list(frequencies.keys())
