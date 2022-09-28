@@ -87,7 +87,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and frequencies != {}):
         for value in frequencies.values():
             if isinstance(value, (int, float)):
-                most_common = sorted(frequencies, key=lambda value: frequencies.get(value), reverse=True)
+                most_common = sorted(frequencies, key=lambda value: frequencies[value], reverse=True)
                 most_common = most_common[:top]
                 if most_common is not None:
                     return most_common
