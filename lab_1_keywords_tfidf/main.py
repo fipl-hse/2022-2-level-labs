@@ -68,7 +68,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         In case of corrupt input arguments, None is returned
         """
 
-    if isinstance(tokens, list) or len(tokens) != 0 or all(isinstance(el, str) for el in tokens):
+    if isinstance(tokens, list) and tokens and all(isinstance(el, str) for el in tokens):
 
         dictionary = {}
 
