@@ -73,16 +73,15 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         for token in tokens:
             if isinstance(token, str):
                 dict_of_occ = {}
-                for token in tokens:
-                    if token in dict_of_occ.keys():
-                        dict_of_occ[token] = 1 + dict_of_occ[token]
+                for token1 in tokens:
+                    if token1 in dict_of_occ.keys():
+                        dict_of_occ[token1] = 1 + dict_of_occ[token1]
                     else:
-                        dict_of_occ[token] = 1
+                        dict_of_occ[token1] = 1
                 return dict_of_occ
             else:
                 return None
     # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
-
     else:
         return None
 
@@ -234,18 +233,18 @@ def calculate_expected_frequency(
         if key in corpus_freqs:
             j = doc_freqs[key]
             k = corpus_freqs[key]
-            l = sum(doc_freqs.values())-j
-            m = sum(corpus_freqs.values())-k
-            expected_dict[key] = ((j+k)*(j+l))/(j+k+l+m)
+            el = sum(doc_freqs.values())-j
+            em = sum(corpus_freqs.values())-k
+            expected_dict[key] = ((j+k)*(j+el))/(j+k+el+em)
         else:
             if len(corpus_freqs) == 0:
                 expected_dict[key] = doc_freqs[key]
             else:
                 j = doc_freqs[key]
                 k = 0
-                l = sum(doc_freqs.values()) - j
-                m = sum(corpus_freqs.values()) - k
-                expected_dict[key] = ((j + k) * (j + l)) / (j + k + l + m)
+                el = sum(doc_freqs.values()) - j
+                em = sum(corpus_freqs.values()) - k
+                expected_dict[key] = ((j + k) * (j + el)) / (j + k + el + em)
     return expected_dict
 
 
@@ -321,4 +320,3 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         if chi_values[key] > criterion[alpha]:
             significant_dict[key] = chi_values[key]
     return significant_dict
-
