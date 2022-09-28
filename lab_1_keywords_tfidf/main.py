@@ -71,7 +71,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     if isinstance(tokens, list) and tokens and all(isinstance(el, str) for el in tokens):
 
         dictionary = {}
-
         for el in tokens:
             if el in dictionary:
                 dictionary[el] += 1
