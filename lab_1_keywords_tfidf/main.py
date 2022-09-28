@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 import math
 from typing import Optional, Union
-
+from string import punctuation
 # def dict_check():
 #     if isinstance(dictionary, dict) and all(isinstance(k, str) for k in dictionary.keys() and )
 #         return False
@@ -27,14 +27,16 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         """
 
     if isinstance(text, str):
-        punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
-        for symbol in punc:
+        # punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
+        for symbol in punctuation:
             text = text.replace(symbol, '')
             stripped = text.lower().split()
 
         return stripped
 
     return None
+
+
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -96,16 +98,17 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
         In case of corrupt input arguments, None is returned
         """
-    if not isinstance(frequencies, dict) and not isinstance(top, int) and not isinstance(top, bool) and not top>0:
+    if not(isinstance(frequencies, dict) and frequencies and isinstance(top, int) and not isinstance(top, bool) and top > 0):
         return None
     for key, val in frequencies.items():
-        if not (key, str) or not isinstance(val, (float, int)):
+        if not ((key, str) and isinstance(val, (float, int))):
             return None
-        lst_len = len(frequencies)
-        if top <= lst_len:
-            top_lst = [i for i in sorted(frequencies.items(), key=lambda para: para[1], reverse=True)[:top]]
+        # sorted_w = [i for i ]
+        dict_len = len(frequencies)
+        if top <= dict_len:
+            top_lst = [i for i, v in sorted(frequencies.items(), key=lambda para: para[1], reverse=True)[:top]]
         else:
-            top_lst = [i for i in sorted(frequencies.items(), key=lambda para: para[1], reverse=True)]
+            top_lst = [i for i, v in sorted(frequencies.items(), key=lambda para: para[1], reverse=True)]
 
         return top_lst
 
@@ -124,7 +127,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     In case of corrupt input arguments, None is returned
     """
 
-    if not isinstance(frequencies, dict) and not all(isinstance(key, str) for key in frequencies.keys()) and not all(isinstance(value, (int, float)) for value in frequencies.values()):
+    if not(isinstance(frequencies, dict) and all(isinstance(key, str) for key in frequencies.keys())
+            and all(isinstance(value, (int, float)) for value in frequencies.values())):
         return None
     count_values = sum(frequencies.values())
     tf_dict = {k: (v/count_values) for k, v in frequencies.items()}
@@ -145,7 +149,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not(isinstance(term_freq, dict) and isinstance(idf, dict)):
+    if not(isinstance(term_freq, dict) and term_freq and isinstance(idf, dict)
+           and all(isinstance(k, str) for k in idf.keys()) and all(isinstance(v, float) for v in idf.values())):
         return None
     for k, v in term_freq.items():
         if not (isinstance(k, str) and isinstance(v, float)):
