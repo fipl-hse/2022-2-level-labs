@@ -153,8 +153,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if not(isinstance(term_freq, dict) and term_freq and isinstance(idf, dict)
            and all(isinstance(k, str) for k in idf.keys()) and all(isinstance(v, float) for v in idf.values())):
         return None
-    for k, v in term_freq.items():
-        if not (isinstance(k, str) and isinstance(v, float)):
+    for key, value in term_freq.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
             return None
         tfidf_d = {}
         for word in term_freq:
