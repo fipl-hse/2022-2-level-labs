@@ -24,10 +24,7 @@ def dict_type_check(dictionary: dict, key_type: Union[type, tuple], val_type: Un
             and all(isinstance(key, key_type) for key in dictionary.keys())
             and all(isinstance(value, val_type) for value in dictionary.values())):
         return False
-    elif not dict:
-        pass
-    else:
-        return True
+    return True
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
