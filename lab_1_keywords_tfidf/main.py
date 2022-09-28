@@ -26,7 +26,8 @@ def dict_type_check(dictionary: dict, key_type: Union[type, tuple], val_type: Un
         return False
     elif not dict:
         pass
-    return True
+    else:
+        return True
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
