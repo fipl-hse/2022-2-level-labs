@@ -212,8 +212,41 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(doc_freqs, dict) or len(doc_freqs) == 0:
+        return None
+    for key in doc_freqs.keys():
+        if not isinstance(key, str):
+            return None
+    for value in doc_freqs.values():
+        if not isinstance(value, int):
+            return None
+    if not isinstance(corpus_freqs, dict):
+        return None
+    for key in corpus_freqs.keys():
+        if not isinstance(key, str):
+            return None
+    for value in corpus_freqs.values():
+        if not isinstance(value, int):
+            return None
 
+    expected_dict = {}
+    for key, value in doc_freqs.items():
+        if key in corpus_freqs:
+            j = doc_freqs[key]
+            k = corpus_freqs[key]
+            l = sum(doc_freqs.values())-j
+            m = sum(corpus_freqs.values())-k
+            expected_dict[key] = ((j+k)*(j+l))/(j+k+l+m)
+        else:
+            if len(corpus_freqs) == 0:
+                expected_dict[key] = doc_freqs[key]
+            else:
+                j = doc_freqs[key]
+                k = 0
+                l = sum(doc_freqs.values()) - j
+                m = sum(corpus_freqs.values()) - k
+                expected_dict[key] = ((j + k) * (j + l)) / (j + k + l + m)
+    return (expected_dict)
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
