@@ -20,12 +20,10 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
         if target_text is not None:
-            clean_and_tokenize(target_text)
             tokens = clean_and_tokenize(target_text)
-            if tokens is not None and stop_words is not None:
-                remove_stop_words(tokens, stop_words)
-                tokens = remove_stop_words(tokens, stop_words)
-                frequencies = calculate_frequencies(tokens)
+        if tokens is not None and stop_words is not None:
+            tokens = remove_stop_words(tokens, stop_words)
+            frequencies = calculate_frequencies(tokens)
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
