@@ -28,9 +28,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         # make entire var text lowercase'
         punctuation_symbols = '.,:-!?;%<>&*@#()'
         # creating a var that has all the punctuation marks'
-        for i in punctuation_symbols:
+        for punct in punctuation_symbols:
             # go through each punctuation symbol and replace it in the text by noting
-            text = text.replace(i, '')
+            text = text.replace(punct, '')
         text_split = text.split()
         # splits text by spaces'
         return text_split
@@ -70,15 +70,15 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
     if isinstance(tokens, list):
-        for i in tokens:
-            if isinstance(i, str):
-                Dict = {}
-                for i in tokens:
-                    if i in Dict.keys():
-                        Dict[i] = 1 + Dict[i]
+        for token in tokens:
+            if isinstance(token, str):
+                dict_of_occ = {}
+                for token in tokens:
+                    if token in dict_of_occ.keys():
+                        dict_of_occ[token] = 1 + dict_of_occ[token]
                     else:
-                        Dict[i] = 1
-                return Dict
+                        dict_of_occ[token] = 1
+                return dict_of_occ
             else:
                 return None
     # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
@@ -103,12 +103,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
-        for k, v in frequencies.items():
-            if isinstance(k, str) and isinstance(v, (int, float)) and top >= 1:
+        for key, value in frequencies.items():
+            if isinstance(key, str) and isinstance(value, (int, float)) and top >= 1:
                 list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
-                List_top = list_sorted[:top]
-                List = [i[0] for i in List_top]
-                return List
+                list_top = list_sorted[:top]
+                list_of_larg_freqs = [word[0] for word in list_top]
+                return list_of_larg_freqs
             else:
                 return None
     else:
@@ -153,8 +153,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     sum_values = sum(frequencies.values())
     tf_dict = dict(frequencies)
-    for i, j in tf_dict.items():
-        tf_dict[i] = j / sum_values
+    for key, value in tf_dict.items():
+        tf_dict[key] = value / sum_values
     return tf_dict
 
 
@@ -172,7 +172,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(term_freq, dict) or len(term_freq) == 0:
+    if not isinstance(term_freq, dict) or len(term_freq) == 0 or not isinstance(idf, dict):
         return None
     for key in term_freq.keys():
         if not isinstance(key, str):
@@ -180,8 +180,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     for value in term_freq.values():
         if not isinstance(value, float):
             return None
-    if not isinstance(idf, dict):
-        return None
     for key in idf.keys():
         if not isinstance(key, str):
             return None
@@ -216,7 +214,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(doc_freqs, dict) or len(doc_freqs) == 0:
+    if not isinstance(doc_freqs, dict) or len(doc_freqs) == 0 or not isinstance(corpus_freqs, dict):
         return None
     for key in doc_freqs.keys():
         if not isinstance(key, str):
@@ -224,8 +222,6 @@ def calculate_expected_frequency(
     for value in doc_freqs.values():
         if not isinstance(value, int):
             return None
-    if not isinstance(corpus_freqs, dict):
-        return None
     for key in corpus_freqs.keys():
         if not isinstance(key, str):
             return None
@@ -269,7 +265,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(expected, dict) or len(expected) == 0:
+    if not isinstance(expected, dict) or len(expected) == 0 or not isinstance(observed, dict) or len(observed) == 0:
         return None
     for key in expected.keys():
         if not isinstance(key, str):
@@ -277,8 +273,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     for value in expected.values():
         if not isinstance(value, float):
             return None
-    if not isinstance(observed, dict) or len(observed) == 0:
-        return None
     for key in observed.keys():
         if not isinstance(key, str):
             return None
