@@ -40,9 +40,9 @@ if __name__ == "__main__":
     frequencies = calculate_frequencies(no_stop_words)
     # print(frequencies.items())
     top_n = get_top_n(frequencies, 10)
-    print(*top_n, sep='\n')
+    print(top_n)
 
-    #RESULT = None
-    ## DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    #assert RESULT, 'Keywords are not extracted'
+    RESULT = None
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Keywords are not extracted'
 
