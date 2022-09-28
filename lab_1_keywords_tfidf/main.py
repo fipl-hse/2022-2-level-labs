@@ -68,16 +68,15 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if isinstance(tokens, list):
         for token in tokens:
-            if isinstance(token, str):
-                dict_of_occ = {}
-                for token1 in tokens:
-                    if token1 in dict_of_occ.keys():
-                        dict_of_occ[token1] = 1 + dict_of_occ[token1]
-                    else:
-                        dict_of_occ[token1] = 1
-                return dict_of_occ
-            else:
+            if not isinstance(token, str):
                 return None
+            dict_of_occ = {}
+            for token1 in tokens:
+                if token1 in dict_of_occ.keys():
+                    dict_of_occ[token1] = 1 + dict_of_occ[token1]
+                else:
+                    dict_of_occ[token1] = 1
+            return dict_of_occ
     # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'fel
     else:
         return None
@@ -100,13 +99,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
         for key, value in frequencies.items():
-            if isinstance(key, str) and isinstance(value, (int, float)) and top >= 1:
-                list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
-                list_top = list_sorted[:top]
-                list_of_larg_freqs = [word[0] for word in list_top]
-                return list_of_larg_freqs
-            else:
+            if not(isinstance(key, str) and isinstance(value, (int, float)) and top >= 1):
                 return None
+            list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
+            list_top = list_sorted[:top]
+            list_of_larg_freqs = [word[0] for word in list_top]
+            return list_of_larg_freqs
     else:
         return None
 
