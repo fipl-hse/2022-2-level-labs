@@ -3,8 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from main import clean_and_tokenize
-from main import remove_stop_words
+from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf
 
 if __name__ == "__main__":
 
@@ -16,13 +15,11 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH = ASSETS_PATH / 'Дюймовочка.txt'
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
         target_text = file.read()
-    clean_and_tokenize(target_text)
 
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = file.read().split('\n')
-    remove_stop_words(clean_and_tokenize(target_text), stop_words)
 
     # reading IDF scores for all tokens in the corpus of H.C. Andersen tales
     IDF_PATH = ASSETS_PATH / 'IDF.json'
@@ -34,6 +31,24 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
+no_stop_words_list = None
+top_freqs_list = None
+tf_freqs_dict = None
+tfidf_freqs_dict = None
+
+token_list = clean_and_tokenize(target_text)
+
+if token_list:
+    no_stop_words_list = remove_stop_words(token_list, stop_words)
+if no_stop_words_list:
+    top_freqs_list = calculate_frequencies(no_stop_words_list)
+if top_freqs_list:
+    tf_freqs_dict = calculate_tf(top_freqs_list)
+if tf_freqs_dict:
+    tfidf_freqs_dict = calculate_tfidf(tf_freqs_dict, idf)
+if tfidf_freqs_dict:
+    print(get_top_n(tfidf_freqs_dict, 10))
+
+    RESULT = get_top_n(tfidf_freqs_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
