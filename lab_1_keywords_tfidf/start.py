@@ -32,17 +32,18 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+    # print(get_top_n({'happy': 2, 'man': 3}, 1))
 
-    clean_tokens = clean_and_tokenize(target_text)
-    # print(clean_tokens)
-    no_stop_words = remove_stop_words(clean_tokens, stop_words)
-    # print(no_stop_words)
-    frequencies = calculate_frequencies(no_stop_words)
-    # print(frequencies.items())
-    top_n = get_top_n(frequencies, 10)
-    print(top_n)
+    # clean_tokens = clean_and_tokenize(target_text)
+    # # print(clean_tokens)
+    # no_stop_words = remove_stop_words(clean_tokens, stop_words)
+    # # print(no_stop_words)
+    # frequencies = calculate_frequencies(no_stop_words)
+    # # print(frequencies.items())
+    # top_n = get_top_n(frequencies, 10)
+    # print(top_n)
 
-    #RESULT = None
-    ## DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    #assert RESULT, 'Keywords are not extracted'
+    RESULT = None
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Keywords are not extracted'
 
