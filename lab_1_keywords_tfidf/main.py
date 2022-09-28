@@ -6,6 +6,7 @@ from typing import Optional, Union
 from operator import itemgetter
 import math
 
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -19,20 +20,21 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(text, str):
-        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
     else:
-        #if var text is not a string - return None'
+        # if var text is not a string - return None
         text = text.lower()
-        #make entire var text lowercase'
+        # make entire var text lowercase'
         punctuation_symbols = '.,:-!?;%<>&*@#()'
         # creating a var that has all the punctuation marks'
         for i in punctuation_symbols:
-            # go through each punctuation symbol and replace it in the text by noting'
+            # go through each punctuation symbol and replace it in the text by noting
             text = text.replace(i, '')
         text_split = text.split()
         # splits text by spaces'
         return text_split
+
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -48,7 +50,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     if not (isinstance(tokens, list) and isinstance(stop_words, list)):
-        #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+        # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
         return None
     else:
         stop_words_removed = [x for x in tokens if x not in stop_words]
@@ -76,13 +78,14 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
                         Dict[i] = 1 + Dict[i]
                     else:
                         Dict[i] = 1
-                return (Dict)
+                return Dict
             else:
                 return None
-    #The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
+    # The isinstance() function returns True if the specified object is of the specified type, otherwise False.'
 
     else:
         return None
+
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
@@ -101,29 +104,28 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool):
         for k, v in frequencies.items():
-            if isinstance(k, str) and isinstance(v, (int, float)) and top>=1:
+            if isinstance(k, str) and isinstance(v, (int, float)) and top >= 1:
                 list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
                 List_top = list_sorted[:top]
                 List = [i[0] for i in List_top]
-                return (List)
+                return List
             else:
                 return None
     else:
         return None
 
-    #If you want to conserve all the information from a dictionary when sorting it," \
+    # If you want to conserve all the information from a dictionary when sorting it," \
     # the typical first step is to call the .items() method on the dictionary. " \
-    #Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
-    #Tuple(кортеж) is a Python type that is an ordered collection of objects"
+    # Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
+    # Tuple(кортеж) is a Python type that is an ordered collection of objects"
 
-    #operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
-    #constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
-    #and fetches the n-th element out of it.'
+    # operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
+    # constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
+    # and fetches the n-th element out of it.'
 
-    #Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
-    #а не одно ключевое значение и" \
-    #это то, что operator.itemgetter(1) даст вам: функция, которая захватывает первый элемент из списка-подобного объекта."
-
+    # Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
+    # а не одно ключевое значение и" \
+    # это то, что operator.itemgetter(1) даст вам: функция которая захватывает 1 элемент из списка-подобного объекта."
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -154,6 +156,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     for i, j in tf_dict.items():
         tf_dict[i] = j / sum_values
     return tf_dict
+
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
@@ -194,7 +197,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         else:
             idf[token] = idf[token]
             tfidf_dict[token] = term_freq[token] * idf[token]
-    return (tfidf_dict)
+    return tfidf_dict
+
 
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
@@ -246,7 +250,8 @@ def calculate_expected_frequency(
                 l = sum(doc_freqs.values()) - j
                 m = sum(corpus_freqs.values()) - k
                 expected_dict[key] = ((j + k) * (j + l)) / (j + k + l + m)
-    return (expected_dict)
+    return expected_dict
+
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
@@ -285,7 +290,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     for key, value in observed.items():
         if key in expected:
             chi_dict[key] = ((observed[key] - expected[key])**2)/expected[key]
-    return (chi_dict)
+    return chi_dict
+
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
@@ -314,11 +320,11 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
             return None
     if not isinstance(alpha, float):
         return None
-    if not alpha in criterion:
+    if alpha not in criterion:
         return None
     significant_dict = {}
     for key, value in chi_values.items():
         if chi_values[key] > criterion[alpha]:
             significant_dict[key] = chi_values[key]
-    return (significant_dict)
+    return significant_dict
 
