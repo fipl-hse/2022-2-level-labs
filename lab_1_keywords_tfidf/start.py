@@ -61,6 +61,6 @@ if __name__ == "__main__":
 
 
 
-    RESULT = get_top_n(tf_idf, 10)
+    RESULT = get_top_n
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

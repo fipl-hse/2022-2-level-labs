@@ -158,8 +158,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             return None
         tfidf_d = {}
         for word in term_freq:
-            if word not in idf:
-                tfidf_d[word] = math.log(47/1)
+            if word not in idf.keys():
+                idf[word] = math.log(47 / 1)
             tfidf_d[word] = term_freq[word]*idf[word]
     return tfidf_d
 
