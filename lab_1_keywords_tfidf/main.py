@@ -2,28 +2,32 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-# fix gettopn
 from typing import Optional, Union
 import math
 
 
-def check_input_type(check_arg, check_type, check_token=None, check_value=None, check_if_not_empty=False):
+def check_input_type(check_arg, check_type, check_token=None, check_value=None, can_be_empty=True):
     if not isinstance(check_arg, check_type):
         return False
-    if not check_arg and check_if_not_empty:
+    if not check_arg and not can_be_empty:
         return False
     if check_type == list:
         for i in check_arg:
             if not isinstance(i, check_token):
                 return False
-            else:
-                return True
     if check_type == dict:
         for i in check_arg:
             if not isinstance(i, check_value):
                 return False
-            else:
-                return True
+    return True
+
+
+def check_num(num_arg):
+    if not isinstance(num_arg, int) or type(num_arg) == bool:
+        return False
+    if num_arg < 0:
+        return False
+    return True
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -37,16 +41,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not check_input_type(text, str):
         return None
-    else:
-        text_small = text.lower().strip()
-        tokens_str = ''
-        for i in text_small:
-            if i.isalnum() is True or i == ' ' or i == '\n':
-                tokens_str += i
-            else:
-                continue
-        tokens = tokens_str.split()
-        return tokens
+    text_small = text.lower().strip()
+    tokens_str = ''
+    for i in text_small:
+        if i.isalnum() is True or i == ' ' or i == '\n':
+            tokens_str += i
+    tokens = tokens_str.split()
+    return tokens
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -59,17 +60,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     List[str]: Token sequence that does not include stop words
     In case of corrupt input arguments, None is returned
     """
-    if not check_input_type(tokens, list, str, check_if_not_empty=True) or \
-            not check_input_type(stop_words, list, str, check_if_not_empty=True):
+    if not check_input_type(tokens, list, str, False) or \
+            not check_input_type(stop_words, list, str):
         return None
-    else:
-        no_stop_words = []
-        for x in tokens:
-            if x not in stop_words:
-                no_stop_words.append(x)
-            else:
-                continue
-        return no_stop_words
+    no_stop_words = []
+    for x in tokens:
+        if x not in stop_words:
+            no_stop_words.append(x)
+        else:
+            continue
+    return no_stop_words
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -81,13 +81,12 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     Dict: {token: number of occurrences in the token sequence} dictionary
     In case of corrupt input arguments, None is returned
     """
-    if not check_input_type(tokens, list, str, check_if_not_empty=True):
+    if not check_input_type(tokens, list, str, False):
         return None
-    else:
-        tokens_freqs = {}
-        for i in tokens:
-            tokens_freqs[i] = tokens.count(i)
-        return tokens_freqs
+    tokens_freqs = {}
+    for i in tokens:
+        tokens_freqs[i] = tokens.count(i)
+    return tokens_freqs
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -102,16 +101,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     consisting of tokens with the largest frequency
     In case of corrupt input arguments, None is returned
     """
-    if not check_input_type(frequencies, dict, str, Union[int, float], check_if_not_empty=True) \
-            or not check_input_type(top, int):
+    if not check_input_type(frequencies, dict, str, Union[int, float], False) \
+            or not check_num(top):
         return None
+    sorted_tokens_freqs = {k: v for k, v in sorted(frequencies.items(), key=lambda item: item[1], reverse=True)}
+    if len(frequencies) > top:
+        top_freqs_words = list(sorted_tokens_freqs.keys())[:top]
     else:
-        sorted_tokens_freqs = {k: v for k, v in sorted(frequencies.items(), key=lambda item: item[1], reverse=True)}
-        if len(frequencies) > top:
-            top_freqs_words = list(sorted_tokens_freqs.keys())[:top]
-        else:
-            top_freqs_words = list(sorted_tokens_freqs.keys())
-        return top_freqs_words
+        top_freqs_words = list(sorted_tokens_freqs.keys())
+    return top_freqs_words
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -124,14 +122,13 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     dict: A dictionary with tokens and corresponding term frequency score
     In case of corrupt input arguments, None is returned
     """
-    if not check_input_type(frequencies, dict, str, int, check_if_not_empty=True):
+    if not check_input_type(frequencies, dict, str, int, False):
         return None
-    else:
-        term_freq = {}
-        for k, v in frequencies.items():
-            new_v = v / sum(frequencies.values())
-            term_freq[k] = new_v
-        return term_freq
+    term_freq = {}
+    for k, v in frequencies.items():
+        new_v = v / sum(frequencies.values())
+        term_freq[k] = new_v
+    return term_freq
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -145,19 +142,18 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     Dict: A dictionary with tokens and its corresponding TF-IDF values
     In case of corrupt input arguments, None is returned
     """
-    if not check_input_type(term_freq, dict, str, float, check_if_not_empty=True) \
-            or not check_input_type(idf, dict, str, float, check_if_not_empty=True):
+    if not check_input_type(term_freq, dict, str, float, False) \
+            or not check_input_type(idf, dict, str, float, False):
         return None
-    else:
-        for k in term_freq:
-            if k in idf:
-                for k in idf.keys():
-                    tf_idf_v = idf[k] * term_freq[k]
-                    term_freq.update({k: tf_idf_v})
-            else:
-                tf_idf_v = math.log(47/1)
+    for k in term_freq:
+        if k in idf:
+            for k in idf.keys():
+                tf_idf_v = idf[k] * term_freq[k]
                 term_freq.update({k: tf_idf_v})
-                return term_freq
+        else:
+            tf_idf_v = math.log(47/1)
+            term_freq.update({k: tf_idf_v})
+            return term_freq
 
 
 def calculate_expected_frequency(
