@@ -15,7 +15,7 @@ def correct_dict(variable: dict, type1: type, type2: type, empty: bool) -> bool:
         if not empty and not variable:
             return False
         for key, value in variable.items():
-            if not (isinstance(key, type1) or isinstance(value, type2)):
+            if not isinstance(key, type1) or not isinstance(value, type2):
                 return False
         return True
     return False
@@ -40,7 +40,7 @@ def is_int(variable: Any) -> bool:
     Checks whether type of variable is int
     """
     if isinstance(variable, int):
-        if not isinstance(variable, bool):
+        if isinstance(variable, bool):
             return False
         return True
     return False
@@ -129,7 +129,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
     correct = correct_dict(frequencies, str, float, False) or correct_dict(frequencies, str, int, False)
-    if not (is_int(top) and top > 0 and correct):
+    if not(is_int(top) and top > 0 and correct):
         return None
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
 
