@@ -60,7 +60,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not(isinstance(tokens, list) and tokens and all(isinstance(token, str) for token in tokens)
+    if not(tokens and isinstance(tokens, list) and all(isinstance(token, str) for token in tokens)
             and isinstance(stop_words, list)):
         return None
     no_stop_words = [token for token in tokens if token not in stop_words]
@@ -79,7 +79,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not(isinstance(tokens, list) and tokens
+    if not(tokens and isinstance(tokens, list)
             and all(isinstance(token, str) for token in tokens)):
         return None
     freq_dict = {token: tokens.count(token) for token in tokens}
@@ -101,7 +101,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not(dict_type_check(frequencies, str, (int, float)) and frequencies
+    if not(frequencies and dict_type_check(frequencies, str, (int, float))
             and isinstance(top, int) and top is not (True or False) and top > 0):
         return None
     sorted_words = [token for token, freq in sorted(frequencies.items(), key=lambda token: token[1], reverse=True)]
@@ -122,7 +122,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not dict_type_check(frequencies, str, int):
+    if not(frequencies and dict_type_check(frequencies, str, int)):
         return None
     words_num = sum(frequencies.values())
     tf_dict = {token: (freq / words_num) for token, freq in frequencies.items()}
@@ -143,7 +143,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not(dict_type_check(term_freq, str, float) and term_freq
+    if not(term_freq and dict_type_check(term_freq, str, float)
             and dict_type_check(idf, str, float)):
         return None
     tfidf_dict = {token: (term_freq[token] * idf.get(token, math.log(47/1))) for token in term_freq}
@@ -166,7 +166,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not(dict_type_check(doc_freqs, str, int) and doc_freqs
+    if not(doc_freqs and dict_type_check(doc_freqs, str, int)
             and dict_type_check(corpus_freqs, str, int)):
         return None
 
@@ -201,8 +201,8 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not(dict_type_check(expected, str, float) and expected
-            and dict_type_check(observed, str, int) and observed):
+    if not(expected and dict_type_check(expected, str, float)
+            and observed and dict_type_check(observed, str, int)):
         return None
     chi_val_dict = {token: (((freq - expected[token]) ** 2) / (expected[token]))
                     for token, freq in observed.items()}
@@ -225,7 +225,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if not(dict_type_check(chi_values, str, float) and chi_values and alpha in [0.05, 0.01, 0.001]):
+    if not(chi_values and dict_type_check(chi_values, str, float) and alpha in [0.05, 0.01, 0.001]):
         return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     significant_chi_words = {token: chi_val for token, chi_val in chi_values.items() if chi_val >= criterion[alpha]}
