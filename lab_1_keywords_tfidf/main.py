@@ -5,10 +5,10 @@ Extract keywords based on frequency related metrics
 import re
 import string
 import math
-from typing import Optional, Union, Any, Set, Dict, List, Tuple
+from typing import Optional, Union, Type, Any
 
 
-def for_i_empty_cheker(collection: Union[Set[Any], Dict[Any, Any], List[Any], Tuple[Any]]) -> bool:
+def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
     """
     Check if collection's items are False
 
@@ -21,7 +21,7 @@ def for_i_empty_cheker(collection: Union[Set[Any], Dict[Any, Any], List[Any], Tu
     return bool(collection and all(bool(i) for i in collection))
 
 
-def my_isinstance(instance: Any, type_of_instance: Any) -> bool:
+def my_isinstance(instance: Any, type_of_instance: Type[Any]) -> bool:
     """
     Distincts int and bool compared to built-in isinstance() function.
 
@@ -39,8 +39,8 @@ def my_isinstance(instance: Any, type_of_instance: Any) -> bool:
 
 
 def for_i_type_checker(collection: Union[set, dict, list, tuple],
-                       type_of_collection: Union[set, dict, list, tuple],
-                       type_of_instance: Any) -> bool:
+                       type_of_collection: Type[Any],
+                       type_of_instance: Type[Any]) -> bool:
     """
     Acts like my_isinstance for every collection's item
 
@@ -61,8 +61,8 @@ def for_i_type_checker(collection: Union[set, dict, list, tuple],
 
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
-                   key_type: Union[int, float, str, tuple],
-                   value_type: Any):
+                   key_type: Union[Type[Any]],
+                   value_type: Union[Type[Any]]):
     """
     Checks dictionary on being empty, having False items in keys and values,
     correspondence of keys and values to the types we expect to observe
@@ -93,7 +93,6 @@ def is_dic_correct(dic: dict,
             and for_i_empty_cheker(keys) and for_i_empty_cheker(values) and is_empty)
 
 
-
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -114,7 +113,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         text = text.replace(item, '')
     tokens = (re.sub(r"\s{2,}", ' ', text.lower())).split()
     return tokens
-
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -143,7 +141,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     return tokens
 
 
-
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
@@ -166,7 +163,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     return frequencies
 
 
-
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
     Extracts a certain number of most frequent tokens
@@ -183,11 +179,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    if not (is_dic_correct(frequencies, False, str, int | float) and my_isinstance(top, int) and top > 0):
+    if not ((is_dic_correct(frequencies, False, str, int)
+            or is_dic_correct(frequencies, False, str, float))
+            and my_isinstance(top, int) and top > 0):
         return None
 
     return sorted(frequencies, key=lambda word: frequencies[word], reverse=True)[:top]
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -213,7 +210,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     return tf_dict
 
 
-
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
     Calculates TF-IDF score for each of the tokens
@@ -237,7 +233,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     tfidf_dict = {word: (term_freq.get(word) * idf.get(word, math.log(47/1)))
                   for word in keys_term_freq}
     return tfidf_dict
-
 
 
 def calculate_expected_frequency(
@@ -282,7 +277,6 @@ def calculate_expected_frequency(
     return expected
 
 
-
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates chi-squared value for the tokens
@@ -306,7 +300,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     formula_chi_2 = (lambda word: (pow((observed.get(word) - expected.get(word, 0)), 2)) / expected.get(word))
     chi_values = {word: formula_chi_2(word) for word in list(observed.keys())}
     return chi_values
-
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
