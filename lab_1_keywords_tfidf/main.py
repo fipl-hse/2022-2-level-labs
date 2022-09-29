@@ -92,19 +92,18 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict) and frequencies) or not (not isinstance(top, int) and isinstance(top, bool)
-                                                                   and not top <= 0):
+    if not (isinstance(frequencies, dict) and isinstance(top, int)
+            and top > 0 and frequencies and not isinstance(top, bool)):
         return None
-    # for key, value in frequencies.items():
-    #     if not (key, str) or not isinstance(value, (float, int)):
-    #         return None
-    #     list_length = len(frequencies)
-    #     if top <= list_length:
-    #         top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)[:top]]
-    #     else:
-    #         top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)]
-    frequencies1 = sorted(frequencies, key=lambda item: frequencies[item], reverse=True)[:top]
-    return frequencies1
+    for key, value in frequencies.items():
+        if not (key, str) or not isinstance(value, (float, int)):
+            return None
+        list_length = len(frequencies)
+        if top <= list_length:
+            top_list = sorted(frequencies, key=lambda couple: frequencies[couple], reverse=True)[:top]
+        else:
+            top_list = sorted(frequencies, key=lambda couple: frequencies[couple], reverse=True)
+        return top_list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -155,7 +154,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         else:
             tfidf_dict[key_frequencies] = value_frequencies * math.log(47)
     return tfidf_dict
-
 
 
 def calculate_expected_frequency(
