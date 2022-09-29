@@ -34,27 +34,36 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokens = clean_and_tokenize(target_text)
-    print(tokens)
-    cleaned_tokens = remove_stop_words(tokens, stop_words)
-    print(cleaned_tokens)
-    frequencies = calculate_frequencies(cleaned_tokens)
-    print(frequencies)
-    top_list = get_top_n(frequencies, 10)
-    print(top_list)
-    term_frequencies = calculate_tf(frequencies)
-    print(term_frequencies)
-    tdidf = calculate_tfidf(term_frequencies, idf)
-    print(tdidf)
-    print(get_top_n(tdidf, 10))
-    expected_frequencies = calculate_expected_frequency(frequencies, corpus_freqs)
-    print(expected_frequencies)
-    chi_values = calculate_chi_values(expected_frequencies, frequencies)
-    print(chi_values)
-    significant = extract_significant_words(chi_values, 0.05)
-    print(significant)
-    top_chi = get_top_n(chi_values, 10)
-    print(top_chi)
+    if target_text:
+        tokens = clean_and_tokenize(target_text)
+        print(tokens)
+    if tokens:
+        cleaned_tokens = remove_stop_words(tokens, stop_words)
+        print(cleaned_tokens)
+    if cleaned_tokens:
+        frequencies = calculate_frequencies(cleaned_tokens)
+        print(frequencies)
+    if frequencies:
+        top_list = get_top_n(frequencies, 10)
+        print(top_list)
+        term_frequencies = calculate_tf(frequencies)
+        print(term_frequencies)
+    if term_frequencies:
+        tdidf = calculate_tfidf(term_frequencies, idf)
+        print(tdidf)
+    if tdidf:
+        print(get_top_n(tdidf, 10))
+    if frequencies:
+        expected_frequencies = calculate_expected_frequency(frequencies, corpus_freqs)
+        print(expected_frequencies)
+    if expected_frequencies:
+        chi_values = calculate_chi_values(expected_frequencies, frequencies)
+        print(chi_values)
+    if chi_values:
+        significant = extract_significant_words(chi_values, 0.05)
+        print(significant)
+        top_chi = get_top_n(chi_values, 10)
+        print(top_chi)
 
     RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
