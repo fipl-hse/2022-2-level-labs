@@ -43,7 +43,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not tokens:
         return None
-    if not isinstance(tokens, list) or not isinstance(stop_words, list):
+    if not (isinstance(tokens, list) and isinstance(stop_words, list)):
         return None
     no_stop_words = []
     for word in tokens:
@@ -65,7 +65,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if not tokens:
         return None
-    if not isinstance(tokens, list) or not tokens:
+    if not (isinstance(tokens, list) and tokens):
         return None
     for i in tokens:
         if not isinstance(i, str):
@@ -92,14 +92,14 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not frequencies or not top:
+    if not (frequencies and top):
         return None
-    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
+    if not (isinstance(frequencies, dict) and isinstance(top, int)) or isinstance(top, bool):
         return None
     if top < 0:
         return None
     for key, value in frequencies.items():
-        if not isinstance(key, str) or not isinstance(value, (float, int)):
+        if not (isinstance(key, str) and isinstance(value, (float, int))):
             return None
     top_list = [key for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
     return top_list
@@ -122,7 +122,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     if not isinstance(frequencies, dict):
         return None
     for key, value in frequencies.items():
-        if not isinstance(key, str) or not isinstance(value, int):
+        if not (isinstance(key, str) and isinstance(value, int)):
             return None
     freq_values = list(frequencies.values())
     words_num = sum(freq_values)
@@ -149,10 +149,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not term_freq:
         return None
-    if not isinstance(term_freq, dict) or not isinstance(idf, dict):
+    if not (isinstance(term_freq, dict)  and isinstance(idf, dict)):
         return None
     for key, value in term_freq.items():
-        if not isinstance(key, str) or not isinstance(value, float):
+        if not (isinstance(key, str) and isinstance(value, float)):
             return None
     tfidf_dict = {}
     for key, value in term_freq.items():
@@ -181,25 +181,25 @@ def calculate_expected_frequency(
     """
     if not doc_freqs:
         return None
-    if not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
+    if not (isinstance(doc_freqs, dict) and isinstance(corpus_freqs, dict)):
         return None
     for key, value in doc_freqs.items():
-        if not isinstance(key, str) or not isinstance(value, int):
+        if not (isinstance(key, str) and isinstance(value, int)):
             return None
     for key, value in corpus_freqs.items():
-        if not isinstance(key, str) or not isinstance(value, int):
+        if not (isinstance(key, str) and isinstance(value, int)):
             return None
     words_in_doc = sum(doc_freqs.values())
     words_in_col = sum(corpus_freqs.values())
     exp_freqs = {}
     for key in doc_freqs:
-        l_val = words_in_doc - doc_freqs.get(key,0)
+        l_val = words_in_doc - doc_freqs[key]
         # l -  количество вхождений всех слов, кроме t, в документ d
-        j_val = doc_freqs.get(key,0)
+        j_val = doc_freqs[key]
         # j - количество вхождений слова t  в документ d
-        k_val = corpus_freqs.get(key,0)
+        k_val = corpus_freqs.get(key, 0)
         # k - количество вхождений слова t во все тексты коллекции D
-        m_val = words_in_col - corpus_freqs.get(key,0)
+        m_val = words_in_col - corpus_freqs.get(key, 0)
         # m - количество вхождений всех слов, кроме t, в коллекцию документов D
         exp = ((j_val + k_val) * (j_val + l_val))/(j_val + k_val + l_val + m_val)
         exp_freqs[key] = exp
@@ -222,15 +222,15 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not expected or not observed:
+    if not (expected and observed):
         return None
-    if not isinstance(expected, dict) or not isinstance(observed, dict):
+    if not (isinstance(expected, dict) and isinstance(observed, dict)):
         return None
     for key, value in expected.items():
-        if not isinstance(key, str) or not isinstance(value, float):
+        if not (isinstance(key, str) and isinstance(value, float)):
             return None
     for key, value in observed.items():
-        if not isinstance(key, str) or not isinstance(value, int):
+        if not (isinstance(key, str) and isinstance(value, int)):
             return None
     chi_values = {}
     for key, value in expected.items():
@@ -263,7 +263,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if not isinstance(chi_values, dict):
         return None
     for key, value in chi_values.items():
-        if not isinstance(key, str) or not isinstance(value, float):
+        if not (isinstance(key, str) and isinstance(value, float)):
             return None
     significant_val = {}
     for key, value in chi_values.items():
