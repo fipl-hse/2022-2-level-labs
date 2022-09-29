@@ -194,20 +194,6 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    '''
-    for key in doc_freqs.keys():
-        if not isinstance(key, str):
-            return None
-    for value in doc_freqs.values():
-        if not isinstance(value, int):
-            return None
-    for key in corpus_freqs.keys():
-        if not isinstance(key, str):
-            return None
-    for value in corpus_freqs.values():
-        if not isinstance(value, int):
-            return None
-    '''
     if not isinstance(doc_freqs, dict) or len(doc_freqs) == 0 or not isinstance(corpus_freqs, dict):
         return None
     for key, value in doc_freqs.items():
