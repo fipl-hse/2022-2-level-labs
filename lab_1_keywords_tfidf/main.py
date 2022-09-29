@@ -23,8 +23,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return None
     for i in punctuation:
         text = text.replace(i, '')
-    text = text.lower().split()
-    return text
+    return text.lower().split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -233,7 +232,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if isinstance(chi_values, dict) and isinstance(alpha, float) \
             and chi_values and all(isinstance(k, str) for k in chi_values.keys()) \
             and all(isinstance(v, float) for v in chi_values.values()):
-        if alpha in (0.05, 0.01, 0.001):
+        if alpha in [0.05, 0.01, 0.001]:
             significant_dic = {}
             criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
             alpha = criterion.get(alpha)
