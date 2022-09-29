@@ -288,7 +288,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     """
 
     if is_dic_correct(expected, False, str, float) and is_dic_correct(observed, False, str, int):
-        formula_chi_2 = (lambda word: (pow((observed.get(word) - expected.get(word)), 2)) / expected.get(word))
+        formula_chi_2 = (lambda word: (pow((observed.get(word) - expected.get(word, 0)), 2)) / expected.get(word))
         chi_values = {word: formula_chi_2(word) for word in list(observed.keys())}
         return chi_values
     return None
@@ -316,6 +316,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         if criterion_dict.get(alpha, False):
             chi_keys = list(chi_values.keys())
             significant_words = {word: chi_values.get(word) for word in chi_keys
-                                 if chi_values.get(word) > criterion_dict.get(alpha)}
+                                 if chi_values.get(word) > criterion_dict.get(alpha, 0)}
             return significant_words
     return None
