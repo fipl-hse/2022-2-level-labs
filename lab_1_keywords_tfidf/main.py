@@ -8,7 +8,7 @@ import math
 from typing import Optional, Union, Any, Set, Dict, List, Tuple
 
 
-def for_i_empty_cheker(collection: Union[Set[Any], Dict[Any, Any], List[Any], Tuple[Any]]) -> bool:
+def for_i_empty_cheker(collection: Optional[Set[Any], Dict[Any, Any], List[Any], Tuple[Any]]) -> bool:
     """
     Check if collection's items are False
 
@@ -38,8 +38,8 @@ def my_isinstance(instance: Any, type_of_instance: Any) -> bool:
     return isinstance(instance, type_of_instance)
 
 
-def for_i_type_checker(collection: Union[set, dict, list, tuple],
-                       type_of_collection: Union[set, dict, list, tuple],
+def for_i_type_checker(collection: Optional[set, dict, list, tuple],
+                       type_of_collection: Optional[set, dict, list, tuple],
                        type_of_instance: Any) -> bool:
     """
     Acts like my_isinstance for every collection's item
@@ -61,7 +61,7 @@ def for_i_type_checker(collection: Union[set, dict, list, tuple],
 
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
-                   key_type: Union[int, float, str, tuple],
+                   key_type: Optional[int, float, str, tuple],
                    value_type: Any):
     """
     Checks dictionary on being empty, having False items in keys and values,
@@ -151,11 +151,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
 
-    condit_1 = bool(tokens and my_isinstance(tokens, list)
-                    and for_i_empty_cheker(tokens)
-                    and for_i_type_checker(tokens, list, str))
+    if (tokens and my_isinstance(tokens, list)
+            and for_i_empty_cheker(tokens)
+            and for_i_type_checker(tokens, list, str)):
 
-    if condit_1:
         frequencies = {i: tokens.count(i) for i in frozenset(tokens)}
         return frequencies
     return None
@@ -222,7 +221,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     if is_dic_correct(term_freq, False, str, float) and is_dic_correct(idf, True, str, float):
         keys_term_freq = list(term_freq.keys())
-        tfidf_dict = {word: (term_freq.get(word) * idf.get(word, math.log(47 / 1)))
+        tfidf_dict = {word: (term_freq.get(word) * idf.get(word, math.log(47)))
                       for word in keys_term_freq}
         return tfidf_dict
     return None
@@ -232,18 +231,18 @@ def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
-        Calculates expected frequency for each of the tokens based on its
-        Term Frequency score for both target document and general corpus
+    Calculates expected frequency for each of the tokens based on its
+    Term Frequency score for both target document and general corpus
 
-        Parameters:
-        doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
-        corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
+    Parameters:
+    doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
+    corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
 
-        Returns:
-        Dict: A dictionary with tokens and its corresponding expected frequency
+    Returns:
+    Dict: A dictionary with tokens and its corresponding expected frequency
 
-        In case of corrupt input arguments, None is returned
-        """
+    In case of corrupt input arguments, None is returned
+    """
 
     if is_dic_correct(doc_freqs, False, str, int) and is_dic_correct(corpus_freqs, True, str, int):
 
