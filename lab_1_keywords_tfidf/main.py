@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
+from string import punctuation
 
 
 
@@ -19,10 +20,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(text, str):
-        return
-    punc = '''!()[]{};:'"\,<>./?@#$%^&*_~-'''
+        return None
     for elements in text:
-        if elements in punc:
+        if elements in punctuation:
             text = text.replace(elements, '')
     text = text.lower().split()
     return text
@@ -67,10 +67,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and tokens != []:
-        for el in tokens:
-            if not (isinstance(el, str)):
-                return None
+    if not isinstance(tokens, list) and tokens != []:
+        return None
+    for el in tokens:
+        if not (isinstance(el, str)):
+            return None
     freq_dict = {}
     for i in tokens:
         if i in freq_dict.keys():
