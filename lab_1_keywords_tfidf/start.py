@@ -3,8 +3,9 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import main
-
+from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
+                                       calculate_tf, calculate_tfidf, calculate_expected_frequency,
+                                       calculate_chi_values, extract_significant_words)
 
 if __name__ == "__main__":
 
@@ -32,19 +33,40 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokens = main.clean_and_tokenize(target_text)
-    tokens = main.remove_stop_words(tokens, stop_words)
-    frequencies = main.calculate_frequencies(tokens)
-    main.get_top_n(frequencies, 10)
-    term_freq = main.calculate_tf(frequencies)
-    tfidf_dic = main.calculate_tfidf(term_freq, idf)
-    print(main.get_top_n(tfidf_dic, 10))
-    expected_freq = main.calculate_expected_frequency(frequencies, corpus_freqs)
-    chi_values = main.calculate_chi_values(expected_freq, frequencies)
-    main.extract_significant_words(chi_values, 0.05)
-    key_words = main.get_top_n(chi_values, 10)
-    print(key_words)
+        if target_text:
+            tokens = clean_and_tokenize(target_text)
 
-    RESULT = key_words
+        if tokens and stop_words:
+            tokens_without_stop_words = remove_stop_words(tokens, stop_words)
+
+        if tokens_without_stop_words:
+            frequencies = calculate_frequencies(tokens_without_stop_words)
+
+        if frequencies:
+            get_top_n(frequencies, 10)
+
+        if frequencies:
+            term_freq = calculate_tf(frequencies)
+
+        if term_freq and idf:
+            tfidf_dic = calculate_tfidf(term_freq, idf)
+
+        if tfidf_dic:
+            print(get_top_n(tfidf_dic, 10))
+
+        if frequencies and corpus_freqs:
+            expected_freq = calculate_expected_frequency(frequencies, corpus_freqs)
+
+        if expected_freq and frequencies:
+            chi_values = calculate_chi_values(expected_freq, frequencies)
+
+        if chi_values:
+            significant_words = extract_significant_words(chi_values, 0.05)
+
+        if significant_words:
+            key_words = get_top_n(significant_words, 10)
+
+        RESULT = key_words
+        print(RESULT)
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+        assert RESULT, 'Keywords are not extracted'
