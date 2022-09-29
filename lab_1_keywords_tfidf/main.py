@@ -11,28 +11,28 @@ def correct_dict(variable: dict, type1: type, type2: type, empty: bool) -> bool:
     """
     Checks the type of dict, keys and values
     """
-    if isinstance(variable, dict):
-        if not empty and not variable:
+    if not isinstance(variable, dict):
+        return False
+    if not empty and not variable:
+        return False
+    for key, value in variable.items():
+        if not isinstance(key, type1) or not isinstance(value, type2):
             return False
-        for key, value in variable.items():
-            if not isinstance(key, type1) or not isinstance(value, type2):
-                return False
-        return True
-    return False
+    return True
 
 
 def correct_list(variable: list, type1: type, empty: bool) -> bool:
     """
     Checks the type of list and its elements
     """
-    if isinstance(variable, list):
-        if not empty and not variable:
+    if not isinstance(variable, list):
+        return False
+    if not empty and not variable:
+        return False
+    for i in variable:
+        if not isinstance(i, type1):
             return False
-        for i in variable:
-            if not isinstance(i, type1):
-                return False
-        return True
-    return False
+    return True
 
 
 def is_int(variable: Any) -> bool:
