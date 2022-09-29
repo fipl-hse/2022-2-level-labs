@@ -23,7 +23,6 @@ def dictionary_check(dictionary: dict, possible_type: type, empty: bool) -> bool
         return True
     return False
 
-
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
