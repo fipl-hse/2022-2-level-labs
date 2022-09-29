@@ -27,7 +27,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     return None
 
 
-
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
     Excludes stop words from the token sequence
@@ -67,7 +66,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         lst = None
 
     return lst
-
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
