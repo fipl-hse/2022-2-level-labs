@@ -71,13 +71,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     for token in tokens:
         if not isinstance(token, str):
             return None
-        dict_of_occ = {}
-        for token1 in tokens:
-            if token1 in dict_of_occ.keys():
-                dict_of_occ[token1] = 1 + dict_of_occ[token1]
-            else:
-                dict_of_occ[token1] = 1
-        return dict_of_occ
+    dict_of_occ = {}
+    for token1 in tokens:
+        if token1 in dict_of_occ.keys():
+            dict_of_occ[token1] = 1 + dict_of_occ[token1]
+        else:
+            dict_of_occ[token1] = 1
+    return dict_of_occ
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -95,15 +95,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict) and isinstance(top, int) and not isinstance(top, bool)):
+    if not isinstance(top, int) or isinstance(top, bool) or not isinstance(frequencies, dict) or len(frequencies) == 0 or top <= 0:
         return None
     for key, value in frequencies.items():
-        if not (isinstance(key, str) and isinstance(value, (int, float)) and top >= 1):
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
             return None
-        list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
-        list_top = list_sorted[:top]
-        list_of_larg_freqs = [word[0] for word in list_top]
-        return list_of_larg_freqs
+    list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
+    list_top = list_sorted[:top]
+    list_of_larg_freqs = [word[0] for word in list_top]
+    return list_of_larg_freqs
 
     # If you want to conserve all the information from a dictionary when sorting it," \
     # the typical first step is to call the .items() method on the dictionary. " \
