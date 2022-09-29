@@ -104,6 +104,14 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     return None
 
 
+def str_to_float(str_var: dict[str, int]) -> dict[str, float]:
+    dict_result = {}
+    keys = list(str_var.keys())
+    for key in keys:
+        dict_result[key] = float(str_var[key])
+    return dict_result
+
+
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
     Extracts a certain number of most frequent tokens
