@@ -272,4 +272,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> dic
 * [Источник текстов Г. Х. Андерсена](https://lukoshko.net/storyList/skazki-andersena.htm)
 * [Пример создания частотного словаря и словаря IDF из корпуса](assets/freq_and_idf_dictionary_creation.py)
 * [TF-IDF clearly explained](https://medium.com/swlh/a-quick-intro-to-tf-idf-483db9a749f5)
-* [Три странички, объясняющие принцип работы $\chi^2$ для взвешивания терминов](https://cyberleninka.ru/article/n/raspredelenie-hi-kvadrat-i-vzveshivanie-terminov) 
+* [Три странички, объясняющие принцип работы $\chi^2$ для взвешивания терминов](https://cyberleninka.ru/article/n/raspredelenie-hi-kvadrat-i-vzveshivanie-terminov)
