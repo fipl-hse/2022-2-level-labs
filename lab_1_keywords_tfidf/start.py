@@ -32,24 +32,32 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    clean_list = clean_and_tokenize(target_text)
-    print(clean_list)
+    if target_text:
+        clean_list = clean_and_tokenize(target_text)
+        print(clean_list)
 
-    delet_list = remove_stop_words(clean_list, stop_words)
-    print(delet_list)
+    if clean_list and stop_words:
+        delet_list = remove_stop_words(clean_list, stop_words)
+        print(delet_list)
 
-    dict_repetitions = calculate_frequencies(delet_list)
-    print(dict_repetitions)
+    if delet_list:
+        dict_repetitions = calculate_frequencies(delet_list)
+        print(dict_repetitions)
 
-    top_words = get_top_n(dict_repetitions, 10)
-    print(top_words)
+    # if dict_repetitions
+    # top_words = get_top_n(dict_repetitions, 10)
+    # print(top_words)
 
-    tf_calculation = calculate_tf(dict_repetitions)
-    print(tf_calculation)
+    if dict_repetitions:
+        tf_calculation = calculate_tf(dict_repetitions)
+        print(tf_calculation)
 
-    tf_idf = calculate_tfidf(tf_calculation, idf)
-    print(tf_idf)
-    print(get_top_n(tf_idf, 10))
+
+    if tf_calculation and idf:
+        tf_idf = calculate_tfidf(tf_calculation, idf)
+        print(tf_idf)
+        print(get_top_n(tf_idf, 10))
+
 
 
 
