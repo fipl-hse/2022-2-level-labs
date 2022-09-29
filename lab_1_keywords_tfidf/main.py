@@ -93,7 +93,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         if not isinstance(token, str):
             return None
         if token in frequency_dict.keys():
-            frequency_dict[token] = 1 + frequency_dict[token]
+            frequency_dict[token] += 1
         else:
             frequency_dict[token] = 1
     return frequency_dict
