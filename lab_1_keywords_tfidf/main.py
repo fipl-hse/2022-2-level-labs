@@ -143,7 +143,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     sum_values = sum(frequencies.values())
     tf_dict = dict(frequencies)
     for key, value in tf_dict.items():
-        tf_dict[key] = float(value) / sum_values
+        tf_dict[key] = float(float(value) / float(sum_values))
     return tf_dict
 
 
