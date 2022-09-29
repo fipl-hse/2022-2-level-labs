@@ -133,8 +133,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             for item in frequencies.keys():
                 if not isinstance(item, str):
                     keys_are_str = False
-            for item in frequencies.values():
-                if not isinstance(item, (int, float)):
+            for item1 in frequencies.values():
+                if not isinstance(item1, (int, float)):
                     values_are_int_or_float = False
 
     frequencies_copy = copy.deepcopy(frequencies)
@@ -177,8 +177,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         for item in frequencies.keys():
             if not isinstance(item, str):
                 keys_are_str = False
-        for item in frequencies.values():
-            if not isinstance(item, int):
+        for item1 in frequencies.values():
+            if not isinstance(item1, int):
                 values_are_int = False
 
     if frequencies_is_dict and keys_are_str and values_are_int:
@@ -222,14 +222,14 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
                 if not isinstance(item[0], str) or not isinstance(item[1], float):
                     return None
             tfidf_list = []
-            for item in term_freq.keys():
-                if item in list(idf.keys()):
+            for item_key in term_freq.keys():
+                if item_key in list(idf.keys()):
                     for item1 in idf.keys():
-                        if item == item1:
-                            tfidf = term_freq[item] * idf[item1]
+                        if item_key == item1:
+                            tfidf = term_freq[item_key] * idf[item1]
                             tfidf_list.append(tfidf)
                 else:
-                    tfidf = term_freq[item] * math.log(47 / 1)
+                    tfidf = term_freq[item_key] * math.log(47 / 1)
                     tfidf_list.append(tfidf)
 
             keys = term_freq.keys()
@@ -276,9 +276,9 @@ def calculate_expected_frequency(
                 total_corpus += value
 
             expected_list = []
-            for item in doc_freqs:
-                doc_entry = doc_freqs[item]
-                corpus_entry = corpus_freqs[item]
+            for item1 in doc_freqs:
+                doc_entry = doc_freqs[item1]
+                corpus_entry = corpus_freqs[item1]
                 other_words_doc_entry = total_doc - doc_entry
                 other_words_corpus_entry = total_corpus - corpus_entry
                 expected = ((doc_entry + corpus_entry) * (doc_entry + other_words_doc_entry) /
