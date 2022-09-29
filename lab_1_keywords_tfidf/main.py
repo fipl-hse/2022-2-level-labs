@@ -8,17 +8,31 @@ import math
 from typing import Optional, Union, Any
 
 
-def for_i_empty_cheker(collection: Any) -> bool:
+def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
+    """
+    Check if collection's items are False
+
+    Parameters:
+    collection: Union[set, dict, list, tuple]: collection, which includes some items
+
+    Returns:
+    bool: True, if items are not False (not empty, or not 0, if numbers) and False otherwise
+    """
     return bool(collection and all(map(lambda x: bool(x), collection)))
 
 
 def my_isinstance(instance: Any,
                   type_of_instance: Any) -> bool:
-    
+
     """
     Distincts int and bool compared to built-in isinstance() function.
 
-    Solves case: isinstance(False/True, int) -> True
+    Parameters:
+    instance: Any
+    type_of_instance: Any
+
+    Returns:
+    bool: True if instance's type is expected type, False, if instance's type is bool and expected type
     """
 
     if type_of_instance is int:
@@ -26,31 +40,57 @@ def my_isinstance(instance: Any,
     return isinstance(instance, type_of_instance)
 
 
-def for_i_type_checker(collection: Any,
-                       type_of_collection: Any,
+def for_i_type_checker(collection: Union[set, dict, list, tuple],
+                       type_of_collection: Union[set, dict, list, tuple],
                        type_of_instance: Any) -> bool:
 
     """
     Acts like my_isinstance for every collection's item
+
+    Parameters:
+    collection: Any
+    type_of_collection: Any
+    type_of_instance: Any
+
+    Returns:
+    bool: True if instance's type is expected type, False, if instance's
+    type is bool and expected type is int or if expected collection's type
+    doesn't equal collection's type
     """
 
     return (my_isinstance(collection, type_of_collection)
             and all(map(lambda x: my_isinstance(x, type_of_instance), collection)))
 
 
-def is_dic_correct(dic, allow_false_items, key_type, value_type):
+def is_dic_correct(dic: dict,
+                   allow_false_items: bool,
+                   key_type: Union[int, float, str, tuple],
+                   value_type: Any):
+    """
+    Checks dictionary on being empty, having False items in keys and values,
+    correspondence of keys and values to the types we expect to observe
+
+    Parameters:
+    dic: dict
+    allow_false_items: bool
+    key_type: Union[int, float, str, tuple]
+    value_type: Any
+
+    Returns:
+    bool: True if dict is not empty,
+    it's keys and values correspond to expected type
+    and deprived of False items, else: False
+    """
+
     if my_isinstance(dic, dict):
         keys = list(dic.keys())
         values = list(dic.values())
-        is_empty = allow_false_items or bool(dic)
-        condition_2 = for_i_type_checker(keys, list, key_type)
-        condition_3 = for_i_type_checker(values, list, value_type)
+        is_empty = bool(allow_false_items or dic)
         if is_empty:
-            return bool(condition_2 and condition_3)
-        condition_5 = for_i_empty_cheker(keys)
-        condition_6 = for_i_empty_cheker(values)
-        return bool(condition_2 and condition_3 and
-                    condition_5 and condition_6 and is_empty)
+            return (for_i_type_checker(keys, list, key_type)
+                         and for_i_type_checker(values, list, value_type))
+        return (for_i_type_checker(keys, list, key_type) and for_i_type_checker(values, list, value_type)
+                    and for_i_empty_cheker(keys) and for_i_empty_cheker(values) and is_empty)
     return False
 
 
@@ -67,10 +107,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
 
-    if isinstance(text, str) and bool(text):
+    if my_isinstance(text, str) and text:
         for item in string.punctuation+'“”':
             text = text.replace(item, '')
-
         tokens = (re.sub(r"\s{2,}", ' ', text.lower())).split()
         return tokens
     return None
@@ -90,15 +129,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
 
-    condition_1 = (my_isinstance(tokens, list)
-                   and
-                   bool(tokens)) and for_i_empty_cheker(tokens)
+    if (my_isinstance(tokens, list) and for_i_empty_cheker(tokens)
+            and for_i_type_checker(tokens, list, str)
+            and for_i_type_checker(stop_words, list, str)
+            and my_isinstance(stop_words, list)):
 
-    condition_2 = (for_i_type_checker(tokens, list, str)) and for_i_type_checker(stop_words, list, str)
-
-    condition_3 = (my_isinstance(stop_words, list))
-
-    if condition_1 and condition_2 and condition_3:
         for word in stop_words:
             while word in tokens:
                 tokens.remove(word)
@@ -119,9 +154,9 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
 
-    condit_1 = ((tokens and my_isinstance(tokens, list))
-                and (bool((for_i_empty_cheker(tokens))
-                          and for_i_type_checker(tokens, list, str))))
+    condit_1 = bool(tokens and my_isinstance(tokens, list)
+                and for_i_empty_cheker(tokens)
+                and for_i_type_checker(tokens, list, str))
 
     if condit_1:
         frequencies = {i: tokens.count(i) for i in frozenset(tokens)}
@@ -280,7 +315,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     if is_dic_correct(chi_values, False, str, float) and my_isinstance(alpha, float):
         criterion_dict = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-        if criterion_dict.get(alpha):
+        if criterion_dict.get(alpha, False):
             chi_keys = list(chi_values.keys())
             significant_words = {word: chi_values.get(word) for word in chi_keys
                                  if chi_values.get(word) > criterion_dict.get(alpha)}
