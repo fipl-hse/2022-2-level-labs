@@ -35,10 +35,6 @@ if __name__ == "__main__":
 
     RESULT = None
 
-    def conv(changing_variable: dict[str, int]) -> dict[str, Union[int, float]]:
-        return changing_variable
-
-
     text_step1 = clean_and_tokenize(target_text)
     if isinstance(text_step1, list):
         text_step2 = remove_stop_words(text_step1, stop_words)
