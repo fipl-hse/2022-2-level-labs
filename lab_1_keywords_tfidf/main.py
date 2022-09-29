@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 import re
 import string
-import math
+from math import log
 from typing import Optional, Union, Type, Any
 
 
@@ -61,8 +61,8 @@ def for_i_type_checker(collection: Union[set, dict, list, tuple],
 
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
-                   key_type: Union[Type[Any]],
-                   value_type: Union[Type[Any]]):
+                   key_type: Type[Any],
+                   value_type: Type[Any]) -> bool:
     """
     Checks dictionary on being empty, having False items in keys and values,
     correspondence of keys and values to the types we expect to observe
@@ -230,7 +230,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
 
     keys_term_freq = list(term_freq.keys())
-    tfidf_dict = {word: (term_freq.get(word) * idf.get(word, math.log(47/1)))
+    tfidf_dict = {word: (term_freq.get(word) * idf.get(word, log(47/1)))
                   for word in keys_term_freq}
     return tfidf_dict
 
@@ -263,7 +263,7 @@ def calculate_expected_frequency(
     expected = {}
 
     for word in doc_freq_keys:
-        j_occur_of_word_in_doc = doc_freqs.get(word)
+        j_occur_of_word_in_doc = doc_freqs.get(word, 0)
         k_occur_of_word_in_corp = corpus_freqs.get(word, 0)
         l_occur_doc_except = (sum_of_occ_doc - j_occur_of_word_in_doc)
         m_occur_corp_except = (sum_of_occ_corp - k_occur_of_word_in_corp)
@@ -297,7 +297,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     if not (is_dic_correct(expected, False, str, float) and is_dic_correct(observed, False, str, int)):
         return None
 
-    formula_chi_2 = (lambda word: (pow((observed.get(word) - expected.get(word, 0)), 2)) / expected.get(word))
+    formula_chi_2 = (lambda word: (pow((observed.get(word, 0) - expected.get(word, .0)), 2)) / expected.get(word, .0))
     chi_values = {word: formula_chi_2(word) for word in list(observed.keys())}
     return chi_values
 
@@ -327,5 +327,5 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     chi_keys = list(chi_values.keys())
     significant_words = {word: chi_values.get(word) for word in chi_keys
-                         if chi_values.get(word) > criterion_dict.get(alpha, 0)}
+                         if chi_values.get(word, .0) > criterion_dict.get(alpha, 0.0)}
     return significant_words
