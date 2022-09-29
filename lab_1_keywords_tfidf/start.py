@@ -4,7 +4,7 @@ Frequency-driven keyword extraction starter
 from pathlib import Path
 import json
 from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
-                  calculate_tf, calculate_tfidf, calculate_expected_frequency, str_to_float)
+                  calculate_tf, calculate_tfidf, calculate_expected_frequency)
 
 if __name__ == "__main__":
 
@@ -33,6 +33,14 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     RESULT = None
+
+    def str_to_float(str_var: dict[str, int]) -> dict[str, float]:
+        dict_result = {}
+        keys = list(str_var.keys())
+        for key in keys:
+            dict_result[key] = float(str_var[key])
+        return dict_result
+
 
     text_step1 = clean_and_tokenize(target_text)
     if isinstance(text_step1, list):
