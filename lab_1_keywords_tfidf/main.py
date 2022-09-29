@@ -23,7 +23,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     text = text.replace('\n', ' ').lower().strip()
     fin_text = ''
     for symbol in text:
-        if symbol.isalnum() is True or symbol == ' ':
+        if symbol.isalnum() or symbol == ' ':
             fin_text += symbol
     tokens = fin_text.split()
     return tokens
@@ -72,8 +72,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     for i in tokens:
         if not isinstance(i, str):
             return None
-        freq = tokens.count(i)
-        frequencies[i] = freq
+        frequencies[i] = tokens.count(i)
 
     return frequencies
 
@@ -131,8 +130,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         length = length + val
 
     for k, val in frequencies.items():
-        term_f = val / length
-        term_freq[k] = term_f
+        term_freq[k] = val / length
 
     return term_freq
 
@@ -159,15 +157,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     for k, val in term_freq.items():
         if not isinstance(k, str) or not isinstance(val, float):
             return None
-        if idf == {}:
+        if not idf:
             term_freq[k] = val * math.log(47 / 1)
         else:
-            for key1, val1 in idf.items():
-                if not isinstance(key1, str) or not isinstance(val1, float):
-                    return None
-                if k == key1:
-                    term_freq[k] = val * idf[k]
-                    break
+            if k in idf.keys():
+                term_freq[k] = val * idf[k]
+            else:
                 term_freq[k] = val * math.log(47 / 1)
     return term_freq
 
