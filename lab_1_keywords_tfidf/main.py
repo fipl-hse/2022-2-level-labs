@@ -95,14 +95,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not frequencies or not top:
         return None
     if not isinstance(frequencies, dict) or not type(top).__name__ == 'int':
-        # если проверять топ через изинтанс появляется ошибка, с тайпом такой ошибки нет
         return None
     if top < 0:
         return None
     for key, value in frequencies.items():
         if not isinstance(key, str) or not isinstance(value, (float, int)):
             return None
-    top_list = [(key) for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
+    top_list = [key for (key, value) in sorted(frequencies.items(), key=lambda val: val[1], reverse=True)[:top]]
 
     return top_list
 
@@ -256,8 +255,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    # есть ощущение что я неправильно реализовала функцию
-    # нужно брать альфу из критериона, это есть в чате в тг
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     crit_keys = list(criterion.keys())
     if alpha not in crit_keys:
