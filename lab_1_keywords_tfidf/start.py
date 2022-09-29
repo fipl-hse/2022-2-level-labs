@@ -63,4 +63,3 @@ if __name__ == "__main__":
     RESULT = get_top_n
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
