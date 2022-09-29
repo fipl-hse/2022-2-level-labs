@@ -100,18 +100,15 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not type(top).__name__ == 'int' or not isinstance(frequencies, dict):
+    if not isinstance(top, int) or isinstance(top, bool) or not isinstance(frequencies, dict):
         return None
     for i in frequencies.keys():
         if not isinstance(i, str):
             return None
     for j in frequencies.values():
-        if not isinstance(j, int) and not isinstance(j, float):
+        if not isinstance(j, (int, float)):
             return None
-    sorted_dict = dict(sorted(frequencies.items(), key=lambda x: x[1], reverse=True))
-    sorted_top = []
-    for i in sorted_dict.keys():
-        sorted_top.append(i)
+    sorted_top = [key for (key, value) in sorted(frequencies.items(), key=lambda x: x[1], reverse=True)]
     return sorted_top[:top]
 
 
@@ -174,7 +171,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     new = {}
     for term_key in term_freq.keys():
         if term_key not in idf:
-            new[term_key] = term_freq[term_key] * math.log(47/1)
+            new[term_key] = term_freq[term_key] * math.log(47)
         else:
             new[term_key] = term_freq[term_key] * idf[term_key]
     return new
