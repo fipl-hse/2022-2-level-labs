@@ -5,15 +5,6 @@ Extract keywords based on frequency related metrics
 import math
 from typing import Optional, Union
 from string import punctuation
-# def dict_check():
-#     if isinstance(dictionary, dict) and all(isinstance(k, str) for k in dictionary.keys() and )
-#         return False
-#     if not smth:
-#         return False
-#     for k, v in smth.items():
-#         if not isinstance(k, str) and :
-#             return
-
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -27,7 +18,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         """
 
     if isinstance(text, str):
-        # punc = '''!()-[]{};:'"\,<>./?@#$%^&*_~'''
         for symbol in punctuation:
             text = text.replace(symbol, '')
             stripped = text.lower().split()
@@ -35,8 +25,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return stripped
 
     return None
-
-
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
