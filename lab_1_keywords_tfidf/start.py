@@ -3,10 +3,9 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words,
-    calculate_frequencies, calculate_tf, calculate_tfidf,
-    calculate_expected_frequency, calculate_chi_values,
-    extract_significant_words, get_top_n)
+from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
+                                       calculate_tf, calculate_tfidf, calculate_expected_frequency,
+                                       calculate_chi_values, extract_significant_words, get_top_n)
 
 if __name__ == "__main__":
 
@@ -33,6 +32,9 @@ if __name__ == "__main__":
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
+
+    (frequencies, term_freq, tfidf_dict, top_n_freq,
+     top_n_tfidf, chi_values, top_n_chi) = [None for variable in range(7)]
 
     clean_tokens = clean_and_tokenize(target_text)
     if clean_tokens:
