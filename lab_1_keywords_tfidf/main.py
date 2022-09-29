@@ -40,10 +40,10 @@ def is_int(variable: Any) -> bool:
     Checks whether type of variable is int
     """
     if isinstance(variable, int):
-        if isinstance(variable, bool):
-            return False
-        return True
-    return False
+        return False
+    if isinstance(variable, bool):
+        return False
+    return True
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
