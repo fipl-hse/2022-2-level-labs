@@ -16,7 +16,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         list[str]: A sequence of lowercase tokens with no punctuation
         In case of corrupt input arguments, None is returned
         """
-
+    pass
     if isinstance(text, str):
         for symbol in punctuation:
             text = text.replace(symbol, '')
@@ -37,7 +37,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             List[str]: Token sequence that does not include stop words
             In case of corrupt input arguments, None is returned
         """
-
+    pass
     if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(token, str) for token in tokens):
         no_stopwords = [word for word in tokens if word not in stop_words]
         return no_stopwords
@@ -57,7 +57,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
         In case of corrupt input arguments, None is returned
         """
-
+    pass
     if isinstance(tokens, list) and tokens and all(isinstance(token, str) for token in tokens):
 
         dictionary = {}
@@ -86,6 +86,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
         In case of corrupt input arguments, None is returned
         """
+    pass
     if not(isinstance(frequencies, dict) and frequencies and isinstance(top, int)
            and not isinstance(top, bool) and top > 0):
         return None
@@ -115,7 +116,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-
+    pass
     if not(isinstance(frequencies, dict) and all(isinstance(key, str) for key in frequencies.keys())
             and all(isinstance(value, (int, float)) for value in frequencies.values())):
         return None
@@ -138,6 +139,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
+    pass
     if not(isinstance(term_freq, dict) and term_freq and isinstance(idf, dict)
            and all(isinstance(k, str) for k in idf.keys()) and all(isinstance(v, float) for v in idf.values())):
         return None
