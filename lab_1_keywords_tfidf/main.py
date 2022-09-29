@@ -138,16 +138,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     for key, value in frequencies.items():
         if not (isinstance(key, str) and isinstance(value, int)):
             return None
-    '''
-            return None
-    for key in frequencies.keys():
-        if not isinstance(key, str):
-            return None
-    for value in frequencies.values():
-        if not isinstance(value, int):
-            return None
-    '''
-
     sum_values = sum(frequencies.values())
     tf_dict = dict(frequencies)
     for key, value in tf_dict.items():
@@ -171,19 +161,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not isinstance(term_freq, dict) or len(term_freq) == 0 or not isinstance(idf, dict):
         return None
-    for key in term_freq.keys():
-        if not isinstance(key, str):
+    for key, value in term_freq.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
             return None
-    for value in term_freq.values():
-        if not isinstance(value, float):
+    for key, value in idf.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
             return None
-    for key in idf.keys():
-        if not isinstance(key, str):
-            return None
-    for value in idf.values():
-        if not isinstance(value, float):
-            return None
-
     tfidf_dict = {}
     for token in term_freq.keys():
         if token not in idf.keys():
