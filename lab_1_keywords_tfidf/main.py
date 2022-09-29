@@ -12,7 +12,7 @@ def correct_dict(variable: dict, type1: type, type2: type, empty: bool) -> bool:
     Checks the type of dict, keys and values
     """
     if isinstance(variable, dict):
-        if not (empty and variable):
+        if not empty and not variable:
             return False
         for key, value in variable.items():
             if not (isinstance(key, type1) or isinstance(value, type2)):
@@ -26,7 +26,7 @@ def correct_list(variable: list, type1: type, empty: bool) -> bool:
     Checks the type of list and its elements
     """
     if isinstance(variable, list):
-        if not (empty and variable):
+        if not empty and not variable:
             return False
         for i in variable:
             if not isinstance(i, type1):
