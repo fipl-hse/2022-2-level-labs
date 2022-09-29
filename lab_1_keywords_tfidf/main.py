@@ -9,14 +9,17 @@ from string import punctuation
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
-        Removes punctuation, casts to lowercase, splits into tokens
-        Parameters:
-        text (str): Original text
-        Returns:
-        list[str]: A sequence of lowercase tokens with no punctuation
-        In case of corrupt input arguments, None is returned
-        """
-    pass
+    Removes punctuation, casts to lowercase, splits into tokens
+
+    Parameters:
+    text (str): Original text
+
+    Returns:
+    list[str]: A sequence of lowercase tokens with no punctuation
+
+    In case of corrupt input arguments, None is returned
+    """
+
     if isinstance(text, str):
         for symbol in punctuation:
             text = text.replace(symbol, '')
@@ -29,15 +32,18 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
-            Excludes stop words from the token sequence
-            Parameters:
-            tokens (List[str]): Original token sequence
-            stop_words (List[str]: Tokens to exclude
-            Returns:
-            List[str]: Token sequence that does not include stop words
-            In case of corrupt input arguments, None is returned
-        """
-    pass
+    Excludes stop words from the token sequence
+
+    Parameters:
+    tokens (List[str]): Original token sequence
+    stop_words (List[str]: Tokens to exclude
+
+    Returns:
+    List[str]: Token sequence that does not include stop words
+
+    In case of corrupt input arguments, None is returned
+    """
+
     if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(token, str) for token in tokens):
         no_stopwords = [word for word in tokens if word not in stop_words]
         return no_stopwords
@@ -47,17 +53,17 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
-        Composes a frequency dictionary from the token sequence
+    Composes a frequency dictionary from the token sequence
 
-        Parameters:
-        tokens (List[str]): Token sequence to count frequencies for
+    Parameters:
+    tokens (List[str]): Token sequence to count frequencies for
 
-        Returns:
-        Dict: {token: number of occurrences in the token sequence} dictionary
+    Returns:
+    Dict: {token: number of occurrences in the token sequence} dictionary
 
-        In case of corrupt input arguments, None is returned
-        """
-    pass
+    In case of corrupt input arguments, None is returned
+    """
+
     if isinstance(tokens, list) and tokens and all(isinstance(token, str) for token in tokens):
 
         dictionary = {}
@@ -73,20 +79,20 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
-        Extracts a certain number of most frequent tokens
+    Extracts a certain number of most frequent tokens
 
-        Parameters:
-        frequencies (Dict): A dictionary with tokens and
-        its corresponding frequency values
-        top (int): Number of token to extract
+    Parameters:
+    frequencies (Dict): A dictionary with tokens and
+    its corresponding frequency values
+    top (int): Number of token to extract
 
-        Returns:
-        List[str]: Sequence of specified length
-        consisting of tokens with the largest frequency
+    Returns:
+    List[str]: Sequence of specified length
+    consisting of tokens with the largest frequency
 
-        In case of corrupt input arguments, None is returned
-        """
-    pass
+    In case of corrupt input arguments, None is returned
+    """
+
     if not(isinstance(frequencies, dict) and frequencies and isinstance(top, int)
            and not isinstance(top, bool) and top > 0):
         return None
@@ -116,7 +122,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
     if not(isinstance(frequencies, dict) and all(isinstance(key, str) for key in frequencies.keys())
             and all(isinstance(value, (int, float)) for value in frequencies.values())):
         return None
@@ -139,7 +145,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
     if not(isinstance(term_freq, dict) and term_freq and isinstance(idf, dict)
            and all(isinstance(k, str) for k in idf.keys()) and all(isinstance(v, float) for v in idf.values())):
         return None
