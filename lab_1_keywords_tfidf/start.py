@@ -3,7 +3,7 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from main import (clean_and_tokenize, remove_stop_words)
+from main import (clean_and_tokenize, remove_stop_words, get_top_n, calculate_frequencies)
 
 
 if __name__ == "__main__":
@@ -32,7 +32,7 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = remove_stop_words(clean_and_tokenize(target_text), stop_words)
+    RESULT = get_top_n(calculate_frequencies(remove_stop_words(clean_and_tokenize(target_text), stop_words)), top=5)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 
