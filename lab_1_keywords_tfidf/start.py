@@ -33,38 +33,39 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tokens = clean_and_tokenize(target_text)
-    print(tokens)
+    if target_text:
+        tokens = clean_and_tokenize(target_text)
 
-    tokens_no_sw = remove_stop_words(tokens, stop_words)
-    print(tokens_no_sw)
 
-    frequencies = calculate_frequencies(tokens_no_sw)
-    print(frequencies)
+    if tokens:
+        tokens_no_sw = remove_stop_words(tokens, stop_words)
 
-    most_frequent = get_top_n(frequencies, 10)
-    print(most_frequent)
+    if tokens_no_sw:
+        frequencies = calculate_frequencies(tokens_no_sw)
 
-    term_freq = calculate_tf(frequencies)
-    print(term_freq)
+    if frequencies:
+        most_frequent = get_top_n(frequencies, 10)
 
-    doc_freqs = calculate_tfidf(term_freq, idf)
-    print(doc_freqs)
+    if frequencies:
+        term_freq = calculate_tf(frequencies)
 
-    most_frequent_2 = get_top_n(doc_freqs, 10)
-    print(most_frequent_2)
+    if term_freq:
+        doc_freqs = calculate_tfidf(term_freq, idf)
 
-    expected = calculate_expected_frequency(frequencies, corpus_freqs)
-    print(expected)
+    if doc_freqs:
+        most_frequent_2 = get_top_n(doc_freqs, 10)
 
-    chi_values = calculate_chi_values(expected, frequencies)
-    print (chi_values)
+    if frequencies:
+        expected = calculate_expected_frequency(frequencies, corpus_freqs)
 
-    significant_words = extract_significant_words(chi_values, 0.05)
-    print(significant_words)
+    if expected and frequencies:
+        chi_values = calculate_chi_values(expected, frequencies)
 
-    top_chi = get_top_n(chi_values, 10)
-    print (top_chi)
+    if chi_values:
+        significant_words = extract_significant_words(chi_values, 0.05)
+
+    if chi_values:
+        top_chi = get_top_n(chi_values, 10)
 
     RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
