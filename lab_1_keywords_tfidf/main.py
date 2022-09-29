@@ -23,8 +23,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return None
     text1 = text.lower()
     for punctuation1 in string.punctuation:
-        if punctuation1 in text1:
-            text1 = text1.replace(punctuation1, '')
+        text1 = text1.replace(punctuation1, '')
     return text1.strip().split()
 
 
@@ -65,14 +64,13 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     if not (tokens and isinstance(tokens, list)):
         return None
 
-    frequencies_dictionary = {}
     for element in tokens:
         if not isinstance(element, str):
             return None
-        if element in frequencies_dictionary.keys():
-            frequencies_dictionary[element] += 1
-        else:
-            frequencies_dictionary[element] = 1
+    frequencies_dictionary = {}
+    for element in tokens:
+        count = tokens.count(element)
+        frequencies_dictionary[element] = count
     return frequencies_dictionary
 
 

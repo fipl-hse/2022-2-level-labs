@@ -33,7 +33,7 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
-    # reading frequencies for all tokens in the corpus of H.C. Andfersen tales
+    # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
