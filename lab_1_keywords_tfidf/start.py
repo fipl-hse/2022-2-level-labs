@@ -8,6 +8,7 @@ from lab_1_keywords_tfidf.main import (
     remove_stop_words
 )
 
+
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
