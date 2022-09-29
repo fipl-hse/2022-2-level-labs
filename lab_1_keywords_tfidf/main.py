@@ -141,10 +141,14 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         if not (isinstance(key, str) and isinstance(value, int)):
             return None
     sum_values = sum(frequencies.values())
-    tf_dict = dict(frequencies)
-    for key, value in tf_dict.items():
+    tf_dict = {}
+    for key, value in frequencies.items():
         tf_dict[key] = float(float(value) / float(sum_values))
     return tf_dict
+    # tf_dict = dict(frequencies)
+    # for key, value in tf_dict.items():
+    # tf_dict[key] = float(float(value) / float(sum_values))
+    # return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
