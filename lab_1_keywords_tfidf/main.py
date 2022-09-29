@@ -2,11 +2,12 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any
 import math
 
 
-def check_input_type(check_arg, check_type, check_token=None, check_value=None, can_be_empty=True):
+def check_input_type(check_arg: Any, check_type: Any, check_token: Any = None,
+                     check_value: Any = None, can_be_empty: bool = True) -> bool:
     """
     Function that returns None in case of bad input for everything but top
     """
@@ -24,11 +25,11 @@ def check_input_type(check_arg, check_type, check_token=None, check_value=None, 
                 return False
         for i in check_arg.keys():
             if not isinstance(i, check_token):
-                return None
+                return False
     return True
 
 
-def check_num(num_arg):
+def check_num(num_arg: int):
     """
     Checks top specifically
     """
