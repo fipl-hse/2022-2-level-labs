@@ -199,6 +199,7 @@ def calculate_expected_frequency(
                 k_corp = 0
             m_corp = sum(corpus_freqs.values()) - k_corp
             expected[token] = ((j_doc + k_corp) * (j_doc + l_doc)) / (j_doc + k_corp + l_doc + m_corp)
+
     return expected
 
 
