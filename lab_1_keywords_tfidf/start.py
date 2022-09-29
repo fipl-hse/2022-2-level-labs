@@ -71,5 +71,3 @@ if __name__ == "__main__":
     RESULT = GET_TOP_TEN
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
-    print(RESULT)
