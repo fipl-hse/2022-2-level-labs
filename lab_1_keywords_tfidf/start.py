@@ -2,7 +2,6 @@
 Frequency-driven keyword extraction starter
 """
 from pathlib import Path
-from typing import Optional, Union
 import json
 from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
                   calculate_tf, calculate_tfidf, calculate_expected_frequency)
