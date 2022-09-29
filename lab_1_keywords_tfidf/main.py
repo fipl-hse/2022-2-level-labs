@@ -21,14 +21,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    for punctuation in string.punctuation:
-        if punctuation in text:
-            text = text.strip()
-            text = text.replace('-', '')
-            text = text.replace('.', '')
-            text = text.replace(punctuation, '').lower().split()
-            return text
-
+    text1 = text.lower()
+    for punctuation1 in string.punctuation:
+        if punctuation1 in text1:
+            text1 = text1.replace(punctuation1, '')
+    return text1.strip().split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -54,7 +51,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         return tokens_without_sw
 
 
-
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
@@ -67,18 +63,17 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not len(tokens) != 0 and not isinstance(tokens, list):
+    if not (tokens and isinstance(tokens, list)):
         return None
 
     frequencies_dictionary = {}
     for element in tokens:
-        if type(element) != str:
+        if not isinstance(element, str):
             return None
         if element in frequencies_dictionary.keys():
             frequencies_dictionary[element] += 1
         else:
             frequencies_dictionary[element] = 1
-
     return frequencies_dictionary
 
 
@@ -97,19 +92,19 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) and not isinstance(top, int) and not isinstance(top, bool) and not top > 0:
+    if not (isinstance(frequencies, dict) and frequencies) or not (not isinstance(top, int) and isinstance(top, bool)
+                                                                   and not top <= 0):
         return None
-    for key, value in frequencies.items():
-        if not (key, str) or not isinstance(value, (float, int)):
-            return None
-        list_length = len(frequencies)
-        if top <= list_length:
-            top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)[:top]]
-        else:
-            top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)]
-
-        return top_list
-
+    # for key, value in frequencies.items():
+    #     if not (key, str) or not isinstance(value, (float, int)):
+    #         return None
+    #     list_length = len(frequencies)
+    #     if top <= list_length:
+    #         top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)[:top]]
+    #     else:
+    #         top_list = [i for i in sorted(frequencies.items(), key=lambda couple: couple[1], reverse=True)]
+    frequencies1 = sorted(frequencies, key=lambda item: frequencies[item], reverse=True)[:top]
+    return frequencies1
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:

@@ -4,7 +4,6 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
-import top as top
 
 from main import clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n, calculate_tf, calculate_tfidf
 
@@ -29,7 +28,7 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
-    # reading frequencies for all tokens in the corpus of H.C. Andersen tales
+    # reading frequencies for all tokens in the corpus of H.C. Andfersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
@@ -44,8 +43,7 @@ print(remove_stop_words(tokens, stop_words))
 tokens = remove_stop_words(tokens, stop_words)
 print(calculate_frequencies(tokens))
 frequencies = calculate_frequencies(tokens)
-top_words = get_top_n(frequencies, 10)
-print(top_words)
+print(get_top_n(frequencies, 10))
 tf_calculation = calculate_tf(frequencies)
 print(tf_calculation)
 tf_idf = calculate_tfidf(tf_calculation, idf)
