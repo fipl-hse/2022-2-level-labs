@@ -79,10 +79,10 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     if not isinstance(tokens, list):
         return None
     for word in tokens:
-        if isinstance(word, str):
-            frequencies = {i: tokens.count(i) for i in tokens}
-            return frequencies
-    return None
+        if not isinstance(word, str):
+            return None
+        frequencies = {i: tokens.count(i) for i in tokens}
+        return frequencies
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
