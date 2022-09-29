@@ -45,9 +45,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
        In case of corrupt input arguments, None is returned
        """
-    if not isinstance(tokens, list) and not isinstance(stop_words, list):
+    if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
-    if not (isinstance(word1, str) for word1 in stop_words) and not (isinstance(word2, str) for word2 in tokens):
+    if not (isinstance(word1, str) for word1 in stop_words) or not (isinstance(word2, str) for word2 in tokens):
         return None
     new_tokens = []
     for word3 in tokens:
@@ -123,7 +123,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     term_freq = {}
     if isinstance(frequencies, dict):
         for key in frequencies.keys():
-            if not isinstance(key, str):
+            if not isinstance(key, str) or key is None:
                 return None
         lenght = 0
         for value in frequencies.values():
@@ -152,28 +152,28 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         In case of corrupt input arguments, None is returned
         """
 
-    if (not isinstance(term_freq, dict) or not isinstance(idf, dict) or term_freq == {}
-            or (all(not isinstance(key, str) for key in term_freq.keys())
-                 or all(not isinstance(value, float) for value in term_freq.values()))):
+    if (isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq != {}
+            and (all(isinstance(key, str) for key in term_freq.keys())
+                 and all(isinstance(value, float) for value in term_freq.values()))):
+        if (all(isinstance(key, str) for key in idf.keys())
+                and all(isinstance(value, float) for value in idf.values())):
+            tfidf = {}
+            for word in idf.keys():
+                if word not in idf.keys():
+                    idf_meaning = math.log(47)
+                    idf[word] = idf_meaning
+                    return idf
+            if idf == {}:
+                for word, word_freq in term_freq.items():
+                    tfidf[word] = word_freq * math.log(47)
+                return tfidf
+            for number in idf.values():
+                if number == 0:
+                    max_idf = math.log(47)
+                    tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
+                    return tfidf
         return None
-    if (all(not isinstance(key, str) for key in idf.keys())
-            or all(not isinstance(value, float) for value in idf.values())):
-        return None
-    tfidf = {}
-    for word in idf.keys():
-        if word not in idf.keys():
-            idf_meaning = math.log(47)
-            idf[word] = idf_meaning
-            return idf
-    if idf == {}:
-        for word, word_freq in term_freq.items():
-            tfidf[word] = word_freq * math.log(47)
-        return tfidf
-    for number in idf.values():
-        if number == 0:
-            max_idf = math.log(47)
-            tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
-            return tfidf
+    return None
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
