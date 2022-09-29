@@ -32,39 +32,39 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    freq_dict, tf_dict, tfidf_dict, top, expected_freq_dict, chi_dict, top_chi = [None for _ in range(7)]
-    tokens = clean_and_tokenize(target_text)
+    FREQ_DICT, TF_DICT, TFIDF_DICT, TOP, EXPECTED_FREQ_DICT, CHI_DICT, TOP_CHI = [None for _ in range(7)]
+    TOKENS = clean_and_tokenize(target_text)
 
-    if tokens:
-        tokens = remove_stop_words(tokens, stop_words)
+    if TOKENS:
+        TOKENS = remove_stop_words(TOKENS, stop_words)
 
-    if tokens:
-        freq_dict = calculate_frequencies(tokens)
+    if TOKENS:
+        FREQ_DICT = calculate_frequencies(TOKENS)
 
-    if freq_dict:
-        tf_dict = calculate_tf(freq_dict)
+    if FREQ_DICT:
+        TF_DICT = calculate_tf(FREQ_DICT)
 
-    if tf_dict:
-        tfidf_dict = calculate_tfidf(tf_dict, idf)
+    if TF_DICT:
+        TFIDF_DICT = calculate_tfidf(TF_DICT, idf)
 
-    if tfidf_dict:
-        top = get_top_n(tfidf_dict, 10)
+    if TFIDF_DICT:
+        TOP = get_top_n(TFIDF_DICT, 10)
 
-    if top:
-        print('Most frequent words by tfidf_dict:', ', '.join(top), end='.\n')
+    if TOP:
+        print('Most frequent words by tfidf_dict:', ', '.join(TOP), end='.\n')
 
-    if freq_dict:
-        expected_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+    if FREQ_DICT:
+        EXPECTED_FREQ_DICT = calculate_expected_frequency(FREQ_DICT, corpus_freqs)
 
-    if expected_freq_dict and freq_dict:
-        chi_dict = calculate_chi_values(expected_freq_dict, freq_dict)
+    if EXPECTED_FREQ_DICT and FREQ_DICT:
+        CHI_DICT = calculate_chi_values(EXPECTED_FREQ_DICT, FREQ_DICT)
 
-    if chi_dict:
-        top_chi = get_top_n(chi_dict, 10)
+    if CHI_DICT:
+        TOP_CHI = get_top_n(CHI_DICT, 10)
 
-    if top_chi:
-        print('Most frequent words by chi value:', ', '.join(top_chi), end='.\n')
+    if TOP_CHI:
+        print('Most frequent words by chi value:', ', '.join(TOP_CHI), end='.\n')
 
-    RESULT = top_chi
+    RESULT = TOP_CHI
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
