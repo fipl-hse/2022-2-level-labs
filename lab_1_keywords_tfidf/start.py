@@ -3,7 +3,8 @@ Frequency-driven keyword extraction starter
 """
 from pathlib import Path
 import json
-import main
+from main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
+                  calculate_tf, calculate_tfidf, calculate_expected_frequency)
 
 if __name__ == "__main__":
 
@@ -33,15 +34,15 @@ if __name__ == "__main__":
 
     RESULT = None
 
-    text_step1 = main.clean_and_tokenize(target_text)
-    text_step2 = main.remove_stop_words(text_step1, stop_words)
-    text_step3 = main.calculate_frequencies(text_step2)
-    text_step4 = main.get_top_n(text_step3, 10)
-    text_step5 = main.calculate_tf(text_step3)
-    text_step6 = main.calculate_tfidf(text_step5, idf)
+    text_step1 = clean_and_tokenize(target_text)
+    text_step2 = remove_stop_words(text_step1, stop_words)
+    text_step3 = calculate_frequencies(text_step2)
+    text_step4 = get_top_n(text_step3, 10)
+    text_step5 = calculate_tf(text_step3)
+    text_step6 = calculate_tfidf(text_step5, idf)
     #step 7
-    print(main.get_top_n(text_step6, 10))
-    text_step8 = main.calculate_expected_frequency(text_step3, corpus_freqs)
+    print(get_top_n(text_step6, 10))
+    text_step8 = calculate_expected_frequency(text_step3, corpus_freqs)
 
    #print(text_step1)
    #print(text_step2)
@@ -51,6 +52,6 @@ if __name__ == "__main__":
    #print(text_step6)
    #print(text_step8)
 
-    RESULT = main.get_top_n(text_step6, 10)
+    RESULT = get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

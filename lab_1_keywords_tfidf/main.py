@@ -23,9 +23,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         text1 = text.lower()
         text2 = text1.translate(str.maketrans('', '', string.punctuation))
         lst = text2.split()
-    else:
-        lst = None
-    return lst
+        return lst
+    return None
 
 
 
@@ -61,7 +60,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     if tokens_is_list and stop_words_is_list and tokens_are_str and stop_words_are_str:
         lst = list()
         for item in tokens:
-            if not item in stop_words:
+            if item not in stop_words:
                 lst.append(item)
 
     else:
