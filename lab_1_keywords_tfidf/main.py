@@ -135,16 +135,16 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if not isinstance(frequencies, dict):
         return None
-    if (all(isinstance(word, str) for word in frequencies.keys())
+    if not (all(isinstance(word, str) for word in frequencies.keys())
             and all(isinstance(freq, int) for freq in frequencies.values())):
-        all_words = 0
-        final = {}
-        for freq in frequencies.values():
-            all_words += freq
-        for key, value in frequencies.items():
-            final[key] = value / all_words
-        return final
-    return None
+        return None
+    all_words = 0
+    final = {}
+    for freq in frequencies.values():
+        all_words += freq
+    for key, value in frequencies.items():
+        final[key] = value / all_words
+    return final
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -161,22 +161,19 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
        In case of corrupt input arguments, None is returned
        """
-    if not (isinstance(term_freq, dict) and isinstance(idf, dict)):
+    if not (isinstance(term_freq, dict) and isinstance(idf, dict) and term_freq != {}):
         return None
     if not (all(isinstance(word, str) for word in term_freq.keys())
             and all(isinstance(freq, float) for freq in term_freq.values())):
         return None
-    if idf == {}:
-        for key, value in term_freq.items():
-            term_freq[key] = value * math.log(47 / 1)
-        return term_freq
     for key, value in term_freq.items():
-        for key_two, value_two in term_freq.items():
-            if key_two in idf.keys():
-                term_freq[key_two] = value_two * idf[key_two]
-            else:
-                term_freq[key_two] = value_two * math.log(47 / 1)
-        return term_freq
+        if idf == {}:
+            term_freq[key] = value * math.log(47 / 1)
+        if key in idf.keys():
+            term_freq[key] = value * idf[key]
+        else:
+            term_freq[key] = value * math.log(47 / 1)
+    return term_freq
 
 
 def calculate_expected_frequency(
