@@ -7,24 +7,24 @@ from string import punctuation
 from math import log
 
 
-def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, not_empty: bool = False) -> bool:
+def type_check(data: Any, expected: Any, content: Any = None, values: Any = None, not_empty: bool = False) -> bool:
     """
     Checks any type used in a program. Also works for types of lists' and dicts' content.
 
     Parameters:
-    obj (Any): An object which type is checked
-    exp_type (Any): A type we expect obj to be
-    exp_cont (Any): A type we expect the content (elements for lists or keys for dictionaries) to be (optional)
-    exp_val (Any): A type we expect the values in a dictionary to be (optional)
-    not_empty (bool): If exp_type is a list or a dict, True stands for "it should not be empty" (optional)
+    data (Any): An object which type is checked
+    expected (Any): A type we expect data to be
+    content (Any): A type we expect data's content (elements for lists or keys for dictionaries) to be (optional)
+    values (Any): A type we expect the values in a dictionary (if data is a dictionary) to be (optional)
+    not_empty (bool): If expected is a list or a dict, True stands for "it should not be empty" (optional)
 
     Returns:
-    bool: True if obj (and its content if needed) has the expected type and emptiness, False otherwise
+    bool: True if data (and its content if needed) has the expected type and emptiness, False otherwise
     """
-    return not (not isinstance(obj, exp_type) or exp_type == int and isinstance(obj, bool)) \
-        and not (exp_type in (list, dict) and not_empty and not obj) \
-        and not (exp_type in (list, dict) and exp_cont and not all(check(item, exp_cont) for item in obj)) \
-        and not (exp_type == dict and exp_val and not all(check(value, exp_val) for value in obj.values()))
+    return not (not isinstance(data, expected) or expected == int and isinstance(data, bool)) \
+        and not (expected in (list, dict) and not_empty and not data) \
+        and not (expected in (list, dict) and content and not all(type_check(item, content) for item in data)) \
+        and not (expected == dict and values and not all(type_check(value, values) for value in data.values()))
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -39,7 +39,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(text, str):
+    if not type_check(text, str):
         return None
     return ''.join(symbol for symbol in text if symbol not in punctuation).lower().split()
 
@@ -57,7 +57,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(tokens, list, str) or not check(stop_words, list, str):
+    if not type_check(tokens, list, str) or not type_check(stop_words, list, str):
         return None
     return [token for token in tokens if token not in stop_words]
 
@@ -74,7 +74,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(tokens, list, str, True):
+    if not type_check(tokens, list, str, True):
         return None
     return {token: tokens.count(token) for token in set(tokens)}
 
@@ -94,7 +94,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(frequencies, dict, str, (float, int), True) or not check(top, int) or top <= 0:
+    if not type_check(frequencies, dict, str, (float, int), True) or not type_check(top, int) or top <= 0:
         return None
     return sorted(list(frequencies), reverse=True, key=lambda word: frequencies[word])[:top]
 
@@ -112,7 +112,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(frequencies, dict, str, int):
+    if not type_check(frequencies, dict, str, int):
         return None
     total_words = sum(frequencies.values())
     return {token: frequencies[token] / total_words for token in frequencies}
@@ -132,7 +132,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(term_freq, dict, str, float, True) or not check(idf, dict, str, float):
+    if not type_check(term_freq, dict, str, float, True) or not type_check(idf, dict, str, float):
         return None
     return {key: term_freq[key] * (idf[key] if key in idf else log(47)) for key in term_freq}
 
@@ -153,7 +153,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(doc_freqs, dict, str, int, True) or not check(corpus_freqs, dict, str, int):
+    if not type_check(doc_freqs, dict, str, int, True) or not type_check(corpus_freqs, dict, str, int):
         return None
     doc_total, corpus_total = sum(doc_freqs.values()), sum(corpus_freqs.values())
     # j = doc_freq;             k = corpus_freqs[key] (0 if not there)
@@ -178,7 +178,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not check(expected, dict, str, float, True) or not check(observed, dict, str, int, True):
+    if not type_check(expected, dict, str, float, True) or not type_check(observed, dict, str, int, True):
         return None
     return {key: (value - expected[key]) ** 2 / expected[key] for key, value in observed.items()}
 
@@ -200,6 +200,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not check(chi_values, dict, str, float, True) or alpha not in criterion:
+    if not type_check(chi_values, dict, str, float, True) or alpha not in criterion:
         return None
     return {key: value for key, value in chi_values.items() if value > criterion[alpha]}

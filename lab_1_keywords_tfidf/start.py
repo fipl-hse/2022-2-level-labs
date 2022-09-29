@@ -34,28 +34,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    clean_text, frequencies, tf_calculated, tfidf_calculated, expected_frequency, \
-        chi_values, significant_words, RESULT = [None for not_undefined in range(8)]
+    CLEAN_TEXT, FREQUENCIES, TF_CALCULATED, TFIDF_CALCULATED, EXPECTED_FREQUENCY, \
+        CHI_VALUES, SIGNIFICANT_WORDS, RESULT = [None for not_undefined in range(8)]
 
-    tokenized_text = clean_and_tokenize(target_text)
-    if tokenized_text:
-        clean_text = remove_stop_words(tokenized_text, stop_words)
-    if clean_text:
-        frequencies = calculate_frequencies(clean_text)
-    if frequencies:
-        tf_calculated = calculate_tf(frequencies)
-    if tf_calculated:
-        tfidf_calculated = calculate_tfidf(tf_calculated, idf)
-    if tfidf_calculated:
-        print(get_top_n(tfidf_calculated, 10))
-    if frequencies:
-        expected_frequency = calculate_expected_frequency(frequencies, corpus_freqs)
-    if expected_frequency and frequencies:
-        chi_values = calculate_chi_values(expected_frequency, frequencies)
-    if chi_values:
-        significant_words = extract_significant_words(chi_values, 0.05)
-    if significant_words:
-        print(get_top_n(significant_words, 10))
-        RESULT = get_top_n(significant_words, 10)
+    TOKENIZED_TEXT = clean_and_tokenize(target_text)
+    if TOKENIZED_TEXT:
+        CLEAN_TEXT = remove_stop_words(TOKENIZED_TEXT, stop_words)
+    if CLEAN_TEXT:
+        FREQUENCIES = calculate_frequencies(CLEAN_TEXT)
+    if FREQUENCIES:
+        TF_CALCULATED = calculate_tf(FREQUENCIES)
+    if TF_CALCULATED:
+        TFIDF_CALCULATED = calculate_tfidf(TF_CALCULATED, idf)
+    if TFIDF_CALCULATED:
+        print(get_top_n(TFIDF_CALCULATED, 10))
+    if FREQUENCIES:
+        EXPECTED_FREQUENCY = calculate_expected_frequency(FREQUENCIES, corpus_freqs)
+    if EXPECTED_FREQUENCY and FREQUENCIES:
+        CHI_VALUES = calculate_chi_values(EXPECTED_FREQUENCY, FREQUENCIES)
+    if CHI_VALUES:
+        SIGNIFICANT_WORDS = extract_significant_words(CHI_VALUES, 0.05)
+    if SIGNIFICANT_WORDS:
+        print(get_top_n(SIGNIFICANT_WORDS, 10))
+        RESULT = get_top_n(SIGNIFICANT_WORDS, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
