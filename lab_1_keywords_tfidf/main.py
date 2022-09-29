@@ -94,10 +94,10 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
         In case of corrupt input arguments, None is returned
         """
-    if not((isinstance(top, int) and top > 0 and isinstance(top, bool) is not True and isinstance(frequencies, dict)
-            and frequencies != {})):
+    if not ((isinstance(top, int) and top > 0 and isinstance(top, bool) is not True and isinstance(frequencies, dict)
+             and frequencies != {})):
         return None
-    if (not isinstance(value, (int, float)) for value in frequencies.values()):
+    if not (isinstance(value, (int, float)) for value in frequencies.values()):
         return None
     most_common = sorted(frequencies, key=lambda value: frequencies[value], reverse=True)
     most_common = most_common[:top]
