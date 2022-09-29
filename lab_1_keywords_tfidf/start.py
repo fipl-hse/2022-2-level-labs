@@ -36,7 +36,6 @@ if __name__ == "__main__":
     if target_text:
         tokens = clean_and_tokenize(target_text)
 
-
     if tokens:
         tokens_no_sw = remove_stop_words(tokens, stop_words)
 
@@ -53,7 +52,7 @@ if __name__ == "__main__":
         doc_freqs = calculate_tfidf(term_freq, idf)
 
     if doc_freqs:
-        most_frequent_2 = get_top_n(doc_freqs, 10)
+        print(get_top_n(doc_freqs, 10))
 
     if frequencies:
         expected = calculate_expected_frequency(frequencies, corpus_freqs)

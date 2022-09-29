@@ -182,23 +182,23 @@ def calculate_expected_frequency(
         return None
     if not isinstance(corpus_freqs, dict):
         return None
+
+    expected = {}
     for token in doc_freqs.keys():
         if not isinstance(token, str):
             return None
-
-    expected = {}
-    for token, value in doc_freqs.items():
-        if not corpus_freqs:
-            expected[token] = value
-        else:
-            j_doc = doc_freqs[token]
-            l_doc = sum(doc_freqs.values()) - j_doc
-            if token in corpus_freqs:
-                k_corp = corpus_freqs[token]
+        for token, value in doc_freqs.items():
+            if not corpus_freqs:
+                expected[token] = value
             else:
-                k_corp = 0
-            m_corp = sum(corpus_freqs.values()) - k_corp
-            expected[token] = ((j_doc + k_corp) * (j_doc + l_doc)) / (j_doc + k_corp + l_doc + m_corp)
+                j_doc = doc_freqs[token]
+                l_doc = sum(doc_freqs.values()) - j_doc
+                if token in corpus_freqs:
+                    k_corp = corpus_freqs[token]
+                else:
+                    k_corp = 0
+                m_corp = sum(corpus_freqs.values()) - k_corp
+                expected[token] = ((j_doc + k_corp) * (j_doc + l_doc)) / (j_doc + k_corp + l_doc + m_corp)
     return expected
 
 
