@@ -51,7 +51,6 @@ if __name__ == "__main__":
 
     if split_text and stop_words:
         TOKENS = remove_stop_words(split_text, stop_words)
-        print(TOKENS)
 
     if TOKENS:
         FREQUENCIES = calculate_frequencies(TOKENS)
@@ -63,7 +62,7 @@ if __name__ == "__main__":
         CALCULATED_TFIDF = calculate_tfidf(CALCULATED_TF, idf)
 
     if CALCULATED_TFIDF:
-        print("The most frequent words by 'calculated_tfidf': ", get_top_n(CALCULATED_TFIDF, 10))
+        print(f"The most frequent words by 'calculated_tfidf': {get_top_n(CALCULATED_TFIDF, 10)}")
 
     if FREQUENCIES and corpus_freqs:
         EXPECTED_FREQUENCY = calculate_expected_frequency(FREQUENCIES, corpus_freqs)
@@ -75,7 +74,7 @@ if __name__ == "__main__":
         TOP_CHI = get_top_n(CHI_VALUES, 10)
 
     if TOP_CHI:
-        print("The most frequent words by 'chi values': ", TOP_CHI)
+        print(f"The most frequent words by 'chi values': {TOP_CHI}")
 
     RESULT = TOP_CHI
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

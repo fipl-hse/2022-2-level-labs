@@ -11,9 +11,7 @@ def correct_list(list1: list, type1: Any, empty: bool) -> bool:
     """
     Checks that type of 'list1' is list and verifies the contents of 'list1' with the type that the user specifies
     """
-    if not isinstance(list1, list):
-        return False
-    if not list1 and not empty:
+    if not isinstance(list1, list) or (not list1 and not empty):
         return False
     for index in list1:
         if not isinstance(index, type1):
@@ -26,9 +24,7 @@ def correct_dict(dictionary: dict, type1: Any, type2: Any, empty: bool) -> bool:
     Checks that type of 'dictionary' is dict and verifies the contents of 'dictionary' with the type that
     the user specifies
     """
-    if not isinstance(dictionary, dict):
-        return False
-    if not dictionary and not empty:
+    if not isinstance(dictionary, dict) or (not dictionary and not empty):
         return False
     for key, value in dictionary.items():
         if not isinstance(key, type1) or not isinstance(value, (int, type2)) or isinstance(value, bool):
@@ -72,14 +68,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not correct_list(tokens, str, False) or not correct_list(stop_words, str, True):
         return None
-    index = 0
-    while index < len(tokens):
-        for stop_word in stop_words:
-            if tokens[index] is stop_word:
-                tokens.remove(stop_word)
-                index -= 1
-                break
-        index += 1
+    for stop_word in stop_words:
+        while stop_word in tokens:
+            tokens.remove(stop_word)
     return tokens
 
 
@@ -126,13 +117,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not correct_dict(frequencies, str, float, False) or not (not isinstance(top, bool) and isinstance(top, int) and
                                                                 not top <= 0):
         return None
-    freq = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
-    top_list = []
-    for word in freq:
-        top_list.append(word[0])
-    if len(freq) >= top:
-        top_list = top_list[:top]
-    return top_list
+    freq = sorted(frequencies, reverse=True, key=lambda word: frequencies[word])[:top]
+    return freq
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -200,18 +186,18 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if correct_dict(doc_freqs, str, int, False) and correct_dict(corpus_freqs, str, int, True):
-        expected_freq = {}
-        for key, value in doc_freqs.items():
-            words_in_doc = sum(doc_freqs.values()) - value
-            word_in_corpus = 0
-            if key in corpus_freqs.keys():
-                word_in_corpus = corpus_freqs[key]
-            words_in_corpus = sum(corpus_freqs.values()) - word_in_corpus
-            expected_freq[key] = ((value + word_in_corpus) * (value + words_in_doc)) / (
-                    value + word_in_corpus + words_in_doc + words_in_corpus)
-        return expected_freq
-    return None
+    if not correct_dict(doc_freqs, str, int, False) or not correct_dict(corpus_freqs, str, int, True):
+        return None
+    expected_freq = {}
+    for key, value in doc_freqs.items():
+        words_in_doc = sum(doc_freqs.values()) - value
+        word_in_corpus = 0
+        if key in corpus_freqs.keys():
+            word_in_corpus = corpus_freqs[key]
+        words_in_corpus = sum(corpus_freqs.values()) - word_in_corpus
+        expected_freq[key] = ((value + word_in_corpus) * (value + words_in_doc)) / (
+                value + word_in_corpus + words_in_doc + words_in_corpus)
+    return expected_freq
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -230,14 +216,14 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if correct_dict(expected, str, float, False) and correct_dict(observed, str, float, False):
-        chi_values = {}
-        for key in expected:
-            word_in_expected = expected[key]
-            word_in_observed = observed[key]
-            chi_values[key] = ((word_in_observed - word_in_expected) ** 2 / word_in_expected)
-        return chi_values
-    return None
+    if not correct_dict(expected, str, float, False) or not correct_dict(observed, str, float, False):
+        return None
+    chi_values = {}
+    for key in expected:
+        word_in_expected = expected[key]
+        word_in_observed = observed[key]
+        chi_values[key] = ((word_in_observed - word_in_expected) ** 2 / word_in_expected)
+    return chi_values
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -256,13 +242,13 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if correct_dict(chi_values, str, float, False) and isinstance(alpha, float):
-        criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-        if alpha in criterion.keys():
-            significant_words = {}
-            for key, value in chi_values.items():
-                if value > criterion[alpha]:
-                    significant_words[key] = value
-            return significant_words
+    if not correct_dict(chi_values, str, float, False) or not isinstance(alpha, float):
         return None
-    return None
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if alpha not in criterion.keys():
+        return None
+    significant_words = {}
+    for key, value in chi_values.items():
+        if value > criterion[alpha]:
+            significant_words[key] = value
+    return significant_words
