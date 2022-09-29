@@ -14,7 +14,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     Parameters:
     text (str): Original text
 
-    Returns:  
+    Returns:
     list[str]: A sequence of lowercase tokens with no punctuation
 
     In case of corrupt input arguments, None is returned
