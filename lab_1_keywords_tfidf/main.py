@@ -329,12 +329,10 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if not (is_dic_correct(chi_values, False, str, float) and my_isinstance(alpha, float)):
         return None
     criterion_dict = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not (criterion_dict.get(alpha, False)):
+    if not criterion_dict.get(alpha, False):
         return None
 
     chi_keys = list(chi_values.keys())
     significant_words = {word: chi_values.get(word) for word in chi_keys
                          if chi_values.get(word) > criterion_dict.get(alpha, 0)}
     return significant_words
-
-
