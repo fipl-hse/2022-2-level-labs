@@ -79,6 +79,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
                 dict_of_occ[token1] = 1
         return dict_of_occ
 
+
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
     """
     Extracts a certain number of most frequent tokens
@@ -134,12 +135,18 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     if not isinstance(frequencies, dict):
         return None
+    for key, value in frequencies.items():
+        if not (isinstance(key, str) and isinstance(value, int)):
+            return None
+    '''
+            return None
     for key in frequencies.keys():
         if not isinstance(key, str):
             return None
     for value in frequencies.values():
         if not isinstance(value, int):
             return None
+    '''
 
     sum_values = sum(frequencies.values())
     tf_dict = dict(frequencies)
