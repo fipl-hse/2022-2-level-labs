@@ -7,6 +7,10 @@ import math
 
 
 def check_input_type(check_arg, check_type, check_token=None, check_value=None, can_be_empty=True):
+    """
+    Function that returns None in case of bad input for everything but top
+    """
+
     if not isinstance(check_arg, check_type):
         return False
     if not check_arg and not can_be_empty:
@@ -16,16 +20,22 @@ def check_input_type(check_arg, check_type, check_token=None, check_value=None, 
             if not isinstance(i, check_token):
                 return False
     if check_type == dict:
-        for i in check_arg:
+        for i in check_arg.values():
             if not isinstance(i, check_value):
                 return False
+        for i in check_arg.keys():
+            if not isinstance(i, check_token):
+                return None
     return True
 
 
 def check_num(num_arg):
-    if not isinstance(num_arg, int) or type(num_arg) == bool:
+    """
+    Checks top specifically
+    """
+    if not isinstance(num_arg, int) or isinstance(num_arg, bool):
         return False
-    if num_arg < 0:
+    if not num_arg > 0:
         return False
     return True
 
@@ -101,7 +111,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     consisting of tokens with the largest frequency
     In case of corrupt input arguments, None is returned
     """
-    if not check_input_type(frequencies, dict, str, Union[int, float], False) \
+    if not check_input_type(frequencies, dict, str, (int, float), False) \
             or not check_num(top):
         return None
     sorted_tokens_freqs = {k: v for k, v in sorted(frequencies.items(), key=lambda item: item[1], reverse=True)}
@@ -143,17 +153,16 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     In case of corrupt input arguments, None is returned
     """
     if not check_input_type(term_freq, dict, str, float, False) \
-            or not check_input_type(idf, dict, str, float, False):
+            or not check_input_type(idf, dict, str, float, True):
         return None
     for k in term_freq:
-        if k in idf:
-            for k in idf.keys():
-                tf_idf_v = idf[k] * term_freq[k]
-                term_freq.update({k: tf_idf_v})
-        else:
-            tf_idf_v = math.log(47/1)
+        if k in idf.keys():
+            tf_idf_v = idf[k] * term_freq[k]
             term_freq.update({k: tf_idf_v})
-            return term_freq
+        else:
+            tf_idf_v = math.log(47/1) * term_freq[k]
+            term_freq.update({k: tf_idf_v})
+    return term_freq
 
 
 def calculate_expected_frequency(
