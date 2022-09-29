@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union, Any
 from string import punctuation
-import math
+from math import log
 
 
 def check(obj: Any, exp_type: Any, exp_cont: Any = None, exp_val: Any = None, not_empty: bool = False) -> bool:
@@ -76,7 +76,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     if not check(tokens, list, str, True):
         return None
-    return {token: tokens.count(token) for token in tokens}
+    return {token: tokens.count(token) for token in set(tokens)}
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -134,7 +134,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not check(term_freq, dict, str, float, True) or not check(idf, dict, str, float):
         return None
-    return {key: term_freq[key] * (idf[key] if key in idf else math.log(47)) for key in term_freq}
+    return {key: term_freq[key] * (idf[key] if key in idf else log(47)) for key in term_freq}
 
 
 def calculate_expected_frequency(
@@ -200,6 +200,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not check(chi_values, dict, str, float, True) or not check(alpha, float) or alpha not in criterion:
+    if not check(chi_values, dict, str, float, True) or alpha not in criterion:
         return None
     return {key: value for key, value in chi_values.items() if value > criterion[alpha]}
