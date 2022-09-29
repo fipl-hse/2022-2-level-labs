@@ -35,7 +35,7 @@ if __name__ == "__main__":
     RESULT = None
 
     text_step1 = clean_and_tokenize(target_text)
-    text_step2 = remove_stop_words(text_step1, stop_words)
+    text_step2 = remove_stop_words(list(text_step1), stop_words)
     text_step3 = calculate_frequencies(text_step2)
     text_step4 = get_top_n(text_step3, 10)
     text_step5 = calculate_tf(text_step3)
