@@ -2,7 +2,7 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union, Any
+from typing import Optional, Union
 import math
 
 
@@ -35,14 +35,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    else:
-        punctuation = r"""!()-[]{};:'"\,<>./?@#$%^&*_~"""
-        res = ""
-        for element in text:
-            if element not in punctuation:
-                res += element
-        cleaned_text = res.lower().split()
-        return cleaned_text
+    punctuation = r"""!()-[]{};:'"\,<>./?@#$%^&*_~"""
+    res = ""
+    for element in text:
+        if element not in punctuation:
+            res += element
+    cleaned_text = res.lower().split()
+    return cleaned_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -107,10 +106,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             for item in final_sorting:
                 top_words.append(item[0])
             return top_words
-        else:
-            return None
-    else:
         return None
+    return None
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -133,8 +130,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
             term_freq = element[1] / length_of_the_text
             term_freq_dict[element[0]] = term_freq
         return term_freq_dict
-    else:
-        return None
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -161,8 +157,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         max_idf = math.log(47 / 1)
         tfidf = {term: term_f * idf.get(term, max_idf) for term, term_f in term_freq.items()}
         return tfidf
-    else:
-        return None
+    return None
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
@@ -267,5 +262,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
                 significant_words_dict[word] = chi_value
         return significant_words_dict
 
-    else:
-        return None
+    return None

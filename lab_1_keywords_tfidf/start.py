@@ -12,8 +12,7 @@ from main import (
     calculate_tfidf,
     calculate_expected_frequency,
     calculate_chi_values,
-    extract_significant_words,
-    type_of_elements
+    extract_significant_words
 )
 
 if __name__ == "__main__":
