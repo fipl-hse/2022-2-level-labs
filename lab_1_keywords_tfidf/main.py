@@ -5,6 +5,26 @@ Extract keywords based on frequency related metrics
 from typing import Optional, Union, Any
 
 
+def check_list(smth: Any, not_empty: bool) -> bool:
+    """
+    Checks correctness of variables, that must be lists with elements - strings
+
+    Parameters:
+    smth (Any): any object
+
+    Returns:
+    bool: True or False
+    """
+    if not isinstance(smth, list):
+        return False
+    if not smth and not_empty is False:
+        return False
+    for i in smth:
+        if not isinstance(i, str):
+            return False
+    return True
+
+
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -17,7 +37,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    print('test')
+    if not isinstance(text, str):
+        return None
+    text.lower().strip()
+    for i in text:
+        if not (i.isalpha() or i == ' '):
+            text.replace(i, '')
+    return text.split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -33,7 +59,12 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(tokens, True) and check_list(stop_words, False)):
+        return None
+    for i in tokens:
+        if i in stop_words:
+            tokens.remove(i)
+    return tokens
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -48,7 +79,11 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(tokens, True):
+        return None
+    dict = {a: tokens.count(a) for a in tokens}
+    return dict
+
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
