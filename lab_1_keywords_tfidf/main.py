@@ -135,16 +135,16 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if not isinstance(frequencies, dict):
         return None
-    if not (all(isinstance(word, str) for word in frequencies.keys())
+    if (all(isinstance(word, str) for word in frequencies.keys())
             and all(isinstance(freq, int) for freq in frequencies.values())):
-        return None
-    all_words = 0
-    final = {}
-    for freq in frequencies.values():
-        all_words += freq
-    for key, value in frequencies.items():
-        final[key] = value / all_words
-    return final
+        all_words = 0
+        final = {}
+        for freq in frequencies.values():
+            all_words += freq
+        for key, value in frequencies.items():
+            final[key] = value / all_words
+        return final
+    return None
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
