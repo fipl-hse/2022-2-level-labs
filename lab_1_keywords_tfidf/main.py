@@ -23,7 +23,6 @@ def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
 
 def my_isinstance(instance: Any,
                   type_of_instance: Any) -> bool:
-
     """
     Distincts int and bool compared to built-in isinstance() function.
 
@@ -43,13 +42,12 @@ def my_isinstance(instance: Any,
 def for_i_type_checker(collection: Union[set, dict, list, tuple],
                        type_of_collection: Union[set, dict, list, tuple],
                        type_of_instance: Any) -> bool:
-
     """
     Acts like my_isinstance for every collection's item
 
     Parameters:
-    collection: Any
-    type_of_collection: Any
+    collection: Union[set, dict, list, tuple]
+    type_of_collection: Union[set, dict, list, tuple]
     type_of_instance: Any
 
     Returns:
@@ -181,7 +179,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
 
     if is_dic_correct(frequencies, False, str, int | float) and my_isinstance(top, int) and top > 0:
-        top_n = sorted(frequencies, key=lambda word: frequencies.get(word), reverse=True)[:top]
+        top_n = sorted(frequencies, key=lambda word: frequencies[word], reverse=True)[:top]
         return top_n
     return None
 
