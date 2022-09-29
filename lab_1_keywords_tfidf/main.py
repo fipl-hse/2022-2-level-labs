@@ -64,7 +64,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     return tokens_clean
 
 
-def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
+def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
 
@@ -76,11 +76,11 @@ def calculate_frequencies(tokens_clean: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(tokens_clean, list):
+    if not isinstance(tokens, list):
         return None
-    for word in tokens_clean:
+    for word in tokens:
         if isinstance(word, str):
-            frequencies = {i: tokens_clean.count(i) for i in tokens_clean}
+            frequencies = {i: tokens.count(i) for i in tokens}
             return frequencies
     return None
 
@@ -127,7 +127,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     return term_dict
 
 
-def calculate_tfidf(term_dict: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
+def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
     Calculates TF-IDF score for each of the tokens
     based on its TF and IDF scores
@@ -141,13 +141,13 @@ def calculate_tfidf(term_dict: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not dictionary_check(term_dict, float, False) or not isinstance(idf, dict):
+    if not dictionary_check(term_freq, float, False) or not isinstance(idf, dict):
         return None
     tfidf_dict = {}
-    for word in term_dict:
+    for word in term_freq:
         if word not in idf.keys():
             idf[word] = math.log(47/1)
-        tfidf_dict[word] = term_dict[word] * idf[word]
+        tfidf_dict[word] = term_freq[word] * idf[word]
     return tfidf_dict
 
 
