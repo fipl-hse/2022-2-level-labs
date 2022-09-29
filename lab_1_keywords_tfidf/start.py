@@ -44,8 +44,6 @@ if __name__ == "__main__":
         frequencies = calculate_frequencies(cleaned_tokens)
 
     if frequencies:
-        top_list = get_top_n(frequencies, 10)
-        print(top_list)
         term_frequencies = calculate_tf(frequencies)
 
     if term_frequencies:
