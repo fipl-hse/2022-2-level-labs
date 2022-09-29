@@ -3,7 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-import string
+from string import punctuation
 import math
 
 
@@ -19,12 +19,12 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt arguments, None is returned
     """
-    if isinstance(text, str):
-        for i in text:
-            if i in string.punctuation:
-                text = text.replace(i, '')
-        return text.lower().split()
-    return None
+    if not isinstance(text, str):
+        return None
+    for i in text:
+        if i in punctuation:
+            text = text.replace(i, '')
+    return text.lower().split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -104,8 +104,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     sort = sorted(frequencies.items(), reverse=True, key=lambda x: x[1])
     for i in sort:
         sorted_list.append(i[0])
-    if top > len(frequencies):
-        top = len(frequencies)
     return sorted_list[:top]
 
 
@@ -161,7 +159,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         if key in idf:
             tfidf = term_freq[key] * idf[key]
         else:
-            tfidf = term_freq[key] * math.log(47 / (0 + 1))
+            tfidf = term_freq[key] * math.log(47 / 1)
         dictionary[key] = tfidf
     return dictionary
 
