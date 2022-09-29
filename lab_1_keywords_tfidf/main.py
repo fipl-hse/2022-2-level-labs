@@ -3,6 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union, Any
+from string import punctuation
 
 
 def check_list(smth: Any, not_empty: bool) -> bool:
@@ -39,11 +40,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    text.lower().strip()
-    for i in text:
-        if not (i.isalpha() or i == ' '):
-            text.replace(i, '')
-    return text.split()
+    norm_text = ''
+    for i in text.lower().strip():
+        if i not in punctuation:
+            norm_text += i
+    return norm_text.split()
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:

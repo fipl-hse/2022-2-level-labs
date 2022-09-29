@@ -3,7 +3,10 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words
+)
 
 if __name__ == "__main__":
 
@@ -31,6 +34,11 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
+    raw_tokens = clean_and_tokenize(target_text)
+    if raw_tokens:
+        tokens = remove_stop_words(raw_tokens, stop_words)
+
+    RESULT = tokens
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
