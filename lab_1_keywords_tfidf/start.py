@@ -63,9 +63,8 @@ if __name__ == "__main__":
 
     if chi_values:
         significant_words = extract_significant_words(chi_values, 0.05)
-
-    if chi_values:
         top_chi = get_top_n(chi_values, 10)
+        print(top_chi)
 
     RESULT = top_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
