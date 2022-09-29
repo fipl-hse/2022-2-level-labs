@@ -3,7 +3,6 @@ Frequency-driven keyword extraction starter
 """
 from pathlib import Path
 import json
-from typing import Union
 from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
                   calculate_tf, calculate_tfidf, calculate_expected_frequency)
 
@@ -41,7 +40,7 @@ if __name__ == "__main__":
         if isinstance(text_step2, list):
             text_step3 = calculate_frequencies(text_step2)
             if text_step3 is not None:
-                text_step4 = get_top_n(conv(text_step3), 10)
+                text_step4 = get_top_n(text_step3, 10)
                 text_step5 = calculate_tf(text_step3)
                 text_step8 = calculate_expected_frequency(text_step3, corpus_freqs)
                 if isinstance(text_step5, dict):
