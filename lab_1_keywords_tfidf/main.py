@@ -27,7 +27,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         text = text.replace(i, "")
         text = text.lower().strip()
     tokens = text.split()
-    print(tokens)
     return tokens
 
 
@@ -50,7 +49,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     for i in tokens:
         if i not in stop_words:
             clean_tokens.append(i)
-    print(clean_tokens)
     return clean_tokens
 
 
@@ -66,19 +64,18 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if isinstance(tokens, list) and len(tokens) != 0:
-        dictionary = {}
-        for word in tokens:
-            if isinstance(word, str):
-                if word in dictionary.keys():
-                    dictionary[word] += 1
-                else:
-                    dictionary[word] = 1
-            else:
-                return None
-        print(dictionary)
-        return dictionary
-    return None
+    if not tokens or not isinstance(tokens, list):
+        return None
+    for word in tokens:
+        if not isinstance(word, str):
+            return None
+    dictionary = {}
+    for word in tokens:
+        if word in dictionary.keys():
+            dictionary[word] += 1
+        else:
+            dictionary[word] = 1
+    return dictionary
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -134,7 +131,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         if not isinstance(word, str) and not isinstance(quantity, int):
             return None
         tf_dict[word] = quantity / number_of_occurrences
-    print(tf_dict)
     return tf_dict
 
 
@@ -162,7 +158,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         if word not in idf:
             idf[word] = log(47 / (0 + 1))
         tf_idf[word] = term_freq[word] * idf[word]
-    print(tf_idf)
     return tf_idf
 
 
@@ -200,7 +195,6 @@ def calculate_expected_frequency(
         occur_collection_except_t = words_in_coll - corpus_freqs.get(word, 0)
         expected_freq[word] = ((occur_doc + occur_collection) * (occur_doc + occur_doc_except_word)) / \
                               (occur_doc + occur_collection + occur_doc_except_word + occur_collection_except_t)
-    print(expected_freq)
     return expected_freq
 
 
@@ -231,7 +225,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     chi_values = {}
     for word, value in expected.items():
         chi_values[word] = ((observed.get(word, 0) - value) ** 2) / value
-    print(chi_values)
     return chi_values
 
 
@@ -264,5 +257,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     for word, value in chi_values.items():
         if value > criterion.get(alpha, 0):
             significant_words[word] = value
-    print(significant_words)
     return significant_words
