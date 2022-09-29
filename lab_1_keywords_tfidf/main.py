@@ -174,6 +174,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             max_idf = math.log(47)
             tfidf = {term: term_freq * idf.get(term, max_idf) for term, term_freq in term_freq.items()}
             return tfidf
+    return tfidf
 
 
 def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
