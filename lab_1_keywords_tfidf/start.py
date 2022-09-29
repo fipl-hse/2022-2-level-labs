@@ -39,17 +39,17 @@ if __name__ == "__main__":
         text_step2 = remove_stop_words(text_step1, stop_words)
         if isinstance(text_step2, list):
             text_step3 = calculate_frequencies(text_step2)
-            if isinstance(text_step3, dict):
+            if text_step3 is not None:
                 text_step4 = get_top_n(text_step3, 10)
                 text_step5 = calculate_tf(text_step3)
                 text_step8 = calculate_expected_frequency(text_step3, corpus_freqs)
                 if isinstance(text_step5, dict):
                     text_step6 = calculate_tfidf(text_step5, idf)
     #step 7
-                    if isinstance(text_step6, dict):
+                    if text_step6 is not None:
                         print(get_top_n(text_step6, 10))
 
 
-                    RESULT = get_top_n(text_step6, 10)
+                        RESULT = get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
