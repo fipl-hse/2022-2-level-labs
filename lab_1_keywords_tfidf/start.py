@@ -34,15 +34,14 @@ if __name__ == "__main__":
 
     if target_text:
         clean_list = clean_and_tokenize(target_text)
-        print(clean_list)
+
 
     if clean_list and stop_words:
         delet_list = remove_stop_words(clean_list, stop_words)
-        print(delet_list)
+
 
     if delet_list:
         dict_repetitions = calculate_frequencies(delet_list)
-        print(dict_repetitions)
 
     # if dict_repetitions
     # top_words = get_top_n(dict_repetitions, 10)
@@ -50,13 +49,11 @@ if __name__ == "__main__":
 
     if dict_repetitions:
         tf_calculation = calculate_tf(dict_repetitions)
-        print(tf_calculation)
 
 
     if tf_calculation and idf:
-        tf_idf = calculate_tfidf(tf_calculation, idf)
-        print(tf_idf)
-        print(get_top_n(tf_idf, 10))
+        # tf_idf = calculate_tfidf(tf_calculation, idf)
+        print(get_top_n(tf_calculation, 10))
 
 
 
