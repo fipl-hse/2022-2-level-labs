@@ -46,13 +46,14 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
     if stop_words != []:
-        if (all(isinstance(word, str) for word in tokens)
+        if not (all(isinstance(word, str) for word in tokens)
                 and all(isinstance(word, str) for word in stop_words)):
-            final_text = []
-            for word3 in tokens:
-                if word3 not in stop_words:
-                    final_text += [word3]
-            return final_text
+            return None
+        final_text = []
+        for word3 in tokens:
+            if word3 not in stop_words:
+                final_text += [word3]
+        return final_text
     else:
         final_text = []
         for word in tokens:
@@ -135,15 +136,16 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if not isinstance(frequencies, dict):
         return None
-    if (all(isinstance(word, str) for word in frequencies.keys())
+    if not (all(isinstance(word, str) for word in frequencies.keys())
             and all(isinstance(freq, int) for freq in frequencies.values())):
-        all_words = 0
-        final = {}
-        for freq in frequencies.values():
-            all_words += freq
-        for key, value in frequencies.items():
-            final[key] = value / all_words
-        return final
+        return None
+    all_words = 0
+    final = {}
+    for freq in frequencies.values():
+        all_words += freq
+    for key, value in frequencies.items():
+        final[key] = value / all_words
+    return final
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -254,12 +256,13 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     if not (all(isinstance(word, str) for word in expected.keys())
             and all(isinstance(word, str) for word in observed.keys())):
         return None
-    if expected != {} and observed != {}:
-        final_dict = {}
-        for key, value in expected.items():
-            if key in observed.keys():
-                final_dict[key] = pow((observed[key] - value), 2) / value
-        return final_dict
+    if expected == {} or observed == {}:
+        return None
+    final_dict = {}
+    for key, value in expected.items():
+        if key in observed.keys():
+            final_dict[key] = pow((observed[key] - value), 2) / value
+    return final_dict
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -287,7 +290,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     if alpha not in alpha_dct.keys():
         return None
     final_dict = {}
-    for chislo in alpha_dct.keys():
+    for chislo in alpha_dct:
         if alpha == chislo:
             digit = alpha_dct[alpha]
     for key, value in chi_values.items():
