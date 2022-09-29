@@ -186,8 +186,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not (is_dic_correct(frequencies, False, str, int | float) and my_isinstance(top, int) and top > 0):
         return None
 
-    top_n = sorted(frequencies, key=lambda word: frequencies[word], reverse=True)[:top]
-    return top_n
+    return sorted(frequencies, key=lambda word: frequencies[word], reverse=True)[:top]
 
 
 
