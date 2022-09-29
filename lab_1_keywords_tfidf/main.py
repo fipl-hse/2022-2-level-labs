@@ -97,14 +97,13 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not((isinstance(top, int) and top > 0 and isinstance(top, bool) is not True and isinstance(frequencies, dict)
             and frequencies != {})):
         return None
-    for value in frequencies.values():
-        if not isinstance(value, (int, float)):
-            return None
-        most_common = sorted(frequencies, key=lambda value: frequencies[value], reverse=True)
-        most_common = most_common[:top]
-        if most_common is None:
-            return None
-        return most_common
+    if (not isinstance(value, (int, float)) for value in frequencies.values()):
+        return None
+    most_common = sorted(frequencies, key=lambda value: frequencies[value], reverse=True)
+    most_common = most_common[:top]
+    if most_common is None:
+        return None
+    return most_common
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
