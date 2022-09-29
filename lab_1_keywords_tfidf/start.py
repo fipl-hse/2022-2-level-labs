@@ -31,15 +31,16 @@ if __name__ == "__main__":
         idf = json.load(file)
         if frequencies is not None:
             term_freq = calculate_tf(frequencies)
+            if term_freq is not None and idf is not None:
+                tfidf = calculate_tfidf(term_freq, idf)
 
     # reading frequencies for all tokens in the corpus of H.C. Andersen tales
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
-        if term_freq is not None and idf is not None:
-            tfidf = calculate_tfidf(term_freq, idf)
-            if frequencies.get is not None and idf is not None and frequencies is not None and tfidf is not None:
-                RESULT = get_top_n(tfidf, 10)
+        if frequencies.get is not None and idf is not None and frequencies is not None and tfidf is not None:
+            RESULT = get_top_n(tfidf, 10)
+            if frequencies.keys() is not None:
                 print("Top 10 most common words in the text: ", RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
