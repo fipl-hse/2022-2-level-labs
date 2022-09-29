@@ -102,11 +102,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
         return None
     if not isinstance(top, int) or isinstance(top, bool) or not isinstance(frequencies, dict):
         return None
-    for i in frequencies.keys():
-        if not isinstance(i, str):
-            return None
-    for j in frequencies.values():
-        if not isinstance(j, (int, float)):
+    for key, val in frequencies.items():
+        if not isinstance(key, str) or not isinstance(val, (int, float)):
             return None
     sorted_top = [key for (key, value) in sorted(frequencies.items(), key=lambda x: x[1], reverse=True)]
     return sorted_top[:top]
@@ -127,11 +124,8 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     if not frequencies or not isinstance(frequencies, dict):
         return None
-    for i in frequencies.keys():
-        if not isinstance(i, str):
-            return None
-    for j in frequencies.values():
-        if not isinstance(j, int):
+    for key, val in frequencies.items():
+        if not isinstance(key, str) or not isinstance(val, int):
             return None
     summa = 0  # количество слов
     freq_new = {}
@@ -160,14 +154,12 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     if not isinstance(term_freq, dict) or not isinstance(idf, dict):
         return None
-    for key in term_freq.keys():
-        for value in term_freq.values():
-            if not isinstance(key, str) or not isinstance(value, float):
-                return None
-    for key in idf.keys():
-        for value in idf.values():
-            if not isinstance(key, str) or not isinstance(value, float):
-                return None
+    for key, val in term_freq.items():
+        if not isinstance(key, str) or not isinstance(val, float):
+            return None
+    for key, val in idf.items():
+        if not isinstance(key, str) or not isinstance(val, float):
+            return None
     new = {}
     for term_key in term_freq.keys():
         if term_key not in idf:
@@ -195,14 +187,12 @@ def calculate_expected_frequency(
     """
     if not doc_freqs or not isinstance(doc_freqs, dict) or not isinstance(corpus_freqs, dict):
         return None
-    for i in doc_freqs.keys():
-        for j in doc_freqs.values():
-            if not isinstance(i, str) or not isinstance(j, int):
-                return None
-    for i in corpus_freqs.keys():
-        for j in corpus_freqs.values():
-            if not isinstance(i, str) or not isinstance(j, int):
-                return None
+    for key, val in doc_freqs.items():
+        if not isinstance(key, str) or not isinstance(val, int):
+            return None
+    for key, val in corpus_freqs.items():
+        if not isinstance(key, str) or not isinstance(val, int):
+            return None
     expected_freq = {}
     all_doc = sum(doc_freqs.values())
     all_corpus = sum(corpus_freqs.values())
@@ -239,14 +229,12 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
         return None
     if not isinstance(expected, dict) or not isinstance(observed, dict):
         return None
-    for i in expected.keys():
-        for j in expected.values():
-            if not isinstance(i, str) or not isinstance(j, float):
-                return None
-    for i in observed.keys():
-        for j in observed.values():
-            if not isinstance(i, str) or not isinstance(j, int):
-                return None
+    for key, val in expected.items():
+        if not isinstance(key, str) or not isinstance(val, float):
+            return None
+    for key, val in observed.items():
+        if not isinstance(key, str) or not isinstance(val, int):
+            return None
     xi_val = {}
     for keys in expected.keys():
         obs_keys = observed[keys]
@@ -275,10 +263,9 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         return None
     if not isinstance(chi_values, dict) or not isinstance(alpha, float):
         return None
-    for i in chi_values.keys():
-        for j in chi_values.values():
-            if not isinstance(i, str) or not isinstance(j, float):
-                return None
+    for key, val in chi_values.items():
+        if not isinstance(key, str) or not isinstance(val, float):
+            return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if alpha not in criterion:
         return None
