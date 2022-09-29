@@ -29,7 +29,7 @@ def check_input_type(check_arg: Any, check_type: Any, check_token: Any = None,
     return True
 
 
-def check_num(num_arg: int):
+def check_num(num_arg: int) -> bool:
     """
     Checks top specifically
     """
@@ -124,7 +124,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not check_input_type(frequencies, dict, str, (int, float), False) \
             or not check_num(top):
         return None
-    sorted_tokens_freqs = sorted(frequencies, key=frequencies.get, reverse=True)
+    sorted_tokens_freqs = sorted(frequencies, key=lambda x: frequencies.get(x), reverse=True)
     top_freqs_words = sorted_tokens_freqs[:top]
     return top_freqs_words
 
