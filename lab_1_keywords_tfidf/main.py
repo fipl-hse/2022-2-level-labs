@@ -5,10 +5,10 @@ Extract keywords based on frequency related metrics
 import re
 import string
 import math
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Set, Dict, List, Tuple
 
 
-def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
+def for_i_empty_cheker(collection: Union[Set[Any], Dict[Any, Any], List[Any], Tuple[Any]]) -> bool:
     """
     Check if collection's items are False
 
@@ -21,8 +21,7 @@ def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
     return bool(collection and all(bool(i) for i in collection))
 
 
-def my_isinstance(instance: Any,
-                  type_of_instance: Any) -> bool:
+def my_isinstance(instance: Any, type_of_instance: Any) -> bool:
     """
     Distincts int and bool compared to built-in isinstance() function.
 
