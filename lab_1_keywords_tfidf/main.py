@@ -102,7 +102,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for value in frequencies.values():
         if not isinstance(value, int) and not isinstance(value, float):
             return None
-        sorted_dictionary = [token for token, word in sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top]]
+        sorted_dictionary = [token for token, word in
+                             sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top]]
         return sorted_dictionary
 
 
@@ -151,7 +152,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             and isinstance(idf, dict) and all(isinstance(token, str) for token in idf.keys())
             and all(isinstance(token, str) for token in term_freq.keys())
             and all(isinstance(tf_meaning, float) for tf_meaning in term_freq.values())
-            and all(isinstance(idf_value,float) for idf_value in idf.values())):
+            and all(isinstance(idf_value, float) for idf_value in idf.values())):
         return None
     dict_tf_idf = {}
     for token in term_freq:
@@ -178,17 +179,24 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    expected_frequency = {}
+    if not doc_freqs or not isinstance(corpus_freqs, dict) or not isinstance(doc_freqs, dict):
+        return None
+    for key, value in corpus_freqs.items():
+        if not isinstance(key, str) or not isinstance(value, int):
+            return None
+    for key, value in doc_freqs.items():
+        if not isinstance(key, str) or not isinstance(value, int):
+            return None
     all_words_d = sum(doc_freqs.values())
     all_words_c = sum(corpus_freqs.values())
-    for key in doc_freqs.keys():
-        j = doc_freqs[key]
-        l = all_words_d[key] - j
-        if key in corpus_freqs.keys():
-            k_corp = corpus_freqs[key]
-            m = all_words_c[key] - k_corp
-        expected_frequency = ((j+k_corp) * (j+l) / j + k_corp + l + m)
-        print(expected_frequency)
+    expected_frequency = {}
+    for key in doc_freqs:
+        j = doc_freqs.get(key, 0)
+        l = all_words_d - doc_freqs.get(key, 0)
+        k_corp = corpus_freqs.get(key, 0)
+        m = all_words_c - corpus_freqs.get(key, 0)
+        expected_frequency[key] = ((j + k_corp) * (j + l)) / (j + k_corp + l + m)
+    print(expected_frequency)
     return expected_frequency
 
 
