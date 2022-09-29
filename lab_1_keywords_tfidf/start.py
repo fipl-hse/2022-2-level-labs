@@ -31,24 +31,24 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-no_stop_words_list = None
-top_freqs_list = None
-tf_freqs_dict = None
-tfidf_freqs_dict = None
+NO_STOP_WORDS_LIST = None
+TOP_FREQS_LIST = None
+TF_FREQS_DICT = None
+TFIDF_FREQS_DICT = None
 
 token_list = clean_and_tokenize(target_text)
 
 if token_list:
-    no_stop_words_list = remove_stop_words(token_list, stop_words)
-if no_stop_words_list:
-    top_freqs_list = calculate_frequencies(no_stop_words_list)
-if top_freqs_list:
-    tf_freqs_dict = calculate_tf(top_freqs_list)
-if tf_freqs_dict:
-    tfidf_freqs_dict = calculate_tfidf(tf_freqs_dict, idf)
-if tfidf_freqs_dict:
-    print(get_top_n(tfidf_freqs_dict, 10))
+    NO_STOP_WORDS_LIST = remove_stop_words(token_list, stop_words)
+if NO_STOP_WORDS_LIST:
+    TOP_FREQS_LIST = calculate_frequencies(NO_STOP_WORDS_LIST)
+if TOP_FREQS_LIST:
+    TF_FREQS_DICT = calculate_tf(TOP_FREQS_LIST)
+if TF_FREQS_DICT:
+    TFIDF_FREQS_DICT = calculate_tfidf(TF_FREQS_DICT, idf)
+if TFIDF_FREQS_DICT:
+    print(get_top_n(TFIDF_FREQS_DICT, 10))
 
-    RESULT = get_top_n(tfidf_freqs_dict, 10)
+    RESULT = get_top_n(TFIDF_FREQS_DICT, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

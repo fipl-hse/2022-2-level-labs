@@ -74,9 +74,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             not check_input_type(stop_words, list, str):
         return None
     no_stop_words = []
-    for x in tokens:
-        if x not in stop_words:
-            no_stop_words.append(x)
+    for word in tokens:
+        if word not in stop_words:
+            no_stop_words.append(word)
         else:
             continue
     return no_stop_words
@@ -114,7 +114,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not check_input_type(frequencies, dict, str, (int, float), False) \
             or not check_num(top):
         return None
-    sorted_tokens_freqs = {k: v for k, v in sorted(frequencies.items(), key=lambda item: item[1], reverse=True)}
+    sorted_tokens_freqs = {key: value for key, value in sorted(frequencies.items(), key=lambda item: item[1], reverse=True)}
     if len(frequencies) > top:
         top_freqs_words = list(sorted_tokens_freqs.keys())[:top]
     else:
@@ -135,9 +135,9 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     if not check_input_type(frequencies, dict, str, int, False):
         return None
     term_freq = {}
-    for k, v in frequencies.items():
-        new_v = v / sum(frequencies.values())
-        term_freq[k] = new_v
+    for key, value in frequencies.items():
+        new_v = value / sum(frequencies.values())
+        term_freq[key] = new_v
     return term_freq
 
 
@@ -155,13 +155,13 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if not check_input_type(term_freq, dict, str, float, False) \
             or not check_input_type(idf, dict, str, float, True):
         return None
-    for k in term_freq:
-        if k in idf.keys():
-            tf_idf_v = idf[k] * term_freq[k]
-            term_freq.update({k: tf_idf_v})
+    for key in term_freq:
+        if key in idf.keys():
+            tf_idf_v = idf[key] * term_freq[key]
+            term_freq.update({key: tf_idf_v})
         else:
-            tf_idf_v = math.log(47/1) * term_freq[k]
-            term_freq.update({k: tf_idf_v})
+            tf_idf_v = math.log(47/1) * term_freq[key]
+            term_freq.update({key: tf_idf_v})
     return term_freq
 
 
