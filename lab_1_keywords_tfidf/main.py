@@ -202,6 +202,7 @@ def calculate_expected_frequency(
     return expected
 
 
+
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates chi-squared value for the tokens
