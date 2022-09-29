@@ -35,13 +35,16 @@ if __name__ == "__main__":
     tokens = main.remove_stop_words(tokens, stop_words)
     frequencies = main.calculate_frequencies(tokens)
     top_n_freq = main.get_top_n(frequencies, 10)
+    print(top_n_freq)
     term_freq = main.calculate_tf(frequencies)
     tfidf_dict = main.calculate_tfidf(term_freq, idf)
     top_n_tfidf = main.get_top_n(tfidf_dict, 10)
+    print(top_n_tfidf)
     expected = main.calculate_expected_frequency(frequencies, corpus_freqs)
     chi_values = main.calculate_chi_values(expected, frequencies)
     significant_words_1 = main.extract_significant_words(chi_values, 0.001)
     top_n_chi = main.get_top_n(chi_values, 10)
+    print(top_n_chi)
 
     RESULT = top_n_chi
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

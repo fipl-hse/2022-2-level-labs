@@ -18,7 +18,7 @@ def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
     Returns:
     bool: True, if items are not False (not empty, or not 0, if numbers) and False otherwise
     """
-    return bool(collection and all(map(lambda x: bool(x), collection)))
+    return bool(collection and all(bool(i) for i in collection))
 
 
 def my_isinstance(instance: Any,
@@ -88,9 +88,9 @@ def is_dic_correct(dic: dict,
         is_empty = bool(allow_false_items or dic)
         if is_empty:
             return (for_i_type_checker(keys, list, key_type)
-                         and for_i_type_checker(values, list, value_type))
+                    and for_i_type_checker(values, list, value_type))
         return (for_i_type_checker(keys, list, key_type) and for_i_type_checker(values, list, value_type)
-                    and for_i_empty_cheker(keys) and for_i_empty_cheker(values) and is_empty)
+                and for_i_empty_cheker(keys) and for_i_empty_cheker(values) and is_empty)
     return False
 
 
@@ -155,8 +155,8 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
 
     condit_1 = bool(tokens and my_isinstance(tokens, list)
-                and for_i_empty_cheker(tokens)
-                and for_i_type_checker(tokens, list, str))
+                    and for_i_empty_cheker(tokens)
+                    and for_i_type_checker(tokens, list, str))
 
     if condit_1:
         frequencies = {i: tokens.count(i) for i in frozenset(tokens)}
@@ -181,8 +181,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
 
     if is_dic_correct(frequencies, False, str, int | float) and my_isinstance(top, int) and top > 0:
-        top_n = sorted(frequencies, key=lambda word: frequencies.get(word), reverse=True)[:top]
-        return top_n
+        return sorted(frequencies, key=lambda word: frequencies.get(word), reverse=True)[:top]
     return None
 
 
