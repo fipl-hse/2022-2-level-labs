@@ -43,9 +43,6 @@ if __name__ == "__main__":
         frequencies = calculate_frequencies(tokens_no_sw)
 
     if frequencies:
-        most_frequent = get_top_n(frequencies, 10)
-
-    if frequencies:
         term_freq = calculate_tf(frequencies)
 
     if term_freq:
