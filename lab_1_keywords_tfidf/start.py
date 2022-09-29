@@ -39,17 +39,28 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     RESULT = None
-    ''' # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted' '''
+    NO_STOP_WORDS = None
+    FREQ_DICT = None
+    TF_DICT = None
+    TF_IDF = None
+    CLEAN_AND_TOKENS = clean_and_tokenize(target_text)
 
-print(clean_and_tokenize(target_text))
-tokens = clean_and_tokenize(target_text)
-print(remove_stop_words(tokens, stop_words))
-tokens = remove_stop_words(tokens, stop_words)
-print(calculate_frequencies(tokens))
-frequencies = calculate_frequencies(tokens)
-print(get_top_n(frequencies, 10))
-tf_calculation = calculate_tf(frequencies)
-print(tf_calculation)
-tf_idf = calculate_tfidf(tf_calculation, idf)
-print(tf_idf)
+    if CLEAN_AND_TOKENS:
+        NO_STOP_WORDS = remove_stop_words(CLEAN_AND_TOKENS, stop_words)
+
+    if NO_STOP_WORDS:
+        FREQ_DICT = calculate_frequencies(NO_STOP_WORDS)
+
+    if FREQ_DICT:
+        TF_DICT = calculate_tf(FREQ_DICT)
+
+    if TF_DICT:
+        TF_IDF = calculate_tfidf(TF_DICT, idf)
+
+    if TF_IDF:
+        print(get_top_n(TF_IDF, 10))
+
+    RESULT = get_top_n
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Keywords are not extracted'
+
