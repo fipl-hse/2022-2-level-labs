@@ -94,7 +94,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     """
     if not frequencies or not top:
         return None
-    if not isinstance(frequencies, dict) or not type(top).__name__ == 'int':
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
         return None
     if top < 0:
         return None
