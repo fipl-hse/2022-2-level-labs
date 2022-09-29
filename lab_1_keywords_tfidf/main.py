@@ -20,14 +20,13 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     In case of corrupt input arguments, None is returned
     """
 
-    if isinstance(text, str):
-        for symbol in punctuation:
-            text = text.replace(symbol, '')
-            stripped = text.lower().split()
+    if not isinstance(text, str):
+        return None
+    for symbol in punctuation:
+        text = text.replace(symbol, '')
+        stripped = text.lower().split()
 
-        return stripped
-
-    return None
+    return stripped
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -44,11 +43,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
 
-    if isinstance(tokens, list) and isinstance(stop_words, list) and all(isinstance(token, str) for token in tokens):
-        no_stopwords = [word for word in tokens if word not in stop_words]
-        return no_stopwords
-
-    return None
+    if not (isinstance(tokens, list) and isinstance(stop_words, list)
+            and all(isinstance(token, str) for token in tokens)):
+        return None
+    no_stopwords = [word for word in tokens if word not in stop_words]
+    return no_stopwords
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -64,17 +63,16 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     In case of corrupt input arguments, None is returned
     """
 
-    if isinstance(tokens, list) and tokens and all(isinstance(token, str) for token in tokens):
+    if not(isinstance(tokens, list) and tokens and all(isinstance(token, str) for token in tokens)):
+        return None
 
-        dictionary = {}
-        for token in tokens:
-            if token in dictionary:
-                dictionary[token] += 1
-            else:
-                dictionary[token] = 1
-        return dictionary
-
-    return None
+    dictionary = {}
+    for token in tokens:
+        if token in dictionary:
+            dictionary[token] += 1
+        else:
+            dictionary[token] = 1
+    return dictionary
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
