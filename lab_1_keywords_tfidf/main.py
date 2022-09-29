@@ -54,12 +54,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             if word3 not in stop_words:
                 final_text += [word3]
         return final_text
-    else:
-        final_text = []
-        for word in tokens:
-            if word not in stop_words:
-                final_text += [word]
-        return final_text
+    final_text = []
+    for word in tokens:
+        if word not in stop_words:
+            final_text += [word]
+    return final_text
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
