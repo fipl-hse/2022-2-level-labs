@@ -76,10 +76,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
             return None
     new_dict = {}
     for i in tokens:
-        if i not in new_dict:
-            new_dict[i] = 1
-        else:
-            new_dict[i] += 1
+        new_dict[i] = new_dict.get(i, 0) + 1
     return new_dict
 
 
