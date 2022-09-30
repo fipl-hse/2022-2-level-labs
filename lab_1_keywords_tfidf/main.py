@@ -26,7 +26,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         text = text.replace(i, "")
         text = text.lower().strip()
     tokens = text.split()
-    print(tokens)
     return tokens
 
 
@@ -49,11 +48,10 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     for i in tokens:
         if i not in stop_words:
             filtered_text.append(i)
-    print(filtered_text)
     return filtered_text
 
 
-def calculate_frequencies(filtered_text: list[str]) -> Optional[dict[str, int]]:
+def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
 
@@ -65,15 +63,14 @@ def calculate_frequencies(filtered_text: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(filtered_text, list)) or not filtered_text:
+    if not (isinstance(tokens, list)) or not tokens:
         return None
-    for i in filtered_text:
+    for i in tokens:
         if not isinstance(i, str):
             return None
     dictionary = {}
-    for i in filtered_text:
+    for i in tokens:
         dictionary[i] = dictionary.get(i, 0) + 1
-    print(dictionary)
     return dictionary
 
 
@@ -102,7 +99,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for value in frequencies.values():
         if not isinstance(value, int) and not isinstance(value, float):
             return None
-        sorted_dictionary = [token for token, word in
+        sorted_dictionary = [token for token, token in
                              sorted(frequencies.items(), key=itemgetter(1), reverse=True)[:top]]
         return sorted_dictionary
 
@@ -130,7 +127,6 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
         if not isinstance(a, str) and not isinstance(b, int):
             return None
         dictionary_tf[a] = b / number
-    print(dictionary_tf)
     return dictionary_tf
 
 
@@ -159,7 +155,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         if token not in idf.keys():
             idf[token] = log(47 / (0 + 1))
         dict_tf_idf[token] = term_freq[token] * idf[token]
-    print(dict_tf_idf)
     return dict_tf_idf
 
 
@@ -196,7 +191,6 @@ def calculate_expected_frequency(
         k_corp = corpus_freqs.get(key, 0)
         m = all_words_c - corpus_freqs.get(key, 0)
         expected_frequency[key] = ((j + k_corp) * (j + l)) / (j + k_corp + l + m)
-    print(expected_frequency)
     return expected_frequency
 
 
