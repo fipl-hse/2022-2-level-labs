@@ -3,8 +3,9 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-import string
 import math
+import string
+
 
 
 
@@ -23,8 +24,7 @@ def clean_and_tokenize(text:str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
     text_punctuation = text.translate(str.maketrans('', '', string.punctuation))
-    text_strip = text_punctuation.strip()
-    text_lower = text_strip.lower()
+    text_lower = text_punctuation.lower()
     lst = text_lower.split()
     return lst
 
@@ -51,9 +51,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     return tokens_new
 
 
-
-
-
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
@@ -71,7 +68,12 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     for token in tokens:
         if not isinstance(token, str):
             return None
-        frequency_dict = {i: tokens.count(i) for i in tokens}
+    frequency_dict = {}
+    for word in tokens:
+        if word in frequency_dict.keys():
+            frequency_dict[word] += 1
+        else:
+            frequency_dict[word] = 1
     return frequency_dict
 
 
@@ -100,15 +102,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
         if not isinstance(value, (float, int)) :
             return None
-        sorted_items = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)[:top]
+        sorted_items =  list(keys for keys, values in sorted(frequencies.items(), key=lambda x: x[1], reverse=True))[:top]
     return sorted_items
-
-
-
-
-
-
-
 
 
 
@@ -163,9 +158,6 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     return idf_dict
 
 
-
-
-
 def calculate_expected_frequency(
     doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
@@ -182,8 +174,6 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-
-
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
