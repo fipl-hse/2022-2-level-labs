@@ -252,7 +252,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if not (
             isinstance(chi_values, dict)
-            and isinstance(alpha, float)
             and type_of_elements(chi_values, tuple, str, float)
             and chi_values
             and alpha in criterion.keys()
@@ -261,6 +260,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     chi_squar_limit = criterion[alpha]
     significant_words_dict = {}
     for word, chi_value in chi_values.items():
-        if chi_value >= chi_squar_limit:
+        if chi_value > chi_squar_limit:
             significant_words_dict[word] = chi_value
     return significant_words_dict
