@@ -2,10 +2,10 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-import re
-import string
+from re import sub
+from string import punctuation
 from math import log
-from typing import Optional, Union, Type, Any
+from typing import Optional, Union, Type, Any, Tuple
 
 
 def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
@@ -62,7 +62,7 @@ def for_i_type_checker(collection: Union[set, list, tuple],
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
                    key_type: Type[Any],
-                   value_type: Type[Any]) -> bool:
+                   value_type: Union[Type[Any], Tuple[Type[Any], Type[Any]]]) -> bool:
     """
     Checks dictionary on being empty, having False items in keys and values,
     correspondence of keys and values to the types we expect to observe
@@ -109,9 +109,9 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not (my_isinstance(text, str) and text):
         return None
 
-    for item in string.punctuation+'“”':
+    for item in punctuation+'“”':
         text = text.replace(item, '')
-    tokens = (re.sub(r"\s{2,}", ' ', text.lower())).split()
+    tokens = (sub(r"\s{2,}", ' ', text.lower())).split()
     return tokens
 
 
@@ -179,8 +179,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    if not ((is_dic_correct(frequencies, False, str, int)
-            or is_dic_correct(frequencies, False, str, float))
+    if not (is_dic_correct(frequencies, False, str, (int, float))
             and my_isinstance(top, int) and top > 0):
         return None
 
