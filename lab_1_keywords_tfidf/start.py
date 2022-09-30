@@ -36,38 +36,38 @@ if __name__ == "__main__":
 
 
     cleaned_text = clean_and_tokenize(target_text)
-    if cleaned_text == None:
+    if cleaned_text is None:
         pass
     no_stop_words_text = remove_stop_words(cleaned_text, stop_words)
-    if no_stop_words_text == None:
+    if no_stop_words_text is None:
         pass
     frequency = calculate_frequencies(no_stop_words_text)
-    if frequency == None:
+    if frequency is None:
         pass
     tf = calculate_tf(frequency)
-    if tf == None:
+    if tf is None:
         pass
     top_of_words = get_top_n(frequency, 10)
-    if top_of_words == None:
+    if top_of_words is None:
         pass
     tfidf = calculate_tfidf(tf, idf)
-    if tfidf == None:
+    if tfidf is None:
         pass
     tfidf_top = get_top_n(tfidf, 10)
-    if tfidf_top == None:
+    if tfidf_top is None:
         pass
     print(tfidf_top)
     expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
-    if expected_frequency == None:
+    if expected_frequency is None:
         pass
     chi_values = calculate_chi_values(expected_frequency, frequency)
-    if chi_values == None:
+    if chi_values is None:
         pass
     significant_words = extract_significant_words(chi_values, 0.001)
-    if significant_words == None:
+    if significant_words is None:
         pass
     the_most_important_words = get_top_n(significant_words, 10)
-    if the_most_important_words == None:
+    if the_most_important_words is None:
         pass
     print(the_most_important_words)
 
