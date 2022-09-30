@@ -19,13 +19,15 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if  not isistance (text, str):
+    if not isinstance(text, str):
         return None
     text = text.lower().strip()
     punctuation = '''!@#$%^&*()_-+=[]{};:'\|,<.>/?"'''
     for symbol in punctuation:
         if symbol in text:
             text = text.replace(symbol, '')
+        else:
+            return None
     tokens = text.split()
     return tokens
     pass
@@ -44,16 +46,19 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isistance(tokens, list) and isinstance(stop_words, list)):
+    if not (isinstance(tokens, list) and isinstance(stop_words, list)):
         return None
+    stop_words = list()
     for stop_word in stop_words:
-        while stop_word in tokens:
+        if stop_word in tokens:
             tokens.remove(stop_word)
+        else:
+            return None
     return tokens
 
 
 def check(massive, type_name) -> Optional[bool]:
-    if not (massive and all(isisstance(el, type_name) for el in massive)):
+    if not (massive and all(isinstance(el, type_name) for el in massive)):
         return False
     return True
     pass
@@ -80,7 +85,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     return frequences
     pass
 
-    def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
+    def get_top_n(frequencies: dict[str, Union[int, float]], top: int, key_list=list, value_list=list) -> Optional[list[str]]:
         """"
         Extracts a certain number of most frequent tokens
 
@@ -95,21 +100,19 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
         In case of corrupt input arguments, None is returned
         """
-        if not (isinstance(frequencies, dict) and top != int):
+        if not (isinstance(frequencies, dict) and top is not int):
             return None
-        key_list = list(frequencies.keys())
-        value_list = list(frequencies.values())
         if check(key_list, str) and check(value_list, int) or check(value_list, float):
             value_list.sort(reserve=True)
             top_list = []
 
-            def tokens(top_list: list[str], frequences: dict[str, Union[int, float]], value_list, float):
+            def tokens(top_list: list[str], frequences: dict[str, Union[int, float]], value_list, float, value):
                 for word, number in frequences.items():
                     if word not in top_list and number == value:
                         return word
 
-    def get_list(length: int):
-        if not isistance(length, int) or length is True:
+    def get_list(length: int, value_list=list):
+        if not isinstance(length, int) or length is True:
             return None
         for i in range(length):
             token = tokens(top_list, frequences, int(value_list[i]))
