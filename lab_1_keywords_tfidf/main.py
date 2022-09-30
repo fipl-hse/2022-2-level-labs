@@ -3,7 +3,7 @@ Lab 1
 Extract keywords based on frequency related metrics
 """
 from typing import Optional, Union
-from operator import itemgetter
+# from operator import itemgetter
 import math
 
 
@@ -102,7 +102,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for key, value in frequencies.items():
         if not isinstance(key, str) or not isinstance(value, (int, float)):
             return None
-    list_sorted = sorted(frequencies.items(), key=itemgetter(1), reverse=True)
+    list_sorted = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
     list_top = list_sorted[:top]
     list_of_larg_freqs = [word[0] for word in list_top]
     return list_of_larg_freqs
@@ -116,9 +116,16 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     # constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
     # and fetches the n-th element out of it.'
 
+    # С версии Python 2.4 у list.sort() и sorted() появился параметр key для указания функции,
+    # которая будет вызываться на каждом элементе до сравнения
+
     # Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
     # а не одно ключевое значение и" \
     # это то, что operator.itemgetter(1) даст вам: функция которая захватывает 1 элемент из списка-подобного объекта."
+    # У list.sort() и sorted() есть параметр reverse, принимающий boolean-значение
+    # Он нужен для обозначения сортировки по убыванию.
+
+    # for each first x in text, if x.isdigit() is True, add it to the list
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
