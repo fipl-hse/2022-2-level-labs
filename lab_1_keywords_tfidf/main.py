@@ -5,7 +5,7 @@ Extract keywords based on frequency related metrics
 from re import sub
 from string import punctuation
 from math import log
-from typing import Optional, Union, Type, Any, Tuple
+from typing import Optional, Union, Type, Any
 
 
 def for_i_empty_checker(collection: Union[set, dict, list, tuple]) -> bool:
