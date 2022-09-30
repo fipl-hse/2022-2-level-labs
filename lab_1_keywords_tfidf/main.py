@@ -62,7 +62,7 @@ def for_i_type_checker(collection: Union[set, list, tuple],
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
                    key_type: Type[Any],
-                   value_type: Union[Type[Any], Union[int, float]]) -> bool:  # ???
+                   value_type: Type[Any]) -> bool:
     """
     Checks dictionary on being empty, having False items in keys and values,
     correspondence of keys and values to the types we expect to observe
@@ -179,7 +179,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    if not (is_dic_correct(frequencies, False, str, (int, float))  # ???
+    if not (is_dic_correct(frequencies, False, str, (int, float))
             and my_isinstance(top, int) and top > 0):
         return None
 
