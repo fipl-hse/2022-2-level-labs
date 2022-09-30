@@ -34,7 +34,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     (tokens, frequencies, term_freq, tfidf_dict, expected, top_n_freq,
-     top_n_tfidf, chi_values, significant_words_1, top_n_chi) = [None for variable in range(7)]
+     top_n_tfidf, chi_values, significant_words_1, top_n_chi) = [None for variable in range(10)]
 
     clean_tokens = clean_and_tokenize(target_text)
     if clean_tokens:
