@@ -21,7 +21,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
@@ -180,7 +180,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf_dict = {}
     for word in term_freq.keys():
-        tfidf_dict[word] = term_freq.get(word, 0) * idf.get(word, log(47))
+        tfidf_dict[word] = term_freq.get(word) * idf.get(word, log(47))
     return tfidf_dict
 
 
@@ -258,6 +258,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         return None
     significant_words_dict = {}
     for word, chi_value in chi_values.items():
-        if chi_value >= criterion.get(alpha, 0):
+        if chi_value > criterion.get(alpha):
             significant_words_dict[word] = chi_value
     return significant_words_dict
