@@ -90,8 +90,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         return None
     frequency_dict = {}
     for token in tokens:
-        if not isinstance(token, str):
-            return None
         if token in frequency_dict.keys():
             frequency_dict[token] += 1
         else:
@@ -117,7 +115,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not correct_dict(frequencies, str, float, False) or not (not isinstance(top, bool) and isinstance(top, int) and
                                                                 not top <= 0):
         return None
-    freq = sorted(frequencies, reverse=True, key=lambda word: frequencies[word])[:top]
+    freq = sorted(frequencies, key=lambda word: frequencies[word], reverse=True)[:top]
     return freq
 
 
