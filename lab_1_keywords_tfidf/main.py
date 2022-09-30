@@ -173,10 +173,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf = {}
     for key in term_freq.keys():
-        try:
-            tfidf[key] = term_freq[key] * idf[key]
-        except KeyError:
-            tfidf[key] = log(47 / (0 + 1)) * term_freq[key]
+        tfidf[key] = term_freq[key] * idf.get(key, log(47 / (0 + 1)))
     return tfidf
 
 
