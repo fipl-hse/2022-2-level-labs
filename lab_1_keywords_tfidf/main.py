@@ -2,11 +2,11 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
+from typing import Optional, Union, Any, Iterable
 import math
 
 
-def type_of_elements(an_object, elem_type, key=str, value=int) -> bool:
+def type_of_elements(an_object: Iterable, elem_type: Any, key=str, value=int) -> bool:
     """
     Checks the type of elements in a collection
     """
@@ -102,7 +102,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and isinstance(top, int) and top > 0
             and not isinstance(top, bool)
             and frequencies
-            and type_of_elements(frequencies, tuple, str, int | float)
+            and type_of_elements(frequencies, tuple, str, (int, float))
             ):
         return None
     sorting = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
