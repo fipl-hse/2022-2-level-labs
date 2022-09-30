@@ -68,10 +68,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not correct_list(tokens, str, False) or not correct_list(stop_words, str, True):
         return None
-    for stop_word in stop_words:
-        while stop_word in tokens:
-            tokens.remove(stop_word)
-    return tokens
+    tokens_clean = []
+    for stop_word in tokens:
+        if stop_word not in stop_words:
+            tokens_clean.append(stop_word)
+    return tokens_clean
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -90,10 +91,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         return None
     frequency_dict = {}
     for token in tokens:
-        if token in frequency_dict.keys():
-            frequency_dict[token] += 1
-        else:
-            frequency_dict[token] = 1
+        frequency_dict[token] = frequency_dict.get(token, 0) + 1
     return frequency_dict
 
 
