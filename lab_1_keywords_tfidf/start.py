@@ -3,11 +3,12 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
+import sys
 from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
                                             get_top_n, calculate_tf, calculate_tfidf,
                                            calculate_expected_frequency, calculate_chi_values,
                                            extract_significant_words)
-import sys
+
 
 if __name__ == "__main__":
 
@@ -75,4 +76,3 @@ if __name__ == "__main__":
     RESULT = the_most_important_words
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
