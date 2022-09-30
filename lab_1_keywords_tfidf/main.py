@@ -134,7 +134,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     """
     if not type_check(term_freq, dict, str, float, True) or not type_check(idf, dict, str, float):
         return None
-    return {key: term_freq[key] * (idf[key] if key in idf else log(47)) for key in term_freq}
+    if_not_in_idf = log(47)
+    return {key: term_freq[key] * idf.get(key, if_not_in_idf) for key in term_freq}
 
 
 def calculate_expected_frequency(
