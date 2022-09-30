@@ -8,16 +8,16 @@ import math
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
-   Removes punctuation, casts to lowercase, splits into tokens
+    Removes punctuation, casts to lowercase, splits into tokens
 
-   Parameters:
-   text (str): Original text
+    Parameters:
+    text (str): Original text
 
-   Returns:
-   list[str]: A sequence of lowercase tokens with no punctuation
+    Returns:
+    list[str]: A sequence of lowercase tokens with no punctuation
 
-   In case of corrupt input arguments, None is returned
-   """
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(text, str):
         return None
     target_text = text.lower().strip()
@@ -34,17 +34,17 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
-   Excludes stop words from the token sequence
+    Excludes stop words from the token sequence
 
-   Parameters:
-   tokens (List[str]): Original token sequence
-   stop_words (List[str]: Tokens to exclude
+    Parameters:
+    tokens (List[str]): Original token sequence
+    stop_words (List[str]: Tokens to exclude
 
-   Returns:
-   List[str]: Token sequence that does not include stop words
+    Returns:
+    List[str]: Token sequence that does not include stop words
 
-   In case of corrupt input arguments, None is returned
-   """
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(tokens, list) or not isinstance(stop_words, list):
         return None
     if not (isinstance(word1, str) for word1 in stop_words) or not (isinstance(word2, str) for word2 in tokens):
@@ -59,16 +59,16 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
-   Composes a frequency dictionary from the token sequence
+    Composes a frequency dictionary from the token sequence
 
-   Parameters:
-   tokens (List[str]): Token sequence to count frequencies for
+    Parameters:
+    tokens (List[str]): Token sequence to count frequencies for
 
-   Returns:
-   Dict: {token: number of occurrences in the token sequence} dictionary
+    Returns:
+    Dict: {token: number of occurrences in the token sequence} dictionary
 
-   In case of corrupt input arguments, None is returned
-   """
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(tokens, list):
         return None
     frequencies = {}
@@ -108,17 +108,17 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
-   Calculates Term Frequency score for each word in a token sequence
-   based on the raw frequency
+    Calculates Term Frequency score for each word in a token sequence
+    based on the raw frequency
 
-   Parameters:
-   frequencies (Dict): Raw number of occurrences for each of the tokens
+    Parameters:
+    frequencies (Dict): Raw number of occurrences for each of the tokens
 
-   Returns:
-   dict: A dictionary with tokens and corresponding term frequency score
+    Returns:
+    dict: A dictionary with tokens and corresponding term frequency score
 
-   In case of corrupt input arguments, None is returned
-   """
+    In case of corrupt input arguments, None is returned
+    """
     term_freq = {}
     if not isinstance(frequencies, dict):
         return None
