@@ -35,22 +35,42 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
 
+    cleaned_text = clean_and_tokenize(target_text)
+    if cleaned_text == None:
+        pass
+    no_stop_words_text = remove_stop_words(cleaned_text, stop_words)
+    if no_stop_words_text == None:
+        pass
+    frequency = calculate_frequencies(no_stop_words_text)
+    if frequency == None:
+        pass
+    tf = calculate_tf(frequency)
+    if tf == None:
+        pass
+    top_of_words = get_top_n(frequency, 10)
+    if top_of_words == None:
+        pass
+    tfidf = calculate_tfidf(tf, idf)
+    if tfidf == None:
+        pass
+    tfidf_top = get_top_n(tfidf, 10)
+    if tfidf_top == None:
+        pass
+    print(tfidf_top)
+    expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
+    if expected_frequency == None:
+        pass
+    chi_values = calculate_chi_values(expected_frequency, frequency)
+    if chi_values == None:
+        pass
+    significant_words = extract_significant_words(chi_values, 0.001)
+    if significant_words == None:
+        pass
+    the_most_important_words = get_top_n(significant_words, 10)
+    if the_most_important_words == None:
+        pass
+    print(the_most_important_words)
 
-
-cleaned_text = clean_and_tokenize(target_text)
-no_stop_words_text = remove_stop_words(cleaned_text, stop_words)
-frequency = calculate_frequencies(no_stop_words_text)
-tf = calculate_tf(frequency)
-top_of_words = get_top_n(frequency, 10)
-tfidf = calculate_tfidf(tf, idf)
-tfidf_top = get_top_n(tfidf, 10)
-print(tfidf_top)
-expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
-chi_values = calculate_chi_values(expected_frequency, frequency)
-significant_words = extract_significant_words(chi_values, 0.001)
-the_most_important_words = get_top_n(significant_words, 10)
-print(the_most_important_words)
-
-RESULT = the_most_important_words
-# DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-assert RESULT, 'Keywords are not extracted'
+    RESULT = the_most_important_words
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Keywords are not extracted'
