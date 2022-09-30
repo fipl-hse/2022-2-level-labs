@@ -61,6 +61,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             type_of_elements(tokens, str) and type_of_elements(stop_words, str)
             ):
         return None
+    
     tokens_cleaned = [key_word for key_word in tokens if key_word not in stop_words]
     return tokens_cleaned
 
