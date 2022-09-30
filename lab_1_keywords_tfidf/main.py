@@ -159,7 +159,7 @@ def calculate_expected_frequency(
     doc_total, corpus_total = sum(doc_freqs.values()), sum(corpus_freqs.values())
     # j = doc_freq;             k = corpus_freqs[key] (0 if not there)
     # l = doc_total - doc_freq; m = corpus_total - corpus_freqs[key]
-    return {key: (doc_freq + (corpus_freqs[key] if key in corpus_freqs else 0)) * doc_total /
+    return {key: (doc_freq + corpus_freqs.get(key, 0)) * doc_total /
                  (doc_total + corpus_total) for key, doc_freq in doc_freqs.items()}  # (j+k)*(j+l)/(j+k+l+m)
 
 
