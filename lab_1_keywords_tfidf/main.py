@@ -12,13 +12,12 @@ def type_of_elements(an_object, elem_type, key=str, value=int) -> bool:
     """
     if all(isinstance(element, elem_type) for element in an_object):
         return True
-    elif isinstance(an_object, dict):
+    if isinstance(an_object, dict):
         if all(isinstance(element, key) for element in an_object.keys()) and all(
                 isinstance(element, value) for element in an_object.values()
         ):
             return True
-    else:
-        return False
+    return False
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -99,10 +98,11 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, dict) and
-            type(top) is int and top > 0 and
-            frequencies and
-            type_of_elements(frequencies, tuple, str, int | float)
+    if not (isinstance(frequencies, dict)
+            and isinstance(top, int) and top > 0
+            and not isinstance(top, bool)
+            and frequencies
+            and type_of_elements(frequencies, tuple, str, int | float)
             ):
         return None
     sorting = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])

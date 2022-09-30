@@ -41,9 +41,7 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, "r", encoding="utf-8") as file:
         corpus_freqs = json.load(file)
 
-    RESULT = None
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+
 
 
 cleaned_text = clean_and_tokenize(target_text)
@@ -59,3 +57,7 @@ chi_values = calculate_chi_values(expected_frequency, frequency)
 significant_words = extract_significant_words(chi_values, 0.001)
 the_most_important_words = get_top_n(significant_words, 10)
 print(the_most_important_words)
+
+RESULT = the_most_important_words
+# DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+assert RESULT, 'Keywords are not extracted'
