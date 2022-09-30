@@ -39,6 +39,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
 
+    RESULT = None
     NO_STOP_WORDS = None
     FREQ_DICT = None
     TF_DICT = None
