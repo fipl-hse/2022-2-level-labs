@@ -2,11 +2,11 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union, Any, Iterable
+from typing import Optional, Union, Any, Iterable, Type
 import math
 
 
-def type_of_elements(an_object: Iterable, elem_type: Any, key=str, value=int) -> bool:
+def type_of_elements(an_object: Iterable, elem_type: Type[Any], key: Type=str, value: Type=int) -> bool:
     """
     Checks the type of elements in a collection
     """
