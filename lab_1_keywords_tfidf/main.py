@@ -14,14 +14,15 @@ def dictionary_check(dictionary: dict, possible_type: type, empty: bool) -> bool
     Сheck the correctness of a dictionary
     And its elements
     """
-    if isinstance(dictionary, dict):
-        if dictionary == {} and not empty:
+    if not isinstance(dictionary, dict):
+        return False
+    if dictionary == {} and not empty:
+        return False
+    for key, value in dictionary.items():
+        if not isinstance(key, str) or not isinstance(value, (int, possible_type)) or isinstance(value, bool):
             return False
-        for key, value in dictionary.items():
-            if not isinstance(key, str) or not isinstance(value, (int, possible_type)) or isinstance(value, bool):
-                return False
-        return True
-    return False
+    return True
+
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
@@ -143,9 +144,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf_dict = {}
     for word in term_freq:
-        if word not in idf.keys():
-            idf[word] = math.log(47/1)
-        tfidf_dict[word] = term_freq[word] * idf[word]
+        if word in idf.keys():
+            tfidf_dict[word] = term_freq[word] * idf[word]
+        else:
+            tfidf_dict[word] = term_freq[word] * math.log(47 / 1)
     return tfidf_dict
 
 
