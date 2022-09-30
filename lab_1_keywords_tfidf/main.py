@@ -180,7 +180,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         return None
     tfidf_dict = {}
     for word in term_freq.keys():
-        tfidf_dict[word] = term_freq.get(word) * idf.get(word, log(47))
+        tfidf_dict[word] = term_freq[word] * idf.get(word, log(47))
     return tfidf_dict
 
 
@@ -258,6 +258,6 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
         return None
     significant_words_dict = {}
     for word, chi_value in chi_values.items():
-        if chi_value > criterion.get(alpha):
+        if chi_value > criterion[alpha]:
             significant_words_dict[word] = chi_value
     return significant_words_dict
