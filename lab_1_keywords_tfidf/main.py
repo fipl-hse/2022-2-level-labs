@@ -20,18 +20,14 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     if not isinstance(text, str):
         return None
 
-    tokens = text.split()
-
-    punctuation = "!@#$%^&()*№[]{},.<>/?\\\"|':;=+"
     clean_tokens = []
-    for word in tokens:
-        for p in punctuation:
-            word = word.replace(p, "")
-
-        word = word.strip("-")
-        if word != "":
-            clean_tokens.append(word.lower())
-
+    punctuation = "!@#-$%^&()*№[]{},.<>/?\\\"|':;=+"
+    text = text.lower()
+    for word in text:
+        if word in punctuation:
+            text = text.replace(word, "")
+    text = text.strip()
+    clean_tokens = text.split()
     return clean_tokens
 
 
@@ -52,6 +48,9 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
             or any(not isinstance(item, str) for item in tokens) \
             or any(not isinstance(item, str) for item in stop_words):
         return None
+    for word in tokens:
+        if word == 0:
+            return None
 
     return [word for word in tokens if word not in stop_words]
 
@@ -99,7 +98,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not isinstance(frequencies, dict) or type(top) != int  \
             or any(not isinstance(key, str) for key in frequencies) \
             or any(not (isinstance(val, float) or isinstance(val, int)) for val in frequencies.values())\
-            or len(frequencies) == 0 or top <= 0:
+            or not frequencies or top <= 0:
         return None
 
     return [k for v, k in (sorted([(-v, k) for k, v in frequencies.items()]))[:top]]
