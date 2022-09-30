@@ -102,8 +102,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             return None
         if not isinstance(value, (float, int)) :
             return None
-        sorted_items =  list(keys for keys, values in sorted(frequencies.items(), key=lambda x: x[1], reverse=True))[:top]
-    return sorted_items
+        sorted_items =  list(keys for keys, values in sorted(frequencies.items(), key=lambda x: x[1], reverse=True))
+    return sorted_items[:top]
 
 
 
