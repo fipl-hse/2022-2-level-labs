@@ -34,7 +34,7 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     (tokens, frequencies, top_n_freq, term_freq, tfidf_dict,
-     top_n_tfidf, expected, chi_values, significant_words_1, top_n_chi, RESULT) = [None for variable in range(11)]
+     top_n_tfidf, expected, chi_values, significant_words_1, top_n_chi) = [None for variable in range(10)]
 
     clean_tokens = clean_and_tokenize(target_text)
     if clean_tokens:
@@ -44,21 +44,21 @@ if __name__ == "__main__":
     if frequencies:
         top_n_freq = get_top_n(frequencies, 10)
         print(top_n_freq)
-    if top_n_freq:
+    if frequencies:
         term_freq = calculate_tf(frequencies)
     if term_freq:
         tfidf_dict = calculate_tfidf(term_freq, idf)
     if tfidf_dict:
         top_n_tfidf = get_top_n(tfidf_dict, 10)
         print(top_n_tfidf)
-    if top_n_tfidf:
+    if frequencies:
         expected = calculate_expected_frequency(frequencies, corpus_freqs)
-    if expected:
+    if expected and frequencies:
         chi_values = calculate_chi_values(expected, frequencies)
     if chi_values:
         significant_words_1 = extract_significant_words(chi_values, 0.001)
     if significant_words_1:
-        top_n_chi = get_top_n(chi_values, 10)
+        top_n_chi = get_top_n(significant_words_1, 10)
         print(top_n_chi)
 
     RESULT = top_n_chi

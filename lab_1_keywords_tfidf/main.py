@@ -8,7 +8,7 @@ from math import log
 from typing import Optional, Union, Type, Any, Tuple
 
 
-def for_i_empty_cheker(collection: Union[set, dict, list, tuple]) -> bool:
+def for_i_empty_checker(collection: Union[set, dict, list, tuple]) -> bool:
     """
     Check if collection's items are False
 
@@ -62,7 +62,7 @@ def for_i_type_checker(collection: Union[set, list, tuple],
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
                    key_type: Type[Any],
-                   value_type: Union[Type[Any], Tuple[Type, Type]]) -> bool:
+                   value_type: Union[Type[Any], Union[int, float]]) -> bool:  # ???
     """
     Checks dictionary on being empty, having False items in keys and values,
     correspondence of keys and values to the types we expect to observe
@@ -90,7 +90,7 @@ def is_dic_correct(dic: dict,
                 and for_i_type_checker(values, list, value_type))
 
     return (for_i_type_checker(keys, list, key_type) and for_i_type_checker(values, list, value_type)
-            and for_i_empty_cheker(keys) and for_i_empty_cheker(values) and is_empty)
+            and for_i_empty_checker(keys) and for_i_empty_checker(values) and is_empty)
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -129,7 +129,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
 
-    if not (my_isinstance(tokens, list) and for_i_empty_cheker(tokens)
+    if not (my_isinstance(tokens, list) and for_i_empty_checker(tokens)
             and for_i_type_checker(tokens, list, str)
             and for_i_type_checker(stop_words, list, str)
             and my_isinstance(stop_words, list)):
@@ -155,7 +155,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
 
     if not (tokens and my_isinstance(tokens, list)
-            and for_i_empty_cheker(tokens)
+            and for_i_empty_checker(tokens)
             and for_i_type_checker(tokens, list, str)):
         return None
 
@@ -179,7 +179,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     In case of corrupt input arguments, None is returned
     """
 
-    if not (is_dic_correct(frequencies, False, str, (int, float))
+    if not (is_dic_correct(frequencies, False, str, (int, float))  # ???
             and my_isinstance(top, int) and top > 0):
         return None
 
