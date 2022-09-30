@@ -18,7 +18,7 @@ def check_list(smth: Any, not_empty: bool) -> bool:
     """
     if not isinstance(smth, list):
         return False
-    if not smth and not_empty is False:
+    if not smth and not_empty is True:
         return False
     for i in smth:
         if not isinstance(i, str):
@@ -62,10 +62,11 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     """
     if not (check_list(tokens, True) and check_list(stop_words, False)):
         return None
+    tokens_new = []
     for i in tokens:
-        if i in stop_words:
-            tokens.remove(i)
-    return tokens
+        if i not in stop_words:
+            tokens_new.append(i)
+    return tokens_new
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
