@@ -2,8 +2,8 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union
 import math
+from typing import Optional, Union
 import string
 
 
