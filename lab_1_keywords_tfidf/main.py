@@ -62,7 +62,7 @@ def for_i_type_checker(collection: Union[set, list, tuple],
 def is_dic_correct(dic: dict,
                    allow_false_items: bool,
                    key_type: Type[Any],
-                   value_type: Union[Type[Any], Tuple[Type[Any], Type[Any]]]) -> bool:
+                   value_type: Union[Type[Any], Tuple[Type[int], Type[float]]]) -> bool:
     """
     Checks dictionary on being empty, having False items in keys and values,
     correspondence of keys and values to the types we expect to observe

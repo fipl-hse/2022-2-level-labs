@@ -33,8 +33,8 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    (tokens, frequencies, term_freq, tfidf_dict, expected, top_n_freq,
-     top_n_tfidf, chi_values, significant_words_1, top_n_chi) = [None for variable in range(10)]
+    (tokens, frequencies, top_n_freq, term_freq, tfidf_dict,
+     top_n_tfidf, expected, chi_values, significant_words_1, top_n_chi) = [None for variable in range(10)]
 
     clean_tokens = clean_and_tokenize(target_text)
     if clean_tokens:
