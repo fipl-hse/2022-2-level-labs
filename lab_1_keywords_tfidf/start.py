@@ -7,6 +7,7 @@ from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, ca
                                             get_top_n, calculate_tf, calculate_tfidf,
                                            calculate_expected_frequency, calculate_chi_values,
                                            extract_significant_words)
+import sys
 
 if __name__ == "__main__":
 
@@ -37,38 +38,38 @@ if __name__ == "__main__":
 
     cleaned_text = clean_and_tokenize(target_text)
     if cleaned_text is None:
-        quit()
+        sys.exit()
     no_stop_words_text = remove_stop_words(cleaned_text, stop_words)
     if no_stop_words_text is None:
-        quit()
+        sys.exit()
     frequency = calculate_frequencies(no_stop_words_text)
     if frequency is None:
-        quit()
+        sys.exit()
     tf = calculate_tf(frequency)
     if tf is None:
-        quit()
+        sys.exit()
     top_of_words = get_top_n(frequency, 10)
     if top_of_words is None:
-        quit()
+        sys.exit()
     tfidf = calculate_tfidf(tf, idf)
     if tfidf is None:
-        quit()
+        sys.exit()
     tfidf_top = get_top_n(tfidf, 10)
     if tfidf_top is None:
-        quit()
+        sys.exit()
     print(tfidf_top)
     expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
     if expected_frequency is None:
-        quit()
+        sys.exit()
     chi_values = calculate_chi_values(expected_frequency, frequency)
     if chi_values is None:
-        quit()
+        sys.exit()
     significant_words = extract_significant_words(chi_values, 0.001)
     if significant_words is None:
-        quit()
+        sys.exit()
     the_most_important_words = get_top_n(significant_words, 10)
     if the_most_important_words is None:
-        quit()
+        sys.exit()
     print(the_most_important_words)
 
     RESULT = the_most_important_words
