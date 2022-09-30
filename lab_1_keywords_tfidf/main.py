@@ -33,12 +33,12 @@ def my_isinstance(instance: Any, type_of_instance: Type[Any]) -> bool:
     bool: True if instance's type is expected type, False, if instance's type is bool and expected type
     """
 
-    if type_of_instance is int:
-        return bool(not isinstance(instance, bool) and isinstance(instance, int))
-    return isinstance(instance, type_of_instance)
+    if type_of_instance is not int:
+        return isinstance(instance, type_of_instance)
+    return bool(not isinstance(instance, bool) and isinstance(instance, int))
 
 
-def for_i_type_checker(collection: Union[set, dict, list, tuple],
+def for_i_type_checker(collection: Union[set, list, tuple],
                        type_of_collection: Type[Any],
                        type_of_instance: Type[Any]) -> bool:
     """
@@ -263,9 +263,10 @@ def calculate_expected_frequency(
     expected = {}
 
     for word in doc_freq_keys:
-        j_occur_of_word_in_doc = doc_freqs.get(word, 0)
-        k_occur_of_word_in_corp = corpus_freqs.get(word, 0)
+        j_occur_of_word_in_doc = doc_freqs[word]
         l_occur_doc_except = (sum_of_occ_doc - j_occur_of_word_in_doc)
+
+        k_occur_of_word_in_corp = corpus_freqs.get(word, 0)
         m_occur_corp_except = (sum_of_occ_corp - k_occur_of_word_in_corp)
 
         expected_freq = (((j_occur_of_word_in_doc + k_occur_of_word_in_corp)
@@ -297,7 +298,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     if not (is_dic_correct(expected, False, str, float) and is_dic_correct(observed, False, str, int)):
         return None
 
-    formula_chi_2 = (lambda word: (pow((observed.get(word, 0) - expected.get(word, .0)), 2)) / expected.get(word, .0))
+    formula_chi_2 = (lambda word: (pow((observed[word] - expected.get(word, .0)), 2)) / expected[word])
     chi_values = {word: formula_chi_2(word) for word in list(observed.keys())}
     return chi_values
 
