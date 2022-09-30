@@ -43,7 +43,6 @@ if __name__ == "__main__":
         frequencies = calculate_frequencies(tokens)
     if frequencies:
         top_n_freq = get_top_n(frequencies, 10)
-        print(top_n_freq)
     if frequencies:
         term_freq = calculate_tf(frequencies)
     if term_freq:
