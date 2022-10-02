@@ -8,6 +8,9 @@ on:
     branches:
       - main
 
+env:
+  REPOSITORY_TYPE: public
+
 jobs:
   install-dependencies:
     name: Installing dependencies
@@ -133,6 +136,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
 
     steps:
       - uses: actions/checkout@v2
@@ -155,13 +160,15 @@ jobs:
           bash config/venv_setup.sh
       - name: Run tests
         run: |
-          bash config/run_tests.sh
+          bash config/run_tests.sh "$PR_NAME"
 
   start:
     name: Check start.py
     runs-on: ubuntu-latest
     timeout-minutes: 10
     needs: [ install-dependencies ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
 
     steps:
       - uses: actions/checkout@v2
@@ -184,13 +191,15 @@ jobs:
           bash config/venv_setup.sh
       - name: Run start
         run: |
-          bash config/run_start.sh
+          bash config/run_start.sh "$PR_NAME"
 
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
     timeout-minutes: 5
     needs: [ unittests ]
+    env:
+      PR_NAME: ${{ github.event.pull_request.title }}
 
     steps:
       - uses: actions/checkout@v2
@@ -213,7 +222,7 @@ jobs:
           bash config/venv_setup.sh
       - name: Run start
         run: |
-          bash config/collect_coverage/run_coverage.sh
+          bash config/collect_coverage/run_coverage.sh "$PR_NAME"
 
   spellcheck:
     name: Spellcheck
