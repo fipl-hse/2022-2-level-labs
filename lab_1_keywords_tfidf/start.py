@@ -39,8 +39,6 @@ if __name__ == "__main__":
     CORPUS_FREQ_PATH = ASSETS_PATH / 'corpus_frequencies.json'
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
-    if target_text:
-        words_list = clean_and_tokenize(target_text)
 
     no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
     tokenization = clean_and_tokenize(target_text)

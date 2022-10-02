@@ -67,6 +67,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
 
     Returns:
     list[str]: A sequence of lowercase tokens with no punctuation
+
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(text, str):
@@ -89,6 +90,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     Returns:
     List[str]: Token sequence that does not include stop words
+
     In case of corrupt input arguments, None is returned
     """
     my_tokens = []
