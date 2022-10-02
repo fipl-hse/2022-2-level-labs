@@ -57,28 +57,6 @@ def check_float(user_input: Any) -> bool:
         return False
     return True
 
-import math
-import string
-
-
-def dict_type_check(dictionary: dict, key_type: Union[type, tuple], val_type: Union[type, tuple]) -> bool:
-    """
-    Checks whether the object is a dictionary and its keys and values are of the expected type
-
-    Parameters:
-    dictionary (Dict): any dictionary which keys and values types must be checked
-    key_type (Type or tuple): the expected key type
-    val_type (Type or tuple): the expected value type
-
-    Returns:
-    bool: True if dictionary keys and values are of the expected type, False otherwise
-    """
-    if not(isinstance(dictionary, dict)
-            and all(isinstance(key, key_type) for key in dictionary.keys())
-            and all(isinstance(value, val_type) for value in dictionary.values())):
-        return False
-    return True
-
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
