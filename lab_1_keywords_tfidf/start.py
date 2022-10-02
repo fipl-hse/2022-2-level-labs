@@ -15,6 +15,7 @@ from lab_1_keywords_tfidf.main import (
 )
 
 if __name__ == "__main__":
+
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
