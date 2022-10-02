@@ -14,13 +14,6 @@ from lab_1_keywords_tfidf.main import (
     calculate_chi_values
 )
 
-from lab_1_keywords_tfidf.main import clean_and_tokenize, \
-                                      remove_stop_words, \
-                                      calculate_frequencies, \
-                                      get_top_n, \
-                                      calculate_tf, \
-                                      calculate_tfidf
-
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
