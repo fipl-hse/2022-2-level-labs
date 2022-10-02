@@ -4,7 +4,16 @@ Frequency-driven keyword extraction starter
 
 import json
 from pathlib import Path
-
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words,
+    calculate_frequencies,
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf,
+    calculate_expected_frequency,
+    calculate_chi_values
+)
 
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
@@ -42,32 +51,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
+    tokenization = clean_and_tokenize(target_text)
 
-    NO_STOP_WORDS = None
-    FREQUENCIES_DICT = None
-    GET_TOP_TEN = None
-    COUNT_TF = None
-    COUNT_TDIDF = None
-    TOP = 10
+    if tokenization:
+        no_stop_words = remove_stop_words(tokenization, stop_words)
 
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
 
-    SPLIT_TEXT = clean_and_tokenize(target_text)
+    if freq_dict:
+        tf_dict = calculate_tf(freq_dict)
 
-    if SPLIT_TEXT:
-        NO_STOP_WORDS = remove_stop_words(SPLIT_TEXT, stop_words)
+    if freq_dict and tf_dict:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
 
-    if NO_STOP_WORDS:
-        FREQUENCIES_DICT = calculate_frequencies(NO_STOP_WORDS)
+    if tfidf_dict and freq_dict:
+        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
-    if FREQUENCIES_DICT:
-        COUNT_TF = calculate_tf(FREQUENCIES_DICT)
+    if exp_freq_dict and freq_dict:
+        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
 
-    if COUNT_TF:
-        COUNT_TDIDF = calculate_tfidf(COUNT_TF, idf)
-
-    if COUNT_TDIDF:
-        GET_TOP_TEN = get_top_n(COUNT_TDIDF, TOP)
-
-    RESULT = GET_TOP_TEN
+    if chi_dict:
+        RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
