@@ -58,9 +58,7 @@ def check_float(user_input: Any) -> bool:
     return True
 
 
-
-
-def clean_and_tokenize(text:str) -> Optional[list[str]]:
+def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
 
