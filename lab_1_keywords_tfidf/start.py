@@ -3,9 +3,16 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-from lab_1_keywords_tfidf.main import clean_and_tokenize, remove_stop_words, calculate_frequencies, \
-    get_top_n, calculate_tf, calculate_tfidf, calculate_expected_frequency, \
-    calculate_chi_values, extract_significant_words
+from lab_1_keywords_tfidf.main import (
+    clean_and_tokenize,
+    remove_stop_words,
+    calculate_frequencies,
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf,
+    calculate_expected_frequency,
+    calculate_chi_values
+)
 
 if __name__ == "__main__":
 
@@ -33,24 +40,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    do_clean_and_tokenized = clean_and_tokenize(target_text)
-    if do_clean_and_tokenized:
-        do_stop_words = remove_stop_words(do_clean_and_tokenized, stop_words)
-    if do_stop_words:
-        do_freqs = calculate_frequencies(do_stop_words)
-    if do_freqs:
-        do_tf = calculate_tf(do_freqs)
-    if do_tf:
-        do_tfidf = calculate_tfidf(do_tf, idf)
-    if do_tfidf and do_freqs:
-        print(get_top_n(do_tfidf, 10))
-        do_expected_frequency = calculate_expected_frequency(do_freqs, corpus_freqs)
-    if do_expected_frequency and do_freqs:
-        do_chi_value = calculate_chi_values(do_expected_frequency, do_freqs)
-    if do_chi_value:
-        do_extract_significant_words = extract_significant_words(do_chi_value, 0.001)
-    if do_extract_significant_words:
-        print(get_top_n(do_extract_significant_words, 10))
-        RESULT = get_top_n(do_extract_significant_words, 10)
+    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
+    tokenization = clean_and_tokenize(target_text)
+
+    if tokenization:
+        no_stop_words = remove_stop_words(tokenization, stop_words)
+
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
+
+    if freq_dict:
+        tf_dict = calculate_tf(freq_dict)
+
+    if freq_dict and tf_dict:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
+
+    if tfidf_dict and freq_dict:
+        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+
+    if exp_freq_dict and freq_dict:
+        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
+
+    if chi_dict:
+        RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
