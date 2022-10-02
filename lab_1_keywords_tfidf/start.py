@@ -14,7 +14,6 @@ from lab_1_keywords_tfidf.main import (
     calculate_chi_values
 )
 
-
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
