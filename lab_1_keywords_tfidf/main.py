@@ -6,7 +6,7 @@ from typing import Optional, Union, Any, Iterable, Type
 import math
 
 
-def type_of_elements(an_object: Iterable, elem_type: Type[Any], key: Type=str, value: Type=int) -> bool:
+def type_of_elements(an_object: Iterable, elem_type: Type[Any], key: Type = str, value: Type = int) -> bool:
     """
     Checks the type of elements in a collection
     """
@@ -59,7 +59,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     if not (isinstance(tokens, list) and isinstance(stop_words, list) and
             tokens and
             type_of_elements(tokens, str) and type_of_elements(stop_words, str)
-            ):
+    ):
         return None
     tokens_cleaned = [key_word for key_word in tokens if key_word not in stop_words]
     return tokens_cleaned
@@ -103,7 +103,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and not isinstance(top, bool)
             and frequencies
             and type_of_elements(frequencies, tuple, str, (int, float))
-            ):
+    ):
         return None
     sorting = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
     final_sorting = sorting[:top]

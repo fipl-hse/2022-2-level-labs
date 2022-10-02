@@ -3,7 +3,6 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-import sys
 from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies,
                                             get_top_n, calculate_tf, calculate_tfidf,
                                            calculate_expected_frequency, calculate_chi_values,
@@ -36,43 +35,36 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, "r", encoding="utf-8") as file:
         corpus_freqs = json.load(file)
 
+    no_stop_words_text, frequency, tf, tfidf, expected_frequency, chi_values, significant_words = \
+        [None for undef in range(7)]
 
     cleaned_text = clean_and_tokenize(target_text)
-    if cleaned_text is None:
-        sys.exit()
-    no_stop_words_text = remove_stop_words(cleaned_text, stop_words)
-    if no_stop_words_text is None:
-        sys.exit()
-    frequency = calculate_frequencies(no_stop_words_text)
-    if frequency is None:
-        sys.exit()
-    tf = calculate_tf(frequency)
-    if tf is None:
-        sys.exit()
-    top_of_words = get_top_n(frequency, 10)
-    if top_of_words is None:
-        sys.exit()
-    tfidf = calculate_tfidf(tf, idf)
-    if tfidf is None:
-        sys.exit()
-    tfidf_top = get_top_n(tfidf, 10)
-    if tfidf_top is None:
-        sys.exit()
-    print(tfidf_top)
-    expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
-    if expected_frequency is None:
-        sys.exit()
-    chi_values = calculate_chi_values(expected_frequency, frequency)
-    if chi_values is None:
-        sys.exit()
-    significant_words = extract_significant_words(chi_values, 0.001)
-    if significant_words is None:
-        sys.exit()
-    the_most_important_words = get_top_n(significant_words, 10)
-    if the_most_important_words is None:
-        sys.exit()
-    print(the_most_important_words)
 
-    RESULT = the_most_important_words
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    if cleaned_text:
+        no_stop_words_text = remove_stop_words(cleaned_text, stop_words)
+
+    if no_stop_words_text:
+        frequency = calculate_frequencies(no_stop_words_text)
+
+    if frequency:
+        tf = calculate_tf(frequency)
+        expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
+        top_of_words = get_top_n(frequency, 10)
+
+    if tf:
+        tfidf = calculate_tfidf(tf, idf)
+
+    if tfidf:
+        tfidf_top = get_top_n(tfidf, 10)
+        print(tfidf_top)
+
+    if expected_frequency and frequency:
+        chi_values = calculate_chi_values(expected_frequency, frequency)
+
+    if chi_values:
+        significant_words = extract_significant_words(chi_values, 0.001)
+
+    if significant_words:
+        RESULT = get_top_n(significant_words, 10)
+        # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+        assert RESULT, 'Keywords are not extracted'
