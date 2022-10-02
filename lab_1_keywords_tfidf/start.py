@@ -3,7 +3,6 @@ Frequency-driven keyword extraction starter
 """
 import json
 from pathlib import Path
-
 from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
@@ -41,43 +40,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    NOT_STOP_WORDS = None
-    FREQ_DICT = None
-    TF_DICT = None
-    TFIDF = None
-    EXPECTED_DICT = None
-    X2_DICT = None
-    TOP_X2 = None
+    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
+    tokenization = clean_and_tokenize(target_text)
 
-    split_words = clean_and_tokenize(target_text)
+    if tokenization:
+        no_stop_words = remove_stop_words(tokenization, stop_words)
 
-    if split_words:
-        NOT_STOP_WORDS = remove_stop_words(split_words, stop_words)
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
 
-    if NOT_STOP_WORDS:
-        FREQ_DICT = calculate_frequencies(NOT_STOP_WORDS)
+    if freq_dict:
+        tf_dict = calculate_tf(freq_dict)
 
-    if FREQ_DICT:
-        TF_DICT = calculate_tf(FREQ_DICT)
+    if freq_dict and tf_dict:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
 
-    if TF_DICT:
-        TFIDF = calculate_tfidf(TF_DICT, idf)
+    if tfidf_dict and freq_dict:
+        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
-    if TFIDF:
-        print(f'The top of words by tfidf: {get_top_n(TFIDF, 10)}')
+    if exp_freq_dict and freq_dict:
+        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
 
-    if FREQ_DICT:
-        EXPECTED_DICT = calculate_expected_frequency(FREQ_DICT, corpus_freqs)
-
-    if EXPECTED_DICT and FREQ_DICT:
-        X2_DICT = calculate_chi_values(EXPECTED_DICT, FREQ_DICT)
-
-    if X2_DICT:
-        TOP_X2 = get_top_n(X2_DICT, 10)
-
-    if TOP_X2:
-        print(f'The top of words by chi: {TOP_X2}')
-
-    RESULT = TOP_X2
+    if chi_dict:
+        RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
