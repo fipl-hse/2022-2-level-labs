@@ -140,11 +140,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_dict(frequencies, str, int, False):
-        return None
-    sum_freq = sum(frequencies.values())
-    tf_dict = {word: (frequency / sum_freq) for word, frequency in frequencies.items()}
-    return tf_dict
+    pass
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -161,12 +157,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True)):
-        return None
-    tfidf_dict = {}
-    for word in term_freq.keys():
-        tfidf_dict[word] = term_freq[word] * idf.get(word, log(47))
-    return tfidf_dict
+    pass
 
 
 def calculate_expected_frequency(
@@ -185,16 +176,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, True)):
-        return None
-    dict_exp_freqs = {}
-    for word, freq in doc_freqs.items():
-        except_word_doc_freq = sum(doc_freqs.values()) - freq
-        corpus_freq = corpus_freqs.get(word, 0)
-        except_word_corpus_freq = sum(corpus_freqs.values()) - corpus_freq
-        dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) /\
-                                (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
-    return dict_exp_freqs
+    pass
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
@@ -213,12 +195,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(expected, str, float, False) and check_dict(observed, str, int, False)):
-        return None
-    chi_dict = {}
-    for word, freq in expected.items():
-        chi_dict[word] = ((observed.get(word, 0) - freq) ** 2) / freq
-    return chi_dict
+    pass
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
@@ -237,12 +214,4 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not (check_dict(chi_values, str, float, False) and check_float(alpha)\
-            and alpha in criterion.keys()):
-        return None
-    significant_words_dict = {}
-    for word, chi_value in chi_values.items():
-        if chi_value > criterion[alpha]:
-            significant_words_dict[word] = chi_value
-    return significant_words_dict
+    pass
