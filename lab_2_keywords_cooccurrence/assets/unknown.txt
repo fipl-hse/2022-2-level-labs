@@ -1,0 +1,128 @@
+Priskribo de la projekto
+En 2002 “Esperantic Studies Foundation”, ESF, iniciatis projekton por starigi elektronikan lingvosciencan tekstaron (korpuson) de Esperanto. ESF kontraktis kun Bertilo Wennergren por plani kaj efektivigi la unuan projektofazon, kiu pretiĝis fine de Aprilo 2003. Helpis al Bertilo Wennergren “Korpusa Konsila Komitato” konsistanta el Ilona Koutny, Jouko Lindstedt, Carlo Minnaja kaj Chris Gledhill.
+
+La unua fazo koncentriĝis je kolektado kaj unuecigado de tiaj tekstoj, kiuj jam ekzistas en ia elektronika formo, precipe gravaj tekstoj Zamenhofaj kaj aliaj klasikaĵoj. Bertilo Wennergren elektis, prilaboris, normaligis kaj markis la tekstojn per la XML-a marklingvo TEI (Text Encoding Initiative).
+
+En Oktobro 2003 komenciĝis la dua fazo de la Tekstarprojekto. ESF kontraktis denove kun Bertilo Wennergren por plivastigi la Tekstaron. Al la Konsila Komitato aliĝis Mauro La Torre.
+
+En Marto 2017 komenciĝis tria fazo de la projekto. ESF faris novan interkonsenton kun Bertilo Wennergren por aldoni pli da Zamenhofaj tekstoj fruktuzante precipe la skanitajn tekstojn alireblajn ĉe la Aŭstra Nacia Biblioteko. Krome la serĉilo estis reprogramita kaj modernigita.
+
+En Septembro 2017 komenciĝis kvara fazo de la projekto. ESF faris novan interkonsenton kun Bertilo Wennergren por aldoni pli da tekstoj ne-Zamenhofaj precipe el la periodo post la Dua mondmilito.
+
+En 2018 en kvina fazo ESF taskigis Bertilon Wennergren plu ampleksigi la Tekstaron precipe per modernaj tekstoj. Tiu laboro ankoraŭ daŭras.
+
+La tekstomaso ampleksas 10.944.194 da vortoj.
+
+Vi povas elŝuti la tekstojn de la Tekstaro (sed ne la serĉilon).
+
+Legu pli detale pri la tekstomarkado per TEI.
+
+Legu novaĵojn pri la Tekstaro.
+
+Retumiloj
+La serĉilo funkcias nur en modernaj TTT-legiloj. Mi testis ĝin kun ĝisdataj versioj de la legiloj Chrome (por ordinaraj komputiloj kaj por Androidaj komputiloj, t.e. poŝtelefonoj, tabuletoj k.s.) kaj Fajrovulpo, sed ĝi devas funkcii ankaŭ en aliaj modernaj TTT-legiloj. La Tekstaro tamen ne funkcias en Microsoft Internet Explorer, kiu estas malnova kaj tre malsekura.
+
+Se vi uzas tuŝekranon, kelketaj neesencaj funkcioj ne estas haveblaj.
+
+La serĉilo funkcias nur se Javaskripto estas aktivigita en la TTT-legilo.
+
+Kiel uzi la serĉilon?
+La serĉilo troviĝas en la serĉilopaĝo.
+
+En la supra tekstokampo post la titolo “Serĉi” vi povas enskribi tekstopecon serĉotan. Kiam vi aktivigas la butonon “Ekserĉi” (aŭ simple premas la enigo-klavon), la serĉoprogramo trairas ĉiujn elektitajn tekstojn, kaj montras al vi la rezultajn trovojn kun iom da kunteksto. La rezulto estas montrata en aparta “folio”.
+
+En serĉesprimoj vi povas uzi diversajn specialajn kodaĵojn. Legu pli detale pri tiuj specialaj serĉosimboloj.
+
+Esperantajn literojn vi povas tajpi rekte (Unikode) aŭ per X-surogatoj: cx, gx... ux. Vi ankaŭ povas miksi rektan kaj X-surogatan skribojn.
+
+Se vi volas uzi samtempe pli ol unu serĉesprimon, vi povas aldoni pliajn tekstokampojn per la pluso-butono maldekstre de la vorto “Serĉesprimo”. Kiam estas pli ol unu serĉesprimo, aperas ankaŭ minuso-butono, per kiu vi povas forigi la lastan el la serĉesprimoj. Ankaŭ eblas fermi serĉesprimon per aparta ferma “×”-simbolo en ties supra dekstra angulo, aŭ per duobla alklako al la tekstokampo. La unua serĉesprima tekstokampo tamen ne estas forigebla. Vi povas ŝanĝi la larĝecon de ĉiu tia tekstokampo per tirado de ties dekstra rando (sed tio eble ne funkcias, se vi uzas tuŝekranon). Ĉiu serĉesprimo estas aparte traktata kaj la serĉorezulto estas montrata en aparta folio. Vidu tamen ĉi-poste ĉe “Kunigi serĉojn”.
+
+Per la elektilo “Ignori fremdaĵojn” vi povas elekti, ke la serĉo ignoru ĉiujn trafojn, kiuj aperas ene de fremdaĵoj, aŭ kiuj enhavas fremdaĵojn ene de si. Ignorado de fremdaĵoj tamen funkcias nur por fremdaĵoj, kiuj estas eksplicite markitaj kiel tiaj en la Tekstaro. Multaj fremdaj vortoj bedaŭrinde ankoraŭ ne estas tiel markitaj. Normale vi kredeble volas, ke fremdaĵoj estu ignorataj.
+
+Per la elektilo “Montri”, vi povas indiki, kiom da signoj estu montrataj por ĉiu trafo (baza elekto: 100 signoj). Prezentiĝas kune kun ĉiu trafo la kunteksto antaŭa kaj posta, kaj tiu tuto ampleksos (proksimume) tiom da signoj, kiom vi elektos. La maksimumo estas 200 signoj (kaj la minimumo estas 10 signoj). La montrota kunteksto tamen ĉiam limiĝas al la koncerna alineo (aŭ alinesimila tekstoparto).
+
+Per la elektilo “Maks.” (= “Maksimumo”) vi povas elekti la maksimuman nombron da trafoj, kiujn la serĉilo montru. Pli alta maksimumo ol 1000 ne eblas.
+
+Per la elektilo “Rapide” vi povas elekti, ke priserĉado de la tekstoj okazu “kunrule”, t.e. ĉiuj tekstoserĉoj estas lanĉataj samtempe, sed tamen kiel apartaj serĉoj. La rezulto de ĉiu unuopa serĉo tiam prezentiĝas tuj, kiam ĝi estas preta. Se oni ne elektas rapidan serĉadon, la tekstoj estas priserĉataj unu post la alia en antaŭvidebla ordo, kaj ĉiu nova serĉo startas nur kiam la antaŭa estas finita. Kun rapida serĉado, se la serĉo atingas la elektitan trafomaksimumon antaŭ ol ĉiuj tekstoj estas priserĉitaj, ne estas eble antaŭvidi, kiuj tekstoj aperas kun serĉorezulto. Se oni refaras la saman serĉon, same kun rapida serĉado, eble aperas aliaj tekstoj. Tio okazas, ĉar la serĉorezultoj alvenas en hazarda ordo. La elektilo “Daŭrigi” ne havas efikon, se oni elektas rapidan serĉadon. Vidu ankaŭ la elektilon “Kunigi tekstojn”, kiu donas simile rapidan serĉon, sed kiu kaŭzas, ke nenia serĉorezulto estas montrata antaŭ ol la tuta serĉo estas finita.
+
+Per la elektilo “Daŭrigi” vi povas elekti, ĉu daŭrigi la serĉon ankaŭ post atingo de la maksimumo da montrotaj trafoj. Se vi elektas, ke la serĉo pludaŭru, tiam post atingo de la maksimumo, la serĉilo raportas nur la nombron da trafoj, sed ne la efektivajn trafojn. Se vi aktivigas rapidan serĉadon per la elektilo “Rapide”, la elektilo “Daŭrigi” ne havas efikon.
+
+Per la elektilo “Atenti usklecon”, vi povas indiki, ĉu la serĉo atentu la diferencon inter majuskloj kaj minuskloj. Vidu ĉe la specialaj simboloj | kaj [] alternativajn metodojn por serĉi kaj minusklojn kaj majusklojn.
+
+Per la elektilo “Kunigi serĉojn” vi povas elekti, ke pluraj serĉesprimoj estu montrataj kune kiel unu serĉon. Normale, se oni enskribas pli ol unu serĉesprimon, ĉiu esprimo estas traktata aparte kaj montrata en aparta folio. En la malnova versio de la serĉilo, antaŭ Junio 2017, pluraj serĉesprimoj ĉiam estis kunigitaj en unu serĉon.
+
+Per la elektilo “Kunigi tekstojn” vi povas elekti, ke ĉiuj elektitaj tekstoj estu samtempe priserĉataj per unu sola voko al la servilo, kaj ke ĉiuj rezultoj estu poste montrataj samtempe. Normale, se oni ne elektas “Kunigi tekstojn”, ĉiu elektita teksto estas aparte priserĉata, kaj la rezultoj de la diversaj tekstoserĉoj aperas iom post iom, kiam ili estas haveblaj. Se oni elektas “Kunigi tekstojn”, la tuta serĉado estas pli rapida (sed la rapido tre dependas de multaj diversaj faktoroj). Aliflanke, se oni faris ian eraron en la serĉesprimo, oni povas tion konstati nur kiam ĉiuj rezultoj estas haveblaj. Kiam la serĉorezultoj estas prezentataj iom post iom, oni povas pli frue rimarki eventualan eraron, kaj povas tiam haltigi la serĉadon. Vidu ankaŭ la elektilon “Rapide”, kiu tamen ne havas efikon, se oni elektas “Kunigi tekstojn”.
+
+Per la elektilo “Uzi streketojn” vi povas decidi, ĉu uzi aŭ ne uzi streketojn en la serĉesprimoj. Tio estas detale klarigita en la sekcio pri streketoj.
+
+Per la elektilo “Inverse” vi povas elekti, ke la tekstoj estu priserĉataj en inversa direkto, t.e. komencante per la plej nova el la elektitaj tekstoj. (Se oni elektas ankaŭ “Rapide”, la ordo en la serĉorezultoj tamen estas grandparte hazarda, kaj tiam la elektilo “Inverse” ne havas multe da senco.)
+
+Per la elektilo “F” vi povas aktivigi t.n. fulmoklavojn, per kiuj vi povas rapide manipuli multajn el la diversaj butonoj kaj elektiloj. Tio estas detale klarigita en la paĝo Fulmoklavoj. Fulmoklavoj povas esti utilaj por tiuj, kiuj tre multe kaj intense uzas la serĉilon.
+
+Poste sekvas ses butonoj:
+
+Ekserĉi = ekserĉi en la elektitaj tekstoj
+Ĉiuj = elekti ĉiujn tekstojn
+Neniuj = elekti neniujn tekstojn
+Inversigi = inversigi la elekton (elektitaj malelektiĝas, neelektitaj elektiĝas)
+Zamenhofaj = elekti/malelekti ĉiujn Zamenhofajn tekstojn. Se neniu aŭ nur malplimulto el la Zamenhofaj tekstoj estas jam elektita, tiam alklako al tiu ĉi butono elektas ĉiujn Zamenhofajn tekstojn. Alie la alklako malelektas ĉiujn Zamenhofajn tekstojn. La stato de la ne-Zamenhofaj tekstoj ne ŝanĝiĝas.
+A = elekti/malelekti tekstojn uzante mallongigojn de la aŭtoroj. Tiu ĉi butono estas aldonita por uzo de la teamo, kiu redaktas la sekvontan PIV-on (la Plenan Ilustritan Vortaron de Esperanto). La teamo uzas daŭre evoluantan liston de aŭtoraj mallongigoj. Tiu listo ankoraŭ ne estas publike alirebla.
+Montri informojn = montri detalajn informojn pri ĉiuj tekstoj. Krome eblas montri informojn pri unuopa teksto per longa musoklako sur la koncernan tekston (premu la musobutonon dum dum iom da tempo antaŭ ol lasi ĝin). Por fermi tian unuopan informokeston, simple alklaku ĝin.
+Ŝ (videbla nur kiam oni jam elektis aŭ malŝaltis almenaŭ unu tekston) = malŝalti ĉiujn elektitajn tekstojn aŭ reŝalti ĉiujn malŝaltitajn tekstojn (legu pli pri malŝaltado de tekstoj)
+Sub la butonoj aperas listo de ĉiuj tekstoj de la Tekstaro. Vi povas alklaki ie ajn en la kesto de teksto por ĝin elekti aŭ malelekti. La tekstoj estas ordigitaj laŭ la jaro, kiam la esperanta teksto estis kreita (verke aŭ traduke).
+
+Se vi elektas unu tekston, kaj poste elektas duan tekston premante samtempe majuskligan klavon de la klavaro, tiam tiuj du tekstoj kaj ankaŭ ĉiuj tekstoj inter ili estos elektitaj. Simile eblas malelekti tutan vicon da tekstoj per premo de majuskliga klavo: Unue malelektu unu tekston. Poste malelektu alian premante majuskligan klavon. (Tiu ĉi funkcio ne estas havebla, se vi ne havas klavaron kun majuskliga klavo, ekz. se vi uzas poŝtelefonon.)
+
+Se vi alklakas tekston samtempe premante la Alt-klavon de la klavaro (aŭ la Option-klavon de OSX-komputilo), elektiĝas aŭ malelektiĝas tiu teksto kaj ankaŭ ĉiuj aliaj tekstoj de la sama aŭtoro. Ekz., se vi volas elekti aŭ malelekti ĉiujn tekstojn de la aŭtoro Piron, vi alklaku iun ajn el ili tenante la Alt-klavon.
+
+Se vi preferas, vi povas anstataŭe elekti tekstojn laŭ jaro per la la perioda elektilo (ĉe la vorto “Periodo”). Unue necesas aktivigi la periodan elektilon per la aktivigilo ĉe ties dekstra flanko. Poste vi povas enskribi komencan kaj finan jaron de la dezirata periodo. Rimarku, ke aliaj manieroj elekti tekstojn ne funkcias, kiam la perioda elektilo estas aktiva. Vi povas ĉiam ajn malaktivigi ĝin, kaj plu prilabori la elektojn en la ordinara maniero.
+
+Maldekstre de ĉiu tekstoelektilo estas litero M. Se vi ĝin alklakas, aperas kelkaj butonoj: butono por montri HTML-an prezenton de la tuta koncerna teksto, alia butono por montri prezenton de la baza XML-kodo de la tuta koncerna teksto. Tie estas ankaŭ butono, per kiu vi povas malŝalti (aŭ reŝalti) uzon de la koncerna teksto. Malŝaltita teksto ne estas elektebla, kaj ĝin ne influas uzo de la butonoj Ĉiuj, Neniuj, Inversigi kaj Zamenhofaj. Ankaŭ la perioda (jara) elektilo ne influas malŝaltitajn tekstojn. Malŝaltita teksto prezentiĝas pale kaj grize. Tia malŝaltado povas esti utila, se iu teksto estas daŭre neinteresa por via esplorado. Krome eblas malŝalti aŭ reŝalti plurajn tekstojn samtempe per la “Ŝ”-butono. Sub la butonoj aperas krome iom da informoj pri la koncerna teksto. Tiuj informoj estas montreblaj ankaŭ en aparta informo-kesto, se vi faras “longan musopremon” sur la nomon de teksto (longe premu la musobutonon antaŭ ol lasi ĝin). Tia longa musopremo tamen kredeble ne funkcias, se vi uzas tuŝekranon. Por fermi tian informokeston, simple alklaku ĝin. Vi ankaŭ povas uzi la butonon “Montri informojn” por montri informojn pri ĉiuj tekstoj.
+
+Ĉiuj elektoj, kiujn vi faras en la serĉila interfaco, estas memorataj (se via TTT-legilo estas agordita por akcepti tian memoradon). Kiam vi revenas al la serĉilo, reaperas aŭtomate ĉiuj elektoj, kiuj estis validaj, kiam vi laste vizitis la serĉilon.
+
+Montrado de serĉorezultoj
+La rezultoj de ĉiu serĉo aperas en aparta folio. Supre de la fenestro aperas langetoj, per kiuj vi povas elekti, kiun folion rigardi. Estas unu folio por la serĉilo mem, kaj poste po unu folio por ĉiu serĉorezulto. Aldone povas aperi ankaŭ folioj, kiuj montras tutajn tekstojn aŭ partojn de tekstoj. Ĉiun folion (krom tiu de la serĉilo) vi povas fermi per tiucela fermilo (kun la signo “×” en la koncerna langeto).
+
+Se vi volas fermi samtempe ĉiujn foliojn (krom tiu de la serĉilo), estas aparta tiucela fermilo, ×, dekstre de la langetoj.
+
+Ĉiu fermita serĉofolio estas aparte konservata en memoro, kaj povas esti remalfermita laŭbezone. En la serĉilofolio apud “Klarigoj kaj helpo” aperas listo de ĉiuj fermitaj kaj restarigeblaj folioj. Vi povas elekti unu el ili, kaj tiel restarigi ĝin (kune kun ĉiuj tekstofolioj, kiuj apartenis al ĝi antaŭ ol ĝi estis fermita). Fine de la listo aperas ankaŭ la eblo “Restarigi ĉiujn”. Kiam vi revenas al la Tekstaro, ĉiuj laste malfermitaj serĉofolioj (sed ne la tekstofolioj) estas tie haveblaj por restarigado (se via TTT-legilo akceptas la statokonservadon). Konserviĝas tamen ĉiam nur maksimume 30 serĉofolioj (la 30 laste fermitaj).
+
+Kiam nova serĉofolio malfermiĝas, aperas tie la serĉorezultoj. Se vi elektis pli ol unu tekston, la rezultoj montriĝas iom post iom. Vi povas en ajna momento interrompi la serĉadon per alklakado de la “Fini”-butono. Dum la serĉo daŭras, vi eĉ povas ŝanĝi al alia folio. La daŭranta serĉo ne interrompiĝas. Vi eĉ povas iri al la serĉilo, kaj tie komenci novan serĉon, kiu malfermiĝos en aparta folio. Pluraj serĉofolioj povas labori samtempe.
+
+En serĉofolio ĉiu trafo estos montrata en aparta linio kun iom da teksto antaŭ la trafo, kaj iom da teksto post ĝi. La trafo mem estas aparte markita. Se vi alklakas la trafotekston, aperas la tuta koncerna alineo (aŭ alia alinesimila tekstoparto). Tie ĉiu trafo estas markita flave. (La alineo devas esti aparte elŝutata el la servilo, kio povas eble daŭri iomete.) Post la alineo aperas butono por vidi ankoraŭ pli da kunteksto. Se vi alklakas tian butonon, malfermiĝas la koncerna teksto en aparta folio. Se la teksto estas tre longa, montriĝas tamen nur parto de ĝi. Iafoje temas pri tre grandaj partoj, alifoje temas pri mallonga eltiraĵo, depende de la strukturo kaj karaktero de la koncerna teksto. Se montriĝas nur parto de la teksto, estas tamen en tiu tekstofolio aparta butono por malfermi la tutan tekston en aparta fenestro (aŭ aparta folio de via TTT-legilo). Se la teksto estas ekstreme granda, vi tiam tamen ricevas anstataŭe liston de ligiloj al ĉiuj partoj de la teksto.
+
+En serĉo-folio kun jam plenumita serĉo aperas butono nomata “Ŝanĝi” supre maldekstre. Se vi alklakas tiun butonon, aperas la serĉilo kun la serĉoparametroj kaj teksto-elektoj de tiu serĉo, por ke vi povu reprilabori tiujn elektojn, kaj eble fari novan similan serĉon (kiu aperos en nova serĉo-folio). Vi povas uzi tiun butonon ankaŭ por rekontroli, kiuj tekstoj estas elektitaj por la koncerna serĉo.
+
+Se vi volas haltigi ĉiujn daŭrantajn serĉojn, vi povas alklaki la krisignon, !, kiu troviĝas dekstre de la langetoj (apud la ×-simbolo por fermi ĉiujn foliojn).
+
+Markado kaj kaŝado de trafoj
+En serĉorezultoj oni povas marki unuopajn trafojn per elektiloj, kiuj aperas maldekstre de ĉiu trafo. Tia markado povas esti utila por elstarigi tiajn trafojn, kiuj estas aparte interesaj. Krome ĉiu teksto havas tian elektilon maldekstre de la titolo. Per tiu elektilo, oni markas ĉiujn trafojn en tiu teksto. Oni povas meti tiajn markojn ankaŭ per alklakado de la teksto de la trafolinio/tekstotitolo premante samtempe la stirklavon de la klavaro.
+
+Super la prezento de la serĉorezultoj aperas laŭbezone butonoj, per kiuj oni povas kaŝi aŭ malkaŝi trafojn: Per la butono “Kaŝi markitaĵn” oni povas kaŝi ĉiujn trafojn, kiuj estas markitaj laŭ la ĉi-antaŭaj klarigoj. Per la butono “Kaŝi nemarkitaĵn” oni anstataŭe kaŝas ĉiujn trafojn, kiuj ne estas tiamaniere markitaj. Per la butono “Malkaŝi kaŝitaĵn” oni povas malfari tian kaŝadon. Fine per la butono “Forigi markojn” oni povas forigi ĉiujn markojn.
+
+Kiam iuj trafoj estas kaŝitaj, aperas ruĝa avertoteksto.
+
+La markado kaj kaŝado de trafoj estas retenataj, kiam oni remalfermas fermitajn serĉofoliojn. La markado kaj kaŝado same estas retenataj, kiam oni kreas ligilon al serĉo.
+
+Streketoj
+Streketoj estas specialaj signoj, kiuj montras limojn inter vortelementoj. En la Tekstaro tiaj streketoj estas aparte aldonitaj al ĉiuj tekstoj. Ekz. “Ĉiu privat•a esperant•ist•o pov•as hav•i tia•j•n konvink•o•j•n aŭ far•i tia•j•n ag•o•j•n, kia•j•n li vol•as”.
+
+En la serĉilo estas la eblo elekti “Uzi streketojn”. Se oni tion ne faras, la streketoj tute ne estas atentataj en serĉoj, kaj tute ne estas montrataj (tiel la Tekstaro ĉiam funkciis antaŭe). Sed se oni ja elektas “Uzi streketojn”, la streketoj aperas en ĉiuj serĉorezultoj kaj en ĉiuj montradoj de alineoj kaj tekstoj, kaj oni devas ilin uzi en la serĉesprimoj. Tiam por trovi ekz. la vorton “tablo”, oni devas skribi ekz. tabl/o aŭ tabl_o aŭ tabl•_\OF en la serĉesprimo. Por indiki streketon oni povas uzi kvar diversajn simbolojn kun iom diversaj sencoj: ', •, _ kaj /. Detalaj klarigoj pri tio troviĝas en la sekcio pri specialaj signoj.
+
+Notindas, ke la enmetado de streketoj en la tekstojn okazis grandparte aŭtomate, kaj ke la rezulto neniel estas perfekta. Multaj eraroj estas ankoraŭ korektendaj (kiel ekz. “sen•tem•a”, kie vere devus esti “sent•em•a”, aŭ ne-Esperantaj nomoj, kiuj mise ricevis streketojn). Raportoj pri misaj vortodividoj estos tre bonvenaj.
+
+Se oni uzas streketojn, oni trovas en prezentoj de serĉorezultoj kaj unuopaj tekstoj butonon por “Kaŝi streketojn”. Tio povas esti utila, se oni volas vidi la koncernan tekston en normala formo. Ankaŭ eblas ree malkaŝi la streketojn per la sama butono. En la unue listigataj trafoj - sur apartaj linioj kun markita trafo meze - la streketoj tiam tamen nur iom paliĝas, ĉar efektiva kaŝado tie tute detruus la aranĝadon de la trafoj. En la montrado de tutaj alineoj kaj tutaj tekstoj la streketoj tiam tamen efektive tute nevidebliĝas.
+
+La analizo de kunmetaĵoj sekvas la klarigojn en PMEG. Atentu interalie, ke tabelvortoj kiel “tio” kaj “kia” estas rigardataj kiel nekunmetitaj, ĝuste tiel, kiel ili estas prezentataj en la Fundamento de Esperanto. Estas multaj okazoj, pri kiuj oni povas havi diversajn opiniojn pri la ĝusta analizo. Ĉu ekzemple “Aŭstrio” estas “Aŭstr•i•o” aŭ “Aŭstri•o”? En la Tekstaro la unua analizo estas uzata. En multaj tiaj okazoj ne ekzistas definitiva vero.
+
+En la bazaj XML-dosieroj de la Tekstaro la streketoj estas reprezentataj de la signo _ (“suba linio”). Tiu signo neniam aperas en normalaj vortoj. Sed ĝi iafoje ja aperas en retadresoj kaj similaj kodaĵoj. En tiuj okazoj mi uzis kiel surogaton por _ la signon ﹍ (“streketita suba linio”, Unikoda numero FE4D) por eviti konfuzon kun la disigaj streketoj. Sekve se oni ial volas serĉi aperojn de veraj _-signoj en la Tekstaro, oni anstataŭ devas serĉi la signon ﹍.
+
+Ligiloj al serĉoj
+Eblas krei ligilon al unuopa serĉo (unuopa serĉofolio). Kiam serĉo en serĉofolio estas finita, aperas butono kun la teksto “Krei ligilon al tiu ĉi serĉo”. Se oni alklakas tiun butonon, kreiĝas retadreso (urlo) ekz. https://tekstaro.com/?s=5a170712af36e, per kiu eblas refari tiun saman serĉon - kun la samaj elektitaj tekstoj, la sama serĉesprimo k.t.p. Tian adreson oni povas sendi al aliaj, publikigi en retpaĝo aŭ teni kiel legosignon.
+
+Povas okazi, ke iafoje aperas iom alia serĉorezulto, kiam oni uzas tian ligilon, ĉar tiam la tuta serĉo okazas denove, kaj se la enhavo de la tekstoj estas iom alia (eble tekstaj eraroj intertempe estas korektitaj), aŭ se la serĉoprogramo intertempe estis iel modifita, la rezulto povas esti iomete alia. Sed aldonado de novaj tekstoj al la Tekstaro ne influas tiajn “konservitajn” serĉojn. La serĉo uzas ĉiam nur tiujn tekstojn, kiuj estis origine elektitaj.
+
+Protektita teksto
+Antaŭe en la Tekstaro estis kelkaj tekstoj, kiuj ne rajtis esti plene montrataj pro kopirajtaj kialoj. Sed ĉiuj tiuj tekstoj estas nun plene alireblaj, kaj novaj protektitaj tekstoj ne estos aldonitaj.
+
