@@ -2,7 +2,7 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union, Any, Iterable, Type
+from typing import Optional, Union, Any, Type
 import math
 
 
