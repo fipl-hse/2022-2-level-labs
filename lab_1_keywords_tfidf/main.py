@@ -181,8 +181,8 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
             isinstance(doc_freqs, dict)
             and isinstance(corpus_freqs, dict)
             and type_of_elements(doc_freqs, tuple, str, int)
-            and type_of_elements(corpus_freqs, tuple, str, int)
             and doc_freqs
+            and type_of_elements(corpus_freqs, tuple, str, int)
     ):
         return None
     text_words_input = sum(doc_freqs.values())
