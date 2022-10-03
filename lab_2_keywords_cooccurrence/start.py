@@ -56,8 +56,9 @@ if __name__ == "__main__":
     WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
     WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
     WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
-    CUMULATIVE_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
-    print(CUMULATIVE_SCORES)
+    KEYWORD_PHRASES_WITH_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
+    TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, 10, 10)
+    print(TOP_N)
 
     ZUB_DAIU_VSYO_NORMALNO = True
     RESULT = ZUB_DAIU_VSYO_NORMALNO

@@ -132,7 +132,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             not type_check(word_scores, dict, str, float, True) or \
             not all(token in word_scores for phrase in candidate_keyword_phrases for token in phrase):
         return None
-    return {phrase: sum(word_scores.get(token, None) for token in phrase) for phrase in candidate_keyword_phrases}
+    return {phrase: sum(word_scores[token] for token in phrase) for phrase in candidate_keyword_phrases}
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -148,7 +148,12 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(keyword_phrases_with_scores, dict, tuple, float, True) \
+            or not all(type_check(phrase, tuple, str, not_empty=True) for phrase in keyword_phrases_with_scores) \
+            or not type_check(top_n, int) or not type_check(max_length, int) or max_length <= 0:
+        return None
+    return sorted(list(item for item in keyword_phrases_with_scores if len(item) <= max_length), reverse=True,
+                  key=lambda phrase: keyword_phrases_with_scores[phrase])[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
