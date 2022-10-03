@@ -6,7 +6,7 @@ from typing import Optional, Union, Any, Type
 import math
 
 
-def type_of_elements(an_object: Any, elem_type: Any, key: Type = str, value: object = int) -> bool:
+def type_of_elements(an_object: Any, elem_type: Any, key: Type = str, value: Type = int) -> bool:
     """
     Checks the type of elements in a collection
     """
