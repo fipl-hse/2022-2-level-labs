@@ -59,9 +59,6 @@ if __name__ == "__main__":
 
         if chi_values:
             significant_words = extract_significant_words(chi_values, 0.05)
-            print(len(significant_words))
-            print(len(extract_significant_words(chi_values, 0.001)))
-            print(len(extract_significant_words(chi_values, 0.01)))
 
         if significant_words:
             key_words = get_top_n(significant_words, 10)

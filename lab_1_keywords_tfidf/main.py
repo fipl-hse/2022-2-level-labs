@@ -61,7 +61,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(tokens, list) and tokens and all(isinstance(i, str) for i in tokens)):
+    if not (isinstance(tokens, list) and tokens != [] and all(isinstance(i, str) for i in tokens)):
         return None
     token_freq = {}
     for word in tokens:
@@ -139,14 +139,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     if not (all(isinstance(k, str) for k in idf.keys())
             and all(isinstance(v, float) for v in idf.values())):
         return None
-    tfidf_dic = {key: (term_freq[key] * idf.get(key, math.log(47 / 1))) for key in term_freq.keys()}
-    print(tfidf_dic)
-    # tfidf_dic = {}
-    # for key in term_freq.keys():
-    #     if key not in idf.keys():
-    #         idf[key] = math.log(47 / 1)
-    #     tfidf_dic[key] = term_freq[key] * idf[key]
-    # print(tfidf_dic)
+    tfidf_dic = {}
+    for key in term_freq.keys():
+        if key not in idf.keys():
+            idf[key] = math.log(47 / 1)
+        tfidf_dic[key] = term_freq[key] * idf[key]
     return tfidf_dic
 
 
@@ -222,7 +219,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
     Select those tokens from the token sequence that
-    have a chi-squared value greater than the criterion
+    have a chi-squared value smaller than the criterion
 
     Parameters:
     chi_values (Dict): A dictionary with tokens and
