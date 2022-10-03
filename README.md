@@ -1,5 +1,6 @@
 # Лабораторные работы для 2-го курса ФПЛ (2022/2023)
 
+
 В рамках предмета
 ["Программирование для лингвистов"](https://www.hse.ru/edu/courses/749664186)
 в НИУ ВШЭ - Нижний Новгород.
@@ -47,14 +48,16 @@
 3. :video_camera: :ru: Хирьянов Т.Ф. Видеолекции.
    [Алгоритмы и структуры данных на Python 3](https://www.youtube.com/watch?v=KdZ4HF1SrFs&list=PLRDzFCPr95fK7tr47883DFUbm4GeOjjc0)
    . 2017.
-4. :bookmark: :us: [Официальная документация](https://docs.python.org/3/).
+5. :bookmark: :us: [Официальная документация](https://docs.python.org/3/).
 
-5. :books: :us: M. Lutz.
+### Продвинутый уровень
+
+1. :books: :us: M. Lutz.
    [Programming Python: Powerful Object-Oriented Programming](https://www.amazon.com/Programming-Python-Powerful-Object-Oriented/dp/0596158106)
-6. :books: :us: J. Burton Browning.
+2. :books: :us: J. Burton Browning.
    [Pro Python 3: Features and Tools for Professional Development](https://www.amazon.com/Pro-Python-Features-Professional-Development/dp/1484243846)
    . 
-7. :video_camera: :ru: Хирьянов Т.Ф. Видеолекции.
+3. :video_camera: :ru: Хирьянов Т.Ф. Видеолекции.
    [Основы программирования и анализа данных на Python](https://teach-in.ru/course/python-programming-and-data-analysis-basics)
    . 2022.
 
