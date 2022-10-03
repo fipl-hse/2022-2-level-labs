@@ -109,7 +109,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(word_degrees, dict, str, int, True) or not type_check(word_frequencies, dict, str, int, True) \
+            or not all(word_frequencies.get(token, False) for token in word_degrees):
+        return None
+    return {token: word_degrees[token] / word_frequencies[token] for token in word_degrees}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
