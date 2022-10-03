@@ -102,7 +102,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             and isinstance(top, int) and top > 0
             and not isinstance(top, bool)
             and frequencies
-            and type_of_elements(frequencies, tuple, str, (int, float))
+            and type_of_elements(frequencies, tuple, str, Union[int, float])
     ):
         return None
     sorting = sorted(frequencies.items(), reverse=True, key=lambda item: item[1])
