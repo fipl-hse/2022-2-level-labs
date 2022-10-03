@@ -92,7 +92,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     """
     if not type_check(candidate_keyword_phrases, list, tuple, not_empty=True) or \
             not all(type_check(candidate, tuple, str, not_empty=True) for candidate in candidate_keyword_phrases) or \
-            not type_check(content_words, list, str, not_empty=True):  # тут должен был быть список
+            not type_check(content_words, list, str, not_empty=True):
         return None
     return {token: sum([len(phrase) for phrase in candidate_keyword_phrases if token in phrase])
             for token in content_words}
@@ -127,7 +127,12 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(candidate_keyword_phrases, list, tuple, not_empty=True) or \
+            not all(type_check(candidate, tuple, str, not_empty=True) for candidate in candidate_keyword_phrases) or \
+            not type_check(word_scores, dict, str, float, True) or \
+            not all(token in word_scores for phrase in candidate_keyword_phrases for token in phrase):
+        return None
+    return {phrase: sum(word_scores.get(token, None) for token in phrase) for phrase in candidate_keyword_phrases}
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
