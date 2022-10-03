@@ -23,8 +23,8 @@ def type_check(data: Any, expected: Any, content: Any = None, values: Any = None
     bool: True if data (and its content if needed) has the expected type and emptiness, False otherwise
     """
     return not (not isinstance(data, expected) or expected == int and isinstance(data, bool)) \
-        and not (expected in (str, list, dict) and not_empty and not data) \
-        and not (expected in (list, dict) and content and not all(type_check(item, content) for item in data)) \
+        and not (expected in (str, list, tuple, dict) and not_empty and not data) \
+        and not (expected in (list, tuple, dict) and content and not all(type_check(item, content) for item in data)) \
         and not (expected == dict and values and not all(type_check(value, values) for value in data.values()))
 
 
@@ -71,7 +71,11 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(candidate_keyword_phrases, list, tuple, not_empty=True) \
+            or not all(type_check(candidate, tuple, str, not_empty=True) for candidate in candidate_keyword_phrases):
+        return None
+    return {token: sum([look.count(token) for look in candidate_keyword_phrases])
+            for phrase in candidate_keyword_phrases for token in set(phrase)}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,

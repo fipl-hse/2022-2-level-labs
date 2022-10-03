@@ -53,7 +53,8 @@ if __name__ == "__main__":
 
     PHRASES = extract_phrases(corpus['gagarin'])
     CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
-    print(CANDIDATE_KEYWORD_PHRASES)
+    FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+    print(FREQUENCIES)
 
     RESULT = None
 
