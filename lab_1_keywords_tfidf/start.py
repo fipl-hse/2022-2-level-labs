@@ -49,7 +49,7 @@ if __name__ == "__main__":
     if frequency:
         tf = calculate_tf(frequency)
         expected_frequency = calculate_expected_frequency(frequency, corpus_freqs)
-        top_of_words = get_top_n(frequency, 10)
+        top_of_words = get_top_n(frequency, 10.0)
 
     if tf:
         tfidf = calculate_tfidf(tf, idf)
