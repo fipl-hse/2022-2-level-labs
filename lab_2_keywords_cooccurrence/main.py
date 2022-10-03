@@ -3,10 +3,29 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
+import re
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def type_check(data: Any, expected: Any, content: Any = None, values: Any = None, not_empty: bool = False) -> bool:
+    """
+    Checks any type used in a program. Also works for types of lists' and dicts' content.
+    Parameters:
+    data (Any): An object which type is checked
+    expected (Any): A type we expect data to be
+    content (Any): A type we expect data's content (elements for lists or keys for dictionaries) to be (optional)
+    values (Any): A type we expect the values in a dictionary (if data is a dictionary) to be (optional)
+    not_empty (bool): If expected is an str, a list or a dict, True stands for "it should not be empty" (optional)
+    Returns:
+    bool: True if data (and its content if needed) has the expected type and emptiness, False otherwise
+    """
+    return not (not isinstance(data, expected) or expected == int and isinstance(data, bool)) \
+        and not (expected in (str, list, dict) and not_empty and not data) \
+        and not (expected in (list, dict) and content and not all(type_check(item, content) for item in data)) \
+        and not (expected == dict and values and not all(type_check(value, values) for value in data.values()))
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,7 +36,11 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    return None
+    if not type_check(text, str, not_empty=True):
+        return None
+    punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
+    return [clean for phrase in re.split(''.join(
+        (punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), text) if (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
