@@ -14,7 +14,7 @@ def correct_sequence(variable: Sequence, type1: type, empty: bool) -> bool:
     """
     Checks the type of list and its elements
     """
-    if not isinstance(variable, Sequence):
+    if not isinstance(variable, list):
         return False
     if not empty and not variable:
         return False
@@ -49,7 +49,20 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_sequence(phrases, str, False) or not correct_sequence(stop_words, str, False):
+        return None
+    candidate_phrases = []
+    new_list = [x.lower().split() for x in phrases]
+    for i in new_list:
+        indexes = [-1] + [index for index, item in enumerate(i) if item in stop_words]
+        new_ind = 1
+        for index in indexes[:-1]:
+            if phrase := tuple(i[index + 1:indexes[new_ind]]):
+                candidate_phrases.append(phrase)
+            new_ind += 1
+        if phrase := tuple(i[indexes[-1] + 1:]):
+            candidate_phrases.append(phrase)
+    return candidate_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
