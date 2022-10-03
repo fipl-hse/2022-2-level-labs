@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+import main
 
 
 def read_target_text(file_path: Path) -> str:
@@ -27,6 +28,9 @@ if __name__ == "__main__":
 
     # reading the text from which keywords are going to be extracted
     TARGET_TEXT_PATH_GENOME = ASSETS_PATH / 'genome_engineering.txt'
+    with open(TARGET_TEXT_PATH_GENOME, 'r', encoding='utf-8') as file:
+        target_text_genome = file.read()
+
     TARGET_TEXT_PATH_ALBATROSS = ASSETS_PATH / 'albatross.txt'
     TARGET_TEXT_PATH_PAIN_DETECTION = ASSETS_PATH / 'pain_detection.txt'
     TARGET_TEXT_PATH_GAGARIN = ASSETS_PATH / 'gagarin.txt'
@@ -38,6 +42,7 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
-
-    assert RESULT, 'Keywords are not extracted'
+    print(main.extract_phrases(target_text_genome))
+    # RESULT = None
+    #
+    # assert RESULT, 'Keywords are not extracted'
