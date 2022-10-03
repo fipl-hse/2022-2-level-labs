@@ -51,8 +51,9 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    phrases = extract_phrases(corpus['gagarin'])
-    print(phrases)
+    PHRASES = extract_phrases(corpus['gagarin'])
+    CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
+    print(CANDIDATE_KEYWORD_PHRASES)
 
     RESULT = None
 

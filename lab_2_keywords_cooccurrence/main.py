@@ -52,7 +52,15 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(phrases, list, str, not_empty=True) or not type_check(stop_words, list, str, not_empty=True):
+        return None
+    candidates = []
+    for phrase in phrases:
+        clean_phrase = phrase.lower().split()
+        splits = [-1] + [count for count, word in enumerate(clean_phrase) if word in stop_words] + [len(clean_phrase)]
+        candidates.extend([candidate for count, split in enumerate(splits[:-1])
+                           if (candidate := tuple(clean_phrase[split+1:splits[count+1]]))])
+    return candidates
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
