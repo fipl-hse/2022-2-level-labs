@@ -205,8 +205,9 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(keyword_phrases_with_scores, tuple, float) and
-            check_positive_int(top_n) and check_positive_int(max_length)):
+    if not (check_dict(keyword_phrases_with_scores, tuple, float)
+            and check_positive_int(top_n)
+            and check_positive_int(max_length)):
         return None
     top = sorted(keyword_phrases_with_scores.keys(),
                  key=lambda phrase: keyword_phrases_with_scores[phrase],
