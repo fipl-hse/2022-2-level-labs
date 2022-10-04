@@ -211,13 +211,13 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         return None
     top = sorted(keyword_phrases_with_scores.keys(),
                  key=lambda phrase: keyword_phrases_with_scores[phrase],
-                 reverse=True)[:top_n]
+                 reverse=True)
     top_str = []
     for phrase in top:
         if len(phrase) <= max_length:
             phrase = ' '.join(phrase)
             top_str.append(phrase)
-    return top_str
+    return top_str[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
