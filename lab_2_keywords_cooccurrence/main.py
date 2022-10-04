@@ -52,14 +52,14 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(phrases, list, str, not_empty=True) or not type_check(stop_words, list, str, not_empty=True):
+    if not type_check(phrases, list, not_empty=True) or not type_check(stop_words, list, not_empty=True):
         return None
     candidates = []
     for phrase in phrases:
         clean_phrase = phrase.lower().split()
         splits = [-1] + [count for count, word in enumerate(clean_phrase) if word in stop_words] + [len(clean_phrase)]
-        candidates.extend([candidate for count, split in enumerate(splits[:-1])
-                           if (candidate := tuple(clean_phrase[split+1:splits[count+1]]))])
+        candidates.extend(candidate for count, split in enumerate(splits[:-1])
+                          if (candidate := tuple(clean_phrase[split+1:splits[count+1]])))
     return candidates
 
 
@@ -71,10 +71,10 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, tuple, not_empty=True) \
-            or not all(type_check(candidate, tuple, str, not_empty=True) for candidate in candidate_keyword_phrases):
+    if not type_check(candidate_keyword_phrases, list, not_empty=True) \
+            or not all(type_check(candidate, tuple, not_empty=True) for candidate in candidate_keyword_phrases):
         return None
-    return {token: sum([look.count(token) for look in candidate_keyword_phrases])
+    return {token: sum(look.count(token) for look in candidate_keyword_phrases)
             for phrase in candidate_keyword_phrases for token in set(phrase)}
 
 
@@ -90,11 +90,10 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, tuple, not_empty=True) or \
-            not all(type_check(candidate, tuple, str, not_empty=True) for candidate in candidate_keyword_phrases) or \
-            not type_check(content_words, list, str, not_empty=True):
+    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
+            not type_check(content_words, list, not_empty=True):
         return None
-    return {token: sum([len(phrase) for phrase in candidate_keyword_phrases if token in phrase])
+    return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
             for token in content_words}
 
 
@@ -109,7 +108,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(word_degrees, dict, str, int, True) or not type_check(word_frequencies, dict, str, int, True) \
+    if not type_check(word_degrees, dict, not_empty=True) or not type_check(word_frequencies, dict, not_empty=True) \
             or not all(word_frequencies.get(token, False) for token in word_degrees):
         return None
     return {token: word_degrees[token] / word_frequencies[token] for token in word_degrees}
@@ -127,9 +126,8 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, tuple, not_empty=True) or \
-            not all(type_check(candidate, tuple, str, not_empty=True) for candidate in candidate_keyword_phrases) or \
-            not type_check(word_scores, dict, str, float, True) or \
+    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
+            not type_check(word_scores, dict, not_empty=True) or \
             not all(token in word_scores for phrase in candidate_keyword_phrases for token in phrase):
         return None
     return {phrase: sum(word_scores[token] for token in phrase) for phrase in candidate_keyword_phrases}
@@ -148,12 +146,11 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(keyword_phrases_with_scores, dict, tuple, float, True) \
-            or not all(type_check(phrase, tuple, str, not_empty=True) for phrase in keyword_phrases_with_scores) \
-            or not type_check(top_n, int) or not type_check(max_length, int) or max_length <= 0:
+    if not type_check(keyword_phrases_with_scores, dict, not_empty=True) \
+            or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
-    return sorted(list(item for item in keyword_phrases_with_scores if len(item) <= max_length), reverse=True,
-                  key=lambda phrase: keyword_phrases_with_scores[phrase])[:top_n]
+    return sorted(list(' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length),
+                  reverse=True, key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())])[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
