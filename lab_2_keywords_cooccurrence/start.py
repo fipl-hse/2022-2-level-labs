@@ -13,8 +13,8 @@ from lab_2_keywords_cooccurrence.main import (
     get_top_n,
     extract_candidate_keyword_phrases_with_adjoining,
     calculate_cumulative_score_for_candidates_with_stop_words,
-    generate_stop_words,
-    load_stop_words
+    # generate_stop_words,
+    # load_stop_words
 )
 
 

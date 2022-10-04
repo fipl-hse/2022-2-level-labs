@@ -10,22 +10,18 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def type_check(data: Any, expected: Any, content: Any = None, values: Any = None, not_empty: bool = False) -> bool:
+def type_check(data: Any, expected: Any, not_empty: bool = False) -> bool:
     """
-    Checks any type used in a program. Also works for types of lists' and dicts' content.
+    Checks any type used in a program.
     Parameters:
     data (Any): An object which type is checked
     expected (Any): A type we expect data to be
-    content (Any): A type we expect data's content (elements for lists or keys for dictionaries) to be (optional)
-    values (Any): A type we expect the values in a dictionary (if data is a dictionary) to be (optional)
     not_empty (bool): If expected is an str, a list or a dict, True stands for "it should not be empty" (optional)
     Returns:
-    bool: True if data (and its content if needed) has the expected type and emptiness, False otherwise
+    bool: True if data has the expected type and emptiness, False otherwise
     """
     return not (not isinstance(data, expected) or expected == int and isinstance(data, bool)) \
-        and not (expected in (str, list, tuple, dict) and not_empty and not data) \
-        and not (expected in (list, tuple, dict) and content and not all(type_check(item, content) for item in data)) \
-        and not (expected == dict and values and not all(type_check(value, values) for value in data.values()))
+        and not (expected in (str, list, tuple, dict) and not_empty and not data)
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -36,7 +32,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(text, str, not_empty=True):
+    if not type_check(text, str, True):
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
     return [clean for phrase in re.split(''.join(
@@ -52,7 +48,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(phrases, list, not_empty=True) or not type_check(stop_words, list, not_empty=True):
+    if not type_check(phrases, list, True) or not type_check(stop_words, list, True):
         return None
     candidates = []
     for phrase in phrases:
@@ -71,8 +67,8 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, not_empty=True) \
-            or not all(type_check(candidate, tuple, not_empty=True) for candidate in candidate_keyword_phrases):
+    if not type_check(candidate_keyword_phrases, list, True) \
+            or not all(type_check(candidate, tuple, True) for candidate in candidate_keyword_phrases):
         return None
     return {token: sum(look.count(token) for look in candidate_keyword_phrases)
             for phrase in candidate_keyword_phrases for token in set(phrase)}
@@ -90,8 +86,8 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
-            not type_check(content_words, list, not_empty=True):
+    if not type_check(candidate_keyword_phrases, list, True) or \
+            not type_check(content_words, list, True):
         return None
     return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
             for token in content_words}
@@ -108,7 +104,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(word_degrees, dict, not_empty=True) or not type_check(word_frequencies, dict, not_empty=True) \
+    if not type_check(word_degrees, dict, True) or not type_check(word_frequencies, dict, True) \
             or not all(word_frequencies.get(token, False) for token in word_degrees):
         return None
     return {token: word_degrees[token] / word_frequencies[token] for token in word_degrees}
@@ -126,8 +122,8 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
-            not type_check(word_scores, dict, not_empty=True) or \
+    if not type_check(candidate_keyword_phrases, list, True) or \
+            not type_check(word_scores, dict, True) or \
             not all(token in word_scores for phrase in candidate_keyword_phrases for token in phrase):
         return None
     return {phrase: sum(word_scores[token] for token in phrase) for phrase in candidate_keyword_phrases}
@@ -146,7 +142,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(keyword_phrases_with_scores, dict, not_empty=True) \
+    if not type_check(keyword_phrases_with_scores, dict, True) \
             or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
     return sorted(list(' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length),
@@ -173,8 +169,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
-            not type_check(phrases, list, not_empty=True):
+    if not type_check(candidate_keyword_phrases, list, True) or not type_check(phrases, list, True):
         return None
     possible_pairs = []
     for number1, sample in enumerate(candidate_keyword_phrases[:-3]):
@@ -208,9 +203,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
-            not type_check(word_scores, dict, not_empty=True) or \
-            not type_check(stop_words, list, not_empty=True):
+    if not type_check(candidate_keyword_phrases, list, True) or \
+            not type_check(word_scores, dict, True) or not type_check(stop_words, list, True):
         return None
     return {phrase: sum(word_scores[token] for token in phrase if token not in stop_words)
             for phrase in candidate_keyword_phrases}
