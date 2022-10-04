@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
 from string import punctuation
 
 KeyPhrase = tuple[str, ...]
@@ -14,7 +14,7 @@ def correct_sequence(variable: Sequence, type1: type, empty: bool) -> bool:
     """
     Checks the type of list and its elements
     """
-    if not isinstance(variable, list):
+    if not isinstance(variable, list) and not isinstance(variable, tuple):
         return False
     if not empty and not variable:
         return False
@@ -73,7 +73,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_sequence(candidate_keyword_phrases, tuple, False):
+        return None
+    freq_dict = {}
+    for phrase in candidate_keyword_phrases:
+        freq_dict |= {token: freq_dict[token] + 1 for token in phrase if token in freq_dict}
+        freq_dict |= {token: phrase.count(token) for token in phrase if token not in freq_dict}
+    return freq_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
