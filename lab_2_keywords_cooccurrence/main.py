@@ -32,9 +32,9 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(text, str):
+    if not (isinstance(text, str) and text):
         return None
-    separators = '[]{}()!?…,:;"\''
+    separators = ',;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—'
     for separator in separators:
         text = text.replace(separator, '.')
     split_text = text.split('.')
