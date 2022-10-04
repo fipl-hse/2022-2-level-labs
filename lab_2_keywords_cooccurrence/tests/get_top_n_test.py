@@ -50,7 +50,6 @@ class GetTopNTest(unittest.TestCase):
     @pytest.mark.mark8
     @pytest.mark.mark10
     def test_get_top_n_arg_top_n_too_large_max_len_is_limited(self):
-
         top_n = 1000000
         max_length = 3
         expected = ['времена союза прошли', 'важнейших задач', 'одной']
