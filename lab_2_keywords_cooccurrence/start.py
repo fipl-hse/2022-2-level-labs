@@ -57,7 +57,7 @@ if __name__ == "__main__":
     PHRASES = extract_phrases(corpus['gagarin'])
     if PHRASES:
         CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
-    if CANDIDATE_KEYWORD_PHRASES
+    if CANDIDATE_KEYWORD_PHRASES:
         WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
     if CANDIDATE_KEYWORD_PHRASES and WORD_FREQUENCIES:
         WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
