@@ -58,9 +58,10 @@ if __name__ == "__main__":
     WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
     KEYWORD_PHRASES_WITH_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
     TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, 10, 10)
-    CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING =\
+    CANDIDATES_WITH_ADJOINING =\
         extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
-
+    CUMULATIVE_SCORE_WITH_STOP_WORDS =\
+        calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATES_WITH_ADJOINING, WORD_SCORES, stop_words)
     ZUB_DAIU_VSYO_NORMALNO = True
     RESULT = ZUB_DAIU_VSYO_NORMALNO
 

@@ -208,7 +208,12 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
+            not type_check(word_scores, dict, not_empty=True) or \
+            not type_check(stop_words, list, not_empty=True):
+        return None
+    return {phrase: sum(word_scores[token] for token in phrase if token not in stop_words)
+            for phrase in candidate_keyword_phrases}
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
