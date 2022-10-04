@@ -9,7 +9,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_list(user_input: Any, elements_type: type, can_be_empty=True) -> bool:
+def check_list(user_input: Any, elements_type: type, can_be_empty=False) -> bool:
     """
     Checks weather object is list
     that contains objects of certain type
@@ -55,7 +55,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(phrases, str) and check_list(stop_words, str, False)):
+    if not (check_list(phrases, str) and check_list(stop_words, str)):
         return None
     tuples_candidate_phrases = []
     candidate_phrases = []
