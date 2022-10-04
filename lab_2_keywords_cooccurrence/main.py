@@ -5,6 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
+import json
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -171,19 +172,16 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list, True) or not type_check(phrases, list, True):
         return None
-    possible_pairs = list(set(tuple((sample, candidate_keyword_phrases[number1+1]))
-                              for number1, sample in enumerate(candidate_keyword_phrases[:-3])  # проверить индекс
-                              for number2, phrase in enumerate(candidate_keyword_phrases[number1+2:-1])
-                              if phrase == sample
-                              and candidate_keyword_phrases[number2 + 1] == candidate_keyword_phrases[number1 + 1]))
-    possible_phrases = []
-    for pair in possible_pairs:
-        len1, len2 = len(pair[0]), len(pair[1])
-        for item in phrases:
-            phrase = tuple(item.lower().split())
-            for index in range(len(phrase[:-(len1+len2)])):
-                if phrase[index:index+len1] == pair[0] and phrase[index+len1+1:index+len1+len2+1] == pair[1]:
-                    possible_phrases.append(phrase[index:index+len1+len2+1])
+    possible_pairs = set(tuple((sample, candidate_keyword_phrases[marker1+1]))
+                         for marker1, sample in enumerate(candidate_keyword_phrases[:-3])
+                         for marker2, phrase in enumerate(candidate_keyword_phrases[marker1+2:-1])
+                         if phrase == sample
+                         and candidate_keyword_phrases[marker2 + 1] == candidate_keyword_phrases[marker1 + 1])
+    possible_phrases = [phrase[index:index+len1+len2+1]
+                        for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
+                        for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
+                        for index in range(len(phrase[:-(len1 + len2)]))
+                        if phrase[index:index+len1] == pair[0] and phrase[index+len1+1:index+len1+len2+1] == pair[1]]
     return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
@@ -226,4 +224,8 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not type_check(path, Path, True):
+        return None
+    with open(path, 'r', encoding='utf-8') as file:
+        stop_words = json.load(file)
+    return stop_words

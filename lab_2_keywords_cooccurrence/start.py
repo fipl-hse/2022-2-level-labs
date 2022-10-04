@@ -14,7 +14,7 @@ from lab_2_keywords_cooccurrence.main import (
     extract_candidate_keyword_phrases_with_adjoining,
     calculate_cumulative_score_for_candidates_with_stop_words,
     # generate_stop_words,
-    # load_stop_words
+    load_stop_words
 )
 
 
@@ -52,7 +52,7 @@ if __name__ == "__main__":
     }
 
     CANDIDATE_KEYWORD_PHRASES, WORD_FREQUENCIES, WORD_DEGREES, WORD_SCORES, KEYWORD_PHRASES_WITH_SCORES,\
-        CANDIDATES_WITH_ADJOINING = [None for not_undefined in range(6)]
+        CANDIDATES_ADJOINED = [None for not_undefined in range(6)]
 
     PHRASES = extract_phrases(corpus['gagarin'])
     if PHRASES:
@@ -73,6 +73,8 @@ if __name__ == "__main__":
     if CANDIDATES_ADJOINED and WORD_SCORES:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = \
             calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATES_ADJOINED, WORD_SCORES, stop_words)
+
+    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
     RESULT = True
 
