@@ -52,7 +52,7 @@ if __name__ == "__main__":
     }
 
     CANDIDATE_KEYWORD_PHRASES, WORD_FREQUENCIES, WORD_DEGREES, WORD_SCORES, KEYWORD_PHRASES_WITH_SCORES,\
-    CANDIDATES_WITH_ADJOINING = [None for not_undefined in range(6)]
+        CANDIDATES_WITH_ADJOINING = [None for not_undefined in range(6)]
 
     PHRASES = extract_phrases(corpus['gagarin'])
     if PHRASES:
@@ -68,11 +68,11 @@ if __name__ == "__main__":
     if KEYWORD_PHRASES_WITH_SCORES:
         TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, 10, 10)
     if CANDIDATE_KEYWORD_PHRASES and PHRASES:
-        CANDIDATES_WITH_ADJOINING = \
-        extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
-    if CANDIDATES_WITH_ADJOINING and WORD_SCORES:
+        CANDIDATES_ADJOINED = \
+            extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
+    if CANDIDATES_ADJOINED and WORD_SCORES:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = \
-        calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATES_WITH_ADJOINING, WORD_SCORES, stop_words)
+            calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATES_ADJOINED, WORD_SCORES, stop_words)
 
     RESULT = True
 
