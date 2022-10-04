@@ -3,10 +3,31 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
+
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+def check_str(user_input: Any) -> bool:
+    """
+    Checks if the input is a string and it is not empty
+    """
+    if not user_input or not isinstance(user_input, str):
+        return False
+    return True
+
+def check_list(user_input: Any, required_type: type) -> bool:
+    """
+    Checks if the input is a Sequence
+    and it is not empty
+    """
+    if not user_input or not isinstance(user_input, Sequence):
+        return False
+    for element in user_input:
+        if not isinstance(element, required_type):
+            return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
