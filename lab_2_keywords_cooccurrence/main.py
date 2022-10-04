@@ -173,7 +173,24 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not type_check(candidate_keyword_phrases, list, not_empty=True) or \
+            not type_check(phrases, list, not_empty=True):
+        return None
+    possible_pairs = []
+    for number1, sample in enumerate(candidate_keyword_phrases[:-3]):
+        for number2, phrase in enumerate(candidate_keyword_phrases[number1+2:-1]):
+            if phrase == sample and candidate_keyword_phrases[number2+1] == candidate_keyword_phrases[number1+1] \
+                    and (pair := tuple((sample, candidate_keyword_phrases[number1+1]))) not in possible_pairs:
+                possible_pairs.append(pair)
+    possible_phrases = []
+    for pair in possible_pairs:
+        len1, len2 = len(pair[0]), len(pair[1])
+        for item in phrases:
+            phrase = tuple(item.lower().split())
+            for index in range(len(phrase[:-(len1+len2)])):
+                if phrase[index:index+len1] == pair[0] and phrase[index+len1+1:index+len1+len2+1] == pair[1]:
+                    possible_phrases.append(phrase[index:index+len1+len2+1])
+    return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
