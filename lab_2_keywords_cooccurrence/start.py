@@ -4,7 +4,12 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
-                                              extract_candidate_keyword_phrases)
+                                              extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores,
+                                              calculate_cumulative_score_for_candidates,
+                                              get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -40,8 +45,25 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    candidates, content_words, word_degrees, word_scores, cumulative_score = [None for notdef in range(5)]
+
     extracted_phrases = extract_phrases(corpus['gagarin'])
     if extracted_phrases:
-        RESULT = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+        candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+
+    if candidates:
+        content_words = calculate_frequencies_for_content_words(candidates)
+
+    if content_words and candidates:
+        word_degrees = calculate_word_degrees(candidates, content_words)
+
+    if word_degrees and content_words:
+        word_scores = calculate_word_scores(word_degrees, content_words)
+
+    if word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
+
+    RESULT = get_top_n(cumulative_score, 3, 5)
+    print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'

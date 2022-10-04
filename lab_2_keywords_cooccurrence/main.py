@@ -24,6 +24,34 @@ def check_list(user_input: Any, elements_type: type, can_be_empty=False) -> bool
     return True
 
 
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty=False) -> bool:
+    """
+    Checks weather object is dictionary
+    hat has keys and values of certain type
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input and can_be_empty is False:
+        return False
+    for key, value in user_input.items():
+        if not (isinstance(key, key_type) and isinstance(value, value_type)):
+            return False
+    return True
+
+
+def check_positive_int(user_input: Any) -> bool:
+    """
+    Checks weather object is int (not bool)
+    """
+    if not isinstance(user_input, int):
+        return False
+    if isinstance(user_input, bool):
+        return False
+    if user_input <= 0:
+        return False
+    return True
+
+
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -84,7 +112,14 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple):
+        return None
+    tokens = []
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            tokens.append(word)
+    freq_dict = {token: tokens.count(token) for token in set(tokens)}
+    return freq_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -99,7 +134,18 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple) and check_dict(content_words, str, int)):
+        return None
+    word_degrees_dict = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in word_degrees_dict:
+                word_degrees_dict[word] += len(phrase)
+            else:
+                word_degrees_dict[word] = len(phrase)
+            if word not in content_words:
+                word_degrees_dict[word] = 0
+    return word_degrees_dict
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -113,7 +159,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(word_degrees, str, int) and check_dict(word_frequencies, str, int)):
+        return None
+    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -128,7 +176,14 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple) and check_dict(word_scores, str, float)):
+        return None
+    cumulative_score_dict = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_score_dict[phrase] = 0
+        for word in phrase:
+            cumulative_score_dict[phrase] += word_scores[word]
+    return cumulative_score_dict
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -144,7 +199,18 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(keyword_phrases_with_scores, tuple, float) and
+            check_positive_int(top_n) and check_positive_int(max_length)):
+        return None
+    top = sorted(keyword_phrases_with_scores.keys(),
+                 key=lambda phrase: keyword_phrases_with_scores[phrase],
+                 reverse=True)[:top_n]
+    top_str = []
+    for phrase in top:
+        if len(phrase) <= max_length:
+            phrase = ' '.join(phrase)
+            top_str.append(phrase)
+    return top_str
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
