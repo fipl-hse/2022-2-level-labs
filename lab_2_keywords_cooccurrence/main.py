@@ -55,7 +55,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(phrases, str) and check_list(stop_words, str)):
+    if not (check_list(phrases, str) and check_list(stop_words, str, False)):
         return None
     tuples_candidate_phrases = []
     candidate_phrases = []
