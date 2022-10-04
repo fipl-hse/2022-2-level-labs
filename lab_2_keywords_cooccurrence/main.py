@@ -134,7 +134,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple) and check_dict(content_words, str, int)):
+    if not (check_list(candidate_keyword_phrases, tuple) and check_list(content_words, str)):
         return None
     word_degrees_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -159,7 +159,8 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(word_degrees, str, int) and check_dict(word_frequencies, str, int)):
+    if not (check_dict(word_degrees, str, int) and check_dict(word_frequencies, str, int)
+            and word_degrees.keys() == word_frequencies.keys()):
         return None
     return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
 
@@ -182,6 +183,8 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in candidate_keyword_phrases:
         cumulative_score_dict[phrase] = 0
         for word in phrase:
+            if word not in word_scores:
+                return None
             cumulative_score_dict[phrase] += word_scores[word]
     return cumulative_score_dict
 
