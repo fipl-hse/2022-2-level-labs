@@ -76,6 +76,31 @@ if __name__ == "__main__":
 
     STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
+    # for polish text
+    PHRASES = extract_phrases(read_target_text(ASSETS_PATH / 'polish.txt'))
+    if PHRASES:
+        CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, STOP_WORDS['pl'])
+    if CANDIDATE_KEYWORD_PHRASES:
+        WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+    if CANDIDATE_KEYWORD_PHRASES and WORD_FREQUENCIES:
+        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
+    if WORD_DEGREES and WORD_FREQUENCIES:
+        WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
+    if CANDIDATE_KEYWORD_PHRASES and WORD_SCORES:
+        KEYWORD_PHRASES_WITH_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
+    if KEYWORD_PHRASES_WITH_SCORES:
+        TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, 10, 10)
+    if CANDIDATE_KEYWORD_PHRASES and PHRASES:
+        CANDIDATES_ADJOINED = \
+            extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
+    if CANDIDATES_ADJOINED and WORD_SCORES:
+        CUMULATIVE_SCORE_WITH_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(
+            CANDIDATES_ADJOINED, WORD_SCORES, STOP_WORDS['pl'])
+    else:
+        CUMULATIVE_SCORE_WITH_STOP_WORDS = {}
+    FINAL_CUMULATIVE_SCORE = KEYWORD_PHRASES_WITH_SCORES | CUMULATIVE_SCORE_WITH_STOP_WORDS
+    print(FINAL_CUMULATIVE_SCORE)
+
     RESULT = True
 
     assert RESULT, 'Keywords are not extracted'

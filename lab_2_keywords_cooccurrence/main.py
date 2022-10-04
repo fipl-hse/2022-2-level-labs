@@ -215,7 +215,14 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not type_check(text, str, True) or not type_check(max_length, int) or max_length <= 0:
+        return None
+    punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
+    tokens = re.sub(''.join(
+        (punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), '', text).lower().split()
+    frequencies = {token: tokens.count(token) for token in set(tokens)}
+    percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
+    return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -227,5 +234,5 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not type_check(path, Path, True):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        stop_words = json.load(file)
+        stop_words = dict(json.load(file))
     return stop_words
