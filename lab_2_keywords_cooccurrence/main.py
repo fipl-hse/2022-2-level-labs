@@ -171,7 +171,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_dict(keyword_phrases_with_scores, tuple, int, False) \
+    if not correct_dict(keyword_phrases_with_scores, tuple, float, False) \
             or not isinstance(top_n, int) or not isinstance(max_length, int) or max_length <= 0 or top_n <= 0:
         return None
     sorted_keys = sorted(list(key for key in keyword_phrases_with_scores.keys() if len(key) <= max_length),
