@@ -2,27 +2,46 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
-from typing import Optional, Union, Any
+from typing import Optional, Union, Any, Type
 from math import log
 
 
-def check_list_and_dict(check_object: Any, object_type: Any, token_type: Any, value_type: Any = None,
-                        can_be_empty: bool = True) -> bool:
+def check_type_and_emptiness(check_object: Any, check_type: Type[Any], can_be_empty: bool = True) -> bool:
+    """
+    Checks if object's type matches required type.
+    Checks if the object is empty if necessary.
+    """
+    if not isinstance(check_object, check_type):
+        return False
+    if not check_object and not can_be_empty:
+        return False
+    return True
+
+
+def check_list(check_object: Any, token_type: Type[Any], can_be_empty: bool = True) -> bool:
     """
     Checks if an object is a list or a dictionary and checks types of its elements.
     Checks if the object is empty if necessary.
     """
-    if not isinstance(check_object, object_type):
-        return False
-    if not check_object and not can_be_empty:
+    if not check_type_and_emptiness(check_object, list, can_be_empty):
         return False
     for i in check_object:
         if not isinstance(i, token_type):
             return False
-    if object_type == dict:
-        for i in check_object.values():
-            if not isinstance(i, value_type):
-                return False
+    return True
+
+
+def check_dict(check_object: Any, key_type: Type[Any], value_type: Type[Any],
+               can_be_empty: bool = True) -> bool:
+    """
+    Checks if an object is a dictionary and checks types of its keys and values.
+    Checks if the object is empty if necessary.
+    """
+    if not check_type_and_emptiness(check_object, dict, can_be_empty):
+        return False
+    for k, v in check_object.items():
+        if not isinstance(k, key_type) or not isinstance(v, value_type):
+            return False
     return True
 
 
@@ -73,8 +92,8 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(tokens, list, str, can_be_empty=False) or not check_list_and_dict(
-            stop_words, list, str):
+    if not check_list(tokens, str, can_be_empty=False) or not check_list(
+            stop_words, str):
         return None
     res_tokens = []
     for i in tokens:
@@ -95,7 +114,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(tokens, list, str, can_be_empty=False):
+    if not check_list(tokens, str, can_be_empty=False):
         return None
     frequencies = {}
     for i in tokens:
@@ -121,7 +140,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(frequencies, dict, str, (int, float), False) or not check_int(top):
+    # noinspection PyTypeChecker
+    if not check_dict(frequencies, str, (int, float), False) or not check_int(top):
         return None
     top_n = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)[:top]
     return top_n
@@ -140,7 +160,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(frequencies, dict, str, int, False):
+    if not check_dict(frequencies, str, int, False):
         return None
     tf_dict = {}
     for i in frequencies.keys():
@@ -163,8 +183,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(term_freq, dict, str, float, False) or not check_list_and_dict(
-            idf, dict, str, float):
+    if not check_dict(term_freq, str, float, False) or not check_dict(idf, str, float):
         return None
     tfidf = {}
     for i in term_freq.keys():
@@ -193,8 +212,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(doc_freqs, dict, str, int, False) or not check_list_and_dict(
-            corpus_freqs, dict, str, int):
+    if not check_dict(doc_freqs, str, int, False) or not check_dict(corpus_freqs, str, int):
         return None
     expected = {}
     for i in doc_freqs.keys():
@@ -226,8 +244,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(expected, dict, str, float, False) or not check_list_and_dict(
-            observed, dict, str, int, False):
+    if not check_dict(expected, str, float, False) or not check_dict(observed, str, int, False):
         return None
     chi_values = {}
     for i in expected.keys():
@@ -252,8 +269,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list_and_dict(chi_values, dict, str, float, False) or not isinstance(
-            alpha, float):
+    if not check_dict(chi_values, str, float, False) or not isinstance(alpha, float):
         return None
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
     if alpha not in criterion.keys():
