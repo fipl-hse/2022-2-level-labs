@@ -51,18 +51,29 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    CANDIDATE_KEYWORD_PHRASES, WORD_FREQUENCIES, WORD_DEGREES, WORD_SCORES, KEYWORD_PHRASES_WITH_SCORES,\
+    CANDIDATES_WITH_ADJOINING = [None for not_undefined in range(6)]
+
     PHRASES = extract_phrases(corpus['gagarin'])
-    CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
-    WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
-    WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
-    WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
-    KEYWORD_PHRASES_WITH_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
-    TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, 10, 10)
-    CANDIDATES_WITH_ADJOINING =\
+    if PHRASES:
+        CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
+    if CANDIDATE_KEYWORD_PHRASES
+        WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+    if CANDIDATE_KEYWORD_PHRASES and WORD_FREQUENCIES:
+        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
+    if WORD_DEGREES and WORD_FREQUENCIES:
+        WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
+    if CANDIDATE_KEYWORD_PHRASES and WORD_SCORES:
+        KEYWORD_PHRASES_WITH_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
+    if KEYWORD_PHRASES_WITH_SCORES:
+        TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, 10, 10)
+    if CANDIDATE_KEYWORD_PHRASES and PHRASES:
+        CANDIDATES_WITH_ADJOINING = \
         extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
-    CUMULATIVE_SCORE_WITH_STOP_WORDS =\
+    if CANDIDATES_WITH_ADJOINING and WORD_SCORES:
+        CUMULATIVE_SCORE_WITH_STOP_WORDS = \
         calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATES_WITH_ADJOINING, WORD_SCORES, stop_words)
-    ZUB_DAIU_VSYO_NORMALNO = True
-    RESULT = ZUB_DAIU_VSYO_NORMALNO
+
+    RESULT = True
 
     assert RESULT, 'Keywords are not extracted'

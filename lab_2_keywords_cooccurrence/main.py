@@ -171,12 +171,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list, True) or not type_check(phrases, list, True):
         return None
-    possible_pairs = []
-    for number1, sample in enumerate(candidate_keyword_phrases[:-3]):
-        for number2, phrase in enumerate(candidate_keyword_phrases[number1+2:-1]):
-            if phrase == sample and candidate_keyword_phrases[number2+1] == candidate_keyword_phrases[number1+1] \
-                    and (pair := tuple((sample, candidate_keyword_phrases[number1+1]))) not in possible_pairs:
-                possible_pairs.append(pair)
+    possible_pairs = list(set(tuple((sample, candidate_keyword_phrases[number1+1]))
+                              for number1, sample in enumerate(candidate_keyword_phrases[:-3])  # проверить индекс
+                              for number2, phrase in enumerate(candidate_keyword_phrases[number1+2:-1])
+                              if phrase == sample
+                              and candidate_keyword_phrases[number2 + 1] == candidate_keyword_phrases[number1 + 1]))
     possible_phrases = []
     for pair in possible_pairs:
         len1, len2 = len(pair[0]), len(pair[1])
