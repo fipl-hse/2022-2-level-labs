@@ -94,7 +94,17 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_sequence(candidate_keyword_phrases, tuple, False) \
+            or not correct_sequence(content_words, str, False):
+        return None
+    word_degree = {}
+    for word in content_words:
+        for i in candidate_keyword_phrases:
+            if word in i:
+                word_degree |= {word: len(i) if word not in word_degree.keys() else word_degree[word] + len(i)}
+        if word not in word_degree.keys():
+            word_degree[word] = 0
+    return word_degree
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
