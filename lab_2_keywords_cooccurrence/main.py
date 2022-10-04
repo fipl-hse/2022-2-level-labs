@@ -24,6 +24,20 @@ def correct_sequence(variable: Sequence, type1: type, empty: bool) -> bool:
     return True
 
 
+def correct_dict(variable, type1: type, type2: type, empty: bool) -> bool:
+    """
+    Checks the type of dict, keys and values
+    """
+    if not isinstance(variable, dict):
+        return False
+    if not empty and not variable:
+        return False
+    for key, value in variable.items():
+        if not isinstance(key, type1) or not isinstance(value, type2):
+            return False
+    return True
+
+
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -118,7 +132,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_dict(word_degrees, str, int, False) or not correct_dict(word_frequencies, str, int, False) \
+            or not all([word_frequencies.get(word) for word in word_degrees.keys()]):
+        return None
+    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -133,7 +150,12 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_sequence(candidate_keyword_phrases, tuple, False) \
+            or not correct_dict(word_scores, str, float, False) or not all([word_scores.get(word) for phrase in
+                                                                            candidate_keyword_phrases for word in
+                                                                            phrase]):
+        return None
+    return {phrase: int(sum(word_scores[word] for word in phrase)) for phrase in candidate_keyword_phrases}
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -149,7 +171,12 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_dict(keyword_phrases_with_scores, tuple, int, False) \
+            or not isinstance(top_n, int) or not isinstance(max_length, int) or max_length <= 0 or top_n <= 0:
+        return None
+    sorted_keys = sorted(list(key for key in keyword_phrases_with_scores.keys() if len(key) <= max_length),
+                         reverse=True, key=lambda phrase: keyword_phrases_with_scores[phrase])[:top_n]
+    return [" ".join(item) for item in sorted_keys]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
