@@ -238,9 +238,14 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
 
 def process_text(text: str, stop_words: Sequence[str] = None, max_length: int = None) \
         -> Optional[Mapping[KeyPhrase, float]]:
-
+    """
+    Uses previous functions to process a text and extract key phrases.
+    Accepts raw text and a list of stop words (or a maximum length of a stop word if they have to be generated
+    from the text).
+    Returns extracted key phrases or None if something goes wrong.
+    """
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
-        candidates_adjoined, cumulative_score_with_stop_words, final_cumulative_score = \
+        candidates_adjoined, cumulative_score_with_stop_words = \
         [None for not_undefined in range(8)]
     phrases = extract_phrases(text)
     if not stop_words and max_length:
