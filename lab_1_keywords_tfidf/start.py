@@ -7,7 +7,11 @@ from lab_1_keywords_tfidf.main import (
     clean_and_tokenize,
     remove_stop_words,
     calculate_frequencies,
-    get_top_n
+    get_top_n,
+    calculate_tf,
+    calculate_tfidf,
+    calculate_expected_frequency,
+    calculate_chi_values
 )
 
 if __name__ == "__main__":
@@ -36,18 +40,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
+    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
+    tokenization = clean_and_tokenize(target_text)
 
-def clean_and_tokenize(text: str) -> list[str]:
-    if not isinstance(text, str):
-        return None
-    punctuation = '''!"#$%&'()*+,-./:;<=>?@[//]^_`{|}~'''
-    my_text = ''
-    for char in text.lower().replace('/n', ''):
-        if char not in punctuation:
-            my_text += char
-    return my_text.split()
+    if tokenization:
+        no_stop_words = remove_stop_words(tokenization, stop_words)
 
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
 
-    RESULT = None
+    if freq_dict:
+        tf_dict = calculate_tf(freq_dict)
+
+    if freq_dict and tf_dict:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
+
+    if tfidf_dict and freq_dict:
+        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
+
+    if exp_freq_dict and freq_dict:
+        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
+
+    if chi_dict:
+        RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
