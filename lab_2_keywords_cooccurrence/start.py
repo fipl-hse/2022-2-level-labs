@@ -70,7 +70,7 @@ if __name__ == "__main__":
     if WORD_DEGREE and FREQUENCIES:
         WORD_SCORE = calculate_word_scores(WORD_DEGREE, FREQUENCIES)
 
-    if WORD_SCORE:
+    if WORD_SCORE and CANDIDATE_KEYWORD_PHRASES:
         SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
 
     if SCORE_FOR_CANDIDATES:
