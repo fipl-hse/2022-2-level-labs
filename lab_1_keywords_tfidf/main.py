@@ -6,7 +6,7 @@ from typing import Optional, Union, Any
 from math import log
 
 
-def check_list(user_input: Any, elements_type: type, can_be_empty=False) -> bool:
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool = False) -> bool:
     """
     Checks weather object is list
     that contains objects of certain type
@@ -21,7 +21,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty=False) -> bool
     return True
 
 
-def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty=False) -> bool:
+def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool = False) -> bool:
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
