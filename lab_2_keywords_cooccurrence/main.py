@@ -246,7 +246,7 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     """
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
         candidates_adjoined, cumulative_score_with_stop_words = \
-        [None for not_undefined in range(8)]
+        [None for not_undefined in range(7)]
     phrases = extract_phrases(text)
     if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
         stop_words = stop_words_generated
