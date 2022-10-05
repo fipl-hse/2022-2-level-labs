@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping
 from string import punctuation
 
 KeyPhrase = tuple[str, ...]
@@ -46,8 +46,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or not text:
         return None
     new_punctuation = punctuation + "¡¿…⋯‹›«»“”⟨⟩–—"
-    for sp in new_punctuation:
-        text = text.replace(sp, ",")
+    for punctuation_mark in new_punctuation:
+        text = text.replace(punctuation_mark, ",")
     return [word for word in [word.strip() for word in text.split(",")] if word]
 
 
@@ -199,7 +199,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not correct_sequence(candidate_keyword_phrases, tuple, False) or not correct_sequence(phrases, str, False):
         return None
     join_phrases = [" ".join(phrase) for phrase in candidate_keyword_phrases]
-    new_phrases = tuple([tuple((join_phrases[ind: ind + 2])) for ind in range(len(join_phrases))])
+    new_phrases = [tuple((join_phrases[ind: ind + 2])) for ind in range(len(join_phrases))]
     freq_dict = {token: new_phrases.count(token) for token in new_phrases}
     new_candidates = []
     for key in freq_dict.keys():
