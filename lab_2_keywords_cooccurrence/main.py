@@ -87,8 +87,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True) or \
-            not type_check(content_words, list, True):
+    if not type_check(candidate_keyword_phrases, list, True) or not type_check(content_words, list, True):
         return None
     return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
             for token in content_words}
@@ -234,5 +233,4 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not type_check(path, Path, True):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        stop_words = dict(json.load(file))
-    return stop_words
+        return dict(json.load(file))
