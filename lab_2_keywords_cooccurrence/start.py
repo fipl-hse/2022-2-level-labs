@@ -66,7 +66,7 @@ if __name__ == "__main__":
 
     UNKNOWN_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'unknown.txt'), max_length=8)
     if UNKNOWN_PROCESSED:
-        print(get_top_n(UNKNOWN_PROCESSED, 10, 5))
+        print(get_top_n(UNKNOWN_PROCESSED, 10, 5))  # эсперанто
 
     RESULT = True
 

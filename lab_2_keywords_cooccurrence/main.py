@@ -68,11 +68,10 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True) \
-            or not all(type_check(candidate, tuple, True) for candidate in candidate_keyword_phrases):
+    if not type_check(candidate_keyword_phrases, list, True):
         return None
     return {token: sum(look.count(token) for look in candidate_keyword_phrases)
-            for phrase in candidate_keyword_phrases for token in set(phrase)}
+            for phrase in set(candidate_keyword_phrases) for token in set(phrase)}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
