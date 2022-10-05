@@ -6,7 +6,7 @@ from typing import Optional, Union, Any
 from math import log
 
 
-def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+def check_list(user_input: Any, elements_type: type, can_be_empty=False) -> bool:
     """
     Checks weather object is list
     that contains objects of certain type
@@ -21,7 +21,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty=False) -> bool:
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
@@ -94,7 +94,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     In case of corrupt input arguments, None is returned
     """
     my_tokens = []
-    if not (check_list(tokens, str, False) and check_list(stop_words, str, True)):
+    if not (check_list(tokens, str) and check_list(stop_words, str, True)):
         return None
     for token in tokens:
         if token not in stop_words:
@@ -114,7 +114,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(tokens, str, False):
+    if not check_list(tokens, str):
         return None
     if tokens:
         my_dict = {token: tokens.count(token) for token in tokens}
@@ -136,7 +136,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    checking_dict = check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)
+    checking_dict = check_dict(frequencies, str, int) or check_dict(frequencies, str, float)
     if not (checking_dict and check_positive_int(top)):
         return None
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
@@ -155,7 +155,7 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_dict(frequencies, str, int, False):
+    if not check_dict(frequencies, str, int):
         return None
     sum_freq = sum(frequencies.values())
     tf_dict = {word: (frequency / sum_freq) for word, frequency in frequencies.items()}
@@ -176,7 +176,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True)):
+    if not (check_dict(term_freq, str, float) and check_dict(idf, str, float, True)):
         return None
     tfidf_dict = {}
     for word in term_freq.keys():
@@ -200,7 +200,7 @@ def calculate_expected_frequency(
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, True)):
+    if not (check_dict(doc_freqs, str, int) and check_dict(corpus_freqs, str, int, True)):
         return None
     dict_exp_freqs = {}
     for word, freq in doc_freqs.items():
@@ -228,7 +228,7 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(expected, str, float, False) and check_dict(observed, str, int, False)):
+    if not (check_dict(expected, str, float) and check_dict(observed, str, int)):
         return None
     chi_dict = {}
     for word, freq in expected.items():
@@ -253,7 +253,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not (check_dict(chi_values, str, float, False) and check_float(alpha)\
+    if not (check_dict(chi_values, str, float) and check_float(alpha)\
             and alpha in criterion.keys()):
         return None
     significant_words_dict = {}

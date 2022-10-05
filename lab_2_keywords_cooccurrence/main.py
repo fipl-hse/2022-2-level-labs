@@ -3,53 +3,11 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping
+from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
-
-
-def check_list(user_input: Any, elements_type: type, can_be_empty=False) -> bool:
-    """
-    Checks weather object is list
-    that contains objects of certain type
-    """
-    if not isinstance(user_input, list):
-        return False
-    if not user_input and can_be_empty is False:
-        return False
-    for element in user_input:
-        if not isinstance(element, elements_type):
-            return False
-    return True
-
-
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty=False) -> bool:
-    """
-    Checks weather object is dictionary
-    hat has keys and values of certain type
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input and can_be_empty is False:
-        return False
-    for key, value in user_input.items():
-        if not (isinstance(key, key_type) and isinstance(value, value_type)):
-            return False
-    return True
-
-
-def check_positive_int(user_input: Any) -> bool:
-    """
-    Checks weather object is int (not bool)
-    """
-    if not isinstance(user_input, int):
-        return False
-    if isinstance(user_input, bool):
-        return False
-    if user_input <= 0:
-        return False
-    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
