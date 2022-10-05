@@ -39,8 +39,8 @@ def check_dict(check_object: Any, key_type: Type[Any], value_type: Type[Any],
     """
     if not check_type_and_emptiness(check_object, dict, can_be_empty):
         return False
-    for k, v in check_object.items():
-        if not isinstance(k, key_type) or not isinstance(v, value_type):
+    for key, value in check_object.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
     return True
 

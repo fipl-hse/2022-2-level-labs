@@ -42,8 +42,8 @@ def check_dict(check_object: Any, key_type: Type[Any], value_type: Type[Any],
     """
     if not check_type_and_emptiness(check_object, dict, can_be_empty):
         return False
-    for k, v in check_object.items():
-        if not isinstance(k, key_type) or not isinstance(v, value_type):
+    for key, value in check_object.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
             return False
     return True
 
@@ -82,8 +82,9 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or len(text) == 0:
         return None
+    punctuation_list = [',;:¡!¿?…⋯‹›«»\\\\"“”\\[\\]()⟨⟩}{&]|[-–~—]']
     for symbol in text:
-        if not symbol.isalnum() and not symbol == ' ' and not symbol == '\n':
+        if symbol in punctuation_list:
             text.replace(symbol, '.')
     text_list = text.split('.')
     phrases = []
