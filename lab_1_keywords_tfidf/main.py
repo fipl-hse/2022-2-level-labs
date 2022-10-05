@@ -8,6 +8,7 @@ import math
 from typing import Optional, Union, Any, Set, Dict, List, Tuple
 
 
+
 def for_i_empty_cheker(collection: Union[Set[Any], Dict[Any, Any], List[Any], Tuple[Any]]) -> bool:
     """
     Check if collection's items are False
