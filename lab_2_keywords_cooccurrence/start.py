@@ -53,7 +53,7 @@ if __name__ == "__main__":
     }
 
     CANDIDATE_KEYWORD_PHRASES, WORD_FREQUENCIES, WORD_DEGREES, WORD_SCORES, KEYWORD_PHRASES_WITH_SCORES,\
-        CANDIDATES_ADJOINED = [None for not_undefined in range(6)]
+        CANDIDATES_ADJOINED, POLISH_STOP_WORDS, FINAL_CUMULATIVE_SCORE = [None for not_undefined in range(8)]
 
     PHRASES = extract_phrases(corpus['gagarin'])
     if PHRASES:
@@ -78,7 +78,8 @@ if __name__ == "__main__":
     STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
     # for polish text
-    POLISH_STOP_WORDS = STOP_WORDS['pl']
+    if STOP_WORDS:
+        POLISH_STOP_WORDS = STOP_WORDS['pl']
     PHRASES = extract_phrases(read_target_text(ASSETS_PATH / 'polish.txt'))
     if PHRASES:
         CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, POLISH_STOP_WORDS)
@@ -100,14 +101,15 @@ if __name__ == "__main__":
             CANDIDATES_ADJOINED, WORD_SCORES, POLISH_STOP_WORDS)
     else:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = {}
-    FINAL_CUMULATIVE_SCORE = {**KEYWORD_PHRASES_WITH_SCORES, **CUMULATIVE_SCORE_WITH_STOP_WORDS}
+    if KEYWORD_PHRASES_WITH_SCORES and CUMULATIVE_SCORE_WITH_STOP_WORDS is not None:
+        FINAL_CUMULATIVE_SCORE = {**KEYWORD_PHRASES_WITH_SCORES, **CUMULATIVE_SCORE_WITH_STOP_WORDS}
     print(get_top_n(FINAL_CUMULATIVE_SCORE, 10, 3))
 
     # for unknown text
     TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
     PHRASES = extract_phrases(TEXT)
     UNKNOWN_STOP_WORDS = generate_stop_words(TEXT, 8)
-    if PHRASES:
+    if PHRASES and UNKNOWN_STOP_WORDS:
         CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, UNKNOWN_STOP_WORDS)
     if CANDIDATE_KEYWORD_PHRASES:
         WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
@@ -122,12 +124,13 @@ if __name__ == "__main__":
     if CANDIDATE_KEYWORD_PHRASES and PHRASES:
         CANDIDATES_ADJOINED = \
             extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
-    if CANDIDATES_ADJOINED and WORD_SCORES:
+    if CANDIDATES_ADJOINED and WORD_SCORES and UNKNOWN_STOP_WORDS:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(
             CANDIDATES_ADJOINED, WORD_SCORES, UNKNOWN_STOP_WORDS)
     else:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = {}
-    FINAL_CUMULATIVE_SCORE = {**KEYWORD_PHRASES_WITH_SCORES, **CUMULATIVE_SCORE_WITH_STOP_WORDS}
+    if KEYWORD_PHRASES_WITH_SCORES and CUMULATIVE_SCORE_WITH_STOP_WORDS is not None:
+        FINAL_CUMULATIVE_SCORE = {**KEYWORD_PHRASES_WITH_SCORES, **CUMULATIVE_SCORE_WITH_STOP_WORDS}
     print(get_top_n(FINAL_CUMULATIVE_SCORE, 10, 3))  # эсперанто
 
     RESULT = True
