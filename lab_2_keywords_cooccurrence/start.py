@@ -81,7 +81,7 @@ if __name__ == "__main__":
     if STOP_WORDS:
         POLISH_STOP_WORDS = STOP_WORDS['pl']
     PHRASES = extract_phrases(read_target_text(ASSETS_PATH / 'polish.txt'))
-    if PHRASES:
+    if PHRASES and POLISH_STOP_WORDS:
         CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, POLISH_STOP_WORDS)
     if CANDIDATE_KEYWORD_PHRASES:
         WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
@@ -96,14 +96,15 @@ if __name__ == "__main__":
     if CANDIDATE_KEYWORD_PHRASES and PHRASES:
         CANDIDATES_ADJOINED = \
             extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
-    if CANDIDATES_ADJOINED and WORD_SCORES:
+    if CANDIDATES_ADJOINED and WORD_SCORES and POLISH_STOP_WORDS:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(
             CANDIDATES_ADJOINED, WORD_SCORES, POLISH_STOP_WORDS)
     else:
         CUMULATIVE_SCORE_WITH_STOP_WORDS = {}
     if KEYWORD_PHRASES_WITH_SCORES and CUMULATIVE_SCORE_WITH_STOP_WORDS is not None:
         FINAL_CUMULATIVE_SCORE = {**KEYWORD_PHRASES_WITH_SCORES, **CUMULATIVE_SCORE_WITH_STOP_WORDS}
-    print(get_top_n(FINAL_CUMULATIVE_SCORE, 10, 3))
+    if FINAL_CUMULATIVE_SCORE:
+        print(get_top_n(FINAL_CUMULATIVE_SCORE, 10, 3))
 
     # for unknown text
     TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
@@ -131,7 +132,8 @@ if __name__ == "__main__":
         CUMULATIVE_SCORE_WITH_STOP_WORDS = {}
     if KEYWORD_PHRASES_WITH_SCORES and CUMULATIVE_SCORE_WITH_STOP_WORDS is not None:
         FINAL_CUMULATIVE_SCORE = {**KEYWORD_PHRASES_WITH_SCORES, **CUMULATIVE_SCORE_WITH_STOP_WORDS}
-    print(get_top_n(FINAL_CUMULATIVE_SCORE, 10, 3))  # эсперанто
+    if KEYWORD_PHRASES_WITH_SCORES:
+        print(get_top_n(FINAL_CUMULATIVE_SCORE, 10, 3))  # эсперанто
 
     RESULT = True
 
