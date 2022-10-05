@@ -56,12 +56,9 @@ if __name__ == "__main__":
     if PAIN_PROCESSED:
         print(get_top_n(PAIN_PROCESSED, 10, 5))
 
-    CANDIDATE_KEYWORD_PHRASES, WORD_FREQUENCIES, WORD_DEGREES, WORD_SCORES, KEYWORD_PHRASES_WITH_SCORES,\
-        CANDIDATES_ADJOINED, POLISH_STOP_WORDS, FINAL_CUMULATIVE_SCORE, POLISH_PROCESSED = \
-        [None for not_undefined in range(9)]
-
     STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
+    POLISH_PROCESSED = None
     if STOP_WORDS:
         POLISH_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'polish.txt'), STOP_WORDS['pl'])
     if POLISH_PROCESSED:

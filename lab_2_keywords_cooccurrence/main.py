@@ -236,7 +236,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return dict(json.load(file))
 
 
-def process_text(text: str, stop_words: Sequence[str] = None, max_length: int = None) \
+def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
         -> Optional[Mapping[KeyPhrase, float]]:
     """
     Uses previous functions to process a text and extract key phrases.
@@ -248,8 +248,8 @@ def process_text(text: str, stop_words: Sequence[str] = None, max_length: int = 
         candidates_adjoined, cumulative_score_with_stop_words = \
         [None for not_undefined in range(8)]
     phrases = extract_phrases(text)
-    if not stop_words and max_length:
-        stop_words = generate_stop_words(text, max_length)
+    if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
+        stop_words = stop_words_generated
     if phrases and stop_words:
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
     if candidate_keyword_phrases:
