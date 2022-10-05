@@ -24,7 +24,7 @@ def correct_sequence(variable: Sequence, type1: type, empty: bool) -> bool:
     return True
 
 
-def correct_dict(variable, type1: type, type2: type, empty: bool) -> bool:
+def correct_dict(variable, empty: bool) -> bool:
     """
     Checks the type of dict, keys and values
     """
@@ -32,9 +32,6 @@ def correct_dict(variable, type1: type, type2: type, empty: bool) -> bool:
         return False
     if not empty and not variable:
         return False
-    for key, value in variable.items():
-        if not isinstance(key, type1) or not isinstance(value, type2):
-            return False
     return True
 
 
@@ -51,7 +48,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     new_punctuation = punctuation + "¡¿…⋯‹›«»“”⟨⟩–—"
     for sp in new_punctuation:
         text = text.replace(sp, ",")
-    return [x for x in [x.strip() for x in text.split(",")] if x]
+    return [word for word in [word.strip() for word in text.split(",")] if word]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -66,15 +63,15 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     if not correct_sequence(phrases, str, False) or not correct_sequence(stop_words, str, False):
         return None
     candidate_phrases = []
-    new_list = [x.lower().split() for x in phrases]
-    for i in new_list:
-        indexes = [-1] + [index for index, item in enumerate(i) if item in stop_words]
+    new_list = [words.lower().split() for words in phrases]
+    for token in new_list:
+        indexes = [-1] + [index for index, item in enumerate(token) if item in stop_words]
         new_ind = 1
         for index in indexes[:-1]:
-            if phrase := tuple(i[index + 1:indexes[new_ind]]):
+            if phrase := tuple(token[index + 1:indexes[new_ind]]):
                 candidate_phrases.append(phrase)
             new_ind += 1
-        if phrase := tuple(i[indexes[-1] + 1:]):
+        if phrase := tuple(token[indexes[-1] + 1:]):
             candidate_phrases.append(phrase)
     return candidate_phrases
 
@@ -132,7 +129,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_dict(word_degrees, str, int, False) or not correct_dict(word_frequencies, str, int, False) \
+    if not correct_dict(word_degrees, False) or not correct_dict(word_frequencies, False) \
             or not all([word_frequencies.get(word) for word in word_degrees.keys()]):
         return None
     return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
@@ -151,9 +148,9 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     In case of corrupt input arguments, None is returned
     """
     if not correct_sequence(candidate_keyword_phrases, tuple, False) \
-            or not correct_dict(word_scores, str, float, False) or not all([word_scores.get(word) for phrase in
-                                                                            candidate_keyword_phrases for word in
-                                                                            phrase]):
+            or not correct_dict(word_scores, False) or not all([word_scores.get(word) for phrase in
+                                                                candidate_keyword_phrases for word in
+                                                                phrase]):
         return None
     return {phrase: int(sum(word_scores[word] for word in phrase)) for phrase in candidate_keyword_phrases}
 
@@ -171,7 +168,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_dict(keyword_phrases_with_scores, tuple, float, False) \
+    if not correct_dict(keyword_phrases_with_scores, False) \
             or not isinstance(top_n, int) or not isinstance(max_length, int) or max_length <= 0 or top_n <= 0:
         return None
     sorted_keys = sorted(list(key for key in keyword_phrases_with_scores.keys() if len(key) <= max_length),
@@ -199,7 +196,23 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_sequence(candidate_keyword_phrases, tuple, False) or not correct_sequence(phrases, str, False):
+        return None
+    join_phrases = [" ".join(phrase) for phrase in candidate_keyword_phrases]
+    new_phrases = tuple([tuple((join_phrases[ind: ind + 2])) for ind in range(len(join_phrases))])
+    freq_dict = {token: new_phrases.count(token) for token in new_phrases}
+    new_candidates = []
+    for key in freq_dict.keys():
+        if freq_dict[key] >= 2:
+            for token in [" ".join(list(key)).split()]:
+                for phrase in phrases:
+                    for ind in range(len(phrase)):
+                        with_stop = phrase.lower().split()[ind:ind + len(key[0].split()) + len(key[1].split()) + 1]
+                        if set(token).issubset(with_stop):
+                            new_candidates.append(tuple(with_stop))
+    for element in set(new_candidates):
+        new_candidates.remove(element)
+    return new_candidates
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -217,7 +230,11 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_sequence(candidate_keyword_phrases, tuple, False) \
+            or not correct_dict(word_scores, False) or not correct_sequence(stop_words, str, False):
+        return None
+    return {phrase: int(sum(word_scores[word] for word in phrase if word not in stop_words)) for phrase in
+            candidate_keyword_phrases}
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
