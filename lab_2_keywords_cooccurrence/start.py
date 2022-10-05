@@ -3,6 +3,17 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from lab_2_keywords_cooccurrence.main import (extract_phrases,
+                                              extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores,
+                                              calculate_cumulative_score_for_candidates,
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words,
+                                              generate_stop_words,
+                                              load_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -38,6 +49,8 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
+    phrases = extract_phrases(corpus['gagarin'])
+    extract_candidate_keyword_phrases(phrases, stop_words)
 
-    assert RESULT, 'Keywords are not extracted'
+    # RESULT = None
+    # assert RESULT, 'Keywords are not extracted'

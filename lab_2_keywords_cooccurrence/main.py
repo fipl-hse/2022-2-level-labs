@@ -3,10 +3,26 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
+import re
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks weather object is list
+    that contains objects of certain type
+    """
+    if not isinstance(user_input, list):
+        return False
+    if not user_input and not can_be_empty:
+        return False
+    for element in user_input:
+        if not isinstance(element, elements_type):
+            return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,7 +33,18 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str) or not text:
+        return None
+    punctuation_marks = '.;:¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'
+    for mark in punctuation_marks:
+        text = text.replace(mark, ',')
+    split_text = text.split(',')
+    phrases = []
+    for phrase in split_text:
+        phrase = phrase.strip()
+        if phrase:
+            phrases.append(phrase)
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +56,26 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
+        return None
+    candidates_list = []
+    for phrase in phrases:
+        phrase = phrase.lower().split()
+        candidate1 = []
+        for word in phrase:
+            if word in stop_words:
+                if candidate1:
+                    candidate2 = tuple(candidate1)
+                    candidates_list.append(candidate2)
+                    candidate1.clear()
+            elif word == phrase[len(phrase) - 1]:
+                candidate1.append(word)
+                candidate2 = tuple(candidate1)
+                candidates_list.append(candidate2)
+                candidate1.clear()
+            else:
+                candidate1.append(word)
+    return candidates_list
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
