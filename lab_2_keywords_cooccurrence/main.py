@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
 from string import punctuation
 
 KeyPhrase = tuple[str, ...]
@@ -24,7 +24,7 @@ def correct_sequence(variable: Sequence, type1: type, empty: bool) -> bool:
     return True
 
 
-def correct_dict(variable, empty: bool) -> bool:
+def correct_dict(variable: Any, empty: bool) -> bool:
     """
     Checks the type of dict, keys and values
     """
