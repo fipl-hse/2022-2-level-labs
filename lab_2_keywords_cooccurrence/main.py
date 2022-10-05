@@ -3,10 +3,73 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Type, Any
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def check_type_and_emptiness(check_object: Any, check_type: Type[Any], can_be_empty: bool = True) -> bool:
+    """
+    Checks if object's type matches required type.
+    Checks if the object is empty if necessary.
+    """
+    if not isinstance(check_object, check_type):
+        return False
+    if not check_object and not can_be_empty:
+        return False
+    return True
+
+
+def check_list(check_object: Any, token_type: Type[Any], can_be_empty: bool = True) -> bool:
+    """
+    Checks if an object is a list and checks types of its elements.
+    Checks if the object is empty if necessary.
+    """
+    if not check_type_and_emptiness(check_object, list, can_be_empty):
+        return False
+    for i in check_object:
+        if not isinstance(i, token_type):
+            return False
+    return True
+
+
+def check_dict(check_object: Any, key_type: Type[Any], value_type: Type[Any],
+               can_be_empty: bool = True) -> bool:
+    """
+    Checks if an object is a dictionary and checks types of its keys and values.
+    Checks if the object is empty if necessary.
+    """
+    if not check_type_and_emptiness(check_object, dict, can_be_empty):
+        return False
+    for k, v in check_object.items():
+        if not isinstance(k, key_type) or not isinstance(v, value_type):
+            return False
+    return True
+
+
+def check_tuple(check_object: Any, token_type: Type[Any], can_be_empty: bool = True) -> bool:
+    """
+    Checks if an object is a tuple and checks types of its elements.
+    Checks if the object is empty if necessary.
+    """
+    if not check_type_and_emptiness(check_object, tuple, can_be_empty):
+        return False
+    for i in check_object:
+        if not isinstance(i, token_type):
+            return False
+    return True
+
+
+def check_int(check_object: Any) -> bool:
+    """
+    Checks if an object is a positive integer.
+    """
+    if not isinstance(check_object, int) or isinstance(check_object, bool):
+        return False
+    if not check_object > 0:
+        return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,7 +80,18 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str) or len(text) == 0:
+        return None
+    for symbol in text:
+        if not symbol.isalnum() and not symbol == ' ' and not symbol == '\n':
+            text.replace(symbol, '.')
+    text_list = text.split('.')
+    phrases = []
+    for phrase in text_list:
+        phrase = phrase.strip()
+        if phrase:
+            phrases.append(phrase)
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +103,20 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(phrases, str, False) or not check_list(stop_words, str):
+        return None
+    candidate_keyword_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower().split()
+        candidate_keyword_phrase = []
+        for word in phrase:
+            if word not in stop_words:
+                candidate_keyword_phrase.append(word)
+            else:
+                if candidate_keyword_phrase:
+                    candidate_keyword_phrases.append(tuple(candidate_keyword_phrase))
+                candidate_keyword_phrase = []
+    return candidate_keyword_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -40,7 +127,18 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False):
+        return None
+    frequencies = {}
+    for phrase in candidate_keyword_phrases:
+        if not check_tuple(phrase, str, False):
+            return None
+        for word in phrase:
+            if word not in frequencies.keys():
+                frequencies[word] = 1
+            else:
+                frequencies[word] += 1
+    return frequencies
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,

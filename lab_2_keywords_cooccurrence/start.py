@@ -3,6 +3,8 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from lab_2_keywords_cooccurrence.main import extract_phrases, \
+    extract_candidate_keyword_phrases, calculate_frequencies_for_content_words
 
 
 def read_target_text(file_path: Path) -> str:
@@ -37,6 +39,16 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
+
+    candidate_keyword_phrases, frequencies = [None for i in range(2)]
+
+    phrases = extract_phrases(corpus['gagarin'])
+
+    if phrases:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+
+    if candidate_keyword_phrases:
+        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
 
     RESULT = None
 
