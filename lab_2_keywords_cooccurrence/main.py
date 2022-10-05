@@ -11,18 +11,17 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def type_check(data: Any, expected: Any, not_empty: bool = False) -> bool:
+def type_check(data: Any, expected: Any) -> bool:
     """
-    Checks any type used in a program.
+    Checks any type used in a program. For str, list, tuple and dict also checks if they are empty.
     Parameters:
     data (Any): An object which type is checked
     expected (Any): A type we expect data to be
-    not_empty (bool): If expected is an str, a list or a dict, True stands for "it should not be empty" (optional)
     Returns:
-    bool: True if data has the expected type and emptiness, False otherwise
+    bool: True if data has the expected type and not empty, False otherwise
     """
     return not (not isinstance(data, expected) or expected == int and isinstance(data, bool)) \
-        and not (expected in (str, list, tuple, dict) and not_empty and not data)
+        and not (expected in (str, list, tuple, dict) and not data)
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -33,7 +32,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(text, str, True):
+    if not type_check(text, str):
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
     return [clean for phrase in re.split(''.join(
@@ -49,7 +48,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(phrases, list, True) or not type_check(stop_words, list, True):
+    if not type_check(phrases, list) or not type_check(stop_words, list):
         return None
     candidates = []
     for phrase in phrases:
@@ -68,7 +67,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True):
+    if not type_check(candidate_keyword_phrases, list):
         return None
     return {token: sum(look.count(token) for look in candidate_keyword_phrases)
             for phrase in set(candidate_keyword_phrases) for token in set(phrase)}
@@ -86,7 +85,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True) or not type_check(content_words, list, True):
+    if not type_check(candidate_keyword_phrases, list) or not type_check(content_words, list):
         return None
     return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
             for token in content_words}
@@ -103,7 +102,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(word_degrees, dict, True) or not type_check(word_frequencies, dict, True) \
+    if not type_check(word_degrees, dict) or not type_check(word_frequencies, dict) \
             or not all(word_frequencies.get(token, False) for token in word_degrees):
         return None
     return {token: word_degrees[token] / word_frequencies[token] for token in word_degrees}
@@ -121,8 +120,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True) or \
-            not type_check(word_scores, dict, True) or \
+    if not type_check(candidate_keyword_phrases, list) or not type_check(word_scores, dict) or \
             not all(token in word_scores for phrase in candidate_keyword_phrases for token in phrase):
         return None
     return {phrase: sum(word_scores[token] for token in phrase) for phrase in candidate_keyword_phrases}
@@ -141,7 +139,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(keyword_phrases_with_scores, dict, True) \
+    if not type_check(keyword_phrases_with_scores, dict) \
             or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
     return sorted(list(' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length),
@@ -168,7 +166,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True) or not type_check(phrases, list, True):
+    if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
     possible_pairs = set(tuple((sample, candidate_keyword_phrases[marker1+1]))
                          for marker1, sample in enumerate(candidate_keyword_phrases[:-3])
@@ -198,8 +196,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not type_check(candidate_keyword_phrases, list, True) or \
-            not type_check(word_scores, dict, True) or not type_check(stop_words, list, True):
+    if not type_check(candidate_keyword_phrases, list) or \
+            not type_check(word_scores, dict) or not type_check(stop_words, list):
         return None
     return {phrase: sum(word_scores[token] for token in phrase if token not in stop_words)
             for phrase in candidate_keyword_phrases}
@@ -213,7 +211,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    if not type_check(text, str, True) or not type_check(max_length, int) or max_length <= 0:
+    if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
     tokens = re.sub(''.join(
@@ -229,7 +227,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    if not type_check(path, Path, True):
+    if not type_check(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
         return dict(json.load(file))
