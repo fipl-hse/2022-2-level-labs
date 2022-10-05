@@ -185,6 +185,9 @@ def calculate_expected_frequency(
     for token_in_doc in doc_freqs.keys():
         if not isinstance(token_in_doc, str):
             return None
+    for value_in_doc in doc_freqs.values():
+        if not isinstance(value_in_doc, int):
+            return None
 
     expected = {}
     for token, value in doc_freqs.items():
