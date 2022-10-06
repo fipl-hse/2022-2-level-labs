@@ -267,4 +267,4 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not isinstance(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as text:
-        return json.load(text)
+        return dict(json.load(text))
