@@ -108,8 +108,9 @@ if __name__ == "__main__":
         if TEXTS:
             EXTRACT_PHRASES = extract_phrases(TEXTS[ind])
 
-        if EXTRACT_PHRASES and STOP_WORDS[ind]:
-            CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(EXTRACT_PHRASES, STOP_WORDS[ind])
+        if EXTRACT_PHRASES and STOP_WORDS:
+            if STOP_WORDS[ind]:
+                CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(EXTRACT_PHRASES, STOP_WORDS[ind])
 
         if CANDIDATE_KEYWORD_PHRASES:
             FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
@@ -130,10 +131,11 @@ if __name__ == "__main__":
             KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
                 CANDIDATE_KEYWORD_PHRASES, EXTRACT_PHRASES)
 
-        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE and STOP_WORDS[ind]:
-            print((score_for_candidates_with_stop_words :=
-                   calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
-                                                                             WORD_SCORE, STOP_WORDS[ind])))
+        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE and STOP_WORDS:
+            if STOP_WORDS[ind]:
+                print((score_for_candidates_with_stop_words :=
+                       calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
+                                                                                 WORD_SCORE, STOP_WORDS[ind])))
 
     RESULT = True
 
