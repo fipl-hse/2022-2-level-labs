@@ -251,10 +251,10 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     new_punctuation = punctuation + "¡¿…⋯‹›«»“”⟨⟩–—"
     for punctuation_mark in new_punctuation:
         text = text.replace(punctuation_mark, " ")
-    tokens = text.split()
+    tokens = text.lower().split()
     freq_dict = {token: tokens.count(token) for token in tokens}
     sorted_values = sorted(freq_dict.values())
-    position_percentile_80 = int(80 / int(len(sorted_values)))
+    position_percentile_80 = int((80 / 100) * len(sorted_values))
     return [key for key, value in freq_dict.items() if sorted_values[position_percentile_80 - 1] <= value <= max_length]
 
 

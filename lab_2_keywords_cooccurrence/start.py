@@ -1,13 +1,13 @@
 """
 Co-occurrence-driven keyword extraction starter
 """
-
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words, calculate_word_degrees,
                                               calculate_word_scores, calculate_cumulative_score_for_candidates,
                                               get_top_n, extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words)
+                                              calculate_cumulative_score_for_candidates_with_stop_words,
+                                              generate_stop_words, load_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -43,6 +43,7 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    EXTRACT_PHRASES = None
     CANDIDATE_KEYWORD_PHRASES = None
     FREQUENCIES = None
     WORD_DEGREE = None
@@ -50,39 +51,81 @@ if __name__ == "__main__":
     SCORE_FOR_CANDIDATES = None
     KEYWORDS_PHRASES_WITH_ADJOINING = None
 
-    EXTRACT_PHRASES1 = extract_phrases(corpus['gagarin'])
-    EXTRACT_PHRASES2 = extract_phrases(corpus['albatross'])
-    EXTRACT_PHRASES3 = extract_phrases(corpus['genome_engineering'])
-    EXTRACT_PHRASES4 = extract_phrases(corpus['pain_detection'])
+    for key in corpus.keys():
 
-    if EXTRACT_PHRASES1 and EXTRACT_PHRASES2 and EXTRACT_PHRASES3 and EXTRACT_PHRASES4:
-        CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(EXTRACT_PHRASES1, stop_words)
-        CANDIDATE_KEYWORD_PHRASES_1 = extract_candidate_keyword_phrases(EXTRACT_PHRASES2, stop_words)
-        CANDIDATE_KEYWORD_PHRASES_2 = extract_candidate_keyword_phrases(EXTRACT_PHRASES3, stop_words)
-        CANDIDATE_KEYWORD_PHRASES_3 = extract_candidate_keyword_phrases(EXTRACT_PHRASES4, stop_words)
+        EXTRACT_PHRASES = extract_phrases(corpus[key])
 
-    if CANDIDATE_KEYWORD_PHRASES:
-        FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+        if EXTRACT_PHRASES:
+            print(CANDIDATE_KEYWORD_PHRASES := extract_candidate_keyword_phrases(EXTRACT_PHRASES, stop_words))
 
-    if FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
-        WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES.keys()))
+        if CANDIDATE_KEYWORD_PHRASES:
+            FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
 
-    if WORD_DEGREE and FREQUENCIES:
-        WORD_SCORE = calculate_word_scores(WORD_DEGREE, FREQUENCIES)
+        if FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
+            WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES.keys()))
 
-    if WORD_SCORE and CANDIDATE_KEYWORD_PHRASES:
-        SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
+        if WORD_DEGREE and FREQUENCIES:
+            WORD_SCORE = calculate_word_scores(WORD_DEGREE, FREQUENCIES)
 
-    if SCORE_FOR_CANDIDATES:
-        top_n = get_top_n(SCORE_FOR_CANDIDATES, 10, 5)
+        if WORD_SCORE and CANDIDATE_KEYWORD_PHRASES:
+            SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
 
-    if CANDIDATE_KEYWORD_PHRASES and EXTRACT_PHRASES1:
-        KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES,
-                                                                                           EXTRACT_PHRASES1)
-    if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE:
-        score_for_candidates_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words \
-            (KEYWORDS_PHRASES_WITH_ADJOINING, WORD_SCORE, stop_words)
+        if SCORE_FOR_CANDIDATES:
+            print(top_n := get_top_n(SCORE_FOR_CANDIDATES, 10, 10))
 
-    RESULT = None
+        if CANDIDATE_KEYWORD_PHRASES and EXTRACT_PHRASES:
+            KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
+                CANDIDATE_KEYWORD_PHRASES, EXTRACT_PHRASES)
+
+        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE:
+            print((score_for_candidates_with_stop_words :=
+                   calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
+                                                                             WORD_SCORE, stop_words)))
+    # polish + unknown
+
+    EXTRACT_PHRASES = None
+    CANDIDATE_KEYWORD_PHRASES = None
+    FREQUENCIES = None
+    WORD_DEGREE = None
+    WORD_SCORE = None
+    SCORE_FOR_CANDIDATES = None
+    KEYWORDS_PHRASES_WITH_ADJOINING = None
+
+    TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
+
+    TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
+    STOP_WORDS = [load_stop_words(ASSETS_PATH / 'stopwords.json')["pl"], generate_stop_words(TEXT_UNKNOWN, 25)]
+
+    for ind in range(2):
+        EXTRACT_PHRASES = extract_phrases(TEXTS[ind])
+
+        if EXTRACT_PHRASES:
+            CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(EXTRACT_PHRASES, STOP_WORDS[ind])
+
+        if CANDIDATE_KEYWORD_PHRASES:
+            FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+
+        if FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
+            WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES.keys()))
+
+        if WORD_DEGREE and FREQUENCIES:
+            WORD_SCORE = calculate_word_scores(WORD_DEGREE, FREQUENCIES)
+
+        if WORD_SCORE and CANDIDATE_KEYWORD_PHRASES:
+            SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
+
+        if SCORE_FOR_CANDIDATES:
+            print(top_n := get_top_n(SCORE_FOR_CANDIDATES, 10, 15))
+
+        if CANDIDATE_KEYWORD_PHRASES and EXTRACT_PHRASES:
+            KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
+                CANDIDATE_KEYWORD_PHRASES, EXTRACT_PHRASES)
+
+        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE:
+            print((score_for_candidates_with_stop_words :=
+                   calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
+                                                                             WORD_SCORE, STOP_WORDS[ind])))
+
+    RESULT = True
 
     assert RESULT, 'Keywords are not extracted'
