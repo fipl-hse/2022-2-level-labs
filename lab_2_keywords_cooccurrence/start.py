@@ -90,14 +90,13 @@ if __name__ == "__main__":
     WORD_SCORE = None
     SCORE_FOR_CANDIDATES = None
     KEYWORDS_PHRASES_WITH_ADJOINING = None
-    TEXT_UNKNOWN = None
     TEXTS = None
     STOP = None
     STOP_WORDS = None
 
-    if ASSETS_PATH / 'unknown.txt':
-        TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
-    if ASSETS_PATH / 'stopwords.json' and TEXT_UNKNOWN:
+    TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
+
+    if load_stop_words(ASSETS_PATH / 'stopwords.json') and TEXT_UNKNOWN:
         STOP = dict(load_stop_words(ASSETS_PATH / 'stopwords.json'))["pl"]
         TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
     if STOP and TEXT_UNKNOWN:
