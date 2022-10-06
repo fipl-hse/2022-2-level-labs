@@ -4,8 +4,8 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-import re
-import json
+from re import split as rsplit, sub
+from json import load
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -35,7 +35,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not type_check(text, str):
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    return [clean for phrase in re.split(''.join(
+    return [clean for phrase in rsplit(''.join(
         (punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), text) if (clean := phrase.strip())]
 
 
@@ -143,7 +143,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
             or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
     return sorted(list(' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length),
-                  reverse=True, key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())])[:top_n]
+                  key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())], reverse=True)[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -214,8 +214,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    tokens = re.sub(''.join(
-        (punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), '', text).lower().split()
+    tokens = sub(''.join((punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
@@ -230,7 +229,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not type_check(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        return dict(json.load(file))
+        return dict(load(file))
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
