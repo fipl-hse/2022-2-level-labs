@@ -182,7 +182,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-
+    type_ = int | float
     if not (is_dic_correct(frequencies, False, str, int | float) and my_isinstance(top, int) and top > 0):
         return None
 
