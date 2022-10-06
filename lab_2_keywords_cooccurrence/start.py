@@ -20,6 +20,46 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
+def key_phrases(text: str, stop_w: list) -> None:
+    """
+    checks functions
+    """
+    candidate_keyword_phrases = None
+    freq = None
+    word_degree = None
+    word_score = None
+    score_for_candidates = None
+    candidate_phrases_with_adjoining = None
+
+    extract_phrase = extract_phrases(text)
+
+    if extract_phrase:
+        print(candidate_keyword_phrases := extract_candidate_keyword_phrases(extract_phrase, stop_w))
+
+    if candidate_keyword_phrases:
+        freq = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+
+    if freq and candidate_keyword_phrases:
+        word_degree = calculate_word_degrees(candidate_keyword_phrases, list(freq.keys()))
+
+    if word_degree and freq:
+        word_score = calculate_word_scores(word_degree, freq)
+
+    if word_score and candidate_keyword_phrases:
+        score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_score)
+
+    if score_for_candidates:
+        print(get_top_n(score_for_candidates, 10, 20))
+
+    if candidate_keyword_phrases and extract_phrase:
+        candidate_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
+            candidate_keyword_phrases, extract_phrase)
+
+    if candidate_phrases_with_adjoining and word_score:
+        print(calculate_cumulative_score_for_candidates_with_stop_words(candidate_phrases_with_adjoining,
+                                                                        word_score, stop_w))
+
+
 if __name__ == "__main__":
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
@@ -43,98 +83,19 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    EXTRACT_PHRASES = None
-    CANDIDATE_KEYWORD_PHRASES = None
-    FREQUENCIES = None
-    WORD_DEGREE = None
-    WORD_SCORE = None
-    SCORE_FOR_CANDIDATES = None
-    KEYWORDS_PHRASES_WITH_ADJOINING = None
-
     for key in corpus:
+        key_phrases(corpus[key], stop_words)
 
-        EXTRACT_PHRASES = extract_phrases(corpus[key])
+    # polish
+    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    if STOP_WORDS:
+        key_phrases(read_target_text(ASSETS_PATH / 'polish.txt'), list(STOP_WORDS["pl"]))
 
-        if EXTRACT_PHRASES:
-            print(CANDIDATE_KEYWORD_PHRASES := extract_candidate_keyword_phrases(EXTRACT_PHRASES, stop_words))
-
-        if CANDIDATE_KEYWORD_PHRASES:
-            FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
-
-        if FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
-            WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES.keys()))
-
-        if WORD_DEGREE and FREQUENCIES:
-            WORD_SCORE = calculate_word_scores(WORD_DEGREE, FREQUENCIES)
-
-        if WORD_SCORE and CANDIDATE_KEYWORD_PHRASES:
-            SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
-
-        if SCORE_FOR_CANDIDATES:
-            print(top_n := get_top_n(SCORE_FOR_CANDIDATES, 10, 10))
-
-        if CANDIDATE_KEYWORD_PHRASES and EXTRACT_PHRASES:
-            KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
-                CANDIDATE_KEYWORD_PHRASES, EXTRACT_PHRASES)
-
-        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE:
-            print((score_for_candidates_with_stop_words :=
-                   calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
-                                                                             WORD_SCORE, stop_words)))
-    # polish + unknown (Esperanto)
-
-    EXTRACT_PHRASES = None
-    CANDIDATE_KEYWORD_PHRASES = None
-    FREQUENCIES = None
-    WORD_DEGREE = None
-    WORD_SCORE = None
-    SCORE_FOR_CANDIDATES = None
-    KEYWORDS_PHRASES_WITH_ADJOINING = None
-    TEXTS = None
-    STOP = None
-    STOP_W = None
-    STOP_WORDS = None
-
+    # unknown (Esperanto)
     TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
-
-    if ASSETS_PATH:
-        STOP = load_stop_words(ASSETS_PATH / 'stopwords.json')
-    if STOP and TEXT_UNKNOWN:
-        STOP_W = dict(STOP)["pl"]
-        TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
-    if STOP_W and TEXT_UNKNOWN:
-        STOP_WORDS = [STOP_W, generate_stop_words(TEXT_UNKNOWN, 20)]
-
-    for ind in range(2):
-        if TEXTS:
-            EXTRACT_PHRASES = extract_phrases(TEXTS[ind])
-
-        if EXTRACT_PHRASES and STOP_WORDS:
-            CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(EXTRACT_PHRASES, STOP_WORDS[ind])
-
-        if CANDIDATE_KEYWORD_PHRASES:
-            FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
-
-        if FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
-            WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES.keys()))
-
-        if WORD_DEGREE and FREQUENCIES:
-            WORD_SCORE = calculate_word_scores(WORD_DEGREE, FREQUENCIES)
-
-        if WORD_SCORE and CANDIDATE_KEYWORD_PHRASES:
-            SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
-
-        if SCORE_FOR_CANDIDATES:
-            print(top_n := get_top_n(SCORE_FOR_CANDIDATES, 10, 15))
-
-        if CANDIDATE_KEYWORD_PHRASES and EXTRACT_PHRASES:
-            KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
-                CANDIDATE_KEYWORD_PHRASES, EXTRACT_PHRASES)
-
-        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE and STOP_WORDS:
-            print((score_for_candidates_with_stop_words :=
-                   calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
-                                                                             WORD_SCORE, STOP_WORDS[ind])))
+    STOP_UNKNOWN = generate_stop_words(TEXT_UNKNOWN, 20)
+    if STOP_UNKNOWN:
+        key_phrases(TEXT_UNKNOWN, list(STOP_UNKNOWN))
 
     RESULT = True
 
