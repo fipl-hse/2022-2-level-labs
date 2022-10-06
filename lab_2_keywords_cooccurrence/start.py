@@ -92,18 +92,22 @@ if __name__ == "__main__":
     KEYWORDS_PHRASES_WITH_ADJOINING = None
     TEXT_UNKNOWN = None
     TEXTS = None
+    STOP = None
     STOP_WORDS = None
 
     if ASSETS_PATH / 'unknown.txt':
         TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
-    if ASSETS_PATH / 'stopwords.json':
+    if ASSETS_PATH / 'stopwords.json' and TEXT_UNKNOWN:
+        STOP = load_stop_words(ASSETS_PATH / 'stopwords.json')["pl"]
         TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
-        STOP_WORDS = [load_stop_words(ASSETS_PATH / 'stopwords.json')["pl"], generate_stop_words(TEXT_UNKNOWN, 25)]
+    if STOP:
+        STOP_WORDS = [STOP, generate_stop_words(TEXT_UNKNOWN, 25)]
 
     for ind in range(2):
-        EXTRACT_PHRASES = extract_phrases(TEXTS[ind])
+        if TEXTS:
+            EXTRACT_PHRASES = extract_phrases(TEXTS[ind])
 
-        if EXTRACT_PHRASES:
+        if EXTRACT_PHRASES and STOP_WORDS:
             CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(EXTRACT_PHRASES, STOP_WORDS[ind])
 
         if CANDIDATE_KEYWORD_PHRASES:
@@ -125,7 +129,7 @@ if __name__ == "__main__":
             KEYWORDS_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
                 CANDIDATE_KEYWORD_PHRASES, EXTRACT_PHRASES)
 
-        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE:
+        if KEYWORDS_PHRASES_WITH_ADJOINING and WORD_SCORE and STOP_WORDS:
             print((score_for_candidates_with_stop_words :=
                    calculate_cumulative_score_for_candidates_with_stop_words(KEYWORDS_PHRASES_WITH_ADJOINING,
                                                                              WORD_SCORE, STOP_WORDS[ind])))
