@@ -51,7 +51,7 @@ if __name__ == "__main__":
     SCORE_FOR_CANDIDATES = None
     KEYWORDS_PHRASES_WITH_ADJOINING = None
 
-    for key in corpus.keys():
+    for key in corpus:
 
         EXTRACT_PHRASES = extract_phrases(corpus[key])
 
