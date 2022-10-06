@@ -146,7 +146,9 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(term_freq, dict) or not isinstance(idf, dict) or not term_freq:
+    if not isinstance(term_freq, dict) or not term_freq:
+        return None
+    if not isinstance(idf, dict):
         return None
     for token in term_freq.keys():
         if not isinstance(token, str):
@@ -182,12 +184,6 @@ def calculate_expected_frequency(
         return None
     if not isinstance(corpus_freqs, dict):
         return None
-    for token_in_doc in doc_freqs.keys():
-        if not isinstance(token_in_doc, str):
-            return None
-    for value_in_doc in doc_freqs.values():
-        if not isinstance(value_in_doc, int):
-            return None
 
     expected = {}
     for token, value in doc_freqs.items():
