@@ -92,15 +92,17 @@ if __name__ == "__main__":
     KEYWORDS_PHRASES_WITH_ADJOINING = None
     TEXTS = None
     STOP = None
+    STOP_W = None
     STOP_WORDS = None
 
     TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
-
-    if load_stop_words(ASSETS_PATH / 'stopwords.json') and TEXT_UNKNOWN:
-        STOP = dict(load_stop_words(ASSETS_PATH / 'stopwords.json'))["pl"]
-        TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
+    if ASSETS_PATH / 'stopwords.json':
+        STOP = load_stop_words(ASSETS_PATH / 'stopwords.json')
     if STOP and TEXT_UNKNOWN:
-        STOP_WORDS = [STOP, generate_stop_words(TEXT_UNKNOWN, 25)]
+        STOP_W = dict(STOP)["pl"]
+        TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
+    if STOP_W and TEXT_UNKNOWN:
+        STOP_WORDS = [STOP_W, generate_stop_words(TEXT_UNKNOWN, 25)]
 
     for ind in range(2):
         if TEXTS:
