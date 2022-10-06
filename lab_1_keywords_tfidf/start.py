@@ -2,16 +2,9 @@
 Frequency-driven keyword extraction starter
 """
 from pathlib import Path
-from lab_1_keywords_tfidf.main import (
-    clean_and_tokenize,
-    remove_stop_words,
-    calculate_frequencies,
-    get_top_n,
-    calculate_tf,
-    calculate_tfidf,
-    calculate_expected_frequency,
-    calculate_chi_values
-)
+import json
+from lab_1_keywords_tfidf.main import (clean_and_tokenize, remove_stop_words, calculate_frequencies, get_top_n,
+                  calculate_tf, calculate_tfidf, calculate_expected_frequency)
 
 if __name__ == "__main__":
 
@@ -39,28 +32,33 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
-    tokenization = clean_and_tokenize(target_text)
+    RESULT = None
 
-    if tokenization:
-        no_stop_words = remove_stop_words(tokenization, stop_words)
+    def str_to_float(str_var: dict[str, int]) -> dict[str, float]:
+        dict_result = {}
+        keys = list(str_var.keys())
+        for key in keys:
+            dict_result[key] = float(str_var[key])
+        return dict_result
 
-    if no_stop_words:
-        freq_dict = calculate_frequencies(no_stop_words)
 
-    if freq_dict:
-        tf_dict = calculate_tf(freq_dict)
+    text_step1 = clean_and_tokenize(target_text)
+    if isinstance(text_step1, list):
+        text_step2 = remove_stop_words(text_step1, stop_words)
+        if isinstance(text_step2, list):
+            text_step3 = calculate_frequencies(text_step2)
+            if text_step3 is not None:
+                text_step4 = get_top_n(str_to_float(text_step3), 10)
+                text_step5 = calculate_tf(text_step3)
+                text_step8 = calculate_expected_frequency(text_step3, corpus_freqs)
+                if isinstance(text_step5, dict):
+                    text_step6 = calculate_tfidf(text_step5, idf)
+    #step 7
+                    if text_step6 is not None:
+                        print(get_top_n(text_step6, 10))
 
-    if freq_dict and tf_dict:
-        tfidf_dict = calculate_tfidf(tf_dict, idf)
 
-    if tfidf_dict and freq_dict:
-        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
-
-    if exp_freq_dict and freq_dict:
-        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
-
-    if chi_dict:
-        RESULT = get_top_n(chi_dict, 10)
+                        RESULT = get_top_n(text_step6, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
+
