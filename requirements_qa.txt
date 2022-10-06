@@ -1,6 +1,6 @@
 black==22.6.0
 coverage[toml]==6.4.4
-mypy==0.971
+mypy
 pylint==2.7.1
 pymdown-extensions==9.5
 pyspelling==2.8.1
