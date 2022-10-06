@@ -98,9 +98,9 @@ if __name__ == "__main__":
     if ASSETS_PATH / 'unknown.txt':
         TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
     if ASSETS_PATH / 'stopwords.json' and TEXT_UNKNOWN:
-        STOP = load_stop_words(ASSETS_PATH / 'stopwords.json')["pl"]
+        STOP = dict(load_stop_words(ASSETS_PATH / 'stopwords.json'))["pl"]
         TEXTS = [read_target_text(ASSETS_PATH / 'polish.txt'), TEXT_UNKNOWN]
-    if STOP:
+    if STOP and TEXT_UNKNOWN:
         STOP_WORDS = [STOP, generate_stop_words(TEXT_UNKNOWN, 25)]
 
     for ind in range(2):
