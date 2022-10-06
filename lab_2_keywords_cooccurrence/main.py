@@ -3,10 +3,19 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Any, Optional, Sequence, Mapping
+from string import punctuation
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def check_lst(object: Any, element_type: type, can_be_empty: bool):
+    if isinstance(object, list) and all(isinstance((element for element in object), element_type)):
+        if (can_be_empty is False and object) or (can_be_empty is True and not object):
+            return True
+    else:
+        return False
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,7 +26,12 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not(isinstance(text, str) and text):
+        return None
+    for punc in punctuation:
+        text = text.replace(punc, '.')
+        phrases = text.split('.')
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +43,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    # if not(check_lst(phrases, str, False), check_lst(stop_words, str, False)):
+    #     for phrase in phrases:
+    #         pass
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
