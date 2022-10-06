@@ -5,16 +5,7 @@ import json
 from pathlib import Path
 
 
-from main import (
-    clean_and_tokenize,
-    remove_stop_words,
-    calculate_frequencies,
-    get_top_n,
-    calculate_tf,
-    calculate_tfidf,
-    calculate_expected_frequency,
-    calculate_chi_values
-)
+import main
 
 if __name__ == "__main__":
 
@@ -40,27 +31,22 @@ if __name__ == "__main__":
 
     RESULT = None
     no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
-    tokenization = clean_and_tokenize(target_text)
+    tokenization = main.clean_and_tokenize(target_text)
 
     if tokenization:
-        no_stop_words = remove_stop_words(tokenization, stop_words)
+        no_stop_words = main.remove_stop_words(tokenization, stop_words)
 
     if no_stop_words:
-        freq_dict = calculate_frequencies(no_stop_words)
+        freq_dict = main.calculate_frequencies(no_stop_words)
 
     if freq_dict:
-        tf_dict = calculate_tf(freq_dict)
+        tf_dict = main.calculate_tf(freq_dict)
 
     if freq_dict and tf_dict:
-        tfidf_dict = calculate_tfidf(tf_dict, idf)
+        tfidf_dict = main.calculate_tfidf(tf_dict, idf)
 
     if tfidf_dict and freq_dict:
-        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
-
-    if exp_freq_dict and freq_dict:
-        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
-
-    if chi_dict:
-        RESULT = get_top_n(chi_dict, 10)
+        exp_freq_dict = main.calculate_expected_frequency(freq_dict, corpus_freqs)
+        RESULT = main.get_top_n(tfidf_dict, 8)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
