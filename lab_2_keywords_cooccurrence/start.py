@@ -9,11 +9,7 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n,
-                                              extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words,
-                                              generate_stop_words,
-                                              load_stop_words)
+                                              get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -48,9 +44,21 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
+    RESULT = None
+    CANDIDATE_KEYWORD_PHRASES, FREQUENCIES_FOR_CONTENT_WORDS, WORD_DEGREES, WORD_SCORE, CUMULATIVE_SCORE = \
+        [None for not_def in range(5)]
+    PHRASES = extract_phrases(corpus['gagarin'])
+    if PHRASES:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(PHRASES, stop_words)
+    if CANDIDATE_KEYWORD_PHRASES:
+        FREQUENCIES_FOR_CONTENT_WORDS = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+    if CANDIDATE_KEYWORD_PHRASES and FREQUENCIES_FOR_CONTENT_WORDS:
+        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES_FOR_CONTENT_WORDS.keys()))
+    if WORD_DEGREES and FREQUENCIES_FOR_CONTENT_WORDS:
+        WORD_SCORE = calculate_word_scores(WORD_DEGREES, FREQUENCIES_FOR_CONTENT_WORDS)
+    if CANDIDATE_KEYWORD_PHRASES and WORD_SCORE:
+        CUMULATIVE_SCORE = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
+    if CUMULATIVE_SCORE:
+        top_keyword_phrases = get_top_n(CUMULATIVE_SCORE, 5, 3)
 
-    phrases = extract_phrases(corpus['gagarin'])
-    extract_candidate_keyword_phrases(phrases, stop_words)
-
-    # RESULT = None
     # assert RESULT, 'Keywords are not extracted'
