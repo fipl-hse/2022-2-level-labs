@@ -225,15 +225,19 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(expected, dict) or not expected:
+    if not isinstance(expected, dict) or not expected or not isinstance(observed, dict) or not observed:
         return None
-    if not isinstance(observed, dict) or not observed:
-        return None
-    for token, value in expected.values():
-        if not isinstance(token, str) or not isinstance(value, float):
+    for token in expected.keys():
+        if not isinstance(token, str):
             return None
-    for token, value in observed.items():
-        if not isinstance(token, str) or not isinstance(value, int):
+    for token in observed.keys():
+        if not isinstance(token, str):
+            return None
+    for value in expected.values():
+        if not isinstance(value, float):
+            return None
+    for value in observed.values():
+        if not isinstance(value, int):
             return None
 
     chi_value = {}
