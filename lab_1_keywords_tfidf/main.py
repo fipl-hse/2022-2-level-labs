@@ -6,59 +6,6 @@ from typing import Optional, Union, Any
 from math import log
 
 
-def check_list(text: Any, elements_type: type, can_be_empty: bool) -> bool:
-    """"
-    Checks weather object is list
-    that contains objects of certain type
-    """
-    if not isinstance(text, list):
-        return False
-    if not text and can_be_empty is False:
-        return False
-    for element in text:
-        if not isinstance(element, elements_type):
-            return False
-    return True
-
-
-def check_dict(text: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
-    """
-    Checks weather object is dictionary
-    hat has keys and values of certain type
-    """
-    if not isinstance(text, dict):
-        return False
-    if not text and can_be_empty is False:
-        return False
-    for key, value in text.items():
-        if not (isinstance(key, key_type) and isinstance(value, value_type)):
-            return False
-    return True
-
-
-def check_positive_int(text: Any) -> bool:
-    """
-    Checks weather object is int (not bool)
-    """
-    if not isinstance(text, int):
-        return False
-    if isinstance(text, bool):
-        return False
-    if text <= 0:
-        return False
-    return True
-
-
-def check_float(text: Any) -> bool:
-    """
-    Checks weather object is float
-    """
-    if not isinstance(text, float):
-        return False
-    else:
-        return True
-
-
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     Removes punctuation, casts to lowercase, splits into tokens
@@ -68,7 +15,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     list[str]: A sequence of lowercase tokens with no punctuation
     In case of corrupt input arguments, None is returned
     """
-
     if not isinstance(text, str):
         return None
     punctuation = '''!@#$%^&*()_-+=[]{};:'\\|,<.>/?"'''
@@ -78,6 +24,42 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
             the_text += symbol
     tokens = the_text.split()
     return tokens
+
+
+def check_list(text: Any, elements_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(text, list):
+        return False
+    if not text and can_be_empty is False:
+        return False
+    for element in text:
+        if not isinstance(element, elements_type):
+            return False
+    return True
+
+def check_dict(text: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(text, dict):
+        return False
+    if not text and can_be_empty is False:
+        return False
+    for key, value in text.items():
+        if not (isinstance(key, key_type) and isinstance(value, value_type)):
+            return False
+    return True
+
+def check_int(text: Any) -> bool:
+    if not isinstance(text, int):
+        return False
+    if isinstance(text, bool):
+        return False
+    if text <= 0:
+        return False
+    return True
+
+def check_float(text: Any) -> bool:
+    if not isinstance(text, float):
+        return False
+    else:
+        return True
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
@@ -90,7 +72,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     List[str]: Token sequence that does not include stop words
     In case of corrupt input arguments, None is returned
     """
-
     the_tokens = []
     if not (check_list(tokens, str, False) and check_list(stop_words, str, True)):
         return None
@@ -98,7 +79,6 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
         if token not in stop_words:
             the_tokens.append(token)
     return the_tokens
-
 
 
 def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
@@ -110,7 +90,6 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     Dict: {token: number of occurrences in the token sequence} dictionary
     In case of corrupt input arguments, None is returned
     """
-
     if not check_list(tokens, str, False):
         return None
     if tokens:
@@ -130,9 +109,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     consisting of tokens with the largest frequency
     In case of corrupt input arguments, None is returned
     """
-
     checking_dict = check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)
-    if not (checking_dict and check_positive_int(top)):
+    if not (checking_dict and check_int(top)):
         return None
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
 
@@ -174,9 +152,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     return tfidf_dict
 
 
-def calculate_expected_frequency(
-    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
-) -> Optional[dict[str, float]]:
+def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
@@ -197,48 +173,3 @@ def calculate_expected_frequency(
         dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) /\
                                 (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
     return dict_exp_freqs
-
-
-def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
-    """
-    Calculates chi-squared value for the tokens
-    based on their expected and observed frequency rates
-    Parameters:
-    expected (Dict): A dictionary with tokens and
-    its corresponding expected frequency
-    observed (Dict): A dictionary with tokens and
-    its corresponding observed frequency
-    Returns:
-    Dict: A dictionary with tokens and its corresponding chi-squared value
-    In case of corrupt input arguments, None is returned
-    """
-    if not (check_dict(expected, str, float, False) and check_dict(observed, str, int, False)):
-        return None
-    chi_dict = {}
-    for word, freq in expected.items():
-        chi_dict[word] = ((observed.get(word, 0) - freq) ** 2) / freq
-    return chi_dict
-
-def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
-
-    """
-    Select those tokens from the token sequence that
-    have a chi-squared value greater than the criterion
-   chi_values (Dict): A dictionary with tokens and
-    its corresponding chi-squared value
-    alpha (float): Level of significance that controls critical value of chi-squared metric
-    Return Parameters:
-    s:
-    Dict: A dictionary with significant tokens
-    and its corresponding chi-squared value
-    In case of corrupt input arguments, None is returned
-    """
-    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not (check_dict(chi_values, str, float, False) and check_float(alpha)\
-            and alpha in criterion.keys()):
-        return None
-    significant_words_dict = {}
-    for word, chi_value in chi_values.items():
-        if chi_value > criterion[alpha]:
-            significant_words_dict[word] = chi_value
-    return significant_words_dict
