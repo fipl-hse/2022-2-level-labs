@@ -34,7 +34,7 @@ if __name__ == "__main__":
 
     if target_text:
         tok = main.clean_and_tokenize(target_text)
-    
+
     if tok:
         st_wo = main.remove_stop_words(tok, stop_words)
 
