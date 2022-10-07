@@ -25,7 +25,11 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     tokens = the_text.split()
     return tokens
 
+
 def check_list(text: Any, elements_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks that object is list
+    """
     if not isinstance(text, list):
         return False
     if not text and can_be_empty is False:
@@ -35,7 +39,11 @@ def check_list(text: Any, elements_type: type, can_be_empty: bool) -> bool:
             return False
     return True
 
+
 def check_dict(text: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks that text can be dict
+    """
     if not isinstance(text, dict):
         return False
     if not text and can_be_empty is False:
@@ -46,6 +54,9 @@ def check_dict(text: dict, key_type: type, value_type: type, can_be_empty: bool)
     return True
 
 def check_int(text: Any) -> bool:
+    """
+    Checks that in text is positive int
+    """
     if not isinstance(text, int):
         return False
     if isinstance(text, bool):
@@ -55,6 +66,9 @@ def check_int(text: Any) -> bool:
     return True
 
 def check_float(text: Any) -> bool:
+    """
+    Checks that in text is float
+    """
     if not isinstance(text, float):
         return False
     else:
@@ -171,3 +185,35 @@ def calculate_expected_frequency(doc_freqs: dict[str, int], corpus_freqs: dict[s
         dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) /\
                                 (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
     return dict_exp_freqs
+
+
+def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
+    """
+    Calculates chi-squared value for the tokens
+    based on their expected and observed frequency rates
+    Parameters:
+    expected (Dict): A dictionary with tokens and
+    its corresponding expected frequency
+    observed (Dict): A dictionary with tokens and
+    its corresponding observed frequency
+    Returns:
+    Dict: A dictionary with tokens and its corresponding chi-squared value
+    In case of corrupt input arguments, None is returned
+    """
+    pass
+
+
+def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
+    """
+    Select those tokens from the token sequence that
+    have a chi-squared value greater than the criterion
+    Parameters:
+    chi_values (Dict): A dictionary with tokens and
+    its corresponding chi-squared value
+    alpha (float): Level of significance that controls critical value of chi-squared metric
+    Returns:
+    Dict: A dictionary with significant tokens
+    and its corresponding chi-squared value
+    In case of corrupt input arguments, None is returned
+    """
+    pass
