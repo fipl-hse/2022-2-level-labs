@@ -32,23 +32,29 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tok = main.clean_and_tokenize(target_text)
-    print(tok)
+    if target_text:
+        tok = main.clean_and_tokenize(target_text)
+        print(tok)
 
-    st_wo = main.remove_stop_words(tok, stop_words)
-    print(st_wo)
+    if tok:
+        st_wo = main.remove_stop_words(tok, stop_words)
+        print(st_wo)
 
-    freq_dict = main.calculate_frequencies(st_wo)
-    print(freq_dict)
+    if st_wo:
+        freq_dict = main.calculate_frequencies(st_wo)
+        print(freq_dict)
 
-    tf_dict = main.calculate_tf(freq_dict)
-    print(tf_dict)
+    if freq_dict:
+        tf_dict = main.calculate_tf(freq_dict)
+        print(tf_dict)
 
-    tfidf_dict = main.calculate_tfidf(tf_dict, idf)
-    print(tfidf_dict)
+    if tf_dict:
+        tfidf_dict = main.calculate_tfidf(tf_dict, idf)
+        print(tfidf_dict)
 
-    top_top = main.get_top_n(tfidf_dict, 10)
-    print(top_top)
+    if tfidf_dict:
+        top_top = main.get_top_n(tfidf_dict, 10)
+        print(top_top)
 
     RESULT = top_top
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
