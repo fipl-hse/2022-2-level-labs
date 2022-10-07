@@ -48,7 +48,9 @@ if __name__ == "__main__":
     top_n_words = get_top_n(freq_dict, 10)
     print(top_n_words)
 
-    if top_n_words:
-        RESULT = get_top_n(top_n_words, 10)
+    RESULT = None
+
+    if freq_dict:
+        RESULT = get_top_n(freq_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
