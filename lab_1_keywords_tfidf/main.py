@@ -94,7 +94,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
             or any(not (isinstance(val, (float, int))) for val in frequencies.values()) \
             or len(frequencies) == 0 or top <= 0:
         return None
-    list_top = sorted(frequencies.keys(), key=lambda x: x[1], reverse=True)
+    list_top = sorted(frequencies.keys(), reverse=True)
     return list_top[:top]
 
 
