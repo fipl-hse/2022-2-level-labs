@@ -25,7 +25,6 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     tokens = the_text.split()
     return tokens
 
-
 def check_list(text: Any, elements_type: type, can_be_empty: bool) -> bool:
     if not isinstance(text, list):
         return False
@@ -113,7 +112,6 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     if not (checking_dict and check_int(top)):
         return None
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
-
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
