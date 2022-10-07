@@ -4,7 +4,7 @@ Frequency-driven keyword extraction starter
 import json
 from pathlib import Path
 
-import main
+import lab_1_keywords_tfidf
 
 if __name__ == "__main__":
 
@@ -32,24 +32,24 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    tok = main.clean_and_tokenize(target_text)
+    tok = lab_1_keywords_tfidf.clean_and_tokenize(target_text)
     print(tok)
 
-    st_wo = main.remove_stop_words(tok, stop_words)
+    st_wo = lab_1_keywords_tfidf.remove_stop_words(tok, stop_words)
     print(st_wo)
 
-    freq_dict = main.calculate_frequencies(st_wo)
+    freq_dict = lab_1_keywords_tfidf.calculate_frequencies(st_wo)
     print(freq_dict)
 
-    top_top = main.get_top_n(freq_dict, 10)
-    print(top_top)
-
-    tf_dict = main.calculate_tf(freq_dict)
+    tf_dict = lab_1_keywords_tfidf.calculate_tf(freq_dict)
     print(tf_dict)
 
-    tfidf_dict = main.calculate_tfidf(tf_dict, idf)
+    tfidf_dict = lab_1_keywords_tfidf.calculate_tfidf(tf_dict, idf)
     print(tfidf_dict)
 
-    RESULT = None
+    top_top = lab_1_keywords_tfidf.get_top_n(tfidf_dict, 10)
+    print(top_top)
+
+    RESULT = top_top
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
