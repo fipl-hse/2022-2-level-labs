@@ -89,12 +89,14 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(frequencies, dict) or not isinstance(top,(int, float)) \
-            or any(not isinstance(word, str) for word in frequencies) \
+    if not isinstance(frequencies, dict) or not isinstance(top, int) or isinstance(top, bool):
+        return None
+    if any(not isinstance(word, str) for word in frequencies) \
             or any(not (isinstance(val, (float, int))) for val in frequencies.values()) \
             or len(frequencies) == 0 or top <= 0:
         return None
-    list_top = sorted(frequencies.keys(), reverse=True)
+    # for k, v in frequencies:
+    list_top = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)
     return list_top[:top]
 
 
