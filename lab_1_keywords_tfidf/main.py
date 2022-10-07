@@ -146,7 +146,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         if token in idf.keys():
             tfidf_dict[token] = term_freq.get(token) * idf.get(token)
         else:
-            tfidf_dict[token] = term_freq.get(token) * log(47 / 1)
+            tfidf_dict[token] = term_freq.get(token) * log(47)
     return tfidf_dict
 
 
