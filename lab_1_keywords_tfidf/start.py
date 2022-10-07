@@ -35,7 +35,7 @@ if __name__ == "__main__":
     tokens = clean_and_tokenize(target_text)
     without_stop_words = remove_stop_words(tokens, stop_words)
     freq_dict = calculate_frequencies(without_stop_words)
-    list = get_top_n(freq_dict,5)
+    list_top = get_top_n(freq_dict,5)
     tf_dict = calculate_tf(freq_dict)
     tf_idf = calculate_tfidf(tf_dict,idf)
     RESULT = calculate_tfidf(tf_dict,idf)
