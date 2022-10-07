@@ -20,8 +20,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     """
     if not isinstance(text, str):
         return None
-    tokens = []
-    symbols = '''()-[]{};:'"\,<>.!/?@#$%^&*_~'''
+    symbols = '''()-[]{};:'",<>.!/?@#$%^&*_~'''
     text = text.lower()
     for i in text:
         if i in symbols:
@@ -29,6 +28,7 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     text = text.strip()
     tokens = text.split()
     return tokens
+
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
     """
@@ -89,11 +89,12 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(frequencies, list) and isinstance(top,(int,float)) and isinstance(word,str) for word in frequencies):
+    if not (isinstance(frequencies, list) and isinstance(top,(int,float))
+            and isinstance(word,str) for word in frequencies) and (top > 0):
         return None
-    list = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
-    list = [element[0] for element in list]
-    return list[:top]
+    list_top = sorted(frequencies.items(), key=lambda x: x[1], reverse=True)
+    list_top = [element[0] for element in list]
+    return list_top[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -141,7 +142,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
         and term_freq):
         return None
     tf_idf = {}
-    for word,numvalue in term_freq.items():
+    for word in term_freq.keys():
         if word not in idf:
             tf_idf[word] = term_freq.get(word)*math.log(47)
         else:
