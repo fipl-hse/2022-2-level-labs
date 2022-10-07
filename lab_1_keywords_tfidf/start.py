@@ -35,11 +35,23 @@ if __name__ == "__main__":
         corpus_freqs = json.load(file)
 
     tokens = clean_and_tokenize(target_text)
+    if not tokens:
+        exit(1)
     without_stop_words = remove_stop_words(tokens, stop_words)
+    if not without_stop_words:
+        exit(1)
     freq_dict = calculate_frequencies(without_stop_words)
+    if not freq_dict:
+        exit(1)
     list_top = get_top_n(freq_dict,5)
+    if not list_top:
+        exit(1)
     tf_dict = calculate_tf(freq_dict)
+    if not(tf_dict):
+        exit(1)
     tf_idf = calculate_tfidf(tf_dict,idf)
+    if not(tf_idf):
+        exit(1)
     RESULT = calculate_tfidf(tf_dict,idf)
     print (RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
