@@ -71,8 +71,7 @@ def check_float(text: Any) -> bool:
     """
     if not isinstance(text, float):
         return False
-    else:
-        return True
+    return True
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
