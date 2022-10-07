@@ -2,6 +2,7 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
+import re
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 from re import split as rsplit, sub
@@ -20,8 +21,7 @@ def type_check(data: Any, expected: Any) -> bool:
     Returns:
     bool: True if data has the expected type and not empty, False otherwise
     """
-    return not (not isinstance(data, expected) or expected == int and isinstance(data, bool)) \
-        and not (expected in (str, list, tuple, dict) and not data)
+    return isinstance(data, expected) and not (expected == int and isinstance(data, bool)) and data
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -36,7 +36,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
     return [clean for phrase in rsplit(''.join(
-        (punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), text) if (clean := phrase.strip())]
+        (punctuation, r"(?=$|\s)|(?!=[\s\w\d])", punctuation)), text) if (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -142,7 +142,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not type_check(keyword_phrases_with_scores, dict) \
             or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
-    return sorted(list(' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length),
+    return sorted([' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length],
                   key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())], reverse=True)[:top_n]
 
 
@@ -168,11 +168,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
-    possible_pairs = set(tuple((sample, candidate_keyword_phrases[marker1+1]))
-                         for marker1, sample in enumerate(candidate_keyword_phrases[:-3])
-                         for marker2, phrase in enumerate(candidate_keyword_phrases[marker1+2:-1])
-                         if phrase == sample
-                         and candidate_keyword_phrases[marker2 + 1] == candidate_keyword_phrases[marker1 + 1])
+    possible_pairs = {(sample, candidate_keyword_phrases[marker1+1])
+                      for marker1, sample in enumerate(candidate_keyword_phrases[:-3])
+                      for marker2, phrase in enumerate(candidate_keyword_phrases[marker1+2:-1])
+                      if phrase == sample
+                      and candidate_keyword_phrases[marker2 + 1] == candidate_keyword_phrases[marker1 + 1]}
     possible_phrases = [phrase[index:index+len1+len2+1]
                         for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
                         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
@@ -214,7 +214,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    tokens = sub(''.join((punctuation, r"(?=$|\s)|(?<=\s)", punctuation, r"|^", punctuation)), '', text).lower().split()
+    tokens = sub(''.join((punctuation, r"(?=$|\s)|(?!=[\s\w\d])", punctuation)), '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
