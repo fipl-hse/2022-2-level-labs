@@ -25,8 +25,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     for punctuation in punctuation_of_the_text:
         text = text.replace(punctuation, '')
     text = text.lower().strip()
-    text = text.split()
-    return text
+    cleaned_text = text.split()
+    return cleaned_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
