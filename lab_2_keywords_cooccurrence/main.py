@@ -34,8 +34,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not type_check(text, str):
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    return [clean for phrase in rsplit(''.join(
-        (punctuation, r"(?=$|\s)|(?!=[\s\w\d])", punctuation)), text) if (clean := phrase.strip())]
+    return [clean for phrase in rsplit(''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation)), text)
+            if (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -213,7 +213,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    tokens = sub(''.join((punctuation, r"(?=$|\s)|(?!=[\s\w\d])", punctuation)), '', text).lower().split()
+    tokens = sub(''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation)), '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
