@@ -11,13 +11,11 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def correct_type(variable: Any, type1: type, empty: bool) -> bool:
+def correct_type(variable: Any, type1: type) -> bool:
     """
     Checks the type of variable
     """
-    if not isinstance(variable, type1):
-        return False
-    if not empty and not variable:
+    if not isinstance(variable, type1) or not variable:
         return False
     if isinstance(variable, int) and variable < 0:
         return False
@@ -32,7 +30,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(text, str, False):
+    if not correct_type(text, str):
         return None
     new_punctuation = punctuation + "¡¿…⋯‹›«»“”⟨⟩–—"
     for punctuation_mark in new_punctuation:
@@ -49,7 +47,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(phrases, list, False) or not correct_type(stop_words, list, False):
+    if not correct_type(phrases, list) or not correct_type(stop_words, list):
         return None
     candidate_phrases = []
     new_list = [words.lower().split() for words in phrases]
@@ -73,7 +71,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(candidate_keyword_phrases, list, False):
+    if not correct_type(candidate_keyword_phrases, list):
         return None
     freq_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -94,7 +92,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(candidate_keyword_phrases, list, False) or not correct_type(content_words, list, False):
+    if not correct_type(candidate_keyword_phrases, list) or not correct_type(content_words, list):
         return None
     word_degree = {}
     for word in content_words:
@@ -117,7 +115,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(word_degrees, dict, False) or not correct_type(word_frequencies, dict, False) \
+    if not correct_type(word_degrees, dict) or not correct_type(word_frequencies, dict) \
             or not all(word_frequencies.get(word) for word in word_degrees.keys()):
         return None
     return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
@@ -135,7 +133,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(candidate_keyword_phrases, list, False) or not correct_type(word_scores, dict, False) \
+    if not correct_type(candidate_keyword_phrases, list) or not correct_type(word_scores, dict) \
             or not all(word_scores.get(word) for phrase in candidate_keyword_phrases for word in phrase):
         return None
     return {phrase: int(sum(word_scores[word] for word in phrase)) for phrase in candidate_keyword_phrases}
@@ -154,8 +152,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(keyword_phrases_with_scores, dict, False) \
-            or not correct_type(top_n, int, False) or not correct_type(max_length, int, False):
+    if not correct_type(keyword_phrases_with_scores, dict) \
+            or not correct_type(top_n, int) or not correct_type(max_length, int):
         return None
     sorted_keys = sorted(list(key for key in keyword_phrases_with_scores.keys() if len(key) <= max_length),
                          reverse=True, key=lambda phrase: keyword_phrases_with_scores[phrase])[:top_n]
@@ -182,7 +180,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(candidate_keyword_phrases, list, False) or not correct_type(phrases, list, False):
+    if not correct_type(candidate_keyword_phrases, list) or not correct_type(phrases, list):
         return None
     join_phrases = [" ".join(phrase) for phrase in candidate_keyword_phrases]
     new_phrases = [tuple((join_phrases[ind: ind + 2])) for ind in range(len(join_phrases))]
@@ -216,8 +214,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_type(candidate_keyword_phrases, list, False) \
-            or not correct_type(word_scores, dict, False) or not correct_type(stop_words, list, False):
+    if not correct_type(candidate_keyword_phrases, list) \
+            or not correct_type(word_scores, dict) or not correct_type(stop_words, list):
         return None
     return {phrase: int(sum(word_scores[word] for word in phrase if word not in stop_words)) for phrase in
             candidate_keyword_phrases}
@@ -231,7 +229,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    if not correct_type(text, str, False) or not correct_type(max_length, int, False):
+    if not correct_type(text, str) or not correct_type(max_length, int):
         return None
     new_punctuation = punctuation + "¡¿…⋯‹›«»“”⟨⟩–—"
     for punctuation_mark in new_punctuation:
