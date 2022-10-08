@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-
+from main import check_input, check_list, extract_phrases, extract_candidate_keyword_phrases
 
 def read_target_text(file_path: Path) -> str:
     """

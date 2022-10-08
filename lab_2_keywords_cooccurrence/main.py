@@ -4,32 +4,51 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
+import re
 
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_str(user_input: Any) -> bool:
+
+def check_input(user_input: Any, required_type: type) -> bool:
     """
-    Checks if the input is a string and it is not empty
+    Checks if the input is as required, and it is not empty (for int, float and str)
     """
-    if not user_input or not isinstance(user_input, str):
+    if not user_input or not isinstance(user_input, required_type):
         return False
     return True
 
-def check_list(user_input: Any, required_type: type) -> bool:
+
+def check_list(user_input: Any, elements_required_type: type) -> bool:
     """
-    Checks if the input is a Sequence
-    and it is not empty
+    Checks if the input is not empty, is a sequence and the elements are of the required type
     """
-    if not user_input or not isinstance(user_input, Sequence):
+    if not user_input or not isinstance(user_input, list):
         return False
     for element in user_input:
-        if not isinstance(element, required_type):
+        if not isinstance(element, elements_required_type):
             return False
     return True
 
+def check_dict(user_input: Any, keys_type: type, values_type: type) -> bool:
+    if not user_input or not isinstance(user_input, dict):
+        return False
+    for key, value in user_input.items():
+        if not isinstance(key, keys_type) or not isinstance(value, values_type):
+            return False
+    return True
 
+def check_keyphrases(user_input: Any) -> bool:
+    if not user_input or not isinstance(user_input, list):
+        return False
+    for i in user_input:
+        if not isinstance(i, tuple):
+            return False
+        for j in i:
+            if not isinstance(j, str):
+                return False
+    return True
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -38,7 +57,10 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_input(text, str):
+        return None
+    sep_phrases = re.split(r'[^\w\s]\s', text)
+    return sep_phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -50,8 +72,25 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
+    if not check_list(phrases, str) or not check_list(stop_words, str):
+        return None
+    lowed_phrases = []  # put lower phrases
+    for i in phrases:
+        lowed_phrases.append(i.lower())  # putting lower phrases
+    for i in range(len(lowed_phrases)):
+        lowed_phrases[i] = lowed_phrases[i].split()  # splitting lowed phrases by ' '. until here okay
+    key_candidates = []
+    for one_phrase in lowed_phrases:  # going through each phrase
+        future_tuple = []  # here will be materials for a tuple
+        for words in one_phrase:  # going through each word
+            if words not in stop_words:
+                future_tuple.append(words)
+            elif future_tuple:
+                key_candidates.append(tuple(future_tuple))
+                future_tuple = []
+        if future_tuple:
+            key_candidates.append(tuple(future_tuple))
+    return key_candidates
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
@@ -61,7 +100,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, str):
+        return None
+    freq_dict = {}
+    for phrases in candidate_keyword_phrases:
+        for words in phrases:
+            freq_dict[words] = freq_dict.get(words, 0) + 1
+    return freq_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -76,7 +121,19 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_keyphrases(candidate_keyword_phrases) or not check_list(content_words, str):
+        return None
+    word_degree_dict = {}
+    for one_phrase in candidate_keyword_phrases:
+        for words in one_phrase:
+            if words in content_words:
+                word_degree_dict[words] = word_degree_dict.get(words, 0) + len(one_phrase)
+    for i in content_words:
+        word_degree_dict[i] = word_degree_dict.get(i, 0)
+    return word_degree_dict
+candidate = [('времена', 'советского', 'союза', 'исследование', 'космоса'), ('времена', 'союза', 'прошли')]
+content = ['времена', 'советского']
+print(calculate_word_degrees(candidate, content))
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
