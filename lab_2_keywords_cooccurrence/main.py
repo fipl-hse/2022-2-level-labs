@@ -10,6 +10,13 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
+    """
+    Splits the text into separate phrases using phrase delimiters
+    :param text: an original text
+    :return: a list of phrases
+
+    In case of corrupt input arguments, None is returned
+    """
     if not isinstance(text, str) or not text:
         return None
     punctuation = """.,;:¡!¿?…⋯‹›«»/\\"“”[]()⟨⟩}{&|-–~—"""
