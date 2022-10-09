@@ -10,14 +10,19 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
-    """
-    Splits the text into separate phrases using phrase delimiters
-    :param text: an original text
-    :return: a list of phrases
-
-    In case of corrupt input arguments, None is returned
-    """
-    pass
+    if not isinstance(text, str) or not text:
+        return None
+    punctuation = """.,;:¡!¿?…⋯‹›«»/\\"“”[]()⟨⟩}{&|-–~—"""
+    for i in text:
+        if i in punctuation:
+            text = text.replace(i, 'splt')
+    splited_text = text.split('splt')
+    tokens = []
+    for token in splited_text:
+        token = token.strip()
+        if token != '':
+            tokens.append(token)
+    return tokens
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +34,34 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(phrases, list) or not isinstance(stop_words, list) or not stop_words or not phrases:
+        return None
+
+    phrases = [i.lower() for i in phrases]
+    tokens = []
+    keywords = []
+    for sentence in phrases:
+        sublist = []
+        element = ""
+        for symbol in sentence:
+            element += symbol
+        words = element.split()
+        tokens.append(words)
+        for word in words:
+            if word not in stop_words:
+                sublist.append(word)
+            else:
+                if sublist:
+                    sublist = tuple(sublist)
+                    keywords.append(sublist)
+                    sublist = []
+                else:
+                    continue
+        sublist = tuple(sublist)
+        if sublist:
+            keywords.append(sublist)
+    return keywords
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
