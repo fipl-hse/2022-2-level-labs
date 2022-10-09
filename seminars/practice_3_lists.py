@@ -26,7 +26,7 @@ example.extend([2, 3, 4])
 print(example)
 
 # List copy
-import copy
+# import copy
 
 
 first_test = [1, 2, 3, [1, 2, 3]]
@@ -49,7 +49,6 @@ print(first_test, test_deepcopy)
 # .sort() – sorts the list in place i.e modifies the original list
 # .reverse() – reverses the list in place
 # .copy() – returns a shallow copy of the list
-# .deepcopy() – returns a deep copy of the list
 
 # TASKS
 
@@ -59,7 +58,7 @@ def count_evens(nums: list):
     """
     Return the number of even ints in the given array.
     """
-    # student realisation goes here
+    # student realization goes here
 
 
 # Function calls with expected result:
@@ -76,7 +75,7 @@ def sum13(nums: list):
     so it does not count and numbers that come after a 13
     also do not count.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # sum13([1, 2, 2, 1]) → 6
@@ -94,7 +93,7 @@ def sum67(nums: list):
     (every 6 will be followed by at least one 7).
     Return 0 for no numbers.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # sum67([1, 2, 2]) → 5
@@ -109,7 +108,7 @@ def create_phone_number(nums: list):
     Write a function that accepts an array of 10 integers (between 0 and 9),
     that returns a string of those numbers in the form of a phone number.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # create_phone_number([1, 2, 3, 4, 5, 6, 7, 8, 9, 0])
@@ -130,7 +129,7 @@ def check_exam(correct_answers: list, student_answers: list):
     and +0 for each blank answer, represented as an empty string.
     If the score < 0, return 0.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # check_exam(["a", "a", "b", "b"], ["a", "c", "b", "d"]) → 6
@@ -147,7 +146,7 @@ def who_likes_it(names: list):
     People can "like" blog posts, pictures or other items.
     We want to create the text that should be displayed next to such an item.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # []                                -->  "no one likes this"
@@ -169,7 +168,7 @@ def find_anagrams(words: list):
     'abba' & 'abca' == false
     Write a function that will find all the anagrams of a word from a list.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # anagrams('abba', ['aabb', 'abcd', 'bbaa', 'dada']) => ['aabb', 'bbaa']
@@ -185,7 +184,7 @@ def scramble(words: list):
     that returns true if a portion of str1 characters can be rearranged to match str2,
     otherwise returns false.
     """
-    # student realisation goes here
+    # student realization goes here
 
 # Function calls with expected result:
 # scramble(['rkqodlw', 'world']) ==> True
