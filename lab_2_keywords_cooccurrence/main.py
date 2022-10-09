@@ -82,7 +82,12 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_type(candidate_keyword_phrases, tuple, True):
+        return None
+    freq_dict = {word: sum(phrase.count(word) for phrase in candidate_keyword_phrases)
+                 for phrase in candidate_keyword_phrases for word in set(phrase)}
+    print(freq_dict)
+    return freq_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
