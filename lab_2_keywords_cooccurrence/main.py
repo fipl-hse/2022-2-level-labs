@@ -3,10 +3,39 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def checking_list(list1: Any, type1: Any, empty: bool) -> bool:
+    """
+    Checks that type of 'list1' is list and verifies the contents of 'list1' with the type that the user specifies
+    """
+    if not isinstance(list1, list):
+        return False
+    if not list1 and not empty:
+        return False
+    for index in list1:
+        if not isinstance(index, type1):
+            return False
+    return True
+
+
+def checking_dict(dictionary: Any, type1: Any, type2: Any, empty: bool) -> bool:
+    """
+    Checks that type of 'dictionary' is dict and verifies the contents of 'dictionary' with the type that
+    the user specifies
+    """
+    if not isinstance(dictionary, dict):
+        return False
+    if not dictionary and not empty:
+        return False
+    for key, value in dictionary.items():
+        if not isinstance(key, type1) or not isinstance(value, (int, type2)) or isinstance(value, bool):
+            return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -16,8 +45,21 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     :return: a list of phrases
 
     In case of corrupt input arguments, None is returned
+    @rtype: object
     """
-    pass
+    if not isinstance(text, str) and text:
+        return None
+    punctuation = '''!"#$%&'()*+,-./:;<=>?@[]^_`{|}~–—¡¿⟨⟩«»'…⋯‹›\\\\“”\\"\\""'''
+    for i in punctuation:
+        text = text.replace(i, ",")
+    split_text = text.split(',')
+    phrases = []
+    for phrase in split_text:
+        phrase = phrase.strip()
+        if phrase:
+            phrases.append(phrase)
+    print(phrases)
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +71,23 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not checking_list(phrases, str, False) or not checking_list(stop_words, str, False):
+        return None
+    candidate_keyword_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower().split()
+        prepared_key_phrases = []
+        for one_word in phrase:
+            if one_word not in stop_words:
+                prepared_key_phrases.append(one_word)
+            elif prepared_key_phrases and one_word in stop_words:
+                candidate_keyword_phrases.append(tuple(prepared_key_phrases))
+                prepared_key_phrases = []
+        if prepared_key_phrases:
+            candidate_keyword_phrases.append(tuple(prepared_key_phrases))
+    print(candidate_keyword_phrases)
+    return candidate_keyword_phrases
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:

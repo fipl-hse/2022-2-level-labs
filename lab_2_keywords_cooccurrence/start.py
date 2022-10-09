@@ -5,6 +5,9 @@ Co-occurrence-driven keyword extraction starter
 from pathlib import Path
 
 
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases)
+
+
 def read_target_text(file_path: Path) -> str:
     """
     Utility functions that reads the text content from the file
@@ -38,6 +41,11 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
+    candidates = [None for notdef in range(5)]
+    extract = extract_phrases(corpus['gagarin'])
+
+    if extract:
+         candidates = extract_candidate_keyword_phrases(extract, stop_words)
+    RESULT = extract_candidate_keyword_phrases(corpus['gagarin'], stop_words)
 
     assert RESULT, 'Keywords are not extracted'
