@@ -95,7 +95,7 @@
 сконвертируйте
 Сконвертируется
 склонировать
-склонировал
+склонирован
 склонировали
 скриншоте
 слов-модификаций
@@ -146,7 +146,6 @@
 элементов-букв
 юнит
 ый
-202X-2-level-labs
 Automatic
 Extraction
 Keyword
@@ -222,7 +221,6 @@ observed
 PAT
 Personal
 PyCharm
-PycharmProjects
 pull
 Powerful
 PR
