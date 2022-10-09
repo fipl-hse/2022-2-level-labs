@@ -54,7 +54,7 @@ first_test = [1, 2, 3, [1, 2, 3]]
 
 # Task 1:
 # easy level
-def count_evens(nums: list):
+def count_evens(nums: list) -> int:
     """
     Return the number of even ints in the given array.
     """
@@ -68,7 +68,7 @@ def count_evens(nums: list):
 
 # Task 2:
 # easy level
-def sum13(nums: list):
+def sum13(nums: list) -> int:
     """
     Return the sum of the numbers in the array, returning 0 for an empty array.
     Except the number 13 is very unlucky,
@@ -86,7 +86,7 @@ def sum13(nums: list):
 
 # Task 3
 # easy level
-def sum67(nums: list):
+def sum67(nums: list) -> int:
     """
     Return the sum of the numbers in the array,
     except ignore sections of numbers starting with a 6 and extending to the next 7
@@ -103,7 +103,7 @@ def sum67(nums: list):
 
 # Task 4
 # easy level
-def create_phone_number(nums: list):
+def create_phone_number(nums: list) -> str:
     """
     Write a function that accepts an array of 10 integers (between 0 and 9),
     that returns a string of those numbers in the form of a phone number.
@@ -117,7 +117,7 @@ def create_phone_number(nums: list):
 
 # Task 5
 # medium level
-def check_exam(correct_answers: list, student_answers: list):
+def check_exam(correct_answers: list, student_answers: list) -> int:
     """
     The first input array is the key to the correct answers to an exam,
     like ["a", "a", "b", "d"].
@@ -140,7 +140,7 @@ def check_exam(correct_answers: list, student_answers: list):
 
 # Task 6
 # medium level
-def who_likes_it(names: list):
+def who_likes_it(names: list) -> str:
     """
     You probably know the "like" system from Facebook and other pages.
     People can "like" blog posts, pictures or other items.
@@ -158,7 +158,7 @@ def who_likes_it(names: list):
 
 # Task 7
 # medium level
-def find_anagrams(words: list):
+def find_anagrams(words: list) -> list:
     """
     What is an anagram?
     Two words are anagrams of each other if they both contain the same letters.
@@ -178,7 +178,7 @@ def find_anagrams(words: list):
 
 # Task 8
 # medium level
-def scramble(words: list):
+def scramble(words: list) -> bool:
     """
     Complete the function scramble(str1, str2)
     that returns true if a portion of str1 characters can be rearranged to match str2,
