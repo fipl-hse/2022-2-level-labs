@@ -13,7 +13,7 @@ KeyPhrases = Sequence[KeyPhrase]
 
 def check_type(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
-    Checks weather object is a list or a tuple that contains elements of certain type
+    Checks wether object is a list or a tuple that contains elements of certain type
     """
     if not isinstance(user_input, list) and not isinstance(user_input, tuple):
         return False
@@ -98,7 +98,17 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_type(candidate_keyword_phrases, tuple, False) or not check_type(content_words, str, False):
+        return None
+    word_degrees = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in content_words:
+                word_degrees[word] = len(phrase) + word_degrees.get(word, 0)
+        for word in content_words:
+            if word not in word_degrees.keys():
+                word_degrees[word] = 0
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
