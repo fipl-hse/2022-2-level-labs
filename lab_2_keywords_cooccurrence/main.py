@@ -3,11 +3,26 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
 from string import punctuation
+from typing import Optional, Sequence, Mapping, Any
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def check_list(user_input: Any, element_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks weather object is list
+    that contains objects of certain type
+    """
+    if not isinstance(user_input, list):
+        return False
+    if not user_input and can_be_empty is False:
+        return False
+    for element in user_input:
+        if not isinstance(element, element_type):
+            return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -18,12 +33,14 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(text, str):
+    if not (isinstance(text, str) and text):
         return None
-    for i in punctuation:
-        text = text.replace(i, ' ').replace('\n', ' ')
-    text_list = text.split('  ')
-    final_list = [strings.strip(' ') for strings in text_list]
+    more_punctuation = punctuation + '–—];:¡¿⟨⟩&]«»…⋯‹›“”' + '\n'
+    for i in more_punctuation:
+        text = text.replace(i, '!')
+    text_list = text.split('!')
+    list0 = [strings.strip() for strings in text_list if strings]
+    final_list = [string for string in list0 if string != '']
     return final_list
 
 
@@ -36,7 +53,22 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(phrases, str, False) and check_list(stop_words, str, False)):
+        return None
+    no_stop_words_list = []
+    candidate_phrases = []
+    for phrase in phrases:
+        new_phrase = phrase.lower().split()
+        no_stop_words_list_0 = []
+        for word in new_phrase:
+            if word not in stop_words:
+                no_stop_words_list_0.append(word)
+            else:
+                no_stop_words_list.append(no_stop_words_list_0)
+                no_stop_words_list_0 = []
+        no_stop_words_list.append(no_stop_words_list_0)
+        candidate_phrases = [tuple(candidate) for candidate in no_stop_words_list if candidate]
+    return candidate_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
