@@ -39,7 +39,6 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         text = text.replace(i, ",")
     phrases = [phrase.strip() for phrase in text.split(",")]
     phrases = [phrase for phrase in phrases if phrase]
-    print(phrases)
     return phrases
 
 
@@ -70,7 +69,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         for candidate_phrase in prepare_candidate_phrases:
             if candidate_phrase:
                 candidate_keyword_phrases.append(tuple(candidate_phrase))
-    print(candidate_keyword_phrases)
     return candidate_keyword_phrases
 
 
@@ -82,7 +80,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_type(candidate_keyword_phrases, tuple, True):
+    if not check_type(candidate_keyword_phrases, tuple, False):
         return None
     freq_dict = {word: sum(phrase.count(word) for phrase in candidate_keyword_phrases)
                  for phrase in candidate_keyword_phrases for word in set(phrase)}
