@@ -171,9 +171,8 @@ def find_anagrams(words: list) -> list:
     # student realization goes here
 
 # Function calls with expected result:
-# anagrams('abba', ['aabb', 'abcd', 'bbaa', 'dada']) => ['aabb', 'bbaa']
-# anagrams('racer', ['crazer', 'carer', 'racar', 'caers', 'racer']) => ['carer', 'racer']
-# anagrams('laser', ['lazing', 'lazy',  'lacer']) => []
+# find_anagrams('abba') => ['aabb', 'bbaa']
+# find_anagrams('racer') => ['carer', 'racer', ...]
 
 
 # Task 8
