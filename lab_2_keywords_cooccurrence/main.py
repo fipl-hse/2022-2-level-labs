@@ -25,6 +25,17 @@ def check_list(user_input: Any, element_type: type, can_be_empty: bool) -> bool:
     return True
 
 
+def check_dict (user_input:Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input and can_be_empty is False:
+        return False
+    for key, value in user_input.items():
+        if not (isinstance(key, key_type) and isinstance(value, value_type)):
+            return False
+    return True
+
+
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -79,7 +90,16 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False):
+        return None
+    words_list = []
+    freq_dict = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            words_list.append(word)
+    for word in words_list:
+        freq_dict[word] = freq_dict.get(word, 0) + 1
+    return freq_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -94,7 +114,17 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple, False) and check_list(content_words, str, False)):
+        return None
+    degrees_dict = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in content_words:
+                degrees_dict[word] = degrees_dict.get(word, 0) + len(phrase)
+        for word in content_words:
+            if word not in degrees_dict.keys():
+                degrees_dict[word] = 0
+    return degrees_dict
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -108,7 +138,13 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, False)
+            and word_degrees.keys() == word_frequencies.keys()):
+        return None
+    word_scores = {}
+    for key in word_degrees.keys():
+        word_scores[key] = word_degrees[key] / word_frequencies[key]
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
