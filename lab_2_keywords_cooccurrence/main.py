@@ -56,9 +56,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     candidate_keyword_phrases = []
     prepare_candidate_phrases = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
         cleaning = []
-        for word in phrase:
+        for word in phrase.lower().split():
             if word not in stop_words:
                 cleaning.append(word)
             else:
@@ -84,7 +83,6 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
         return None
     freq_dict = {word: sum(phrase.count(word) for phrase in candidate_keyword_phrases)
                  for phrase in candidate_keyword_phrases for word in set(phrase)}
-    print(freq_dict)
     return freq_dict
 
 
