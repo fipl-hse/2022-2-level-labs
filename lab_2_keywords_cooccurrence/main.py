@@ -55,7 +55,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     if not check_type(phrases, str, False) or not check_type(stop_words, str, False):
         return None
     candidate_keyword_phrases = []
-    prepare_candidate_phrase = []
+    prepare_candidate_phrases = []
     for phrase in phrases:
         phrase = phrase.lower().split()
         cleaning = []
@@ -63,13 +63,13 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             if word not in stop_words:
                 cleaning.append(word)
             else:
-                prepare_candidate_phrase.append(cleaning)
+                prepare_candidate_phrases.append(cleaning)
                 cleaning = []
-        prepare_candidate_phrase.append(cleaning)
+        prepare_candidate_phrases.append(cleaning)
         candidate_keyword_phrases = []
-        for candidate_phrases_inside in prepare_candidate_phrase:
-            if candidate_phrases_inside:
-                candidate_keyword_phrases.append(tuple(candidate_phrases_inside))
+        for candidate_phrase in prepare_candidate_phrases:
+            if candidate_phrase:
+                candidate_keyword_phrases.append(tuple(candidate_phrase))
     print(candidate_keyword_phrases)
     return candidate_keyword_phrases
 
