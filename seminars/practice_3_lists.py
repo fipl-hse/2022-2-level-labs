@@ -36,9 +36,9 @@ test_copy[3].append(4)
 print(first_test, test_copy)
 
 first_test = [1, 2, 3, [1, 2, 3]]
-test_deepcopy = copy.deepcopy(first_test)
-test_deepcopy[3].append(4)
-print(first_test, test_deepcopy)
+# test_deepcopy = copy.deepcopy(first_test)
+# test_deepcopy[3].append(4)
+# print(first_test, test_deepcopy)
 
 # List methods (some of them)
 # .insert(index, item) -> inserts the given item on the mentioned index
