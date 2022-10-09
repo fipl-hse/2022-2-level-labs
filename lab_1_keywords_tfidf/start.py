@@ -11,8 +11,7 @@ from lab_1_keywords_tfidf.main import (
     calculate_tf,
     calculate_tfidf,
     calculate_expected_frequency,
-    calculate_chi_values,
-    extract_significant_words
+    calculate_chi_values
 )
 
 if __name__ == "__main__":
@@ -41,40 +40,28 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    NO_STOP_WORDS = None
-    FREQ_DICT = None
-    TF_DICT = None
-    TF_IDF = None
-    EXPECTED_FREQUENCY = None
-    CHI_VALUES = None
-    SIGNIFICANT_WORDS = None
-    CLEAN_AND_TOKENS = clean_and_tokenize(target_text)
+    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
+    tokenization = clean_and_tokenize(target_text)
 
-    if CLEAN_AND_TOKENS:
-        NO_STOP_WORDS = remove_stop_words(CLEAN_AND_TOKENS, stop_words)
+    if tokenization:
+        no_stop_words = remove_stop_words(tokenization, stop_words)
 
-    if NO_STOP_WORDS:
-        FREQ_DICT = calculate_frequencies(NO_STOP_WORDS)
+    if no_stop_words:
+        freq_dict = calculate_frequencies(no_stop_words)
 
-    if FREQ_DICT:
-        TF_DICT = calculate_tf(FREQ_DICT)
+    if freq_dict:
+        tf_dict = calculate_tf(freq_dict)
 
-    if TF_DICT:
-        TF_IDF = calculate_tfidf(TF_DICT, idf)
+    if freq_dict and tf_dict:
+        tfidf_dict = calculate_tfidf(tf_dict, idf)
 
-    if TF_IDF:
-        print(get_top_n(TF_IDF, 10))
+    if tfidf_dict and freq_dict:
+        exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
-    if FREQ_DICT:
-        EXPECTED_FREQUENCY = calculate_expected_frequency(FREQ_DICT, corpus_freqs)
+    if exp_freq_dict and freq_dict:
+        chi_dict = calculate_chi_values(exp_freq_dict, freq_dict)
 
-    if EXPECTED_FREQUENCY and FREQ_DICT:
-        CHI_VALUES = calculate_chi_values(EXPECTED_FREQUENCY, FREQ_DICT)
-
-    if CHI_VALUES:
-        SIGNIFICANT_WORDS = extract_significant_words(CHI_VALUES, 0.001)
-        print(get_top_n(CHI_VALUES, 10))
-
-    RESULT = CHI_VALUES
+    if chi_dict:
+        RESULT = get_top_n(chi_dict, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

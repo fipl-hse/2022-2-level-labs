@@ -3,41 +3,10 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
-from string import punctuation
+from typing import Optional, Sequence, Mapping
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
-
-
-def check_list(user_input: Any, objects_type: type, empty: bool = False) -> bool:
-    """
-    Checks whether object is list
-    that contains objects of certain type
-    """
-    if not isinstance(user_input, list):
-        return False
-    if not user_input and empty is False:
-        return False
-    for element in user_input:
-        if not isinstance(element, objects_type):
-            return False
-    return True
-
-
-def check_dict(user_input: dict, key_type: type, value_type: type, empty: bool = False) -> bool:
-    """
-    Checks whether object is dictionary
-    hat has keys and values of certain type
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input and empty is False:
-        return False
-    for key, value in user_input.items():
-        if not (isinstance(key, key_type) and isinstance(value, value_type)):
-            return False
-    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -48,17 +17,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(text, str) or not text:
-        return None
-    for i in punctuation + '–—];:¡¿⟨⟩&]«»…⋯‹›“”' + '\n':
-        text = text.replace(i, ".")
-    split_phrases = text.split(".")
-    list_of_phrases = []
-    for phrase in split_phrases:
-        phrase = phrase.strip()
-        if phrase:
-            list_of_phrases.append(phrase)
-    return list_of_phrases
+    pass
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -70,8 +29,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(phrases, str, False) and check_list(stop_words, str, False)):
-        return None
+    pass
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
