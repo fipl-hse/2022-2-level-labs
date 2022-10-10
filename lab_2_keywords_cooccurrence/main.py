@@ -237,7 +237,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not is_valid(text, str) or not is_valid(max_length, int) or max_length < 0:
         return None
     tokens = clean_and_tokenize(text)
-    if frequencies:
+    if tokens:
         frequencies = calculate_frequencies(tokens)
     values = sorted(frequencies.values())
     percentile = values[round(len(values) * 0.8) - 1]
