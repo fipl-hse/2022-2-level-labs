@@ -195,8 +195,12 @@
 
 1. Откройте PyCharm и нажмите кнопку `Open`
 
-   ![](../images/starting_guide/opening_project.png) 
+    ![](../images/starting_guide/opening_project.png) 
 2. В открывшемся окне выберите папку с форком, который Вы склонировали на шаге "Клонирование форка репозитория для локальной работы"
+
+    ![](../images/starting_guide/selecting_folder.png)
+    * **NB**: На скриншоте выше показано, что форк был склонирован в папку `PycharmProjects`. 
+    * **NB №2**: Нужно выбрать именно **папку с форком**, имеющую название `202X-2-level-labs`, а не папку с конкретной лабораторной работой. 
 3. В открывшемся окне нажмите кнопку `OK`
 
     ![](../images/starting_guide/setting_interpreter.png)
