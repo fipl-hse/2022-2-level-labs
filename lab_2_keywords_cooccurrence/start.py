@@ -70,7 +70,7 @@ if __name__ == "__main__":
 
     if CANDIDATE_KEYWORD_PHRASES and PHRASES:
         CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
-            CANDIDATE_KEYWORD_PHRASES, PHRASES)
+                                                   CANDIDATE_KEYWORD_PHRASES, PHRASES)
 
     if CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING and WORD_SCORE:
         print(calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING,
