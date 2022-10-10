@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import extract_phrases, extract_candidate_keyword_phrases,\
+from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases,\
     calculate_frequencies_for_content_words, calculate_word_degrees, \
     calculate_word_scores, calculate_cumulative_score_for_candidates, \
     get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
@@ -20,7 +20,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def extract_and_show_keyword_phrases(text, stopwords) -> None:
+def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> None:
     phrases = extract_phrases(text)
     key_pharases = extract_candidate_keyword_phrases(phrases, stopwords)
 
@@ -80,6 +80,7 @@ if __name__ == "__main__":
     esperanto_stopwords = generate_stop_words(esperanto_text, 2)
 
     extract_and_show_keyword_phrases(esperanto_text, esperanto_stopwords)
+    print(esperanto_stopwords)
 
     RESULT = corpus
 

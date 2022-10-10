@@ -237,7 +237,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not is_valid(text, str) or not is_valid(max_length, int) or max_length < 0:
         return None
     tokens = clean_and_tokenize(text)
-    frequencies = calculate_frequencies(tokens)
+    if frequencies:
+        frequencies = calculate_frequencies(tokens)
     values = sorted(frequencies.values())
     percentile = values[round(len(values) * 0.8) - 1]
     return [key for key, value in frequencies.items() if value >= percentile and len(key) <= max_length]
@@ -252,4 +253,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not is_valid(path, Path):
         return None
     file = open(path, encoding='utf-8')
-    return json.load(file)
+    stop_words = json.load(file)
+    if isinstance(stop_words, dict):
+        return stop_words
+    return None
