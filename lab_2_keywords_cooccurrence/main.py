@@ -64,10 +64,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 prepare_candidate_phrases.append(cleaning)
                 cleaning = []
         prepare_candidate_phrases.append(cleaning)
-        candidate_keyword_phrases = []
-        for candidate_phrase in prepare_candidate_phrases:
-            if candidate_phrase:
-                candidate_keyword_phrases.append(tuple(candidate_phrase))
+    for candidate_phrase in prepare_candidate_phrases:
+        if candidate_phrase:
+            candidate_keyword_phrases.append(tuple(candidate_phrase))
     return candidate_keyword_phrases
 
 
