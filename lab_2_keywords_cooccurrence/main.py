@@ -5,7 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 from re import split as rsplit, sub
-from json import load
+from json import load as json_load
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -228,7 +228,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not type_check(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        return dict(load(file))
+        return dict(json_load(file))
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
