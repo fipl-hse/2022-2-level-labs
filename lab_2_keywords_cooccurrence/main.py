@@ -226,7 +226,62 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_list(candidate_keyword_phrases, tuple, False) or not correct_list(phrases, str, False):
+        return None
+    dict_key = {}
+    for item in candidate_keyword_phrases:
+        count = 0
+        for x in candidate_keyword_phrases:
+            if x == item:
+                count += 1
+        if count >= 2:
+            dict_key[item] = count
+
+    list_of_tuples = []
+    for count, item in enumerate(candidate_keyword_phrases):
+        for x in dict_key.keys():
+            if x == item:
+                a = tuple(candidate_keyword_phrases[count:count + 2])
+                list_of_tuples.append(a)
+
+    final_list = []
+    for item in list_of_tuples:
+        count = 0
+        for x in list_of_tuples:
+            if x == item:
+                count += 1
+                if count >= 2:
+                    final_list.append(item)
+    result = list(set(final_list))
+    result = result[::-1]
+
+    key_phrases = []
+    for item in phrases:
+        for elem in result:
+            first_tuple = elem[0]
+            second_tuple = elem[1]
+            first_word = first_tuple[0]
+            second_word = second_tuple[len(second_tuple) - 1]
+            if first_word in item:
+                first_place = item.index(first_word)
+                second_place = item.rindex(second_word)
+                len_second_word = second_place + (len(second_word) - 1)
+                key_phrases.append(item[first_place:len_second_word + 1])
+
+    list_result = []
+    if not key_phrases:
+        return list_result
+    previous = key_phrases[0][0]
+    for item in key_phrases:
+        count = 0
+        for x in key_phrases:
+            if x == item:
+                count += 1
+        if count >= 2 and previous == item[0]:
+            previous = item[0]
+            list_result.append(tuple(item.split()))
+    list_result = list(set(list_result))
+    return list_result
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -244,7 +299,21 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not correct_list(candidate_keyword_phrases, tuple, False) or not correct_dict(word_scores, str, float, False) \
+            or not correct_list(stop_words, str, False):
+        return None
+    result_dict = {}
+    for item in candidate_keyword_phrases:
+        count = 0
+        for elem in item:
+            for key, value in word_scores.items():
+                if elem == key:
+                    count += int(value)
+                    for stop_word in stop_words:
+                        if elem == stop_word:
+                            count -= int(value)
+        result_dict[item] = count
+    return result_dict
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
