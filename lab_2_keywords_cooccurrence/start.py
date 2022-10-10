@@ -7,7 +7,8 @@ from main import extract_phrases, extract_candidate_keyword_phrases,\
     calculate_frequencies_for_content_words, calculate_word_degrees, \
     calculate_word_scores, calculate_cumulative_score_for_candidates, \
     get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
-    calculate_cumulative_score_for_candidates_with_stop_words
+    calculate_cumulative_score_for_candidates_with_stop_words,\
+    load_stop_words, generate_stop_words
 from lab_1_keywords_tfidf.main import clean_and_tokenize
 
 def read_target_text(file_path: Path) -> str:
@@ -18,6 +19,30 @@ def read_target_text(file_path: Path) -> str:
     """
     with open(file_path, 'r', encoding='utf-8') as target_text_file:
         return target_text_file.read()
+
+
+def extract_and_show_keyword_phrases(text, stop_words) -> None:
+    phrases = extract_phrases(text)
+    key_pharases = extract_candidate_keyword_phrases(phrases, stop_words)
+
+    print( *key_pharases)
+
+    frequencies = calculate_frequencies_for_content_words(key_pharases)
+    word_degrees = calculate_word_degrees(key_pharases, list(frequencies.keys()))
+    word_scores = calculate_word_scores(word_degrees, frequencies)
+    cumulative_scores = calculate_cumulative_score_for_candidates(key_pharases, word_scores)
+
+    print(get_top_n(cumulative_scores, 5, 3))
+
+    with_adjoining = key_pharases \
+                               + extract_candidate_keyword_phrases_with_adjoining(key_pharases, phrases)
+
+    candidates_with_stop_words\
+            = calculate_cumulative_score_for_candidates_with_stop_words(
+            with_adjoining, word_scores, stop_words)
+
+    print(get_top_n(candidates_with_stop_words, 5, 3))
+
 
 
 if __name__ == "__main__":
@@ -42,52 +67,20 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-    phrases = {}
-    for text in corpus:
-        phrases[text] = extract_phrases(corpus[text])
-
-    key_pharases = {}
-    for text in corpus:
-        key_pharases[text] = extract_candidate_keyword_phrases(phrases[text], stop_words)
-    for text, pharases in key_pharases.items():
-        print(f'{text}:', *pharases)
-        continue
-    # print()
-
-    frequencies = {}
-    for text in corpus:
-        frequencies[text] = calculate_frequencies_for_content_words(key_pharases[text])
-
-    word_degrees = {}
-    for text in corpus:
-        word_degrees[text] = calculate_word_degrees(key_pharases[text], list(frequencies[text].keys()))
-
-    word_scores = {}
-    for text in corpus:
-        word_scores[text] = calculate_word_scores(word_degrees[text], frequencies[text])
-
-    cumulative_scores = {}
-    for text in corpus:
-        cumulative_scores[text] = calculate_cumulative_score_for_candidates(key_pharases[text], word_scores[text])
 
     for text in corpus:
-        print(text, get_top_n(cumulative_scores[text], 5, 3))
+        extract_and_show_keyword_phrases(corpus[text], stop_words)
         continue
 
-    with_adjoining = {}
-    for text in corpus:
-        with_adjoining[text] = key_pharases[text] \
-                               + extract_candidate_keyword_phrases_with_adjoining(key_pharases[text], phrases[text])
+    polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
+    stopwords = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-    candidates_with_stop_words = {}
-    for text in corpus:
-        candidates_with_stop_words[text] \
-            = calculate_cumulative_score_for_candidates_with_stop_words(
-            key_pharases[text], word_scores[text], stop_words)
+    extract_and_show_keyword_phrases(polish_text, stopwords['pl'])
 
-    for text in corpus:
-        print(text, get_top_n(candidates_with_stop_words[text], 5, 3))
-        continue
+    esperanto_text = read_target_text(ASSETS_PATH / 'unknown.txt')
+    esperanto_stopwords = generate_stop_words(esperanto_text, 2)
+
+    extract_and_show_keyword_phrases(esperanto_text, esperanto_stopwords)
 
     RESULT = corpus
 
