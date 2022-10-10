@@ -10,8 +10,9 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_lst(object: Any, element_type: type, can_be_empty: bool):
-    if isinstance(object, list) and all(isinstance((element for element in object), element_type)):
+def check_lst(object: Any, element_type: type, can_be_empty: bool) -> bool:
+    if isinstance(object, list):  # and all(isinstance((element for element in object), element_type)): for some reason
+        # it returns TypeError: 'bool' object is not iterable
         if (can_be_empty is False and object) or (can_be_empty is True and not object):
             return True
     else:
@@ -28,8 +29,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not(isinstance(text, str) and text):
         return None
-    for punc in punctuation:
-        text = text.replace(punc, '.')
+    for punc in punctuation + '–«»':
+        text = text.replace('\n', '').replace('\t', '').replace(punc, '.')
         phrases = text.split('.')
     return phrases
 
@@ -43,9 +44,21 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    # if not(check_lst(phrases, str, False), check_lst(stop_words, str, False)):
-    #     for phrase in phrases:
-    #         pass
+    if not(check_lst(phrases, str, False) and check_lst(stop_words, str, False)):
+        return None
+    splt_phrases = [phrase.lower().split() for phrase in phrases]
+    keyword_phrases = []
+    no_stop_phrase = []
+
+    for splt_phrase in splt_phrases:
+        for word in splt_phrase:
+            if word not in stop_words:
+                no_stop_phrase.append(word)
+            elif word in stop_words and no_stop_phrase:
+                keyword_phrases.append(tuple(no_stop_phrase))
+                no_stop_phrase = []
+
+    return keyword_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
