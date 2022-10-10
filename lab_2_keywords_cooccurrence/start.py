@@ -3,8 +3,10 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import extract_phrases, extract_candidate_keyword_phrases
-
+from main import extract_phrases, extract_candidate_keyword_phrases,\
+    calculate_frequencies_for_content_words, calculate_word_degrees, \
+    calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n
+from lab_1_keywords_tfidf.main import clean_and_tokenize
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -39,10 +41,31 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    key_pharases = {}
     for text in corpus:
-        corpus[text] = extract_candidate_keyword_phrases(extract_phrases(corpus[text]), stop_words)
-    for text, pharases in corpus.items():
+        key_pharases[text] = extract_candidate_keyword_phrases(extract_phrases(corpus[text]), stop_words)
+    for text, pharases in key_pharases.items():
         print(f'{text}:', *pharases)
+    print(key_pharases)
+
+    frequencies = {}
+    for text in corpus:
+        frequencies[text] = calculate_frequencies_for_content_words(key_pharases[text])
+
+    word_degrees = {}
+    for text in corpus:
+        word_degrees[text] = calculate_word_degrees(key_pharases[text], list(frequencies[text].keys()))
+
+    word_scores = {}
+    for text in corpus:
+        word_scores[text] = calculate_word_scores(word_degrees[text], frequencies[text])
+
+    cumulative_scores = {}
+    for text in corpus:
+        cumulative_scores[text] = calculate_cumulative_score_for_candidates(key_pharases[text], word_scores[text])
+
+    for text in cumulative_scores:
+        print(text, get_top_n(cumulative_scores[text], 2, 3))
 
     RESULT = corpus
 
