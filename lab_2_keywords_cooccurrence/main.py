@@ -246,7 +246,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for phrase in key_phrases:
             if phrase == item:
                 count2 += 1
-    return list(set([tuple(item.split()) for item in key_phrases if count2 >= 2 and previous == item[0]]))
+    list_result = {tuple(item.split()) for item in key_phrases if count2 >= 2 and previous == item[0]}
+    return list(list_result)
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
