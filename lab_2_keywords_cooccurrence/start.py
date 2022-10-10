@@ -22,11 +22,12 @@ def read_target_text(file_path: Path) -> str:
 
 
 def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> None:
-    key_pharases, frequencies, word_degrees, word_scores, with_adjoining = [None for _ in range(5)]
+    key_pharases, frequencies, word_degrees, word_scores,\
+    with_adjoining, cumulative_scores, candidates_with_stop_words = [None for _ in range(5)]
     phrases = extract_phrases(text)
     if phrases:
         key_pharases = extract_candidate_keyword_phrases(phrases, stopwords)
-        print( *key_pharases)
+        print(key_pharases)
 
     if key_pharases:
         frequencies = calculate_frequencies_for_content_words(key_pharases)
@@ -36,6 +37,7 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
         word_scores = calculate_word_scores(word_degrees, frequencies)
     if key_pharases and word_scores:
         cumulative_scores = calculate_cumulative_score_for_candidates(key_pharases, word_scores)
+    if cumulative_scores:
         print(get_top_n(cumulative_scores, 5, 3))
 
     if key_pharases and phrases:
@@ -46,6 +48,7 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
         candidates_with_stop_words\
             = calculate_cumulative_score_for_candidates_with_stop_words(
             with_adjoining, word_scores, stopwords)
+    if candidates_with_stop_words:
         print(get_top_n(candidates_with_stop_words, 5, 3))
 
 
@@ -78,15 +81,15 @@ if __name__ == "__main__":
         continue
 
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
-    stopwords_for_different_languages = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    stopwords_for_different_languages = dict(load_stop_words(ASSETS_PATH / 'stopwords.json'))
 
     extract_and_show_keyword_phrases(polish_text, stopwords_for_different_languages['pl'])
 
     esperanto_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     esperanto_stopwords = generate_stop_words(esperanto_text, 2)
+    if not esperanto_stopwords:
+        extract_and_show_keyword_phrases(esperanto_text, esperanto_stopwords)
 
-    extract_and_show_keyword_phrases(esperanto_text, esperanto_stopwords)
-    print(esperanto_stopwords)
 
     RESULT = corpus
 
