@@ -261,15 +261,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     list_result = []
     if not key_phrases:
         return list_result
+    count2 = 0
     previous = key_phrases[0][0]
     for item in key_phrases:
-        count = 0
         for phrase in key_phrases:
             if phrase == item:
-                count += 1
-        if count >= 2 and previous == item[0]:
-            previous = item[0]
-            list_result.append(tuple(item.split()))
+                count2 += 1
+    list_result = [tuple(item.split()) for item in key_phrases if count2 >= 2 and previous == item[0]]
     return list(set(list_result))
 
 
