@@ -131,9 +131,6 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     for i in content_words:
         word_degree_dict[i] = word_degree_dict.get(i, 0)
     return word_degree_dict
-candidate = [('времена', 'советского', 'союза', 'исследование', 'космоса'), ('времена', 'союза', 'прошли')]
-content = ['времена', 'советского']
-print(calculate_word_degrees(candidate, content))
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -147,7 +144,15 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(word_degrees, str, int) or not check_dict(word_frequencies, str, int):
+        return None
+    word_score_dict = {}
+    for i in word_frequencies:
+        if i in word_degrees:
+            word_score_dict[i] = word_degrees[i] / word_frequencies.get[i]
+        else:
+            return None
+    return word_score_dict
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -162,7 +167,17 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_keyphrases(candidate_keyword_phrases) or not check_dict(word_scores, str, float):
+        return None
+    cumul_score_dict = {}
+    for one_phrase in candidate_keyword_phrases:
+        metric = 0
+        for words in one_phrase:
+            if word_scores.get(words, 0) == 0:
+                return None
+            metric += word_scores[words]
+        cumul_score_dict[one_phrase] = metric
+    return cumul_score_dict
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -178,7 +193,19 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(keyword_phrases_with_scores, tuple, float) or not check_input(top_n, int) or not check_input(max_length, int) or max_length < 0:
+        return None
+    if top_n < 1 or max_length < 1:
+        return None
+    correct_len = {}
+    for key, val in keyword_phrases_with_scores.items():
+        if len(key) <= max_length:
+            correct_len[key] = val
+    correct_len = sorted(correct_len.keys(), key=lambda key: correct_len[key], reverse=True)[:top_n]
+    top_phr = []
+    for i in correct_len:
+        top_phr.append(' '.join(i))
+    return top_phr
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -201,7 +228,30 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_keyphrases(candidate_keyword_phrases) or not check_list(phrases, str):
+        return None
+    possible_phr = {}
+    for one_phrase in range(len(candidate_keyword_phrases)-1):
+        #key_phr = ()
+        for sec_phrase in range(1, len(candidate_keyword_phrases)):
+            key_phr = tuple(one_phrase, sec_phrase)
+            possible_phr[key_phr] = possible_phr.get(key_phr, 0) + 1
+    neighbours = []
+    for key, val in possible_phr.items():
+        if val > 1:
+            neighbours.append(key)
+    all_words = []
+    for one_phrase in phrases:
+        all_words.append(one_phrase.lower().split())  # turning phrases into words
+    # for one_phrase in neighbours:
+    #     for word in one_phrase:
+    #         if word in all_words:
+    # for one_phrase in range(len(neighbours)):
+    #     for words in range(len(neighbours[one_phrase])):
+    #         if neighbours[one_phrase][words]
+
+
+
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
