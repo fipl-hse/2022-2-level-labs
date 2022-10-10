@@ -228,20 +228,15 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not correct_list(candidate_keyword_phrases, tuple, False) or not correct_list(phrases, str, False):
         return None
-    dict_key = {}
+    count = 0
     for item in candidate_keyword_phrases:
-        count = 0
         for keyword_phrase in candidate_keyword_phrases:
             if keyword_phrase == item:
                 count += 1
-        if count >= 2:
-            dict_key[item] = count
+    dict_key = {item: count for item in candidate_keyword_phrases if count >= 2}
 
-    list_of_tuples = []
-    for count, item in enumerate(candidate_keyword_phrases):
-        for key in dict_key.keys():
-            if key == item:
-                list_of_tuples.append(tuple(candidate_keyword_phrases[count:count + 2]))
+    list_of_tuples = [tuple(candidate_keyword_phrases[count:count + 2]) for count, item in
+                      enumerate(candidate_keyword_phrases) for key in dict_key.keys() if key == item]
 
     final_list = []
     for item in list_of_tuples:
@@ -249,8 +244,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for tuple1 in list_of_tuples:
             if tuple1 == item:
                 count += 1
-                if count >= 2:
-                    final_list.append(item)
+            elif count >= 2:
+                final_list.append(item)
     result = list(set(final_list))
     result = result[::-1]
 
