@@ -44,7 +44,7 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
     if key_pharases and phrases:
         stop_word_key_phrases = extract_candidate_keyword_phrases_with_adjoining(key_pharases, phrases)
 
-    if stop_word_key_phrases:
+    if key_pharases and stop_word_key_phrases:
         with_adjoining = [*key_pharases, *stop_word_key_phrases]
 
     if with_adjoining and word_scores:
