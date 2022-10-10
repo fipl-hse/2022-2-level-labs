@@ -22,26 +22,31 @@ def read_target_text(file_path: Path) -> str:
 
 
 def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> None:
+    key_pharases, frequencies, word_degrees, word_scores, with_adjoining = [None for _ in range(5)]
     phrases = extract_phrases(text)
-    key_pharases = extract_candidate_keyword_phrases(phrases, stopwords)
+    if phrases:
+        key_pharases = extract_candidate_keyword_phrases(phrases, stopwords)
+        print( *key_pharases)
 
-    print( *key_pharases)
+    if key_pharases:
+        frequencies = calculate_frequencies_for_content_words(key_pharases)
+    if key_pharases and frequencies:
+        word_degrees = calculate_word_degrees(key_pharases, list(frequencies.keys()))
+    if word_degrees and frequencies:
+        word_scores = calculate_word_scores(word_degrees, frequencies)
+    if key_pharases and word_scores:
+        cumulative_scores = calculate_cumulative_score_for_candidates(key_pharases, word_scores)
+        print(get_top_n(cumulative_scores, 5, 3))
 
-    frequencies = calculate_frequencies_for_content_words(key_pharases)
-    word_degrees = calculate_word_degrees(key_pharases, list(frequencies.keys()))
-    word_scores = calculate_word_scores(word_degrees, frequencies)
-    cumulative_scores = calculate_cumulative_score_for_candidates(key_pharases, word_scores)
-
-    print(get_top_n(cumulative_scores, 5, 3))
-
-    with_adjoining = key_pharases \
+    if key_pharases and phrases:
+        with_adjoining = key_pharases \
                                + extract_candidate_keyword_phrases_with_adjoining(key_pharases, phrases)
 
-    candidates_with_stop_words\
+    if with_adjoining and word_scores:
+        candidates_with_stop_words\
             = calculate_cumulative_score_for_candidates_with_stop_words(
             with_adjoining, word_scores, stopwords)
-
-    print(get_top_n(candidates_with_stop_words, 5, 3))
+        print(get_top_n(candidates_with_stop_words, 5, 3))
 
 
 
