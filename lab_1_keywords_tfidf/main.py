@@ -100,11 +100,8 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     for i in frequencies.items():
         if not isinstance(i[0], str) or not isinstance(i[1], (int, float)):
             return None
-    sorted_list = []
-    sort = sorted(frequencies.items(), reverse=True, key=lambda x: x[1])
-    for i in sort:
-        sorted_list.append(i[0])
-    return sorted_list[:top]
+    sort = sorted(frequencies.keys(), reverse=True, key=lambda word: frequencies[word])
+    return sort[:top]
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
@@ -156,10 +153,8 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
             return None
     dictionary = {}
     for key in term_freq:
-        if key in idf:
-            tfidf = term_freq[key] * idf[key]
-        else:
-            tfidf = term_freq[key] * math.log(47 / 1)
+        tfidf = idf.get(key,
+                        math.log(47 / 1)) * term_freq[key]
         dictionary[key] = tfidf
     return dictionary
 
