@@ -72,9 +72,9 @@ if __name__ == "__main__":
         continue
 
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
-    stopwords = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    stopwords_for_different_languages = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-    extract_and_show_keyword_phrases(polish_text, stopwords['pl'])
+    extract_and_show_keyword_phrases(polish_text, stopwords_for_different_languages['pl'])
 
     esperanto_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     esperanto_stopwords = generate_stop_words(esperanto_text, 2)
