@@ -14,11 +14,9 @@ KeyPhrases = Sequence[KeyPhrase]
 def type_check(data: Any, expected: Any) -> bool:
     """
     Checks any type used in a program. For str, list, tuple and dict also checks if they are empty.
-    Parameters:
-    data (Any): An object which type is checked
-    expected (Any): A type we expect data to be
-    Returns:
-    bool: True if data has the expected type and not empty, False otherwise
+    :param data: An object which type is checked
+    :param expected: A type we expect data to be
+    :return: True if data has the expected type and not empty, False otherwise
     """
     return isinstance(data, expected) and not (expected == int and isinstance(data, bool)) and data
 
@@ -50,11 +48,10 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     if not type_check(phrases, list) or not type_check(stop_words, list):
         return None
     candidates = []
-    for phrase in phrases:
-        clean_phrase = phrase.lower().split()
-        splits = [-1] + [count for count, word in enumerate(clean_phrase) if word in stop_words] + [len(clean_phrase)]
+    for phrase in [phrase.lower().split() for phrase in phrases]:
+        splits = [-1] + [count for count, word in enumerate(phrase) if word in stop_words] + [len(phrase)]
         candidates.extend(candidate for count, split in enumerate(splits[:-1])
-                          if (candidate := tuple(clean_phrase[split+1:splits[count+1]])))
+                          if (candidate := tuple(phrase[split+1:splits[count+1]])))
     return candidates
 
 
@@ -235,13 +232,12 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
         -> Optional[Mapping[KeyPhrase, float]]:
     """
     Uses previous functions to process a text and extract key phrases.
-    Accepts raw text and a list of stop words (or a maximum length of a stop word if they have to be generated
+    Accepts raw text and stop words list (or maximum length of a stop word if they have to be generated
     from the text).
     Returns extracted key phrases or None if something goes wrong.
     """
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
-        candidates_adjoined, cumulative_score_with_stop_words = \
-        [None for not_undefined in range(7)]
+        candidates_adjoined, cumulative_score_with_stop_words = [None for not_undefined in range(7)]
     phrases = extract_phrases(text)
     if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
         stop_words = stop_words_generated
