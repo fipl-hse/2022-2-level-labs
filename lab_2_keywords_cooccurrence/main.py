@@ -244,21 +244,17 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for tuple1 in list_of_tuples:
             if tuple1 == item:
                 count += 1
-            elif count >= 2:
-                final_list.append(item)
-    result = list(set(final_list))
-    result = result[::-1]
+        if count >= 2:
+            final_list.append(item)
+    result = list(set(final_list))[::-1]
 
     key_phrases = []
     for item in phrases:
         for elem in result:
-            first_tuple = elem[0]
-            second_tuple = elem[1]
-            first_word = first_tuple[0]
-            second_word = second_tuple[len(second_tuple) - 1]
+            first_tuple, second_tuple = elem[0], elem[1]
+            first_word, second_word = first_tuple[0], second_tuple[len(second_tuple) - 1]
             if first_word in item:
-                first_place = item.index(first_word)
-                second_place = item.rindex(second_word)
+                first_place, second_place = item.index(first_word), item.rindex(second_word)
                 len_second_word = second_place + (len(second_word) - 1)
                 key_phrases.append(item[first_place:len_second_word + 1])
 
@@ -274,8 +270,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if count >= 2 and previous == item[0]:
             previous = item[0]
             list_result.append(tuple(item.split()))
-    list_result = list(set(list_result))
-    return list_result
+    return list(set(list_result))
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
