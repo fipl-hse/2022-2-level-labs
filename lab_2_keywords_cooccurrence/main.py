@@ -13,11 +13,11 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def is_valid(object: Any, type: type) -> bool:
+def is_valid(some_object: Any, some_type: type) -> bool:
     """
     Checks object type and whether it contains something
     """
-    return bool(object and isinstance(object, type))
+    return bool(some_object and isinstance(some_object, some_type))
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -214,7 +214,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not is_valid(candidate_keyword_phrases, list) or not is_valid(word_scores, dict) or not is_valid(stop_words, list):
+    if not is_valid(candidate_keyword_phrases, list) \
+            or not is_valid(word_scores, dict) or not is_valid(stop_words, list):
         return None
     cumulative = {}
     for phrase in candidate_keyword_phrases:

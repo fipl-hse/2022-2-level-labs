@@ -82,7 +82,8 @@ if __name__ == "__main__":
     candidates_with_stop_words = {}
     for text in corpus:
         candidates_with_stop_words[text] \
-            = calculate_cumulative_score_for_candidates_with_stop_words(key_pharases[text], word_scores[text], stop_words)
+            = calculate_cumulative_score_for_candidates_with_stop_words(
+            key_pharases[text], word_scores[text], stop_words)
 
     for text in corpus:
         print(text, get_top_n(candidates_with_stop_words[text], 5, 3))
