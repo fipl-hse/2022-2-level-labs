@@ -236,7 +236,6 @@ def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -
     return chi_dict
 
 
-
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
     Select those tokens from the token sequence that
