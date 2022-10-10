@@ -158,7 +158,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
             or top_n < 0):
         return None
     normal_length_phrases = [phrase for phrase in keyword_phrases_with_scores if len(phrase) <= max_length]
-    sorted_phrase = sorted(normal_length_phrases, key=keyword_phrases_with_scores.get or ' ', reverse=True)
+    sorted_phrase = sorted(normal_length_phrases, key=lambda x: keyword_phrases_with_scores[x], reverse=True)
     return [' '.join(words) for words in sorted_phrase[:top_n]]
 
 
