@@ -5,7 +5,6 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from string import punctuation
-import re
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -245,8 +244,15 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 x.append(i)
             if x:
                 appropriate_pairs.append(x)
-
-
+    phrases_with_stopwords = []
+    for phrase in phrases:
+        for elem in appropriate_pairs:
+            if (elem[0] and elem[1]) in phrase:
+                a = phrase.index(elem[0])
+                b = phrase.index(elem[1]) + len(elem[1])
+                needed_phrase = phrase[a:b]
+                phrases_with_stopwords.append(needed_phrase)
+    return phrases_with_stopwords
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
