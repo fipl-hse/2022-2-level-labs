@@ -9,7 +9,6 @@ from main import extract_phrases, extract_candidate_keyword_phrases,\
     get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
     calculate_cumulative_score_for_candidates_with_stop_words,\
     load_stop_words, generate_stop_words
-from lab_1_keywords_tfidf.main import clean_and_tokenize
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -21,9 +20,9 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def extract_and_show_keyword_phrases(text, stop_words) -> None:
+def extract_and_show_keyword_phrases(text, stopwords) -> None:
     phrases = extract_phrases(text)
-    key_pharases = extract_candidate_keyword_phrases(phrases, stop_words)
+    key_pharases = extract_candidate_keyword_phrases(phrases, stopwords)
 
     print( *key_pharases)
 
@@ -39,7 +38,7 @@ def extract_and_show_keyword_phrases(text, stop_words) -> None:
 
     candidates_with_stop_words\
             = calculate_cumulative_score_for_candidates_with_stop_words(
-            with_adjoining, word_scores, stop_words)
+            with_adjoining, word_scores, stopwords)
 
     print(get_top_n(candidates_with_stop_words, 5, 3))
 
@@ -68,8 +67,8 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    for text in corpus:
-        extract_and_show_keyword_phrases(corpus[text], stop_words)
+    for article in corpus:
+        extract_and_show_keyword_phrases(corpus[article], stop_words)
         continue
 
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
