@@ -41,8 +41,8 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
         print(get_top_n(cumulative_scores, 5, 3))
 
     if key_pharases and phrases:
-        with_adjoining = key_pharases \
-                               + extract_candidate_keyword_phrases_with_adjoining(key_pharases, phrases)
+        with_adjoining = [*key_pharases,
+                          *extract_candidate_keyword_phrases_with_adjoining(key_pharases, phrases)]
 
     if with_adjoining and word_scores:
         candidates_with_stop_words\
@@ -81,13 +81,14 @@ if __name__ == "__main__":
         continue
 
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
-    stopwords_for_different_languages = dict(load_stop_words(ASSETS_PATH / 'stopwords.json'))
+    stopwords_for_different_languages = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-    extract_and_show_keyword_phrases(polish_text, stopwords_for_different_languages['pl'])
+    if stopwords_for_different_languages:
+        extract_and_show_keyword_phrases(polish_text, stopwords_for_different_languages['pl'])
 
     esperanto_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     esperanto_stopwords = generate_stop_words(esperanto_text, 2)
-    if not esperanto_stopwords:
+    if esperanto_stopwords:
         extract_and_show_keyword_phrases(esperanto_text, esperanto_stopwords)
 
 
