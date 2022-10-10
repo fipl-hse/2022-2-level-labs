@@ -48,16 +48,11 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or not text:
         return None
-    punctuation_marks = '.;:¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'
+    punctuation_marks = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
     for mark in punctuation_marks:
         text = text.replace(mark, ',')
     split_text = text.split(',')
-    phrases = []
-    for phrase in split_text:
-        phrase = phrase.strip()
-        if phrase:
-            phrases.append(phrase)
-    return phrases
+    return [phrase.strip() for phrase in split_text if phrase.strip() != '']
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -127,7 +122,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         for word in content_words:
             if word in phrase:
                 word_degrees[word] = word_degrees.get(word, 0) + len(phrase)
-            elif word not in word_degrees.keys():
+            elif word not in word_degrees:
                 word_degrees[word] = 0
     return word_degrees
 
@@ -145,14 +140,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     """
     if not correct_dict(word_degrees, str, int, False) or not correct_dict(word_frequencies, str, int, False):
         return None
-    word_scores = {}
     for word in word_degrees:
         if word not in word_frequencies:
             return None
-        word_in_word_degrees = word_degrees[word]
-        word_in_word_frequencies = word_frequencies[word]
-        word_scores[word] = word_in_word_degrees/word_in_word_frequencies
-    return word_scores
+    return {word: word_degrees[word]/word_frequencies[word] for word in word_degrees if word in word_frequencies}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -198,12 +189,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         return None
     top_phrases = sorted(keyword_phrases_with_scores.keys(), key=lambda word: keyword_phrases_with_scores[word],
                          reverse=True)
-    top_keyword_phrases = []
-    for phrase in top_phrases:
-        if len(phrase) <= max_length:
-            words = " ".join(phrase)
-            top_keyword_phrases.append(words)
-    return top_keyword_phrases[:top_n]
+    return [" ".join(phrase) for phrase in top_phrases if len(phrase) <= max_length][:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -229,15 +215,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not correct_list(candidate_keyword_phrases, tuple, False) or not correct_list(phrases, str, False):
         return None
     count = 0
-    for item in candidate_keyword_phrases:
-        for keyword_phrase in candidate_keyword_phrases:
-            if keyword_phrase == item:
-                count += 1
+    count = sum([count+1 for keyword_phrase in candidate_keyword_phrases for item in candidate_keyword_phrases
+                 if keyword_phrase == item])
     dict_key = {item: count for item in candidate_keyword_phrases if count >= 2}
-
     list_of_tuples = [tuple(candidate_keyword_phrases[count:count + 2]) for count, item in
                       enumerate(candidate_keyword_phrases) for key in dict_key.keys() if key == item]
-
     final_list = []
     for item in list_of_tuples:
         count = 0
@@ -251,24 +233,20 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     key_phrases = []
     for item in phrases:
         for elem in result:
-            first_tuple, second_tuple = elem[0], elem[1]
-            first_word, second_word = first_tuple[0], second_tuple[len(second_tuple) - 1]
-            if first_word in item:
-                first_place, second_place = item.index(first_word), item.rindex(second_word)
-                len_second_word = second_place + (len(second_word) - 1)
-                key_phrases.append(item[first_place:len_second_word + 1])
+            first_tuple, second_tuple = elem[0][0], elem[1][len(elem[1]) - 1]
+            if first_tuple in item:
+                key_phrases.append(item[item.index(first_tuple):
+                                        item.rindex(second_tuple) + (len(second_tuple) - 1) + 1])
 
-    list_result = []
     if not key_phrases:
-        return list_result
+        return []
     count2 = 0
     previous = key_phrases[0][0]
     for item in key_phrases:
         for phrase in key_phrases:
             if phrase == item:
                 count2 += 1
-    list_result = [tuple(item.split()) for item in key_phrases if count2 >= 2 and previous == item[0]]
-    return list(set(list_result))
+    return list(set([tuple(item.split()) for item in key_phrases if count2 >= 2 and previous == item[0]]))
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
