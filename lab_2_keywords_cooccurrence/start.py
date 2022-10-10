@@ -23,7 +23,7 @@ def read_target_text(file_path: Path) -> str:
 
 def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> None:
     key_pharases, frequencies, word_degrees, word_scores,\
-    with_adjoining, cumulative_scores, candidates_with_stop_words = [None for _ in range(5)]
+    with_adjoining, cumulative_scores, candidates_with_stop_words = [None for _ in range(7)]
     phrases = extract_phrases(text)
     if phrases:
         key_pharases = extract_candidate_keyword_phrases(phrases, stopwords)
