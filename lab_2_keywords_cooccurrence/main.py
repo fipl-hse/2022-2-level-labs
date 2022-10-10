@@ -129,13 +129,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     if (not check_type_and_not_empty(candidate_keyword_phrases, list)
             or not check_type_and_not_empty(word_scores, dict)):
         return None
-    cumulative = {}
-    for phrase in candidate_keyword_phrases:
-        try:
-            cumulative[phrase] = sum([word_scores[word] for word in phrase])
-        except KeyError:
+    try:
+        return {phrase: sum(word_scores[word] for word in phrase)
+                for phrase in candidate_keyword_phrases}
+    except KeyError:
             return None
-    return cumulative
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
