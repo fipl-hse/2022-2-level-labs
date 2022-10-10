@@ -133,7 +133,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return {phrase: sum(word_scores[word] for word in phrase)
                 for phrase in candidate_keyword_phrases}
     except KeyError:
-            return None
+        return None
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
