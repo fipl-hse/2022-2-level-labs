@@ -5,6 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
+from string import punctuation
 
 
 KeyPhrase = tuple[str, ...]
@@ -15,14 +16,16 @@ def check_input(user_input: Any, required_type: type) -> bool:
     """
     Checks if the input is as required, and it is not empty (for int, float and str)
     """
-    if not user_input or not isinstance(user_input, required_type):
-        return False
-    return True
+    if user_input and isinstance(user_input, required_type):
+        return True
 
 
 def check_list(user_input: Any, elements_required_type: type) -> bool:
     """
     Checks if the input is not empty, is a sequence and the elements are of the required type
+    :param user_input: An input, which is checked
+    :param elements_required_type: The type of input's elements
+    :return: True if the input is correct and it's elements are of a required type
     """
     if not user_input or not isinstance(user_input, list):
         return False
@@ -32,6 +35,13 @@ def check_list(user_input: Any, elements_required_type: type) -> bool:
     return True
 
 def check_dict(user_input: Any, keys_type: type, values_type: type) -> bool:
+    """
+    Checks if the input is a non-empty dictionary with required keys and values
+    :param user_input: An input, which is checked
+    :param keys_type: The type of dictionary's keys
+    :param values_type: The type of dictionary's values
+    :return: True if the input is correct and keys and values are as required
+    """
     if not user_input or not isinstance(user_input, dict):
         return False
     for key, value in user_input.items():
@@ -40,6 +50,11 @@ def check_dict(user_input: Any, keys_type: type, values_type: type) -> bool:
     return True
 
 def check_keyphrases(user_input: Any) -> bool:
+    """
+    Checks whether the input is a non-empty keyphrase
+    :param user_input: An input, which is checked
+    :return: True if the input is correct
+    """
     if not user_input or not isinstance(user_input, list):
         return False
     for i in user_input:
@@ -49,6 +64,7 @@ def check_keyphrases(user_input: Any) -> bool:
             if not isinstance(j, str):
                 return False
     return True
+
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -59,8 +75,20 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not check_input(text, str):
         return None
-    sep_phrases = re.split(r'[^\w\s]\s', text)
-    return sep_phrases
+    punctuat = """!\"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
+    sep_phrases = text[:]
+    for i in sep_phrases:
+        if i in punctuat:
+            sep_phrases = sep_phrases.replace(i, '*')
+    sep_phrases = re.split(r'[*]{1,}', sep_phrases)
+    new_sep = sep_phrases[:]
+    for j in sep_phrases:
+        if re.fullmatch(r'\s+', j) or len(j) == 0:
+            new_sep.remove(j)
+    result = []
+    for i in new_sep:
+        result.append(i.strip())
+    return result
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -100,7 +128,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, str):
+    if not check_keyphrases(candidate_keyword_phrases):
         return None
     freq_dict = {}
     for phrases in candidate_keyword_phrases:
@@ -147,9 +175,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not check_dict(word_degrees, str, int) or not check_dict(word_frequencies, str, int):
         return None
     word_score_dict = {}
-    for i in word_frequencies:
-        if i in word_degrees:
-            word_score_dict[i] = word_degrees[i] / word_frequencies.get[i]
+    for i in word_degrees:
+        if i in word_frequencies:
+            word_score_dict[i] = word_degrees[i] / word_frequencies[i]
         else:
             return None
     return word_score_dict
