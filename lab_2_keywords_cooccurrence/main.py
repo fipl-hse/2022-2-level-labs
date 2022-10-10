@@ -2,16 +2,18 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
+import json
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Union, Type, Any
+from typing import Optional, Sequence, Mapping, Any
 import re
 from itertools import chain
+from lab_1_keywords_tfidf.main import clean_and_tokenize, calculate_frequencies
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def is_valid(object, type):
+def is_valid(object: Any, type: type) -> bool:
     """
     Checks object type and whether it contains something
     """
@@ -50,7 +52,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         phrase = []
         for word in sentence.lower().split():
             if word not in stop_words:
-                print(word)
                 phrase.append(word)
             elif phrase and word in stop_words:
                 key_phrases.append(tuple(phrase))
@@ -86,7 +87,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not is_valid(candidate_keyword_phrases, Sequence) or not is_valid(content_words, Sequence):
+    if not is_valid(candidate_keyword_phrases, list) or not is_valid(content_words, list):
         return None
     word_degree = dict.fromkeys(content_words, 0)
     for word in content_words:
@@ -107,8 +108,8 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not is_valid(word_degrees, dict) or not is_valid(word_frequencies, dict) or \
-            word_degrees.keys() != word_frequencies.keys():
+    if (not is_valid(word_degrees, dict) or not is_valid(word_frequencies, dict) or
+            word_degrees.keys() != word_frequencies.keys()):
         return None
     word_score = {k: word_degrees[k] / word_frequencies[k] for k in word_degrees}
     return word_score
@@ -126,7 +127,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not is_valid(candidate_keyword_phrases, Sequence) or not is_valid(word_scores, Mapping):
+    if not is_valid(candidate_keyword_phrases, list) or not is_valid(word_scores, dict):
         return None
     cumulative = {}
     for phrase in candidate_keyword_phrases:
@@ -178,7 +179,24 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_valid(candidate_keyword_phrases, list) or not is_valid(phrases, list):
+        return None
+    neughbours = []
+    for i in range(len(candidate_keyword_phrases) - 4):
+        if (candidate_keyword_phrases[i] == candidate_keyword_phrases[i + 3]
+            and candidate_keyword_phrases[i + 1] == candidate_keyword_phrases[i + 4]):
+            neughbours.append((candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]))
+
+    phrases = [phrase.lower() for phrase in phrases]
+    keyword_phrases_with_stop_words = []
+    for phrase in phrases:
+        for pair in neughbours:
+            part1, part2 =  ' '.join(pair[0]), ' '.join(pair[1])
+            if part1 in phrase.lower() and  part2 in phrase.lower():
+                keyword_phrases_with_stop_words.extend(re.findall(fr'{part1}.*?{part2}', phrase))
+
+    return [tuple(phrase.split()) for phrase in set(keyword_phrases_with_stop_words)
+           if keyword_phrases_with_stop_words.count(phrase) > 1]
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -196,7 +214,15 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_valid(candidate_keyword_phrases, list) or not is_valid(word_scores, dict) or not is_valid(stop_words, list):
+        return None
+    cumulative = {}
+    for phrase in candidate_keyword_phrases:
+        try:
+            cumulative[phrase] = sum([word_scores[word] for word in phrase if word not in stop_words])
+        except KeyError:
+            return None
+    return cumulative
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -207,7 +233,13 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not is_valid(text, str) or not is_valid(max_length, int) or max_length < 0:
+        return None
+    tokens = clean_and_tokenize(text)
+    frequencies = calculate_frequencies(tokens)
+    values = sorted(frequencies.values())
+    percentile = values[round(len(values) * 0.8) - 1]
+    return [key for key, value in frequencies.items() if value >= percentile and len(key) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -216,4 +248,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not is_valid(path, Path):
+        return None
+    file = open(path, encoding='utf-8')
+    return json.load(file)
