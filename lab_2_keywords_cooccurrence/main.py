@@ -243,7 +243,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not key_phrases:
         return []
     count2 = 0
-    previous = key_phrases[0][0]
+    previous = key_phrases[0][0:1]
     for item2 in key_phrases:
         for phrase in key_phrases:
             if phrase == item2:
