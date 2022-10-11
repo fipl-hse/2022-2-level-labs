@@ -4,6 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
+import json
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -68,15 +69,15 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     candidates_list = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
+        ready_phrase = phrase.lower().split()
         candidate1 = []
-        for word in phrase:
+        for word in ready_phrase:
             if word in stop_words:
                 if candidate1:
                     candidate2 = tuple(candidate1)
                     candidates_list.append(candidate2)
                     candidate1.clear()
-            elif word == phrase[len(phrase) - 1]:
+            elif word == ready_phrase[len(ready_phrase) - 1]:
                 candidate1.append(word)
                 candidate2 = tuple(candidate1)
                 candidates_list.append(candidate2)
@@ -235,8 +236,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for elem in result:
             first_tuple, second_tuple = elem[0][0], elem[1][len(elem[1]) - 1]
             if first_tuple in item:
-                key_phrases.append(item[item.index(first_tuple):item.rindex(second_tuple) +
-                                                                           (len(second_tuple) - 1) + 1])
+                first_place, second_place = item.index(first_tuple), item.rindex(second_tuple[len(second_tuple) - 1])
+                len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
+                key_phrases.append(item[first_place:len_second_word + 1])
 
     if not key_phrases:
         return []
@@ -299,4 +301,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not isinstance(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as stop_words:
+        return dict(json.load(stop_words))
