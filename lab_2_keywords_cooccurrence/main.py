@@ -240,19 +240,16 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
                 key_phrases.append(item1[first_place:len_second_word + 1])
 
-    list_result = []
     if not key_phrases:
-        return list_result
+        return []
+    count2 = 0
     previous = key_phrases[0][0]
-    for item in key_phrases:
-        count = 0
+    for item2 in key_phrases:
         for phrase in key_phrases:
-            if phrase == item:
-                count += 1
-        if count >= 2 and previous == item[0:1]:
-            previous = item[0]
-            list_result.append(tuple(item.split()))
-    return list(set(list_result))
+            if phrase == item2:
+                count2 += 1
+    list_result = {tuple(item2.split()) for item2 in key_phrases if count2 >= 2 and previous == item2[0:1]}
+    return list(list_result)
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
