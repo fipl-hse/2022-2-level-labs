@@ -5,6 +5,8 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
+from itertools import pairwise
+import re
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -198,41 +200,18 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases) and check_list(phrases)):
+    if not (check_list(candidate_keyword_phrases, tuple, False) and check_list(phrases, str, False)):
         return None
-        keyword_phrases = []
-        for phrase in candidate_keyword_phrases:
-            if candidate_keyword_phrases.count(phrase) >= 2:
-                next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(phrase) + 1]
-                phrase_pair = [phrase, next_phrase]
-                if candidate_keyword_phrases.count(next_phrase) >= 2 \
-                        and candidate_keyword_phrases[candidate_keyword_phrases.index(next_phrase) - 1] == phrase:
-                    keyword_phrases.append(phrase_pair)
-        keyword_phrases_no_duplicates = []
-        new = []
-        for i in keyword_phrases:
-            if i not in keyword_phrases_no_duplicates:
-                keyword_phrases_no_duplicates.append(i)
-        keyword_phrases = keyword_phrases_no_duplicates
-        for new_keyword_phrase in keyword_phrases:
-            for sentence in phrases:
-                splitted = sentence.lower().split()
-                first_part_phrase = ' '.join(new_keyword_phrase[0]) if len(
-                    new_keyword_phrase) > 1 else new_keyword_phrase
-                second_part_phrase = ' '.join(new_keyword_phrase[1]) if len(
-                    new_keyword_phrase) > 1 else new_keyword_phrase
-                if first_part_phrase in sentence \
-                        and second_part_phrase in sentence \
-                        and splitted[splitted.index(first_part_phrase.split()[-1]) + 1] == \
-                        splitted[splitted.index(second_part_phrase.split()[0]) - 1]:
-                    whole_keyword_phrase = [first_part_phrase, splitted[splitted.index(first_part_phrase) + 1],
-                                            second_part_phrase]
-                    new.append(whole_keyword_phrase)
-        actual_final = []
-        for final_keyword_phrase in new:
-            final_keyword_phrase = tuple(' '.join(final_keyword_phrase).split())
-            actual_final.append(final_keyword_phrase)
-        return actual_final
+    kw_phrases_join = [' '.join(kw_phrase) for kw_phrase in candidate_keyword_phrases]
+    kw_phrases_pairs = list(pairwise(kw_phrases_join))
+    frequencies = {token: kw_phrases_pairs.count(token) for token in kw_phrases_pairs}
+    kw_phrases_with_stop_word = []
+    for kw_phrase in frequencies.keys():
+        if frequencies[kw_phrase] > 1:
+            for phrase in phrases:
+                if kw_phrase[0] in phrase and kw_phrase[1] in phrase:
+                    kw_phrases_with_stop_word.extend(re.findall(f'{kw_phrase[0]}.*{kw_phrase[1]}', phrase))
+    return [tuple(phrase.split()) for phrase in set(kw_phrases_with_stop_word)]
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
