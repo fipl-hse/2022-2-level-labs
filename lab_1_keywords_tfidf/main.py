@@ -139,7 +139,37 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
     checking_dict = check_dict(frequencies, str, int, False) or check_dict(frequencies, str, float, False)
     if not (checking_dict and check_positive_int(top)):
         return None
+<<<<<<< HEAD
     return sorted(frequencies.keys(), key=lambda key: frequencies[key], reverse=True)[:top]
+=======
+    if top <= 0:
+        return None
+    for key, value in frequencies.items():
+        if not isinstance(key, str) or not isinstance(value, (int, float)):
+            return None
+    list_sorted = sorted(frequencies.keys(), key=lambda x: frequencies[x], reverse=True)
+    return list_sorted[:top]
+
+    # If you want to conserve all the information from a dictionary when sorting it," \
+    # the typical first step is to call the .items() method on the dictionary. " \
+    # Calling .items() on the dictionary will provide an iterable of tuples representing the key-value pairs:" \
+    # Tuple(кортеж) is a Python type that is an ordered collection of objects"
+
+    # operator is a built-in module providing a set of convenient operators. operator.itemgetter(n) ' \
+    # constructs a callable that assumes an iterable object (e.g. list, tuple, set) as input, ' \
+    # and fetches the n-th element out of it.'
+
+    # С версии Python 2.4 у list.sort() и sorted() появился параметр key для указания функции,
+    # которая будет вызываться на каждом элементе до сравнения
+
+    # Для параметра key= sort требуется ключевая функция (которая будет применяться для сортировки объектов), " \
+    # а не одно ключевое значение и" \
+    # это то, что operator.itemgetter(1) даст вам: функция которая захватывает 1 элемент из списка-подобного объекта."
+    # У list.sort() и sorted() есть параметр reverse, принимающий boolean-значение
+    # Он нужен для обозначения сортировки по убыванию.
+
+    # for each first x in text, if x.isdigit() is True, add it to the list
+>>>>>>> 577305d (smth went wrong so im fixing to merge new lab)
 
 
 def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
