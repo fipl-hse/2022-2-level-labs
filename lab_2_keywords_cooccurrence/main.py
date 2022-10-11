@@ -167,7 +167,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            cumulative_score += word_scores[word]
+            cumulative_score += int(word_scores[word])
         cumulative_score_for_candidates[phrase] = cumulative_score
     return cumulative_score_for_candidates
 
@@ -232,13 +232,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     result = list(set(final_list))[::-1]
 
     key_phrases = []
-    for item in phrases:
+    for item1 in phrases:
         for elem in result:
             first_tuple, second_tuple = elem[0][0], elem[1][len(elem[1]) - 1]
-            if first_tuple in item:
-                first_place, second_place = item.index(first_tuple), item.rindex(second_tuple[len(second_tuple) - 1])
+            if first_tuple in item1:
+                first_place, second_place = item1.index(first_tuple), item1.rindex(second_tuple[len(second_tuple) - 1])
                 len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
-                key_phrases.append(item[first_place:len_second_word + 1])
+                key_phrases.append(item1[first_place:len_second_word + 1])
 
     if not key_phrases:
         return []
