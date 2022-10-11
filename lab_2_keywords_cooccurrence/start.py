@@ -87,7 +87,7 @@ if __name__ == "__main__":
     LOADED_STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
     if LOADED_STOP_WORDS:
-        text_processing(read_target_text(ASSETS_PATH / 'polish.txt'), LOADED_STOP_WORDS)
+        text_processing(read_target_text(ASSETS_PATH / 'polish.txt'), LOADED_STOP_WORDS['pl'])
 
     UNKNOWN_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
     STOP_WORDS_IN_UNKNOWN_TEXT = generate_stop_words(UNKNOWN_TEXT, 10)
