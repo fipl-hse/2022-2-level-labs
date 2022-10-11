@@ -246,10 +246,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     previous = key_phrases[0][0]
     for item in key_phrases:
         count = 0
+        sled = item[0][0]
         for phrase in key_phrases:
             if phrase == item:
                 count += 1
-        if count >= 2 and previous == item[0][0]:
+        if count >= 2 and previous == sled:
             previous = item[0]
             list_result.append(tuple(item.split()))
     return list(set(list_result))
