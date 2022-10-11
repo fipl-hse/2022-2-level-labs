@@ -52,7 +52,6 @@ if __name__ == "__main__":
         FREQUENCIES = calculate_frequencies(CLEAN_TOKENS)
 
     if FREQUENCIES:
-        top_10 = get_top_n(FREQUENCIES, 10)
         TF_DICT = calculate_tf(FREQUENCIES)
 
     if TF_DICT:
@@ -64,7 +63,7 @@ if __name__ == "__main__":
     if FREQUENCIES:
         EXP_FREQ_DICT = calculate_expected_frequency(FREQUENCIES, corpus_freqs)
 
-    if EXP_FREQ_DICT:
+    if EXP_FREQ_DICT and FREQUENCIES:
         CHI_DICT = calculate_chi_values(EXP_FREQ_DICT, FREQUENCIES)
 
     if CHI_DICT:
