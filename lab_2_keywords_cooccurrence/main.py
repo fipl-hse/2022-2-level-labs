@@ -118,11 +118,11 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, False)
             and word_degrees.keys() == word_frequencies.keys()):
         return None
-    word_scores = {}
+    key_scores = {}
     for key in word_degrees.keys():
         if key in word_frequencies:
-            word_scores[key] = word_degrees[key] / word_frequencies[key]
-    return word_scores
+            key_scores[key] = word_degrees[key] / word_frequencies[key]
+    return key_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,

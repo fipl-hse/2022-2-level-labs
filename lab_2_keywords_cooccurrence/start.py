@@ -45,7 +45,7 @@ if __name__ == "__main__":
 
     CANDIDATE_PHRASES = None
     FREQUENCIES = None
-    DEGREE = None
+    DEGREES = None
     SCORES = None
     EXTRACTION = extract_phrases(corpus['gagarin'])
 
@@ -56,11 +56,11 @@ if __name__ == "__main__":
         FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_PHRASES)
 
     if FREQUENCIES:
-        DEGREE = calculate_word_degrees(CANDIDATE_PHRASES, list(FREQUENCIES.keys()))
+        DEGREES = calculate_word_degrees(CANDIDATE_PHRASES, list(FREQUENCIES.keys()))
 
-    if DEGREE:
-        SCORES = calculate_word_scores(DEGREE, FREQUENCIES)
+    if DEGREES:
+        SCORES = calculate_word_scores(DEGREES, FREQUENCIES)
 
-    RESULT = DEGREE
+    RESULT = DEGREES
 
     assert RESULT, 'Keywords are not extracted'
