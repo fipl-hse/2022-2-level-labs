@@ -34,45 +34,45 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    clean_tokens = None
-    frequencies = None
-    tf_dict = None
-    tfidf_dict = None
-    exp_freq_dict = None
-    chi_dict = None
-    significant_words = None
+    CLEAN_TOKENS = None
+    FREQUENCIES = None
+    TF_DICT = None
+    TFIDF_DICT = None
+    EXP_FREQ_DICT = None
+    CHI_DICT = None
+    SIGNIFICANT_WORDS = None
     RESULT = None
 
     clean_text = clean_and_tokenize(target_text)
 
     if clean_text:
-        clean_tokens = remove_stop_words(clean_text, stop_words)
+        CLEAN_TOKENS = remove_stop_words(clean_text, stop_words)
 
-    if clean_tokens:
-        frequencies = calculate_frequencies(clean_tokens)
+    if CLEAN_TOKENS:
+        FREQUENCIES = calculate_frequencies(CLEAN_TOKENS)
 
-    if frequencies:
-        top_10 = get_top_n(frequencies, 10)
-        tf_dict = calculate_tf(frequencies)
+    if FREQUENCIES:
+        top_10 = get_top_n(FREQUENCIES, 10)
+        TF_DICT = calculate_tf(FREQUENCIES)
 
-    if tf_dict:
-        tfidf_dict = calculate_tfidf(tf_dict, idf)
+    if TF_DICT:
+        TFIDF_DICT = calculate_tfidf(TF_DICT, idf)
 
-    if tfidf_dict:
-        top_10_tfidf = get_top_n(tfidf_dict, 10)
+    if TFIDF_DICT:
+        top_10_tfidf = get_top_n(TFIDF_DICT, 10)
 
-    if frequencies:
-        exp_freq_dict = calculate_expected_frequency(frequencies, corpus_freqs)
+    if FREQUENCIES:
+        EXP_FREQ_DICT = calculate_expected_frequency(FREQUENCIES, corpus_freqs)
 
-    if exp_freq_dict:
-        chi_dict = calculate_chi_values(exp_freq_dict, frequencies)
+    if EXP_FREQ_DICT:
+        CHI_DICT = calculate_chi_values(EXP_FREQ_DICT, FREQUENCIES)
 
-    if chi_dict:
-        significant_words = extract_significant_words(chi_dict, 0.05)
+    if CHI_DICT:
+        SIGNIFICANT_WORDS = extract_significant_words(CHI_DICT, 0.05)
 
-    if significant_words:
-        top_10_chi = get_top_n(significant_words, 10)
+    if SIGNIFICANT_WORDS:
+        top_10_chi = get_top_n(SIGNIFICANT_WORDS, 10)
 
-    RESULT = get_top_n(significant_words, 10)
+    RESULT = get_top_n(SIGNIFICANT_WORDS, 10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
