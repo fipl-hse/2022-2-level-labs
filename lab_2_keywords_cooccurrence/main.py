@@ -236,7 +236,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for elem in result:
             first_tuple, second_tuple = elem[0][0], elem[1][len(elem[1]) - 1]
             if first_tuple in item1:
-                first_place, second_place = item1.index(first_tuple), item1.rindex(second_tuple[len(second_tuple) - 1])
+                first_place, second_place = item1.find(first_tuple), item1.rfind(second_tuple[len(second_tuple) - 1])
                 len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
                 key_phrases.append(item1[first_place:len_second_word + 1])
 
