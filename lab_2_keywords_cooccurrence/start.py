@@ -11,7 +11,9 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_cumulative_score_for_candidates,
                                               get_top_n,
                                               extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words)
+                                              calculate_cumulative_score_for_candidates_with_stop_words,
+                                              generate_stop_words,
+                                              load_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -22,6 +24,37 @@ def read_target_text(file_path: Path) -> str:
     """
     with open(file_path, 'r', encoding='utf-8') as target_text_file:
         return target_text_file.read()
+
+
+def text_processing(text, stop_words):
+    candidate_keyword_phrases, frequencies_for_content_words, word_degrees, word_scores, cumulative_score, \
+        candidate_keyword_phrases_with_adjoining = [None for not_def in range(6)]
+    phrases = extract_phrases(text)
+    if phrases:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+
+    if candidate_keyword_phrases:
+        frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+
+    if candidate_keyword_phrases and frequencies_for_content_words:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words.keys()))
+
+    if word_degrees and frequencies_for_content_words:
+        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+
+    if candidate_keyword_phrases and word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+
+    if cumulative_score:
+        print(get_top_n(cumulative_score, 5, 3))
+
+    if candidate_keyword_phrases and phrases:
+        candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
+                                                   candidate_keyword_phrases, phrases)
+
+    if candidate_keyword_phrases_with_adjoining and word_scores and stop_words:
+        calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases_with_adjoining, word_scores,
+                                                                  stop_words)
 
 
 if __name__ == "__main__":
@@ -46,34 +79,19 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-    RESULT = None
-    CANDIDATE_KEYWORD_PHRASES, FREQUENCIES_FOR_CONTENT_WORDS, WORD_DEGREES, WORD_SCORE, CUMULATIVE_SCORE, \
-        CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = [None for not_def in range(6)]
-    PHRASES = extract_phrases(corpus['gagarin'])
-    if PHRASES:
-        CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
 
-    if CANDIDATE_KEYWORD_PHRASES:
-        FREQUENCIES_FOR_CONTENT_WORDS = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
+    for exact_text in corpus:
+        text_processing(corpus[exact_text], stop_words)
 
-    if CANDIDATE_KEYWORD_PHRASES and FREQUENCIES_FOR_CONTENT_WORDS:
-        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(FREQUENCIES_FOR_CONTENT_WORDS.keys()))
+    LOADED_STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-    if WORD_DEGREES and FREQUENCIES_FOR_CONTENT_WORDS:
-        WORD_SCORE = calculate_word_scores(WORD_DEGREES, FREQUENCIES_FOR_CONTENT_WORDS)
+    if LOADED_STOP_WORDS:
+        text_processing(read_target_text(ASSETS_PATH / 'polish.txt'), LOADED_STOP_WORDS)
 
-    if CANDIDATE_KEYWORD_PHRASES and WORD_SCORE:
-        CUMULATIVE_SCORE = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORE)
+    UNKNOWN_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
+    STOP_WORDS_IN_UNKNOWN_TEXT = list(generate_stop_words(UNKNOWN_TEXT, 10))
+    if STOP_WORDS_IN_UNKNOWN_TEXT:
+        text_processing(UNKNOWN_TEXT, STOP_WORDS_IN_UNKNOWN_TEXT)
 
-    if CUMULATIVE_SCORE:
-        print(get_top_n(CUMULATIVE_SCORE, 5, 3))
-
-    if CANDIDATE_KEYWORD_PHRASES and PHRASES:
-        CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(
-                                                   CANDIDATE_KEYWORD_PHRASES, PHRASES)
-
-    if CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING and WORD_SCORE:
-        print(calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING,
-                                                                        WORD_SCORE, stop_words))
-
-    # assert RESULT, 'Keywords are not extracted'
+    RESULT = True
+    assert RESULT, 'Keywords are not extracted'
