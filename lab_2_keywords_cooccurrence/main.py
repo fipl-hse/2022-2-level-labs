@@ -6,7 +6,7 @@ import json
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
-from itertools import chain
+from itertools import chain, pairwise
 from lab_1_keywords_tfidf.main import clean_and_tokenize, calculate_frequencies
 
 KeyPhrase = tuple[str, ...]
@@ -51,11 +51,11 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     """
     if not check_type_and_not_empty(phrases, list) or not check_type_and_not_empty(stop_words, list):
         return None
-    modified_phrases = []
-    for sentence in phrases:
-        modified_sentence = ' '.join([word if word not in stop_words else '?' for word in sentence.lower().split()])
-        modified_phrases.append(modified_sentence)
-    return [tuple(phrase.split()) for phrase in extract_phrases('? '.join(modified_phrases))]
+    text = ' ? '.join(phrases)
+    tokens = text.lower().split()
+    without_stopwords = [token if token not in stop_words else '?' for token in tokens]
+    new_text = ' '.join(without_stopwords)
+    return [tuple(phrase.split()) for phrase in extract_phrases(new_text)]
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -90,8 +90,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     word_degree = dict.fromkeys(content_words, 0)
     for word in content_words:
         for phrase in candidate_keyword_phrases:
-            if word in phrase:
-                word_degree[word] += len(phrase)
+            if word not in phrase:
+                continue
+            word_degree[word] += len(phrase)
     return word_degree
 
 
@@ -183,11 +184,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not check_type_and_not_empty(candidate_keyword_phrases, list) or not check_type_and_not_empty(phrases, list):
         return None
 
+    pairs = list(pairwise(candidate_keyword_phrases))
     neighbours = []
-    for i in range(len(candidate_keyword_phrases) - 4):
-        if (candidate_keyword_phrases[i] == candidate_keyword_phrases[i + 3]
-                and candidate_keyword_phrases[i + 1] == candidate_keyword_phrases[i + 4]):
-            neighbours.append((candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]))
+    distance = 3
+    for i in range(len(pairs) - distance):
+        if pairs[i] == pairs[i + distance]:
+            neighbours.append(pairs[i])
 
     phrases = [phrase.lower() for phrase in phrases]
     keyword_phrases_with_stop_words = []
@@ -242,7 +244,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     else:
         return None
     scores = sorted(frequencies.values())
-    percentile = scores[round(len(scores) * 0.8) - 1]
+    percent = 80
+    percentile = scores[round(len(scores) * percent / 100) - 1]
     return [phrase for phrase, score in frequencies.items()
             if score >= percentile and len(phrase) <= max_length]
 
@@ -255,8 +258,8 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
     if not check_type_and_not_empty(path, Path):
         return None
-    file = open(path, encoding='utf-8')
-    stop_words = json.load(file)
+    with open(path, encoding='utf-8') as file_with_stopwords:
+        stop_words = json.load(file_with_stopwords)
     if isinstance(stop_words, dict):
         return stop_words
     return None
