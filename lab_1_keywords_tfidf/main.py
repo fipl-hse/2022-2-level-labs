@@ -126,7 +126,7 @@ def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[l
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_dict(frequencies, str, (int, float), False) or not check_int(top):
+    if not check_dict(frequencies, str, Union[int, float], False) or not check_int(top):
         return None
     top_n = sorted(frequencies.keys(), key=lambda token: frequencies[token], reverse=True)[:top]
     return top_n
