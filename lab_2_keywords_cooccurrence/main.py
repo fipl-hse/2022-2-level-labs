@@ -296,8 +296,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         return None
     punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
     clean_text = ''
-    clean_text = [clean_text + mark for mark in text.lower().replace(',', '').split() if mark not in punctuation]
-    frequencies = {token: clean_text.count(token) for token in clean_text}
+    clean_text_1 = [clean_text + mark for mark in text.lower().replace(',', '').split() if mark not in punctuation]
+    frequencies = {token: clean_text_1.count(token) for token in clean_text_1}
     freq_list = sorted(frequencies.values())
     percentile = int((80 / 100) * len(freq_list))
     stop_words = []
