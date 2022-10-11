@@ -144,7 +144,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     for word in word_degrees:
         if word not in word_frequencies:
             return None
-    return {word: word_degrees[word]/word_frequencies[word] for word in word_degrees if word in word_frequencies}
+    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees if word in word_frequencies}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -216,7 +216,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not correct_list(candidate_keyword_phrases, tuple, False) or not correct_list(phrases, str, False):
         return None
     count = 0
-    count = sum([count+1 for keyword_phrase in candidate_keyword_phrases for item in candidate_keyword_phrases
+    count = sum([count + 1 for keyword_phrase in candidate_keyword_phrases for item in candidate_keyword_phrases
                  if keyword_phrase == item])
     dict_key = {item: count for item in candidate_keyword_phrases if count >= 2}
     list_of_tuples = [tuple(candidate_keyword_phrases[count:count + 2]) for count, item in
@@ -292,7 +292,19 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not isinstance(text, str) or not isinstance(max_length, int) or max_length < 0 or not text:
+        return None
+    punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
+    clean_text = ''
+    clean_text = [clean_text + mark for mark in text.lower().replace(',', '').split() if mark not in punctuation]
+    frequencies = {token: clean_text.count(token) for token in clean_text}
+    freq_list = sorted(frequencies.values())
+    percentile = int((80 / 100) * len(freq_list))
+    stop_words = []
+    for key, value in frequencies.items():
+        if percentile <= value and len(key) <= max_length:
+            stop_words.append(key)
+    return stop_words
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
