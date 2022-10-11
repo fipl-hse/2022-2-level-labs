@@ -89,7 +89,7 @@ if __name__ == "__main__":
         text_processing(read_target_text(ASSETS_PATH / 'polish.txt'), LOADED_STOP_WORDS)
 
     UNKNOWN_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
-    STOP_WORDS_IN_UNKNOWN_TEXT = list(generate_stop_words(UNKNOWN_TEXT, 10))
+    STOP_WORDS_IN_UNKNOWN_TEXT = generate_stop_words(UNKNOWN_TEXT, 10)
     if STOP_WORDS_IN_UNKNOWN_TEXT:
         text_processing(UNKNOWN_TEXT, STOP_WORDS_IN_UNKNOWN_TEXT)
 
