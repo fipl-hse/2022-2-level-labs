@@ -21,7 +21,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     #Hi
 
 
-def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
+def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequengice[str]) -> Optional[KeyPhrases]:
     """
     Creates a list of candidate keyword phrases by splitting the given phrases by the stop words
     :param phrases: a list of the phrases
