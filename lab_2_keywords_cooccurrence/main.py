@@ -140,7 +140,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple) and check_dict(word_scores, str, float)):
+    if not (check_list(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)):
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
