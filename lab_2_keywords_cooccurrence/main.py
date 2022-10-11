@@ -34,7 +34,7 @@ def correct_dict(dictionary: Any, type1: Any, type2: Any, empty: bool) -> bool:
     if not dictionary and not empty:
         return False
     for key, value in dictionary.items():
-        if not isinstance(key, type1) or not isinstance(value, (int, type2)) or isinstance(value, bool):
+        if not isinstance(key, type1) and not isinstance(value, type2):
             return False
     return True
 
