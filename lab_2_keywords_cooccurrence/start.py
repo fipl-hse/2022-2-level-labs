@@ -26,12 +26,12 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def text_processing(text, stop_words1):
+def text_processing(text, list_of_stop_word):
     candidate_keyword_phrases, frequencies_for_content_words, word_degrees, word_scores, cumulative_score, \
         candidate_keyword_phrases_with_adjoining = [None for _ in range(6)]
     phrases = extract_phrases(text)
     if phrases:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words1)
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list_of_stop_word)
 
     if candidate_keyword_phrases:
         frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
@@ -52,9 +52,9 @@ def text_processing(text, stop_words1):
         candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
                                                    candidate_keyword_phrases, phrases)
 
-    if candidate_keyword_phrases_with_adjoining and word_scores and stop_words:
+    if candidate_keyword_phrases_with_adjoining and word_scores and list_of_stop_word:
         calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases_with_adjoining, word_scores,
-                                                                  stop_words1)
+                                                                  list_of_stop_word)
 
 
 if __name__ == "__main__":

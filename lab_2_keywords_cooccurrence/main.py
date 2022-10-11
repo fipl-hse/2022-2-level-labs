@@ -248,7 +248,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for phrase in key_phrases:
             if phrase == item2:
                 count2 += 1
-    list_result = {tuple(item2.split()) for item2 in key_phrases if count2 >= 2 and previous == item2[0:1]}
+    list_result = {tuple(item2.split()) for item2 in key_phrases if count2 >= 2 and previous == item2[0]}
     return list(list_result)
 
 
