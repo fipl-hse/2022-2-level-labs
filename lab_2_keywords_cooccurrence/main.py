@@ -43,7 +43,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(phrases, str) and check_list(stop_words, str)):
+    if not (check_list(phrases, str, False) and check_list(stop_words, str, False)):
         return None
     tuples_candidate_phrases = []
     candidate_phrases = []
@@ -72,7 +72,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, tuple):
+    if not check_list(candidate_keyword_phrases, tuple, False):
         return None
     tokens = []
     for phrase in candidate_keyword_phrases:
@@ -94,7 +94,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple) and check_list(content_words, str)):
+    if not (check_list(candidate_keyword_phrases, tuple, False) and check_list(content_words, str, False)):
         return None
     word_degrees_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -122,7 +122,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(word_degrees, str, int) and check_dict(word_frequencies, str, int)
+    if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, False)
             and word_degrees.keys() == word_frequencies.keys()):
         return None
     return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
@@ -165,7 +165,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(keyword_phrases_with_scores, tuple, float)
+    if not (check_dict(keyword_phrases_with_scores, tuple, float, False)
             and check_positive_int(top_n)
             and check_positive_int(max_length)):
         return None
@@ -211,7 +211,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             for phrase in phrases:
                 if kw_phrase[0] in phrase and kw_phrase[1] in phrase:
                     kw_phrases_with_stop_word.extend(re.findall(f'{kw_phrase[0]}.*{kw_phrase[1]}', phrase))
-    return [tuple(phrase.split()) for phrase in set(kw_phrases_with_stop_word)]
+    true_kw_phrases_with_stop_word = []
+    for kw_phrase_with_stop_word in dict.fromkeys(kw_phrases_with_stop_word):
+        if kw_phrases_with_stop_word.count(kw_phrase_with_stop_word) > 1:
+            true_kw_phrases_with_stop_word.append(tuple(kw_phrase_with_stop_word.split()))
+    return true_kw_phrases_with_stop_word
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
