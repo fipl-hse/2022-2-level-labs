@@ -21,7 +21,7 @@ def check_list(object_for_check: Any, token_type: type, can_be_empty: bool) -> b
     return True
 
 
-def check_dict(object_for_check: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(object_for_check: dict, key_type: type, value_type: Any, can_be_empty: bool) -> bool:
     """
     Checks if an object is a dictionary, checks its keys and values and its emptiness.
     """
@@ -65,8 +65,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
     for token in text:
         if token not in punctuation:
             clean_text += token
-    clean_text = clean_text.split()
-    return clean_text
+    result_text = clean_text.split()
+    return result_text
 
 
 def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list[str]]:
