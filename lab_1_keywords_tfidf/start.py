@@ -69,9 +69,6 @@ if __name__ == "__main__":
     if CHI_DICT:
         SIGNIFICANT_WORDS = extract_significant_words(CHI_DICT, 0.05)
 
-    if SIGNIFICANT_WORDS:
-        top_10_chi = get_top_n(SIGNIFICANT_WORDS, 10)
-
-    RESULT = get_top_n(SIGNIFICANT_WORDS, 10)
+    RESULT = get_top_n(SIGNIFICANT_WORDS, 10) if SIGNIFICANT_WORDS else None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
