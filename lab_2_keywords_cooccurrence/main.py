@@ -137,6 +137,17 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_dict(word_scores, str, float, False):
+        return None
+    cumulative_score_for_candidates = {}
+    for phrase in candidate_keyword_phrases:
+        score = 0
+        for word in phrase:
+            if word not in word_scores:
+                return None
+            score += word_scores.get(word)
+        cumulative_score_for_candidates[phrase] = score
+    return cumulative_score_for_candidates
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -152,7 +163,17 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(keyword_phrases_with_scores, tuple, float, False) or not isinstance(top_n, int) \
+            or not isinstance(max_length, int) or not top_n > 0 or not max_length > 0:
+        return None
+    true_phrases = [word for (word, value) in sorted(keyword_phrases_with_scores.items(), key=lambda val: val[1],
+                                                     reverse=True)]
+    top_true_phrases = []
+    for phrase in true_phrases:
+        if len(phrase) <= max_length:
+            phrase = ' '.join(phrase)
+            top_true_phrases.append(phrase)
+    return top_true_phrases[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
