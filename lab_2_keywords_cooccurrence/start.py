@@ -31,6 +31,7 @@ def key_phrases(text: str, stop_w: list) -> Optional[dict]:
     word_score = None
     score_for_candidates = None
     candidate_phrases_with_adjoining = None
+    significant_phrases = None
 
     extract_phrase = extract_phrases(text)
 
@@ -60,6 +61,8 @@ def key_phrases(text: str, stop_w: list) -> Optional[dict]:
         print(significant_phrases :=
               calculate_cumulative_score_for_candidates_with_stop_words(candidate_phrases_with_adjoining, word_score,
                                                                         stop_w))
+
+    if significant_phrases:
         return dict(significant_phrases)
     return None
 
