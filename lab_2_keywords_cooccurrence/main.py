@@ -5,8 +5,8 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
-from string import punctuation
-
+import json
+from copy import deepcopy
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -34,6 +34,7 @@ def check_list(user_input: Any, elements_required_type: type) -> bool:
             return False
     return True
 
+
 def check_dict(user_input: Any, keys_type: type, values_type: type) -> bool:
     """
     Checks if the input is a non-empty dictionary with required keys and values
@@ -48,6 +49,7 @@ def check_dict(user_input: Any, keys_type: type, values_type: type) -> bool:
         if not isinstance(key, keys_type) or not isinstance(value, values_type):
             return False
     return True
+
 
 def check_keyphrases(user_input: Any) -> bool:
     """
@@ -64,6 +66,7 @@ def check_keyphrases(user_input: Any) -> bool:
             if not isinstance(j, str):
                 return False
     return True
+
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
@@ -119,6 +122,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         if future_tuple:
             key_candidates.append(tuple(future_tuple))
     return key_candidates
+
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
@@ -256,29 +260,57 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases) or not check_list(phrases, str):
+    if not check_keyphrases(candidate_keyword_phrases) or not check_list(phrases, str): # checking types
         return None
-    possible_phr = {}
-    for one_phrase in range(len(candidate_keyword_phrases)-1):
-        #key_phr = ()
-        for sec_phrase in range(1, len(candidate_keyword_phrases)):
-            key_phr = tuple(one_phrase, sec_phrase)
+    possible_phr = {}  # a dictionary for possible phrases, values = frequency of the phrase
+    for one_phrase in range(0, len(candidate_keyword_phrases)-1):
+        for sec_phrase in range(one_phrase + 1, len(candidate_keyword_phrases)):
+            key_phr = tuple([candidate_keyword_phrases[one_phrase], candidate_keyword_phrases[sec_phrase]])
             possible_phr[key_phr] = possible_phr.get(key_phr, 0) + 1
+            break
     neighbours = []
     for key, val in possible_phr.items():
         if val > 1:
-            neighbours.append(key)
+            neighbours.append(list(key))
     all_words = []
     for one_phrase in phrases:
         all_words.append(one_phrase.lower().split())  # turning phrases into words
-    # for one_phrase in neighbours:
-    #     for word in one_phrase:
-    #         if word in all_words:
-    # for one_phrase in range(len(neighbours)):
-    #     for words in range(len(neighbours[one_phrase])):
-    #         if neighbours[one_phrase][words]
-
-
+    result_list = deepcopy(neighbours)
+    for one_phrase in range(len(neighbours)):
+        for words in range(len(neighbours[one_phrase])-1):
+            for sentences in all_words:
+                first_phr = ' '.join(neighbours[one_phrase][words])
+                second_phr = ' '.join(neighbours[one_phrase][words+1])
+                str_sentence = ' '.join(sentences)
+                if first_phr in str_sentence and second_phr in str_sentence:
+                    counter_first = str_sentence.count(first_phr)
+                    counter_sec = str_sentence.count(second_phr)
+                    if counter_first == 1 and counter_sec == 1:
+                        stop_word = sentences.index(first_phr)+1 #index of stop_w
+                        if len(result_list[one_phrase]) == 2:
+                            result_list[one_phrase].insert(1, (sentences[stop_word],))
+                        else:
+                            a = neighbours[one_phrase][:]
+                            a.insert(1, (sentences[stop_word],))
+                            result_list.append(a)
+                    elif counter_first == counter_sec and counter_first > 1:
+                        for i in range(len(sentences)):
+                            if sentences[i] == first_phr:
+                                stop_word = sentences.index(first_phr, i)+1 #index of stop_w
+                                if len(result_list[one_phrase]) == 2:
+                                    result_list[one_phrase].insert(1, (sentences[stop_word],))
+                                else:
+                                    a = neighbours[one_phrase][:]
+                                    a.insert(1, (sentences[stop_word],))
+                                    result_list.append(a)
+    freq_dict = {}
+    for one_phrase in result_list:
+        list_for_str = []
+        for words in one_phrase:
+            list_for_str.append(' '.join(words))
+        key_phrase = tuple((' '.join(list_for_str)).split())
+        freq_dict[key_phrase] = freq_dict.get(key_phrase, 0) + 1
+    return [j for j, i in freq_dict.items() if i > 1]
 
 
 
@@ -297,7 +329,21 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_keyphrases(candidate_keyword_phrases) or not check_dict(word_scores, str, float | int) or not check_list(stop_words, str):
+        return None
+    cumul_score_dict = {}
+    for one_phrase in candidate_keyword_phrases:
+        metric = 0
+        for words in one_phrase:
+            if words in stop_words:
+                metric += 0
+            elif word_scores.get(words, 0) != 0:
+                metric += word_scores[words]
+            else:
+                return None
+        cumul_score_dict[one_phrase] = metric
+    return cumul_score_dict
+
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -317,4 +363,6 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    # with open(path) as file:
+    #     result_dict = json.load(file)
+    # return result_dict
