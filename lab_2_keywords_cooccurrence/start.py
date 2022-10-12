@@ -20,7 +20,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def key_phrases(text: str, stop_w: list) -> None:
+def key_phrases(text: str, stop_w: list) -> dict:
     """
     checks functions
     """
@@ -56,8 +56,10 @@ def key_phrases(text: str, stop_w: list) -> None:
             candidate_keyword_phrases, extract_phrase)
 
     if candidate_phrases_with_adjoining and word_score:
-        print(calculate_cumulative_score_for_candidates_with_stop_words(candidate_phrases_with_adjoining,
-                                                                        word_score, stop_w))
+        print(significant_phrases :=
+              calculate_cumulative_score_for_candidates_with_stop_words(candidate_phrases_with_adjoining, word_score,
+                                                                        stop_w))
+        return dict(significant_phrases)
 
 
 if __name__ == "__main__":
@@ -95,8 +97,7 @@ if __name__ == "__main__":
     TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
     STOP_UNKNOWN = generate_stop_words(TEXT_UNKNOWN, 20)
     if STOP_UNKNOWN:
-        key_phrases(TEXT_UNKNOWN, list(STOP_UNKNOWN))
+        esperanto = key_phrases(TEXT_UNKNOWN, list(STOP_UNKNOWN))
 
-    RESULT = True
-
-    assert RESULT, 'Keywords are not extracted'
+        RESULT = esperanto
+        assert RESULT, 'Keywords are not extracted'

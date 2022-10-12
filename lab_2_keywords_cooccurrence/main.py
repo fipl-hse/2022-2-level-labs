@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, Tuple
 from string import punctuation
 import json
 
@@ -11,11 +11,11 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def correct_type(variable: Any, type1: type) -> bool:
+def correct_type(variable: Any, expected_type: type) -> bool:
     """
     Checks the type of variable
     """
-    if not isinstance(variable, type1) or not variable:
+    if not isinstance(variable, expected_type) or not variable:
         return False
     if isinstance(variable, int) and variable < 0:
         return False
@@ -75,8 +75,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
         return None
     freq_dict = {}
     for phrase in candidate_keyword_phrases:
-        freq_dict |= {token: freq_dict[token] + 1 for token in phrase if token in freq_dict}
-        freq_dict |= {token: phrase.count(token) for token in phrase if token not in freq_dict}
+        freq_dict |= {token: (freq_dict[token] + 1 if token in freq_dict else phrase.count(token)) for token in phrase}
     return freq_dict
 
 
@@ -98,7 +97,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     for word in content_words:
         for i in candidate_keyword_phrases:
             if word in i:
-                word_degree |= {word: len(i) if word not in word_degree.keys() else word_degree[word] + len(i)}
+                word_degree |= {word: word_degree.get(word, 0) + len(i)}
         if word not in word_degree.keys():
             word_degree[word] = 0
     return word_degree
@@ -249,5 +248,5 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
     if not isinstance(path, Path):
         return None
-    with open(path, 'r', encoding='utf-8') as text:
+    with path.open(encoding='utf-8') as text:
         return dict(json.load(text))
