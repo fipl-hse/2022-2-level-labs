@@ -4,6 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
+import copy
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -56,7 +57,34 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(phrases, list) or not isinstance(stop_words, list):
+        return None
+    if not all(isinstance(element, str) for element in phrases):
+        return None
+    if phrases == [] or stop_words == []:
+        return None
+    result = []
+    sentences = copy.deepcopy(phrases)
+    for phrase in sentences:
+        phrase = phrase.lower()
+        phrase = phrase.split()
+        points = []
+        for element in phrase:
+            if element not in stop_words:
+                points.append(element)
+            else:
+                points.append('.')
+        tokens = ' '.join(points)
+        back_to_string = tokens.split('.')
+        dividing = []
+        for element in back_to_string:
+            if element != '' and element != ' ':
+                dividing.append(element.strip())
+        list_of_tuples = []
+        for element in dividing:
+            list_of_tuples.append(tuple(element.split()))
+        result += list_of_tuples
+    return result
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
