@@ -239,7 +239,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 first_place, second_place = item1.find(first_tuple), item1.rfind(second_tuple[len(second_tuple) - 1])
                 len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
                 key_phrases.append(item1[first_place:len_second_word + 1])
-
     if not key_phrases:
         return []
     count2 = 0
@@ -300,11 +299,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     frequencies = {token: clean_text_1.count(token) for token in clean_text_1}
     freq_list = sorted(frequencies.values())
     percentile = int((80 / 100) * len(freq_list))
-    stop_words = []
-    for key, value in frequencies.items():
-        if percentile <= value and len(key) <= max_length:
-            stop_words.append(key)
-    return stop_words
+    return [key for key, value in frequencies.items() if percentile <= value and len(key) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
