@@ -17,17 +17,18 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
+    punctuation = ['!', '(', ')', '-', '[', ']', '{', '}', ';', ':', '"', ',', "'", '¡', '¿', '-',
+                   '<', '>', '/', '?', '@', '#', '$', '%', '^', '&', '*', '_', '~', ':', '⟩', '⟨',
+                   '—', '–', '«', '»']
     if not isinstance(text, str):
         return None
-    if text == '':
+    if not text:
         return None
     if all(symbol.isalpha() is False for symbol in text):
         return []
     level_one = text[:]
     for symbol in level_one:
-        if symbol in ['!', '(', ')', '-', '[', ']', '{', '}', ';', ':', '"', ',', "'", '¡', '¿', '-',
-                      '<', '>', '/', '?', '@', '#', '$', '%', '^', '&', '*', '_', '~', ':', '⟩', '⟨',
-                      '—', '–', '«', '»']:
+        if symbol in punctuation:
             level_one = level_one.replace(symbol, '.')
     level_two = ''
     for idx, symbol in enumerate(level_one):
@@ -35,7 +36,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
             level_two += symbol
     level_three = ''
     for idx, symbol in enumerate(level_two):
-        if not(symbol == '.' and level_two[idx - 1] == '.'):
+        if symbol != '.' or level_two[idx - 1] != '.':
             level_three += symbol
     if level_three[-1] == '.':
         level_three = level_three[:-1]
@@ -44,7 +45,6 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     level_three = level_three.replace(". ", ".")
     level_four = level_three.split('.')
     return level_four
-
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
