@@ -3,7 +3,11 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases)
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores,
+                                              calculate_cumulative_score_for_candidates, get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -38,10 +42,29 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-    GAGARIN_PHRASES = None
+
+    PHRASES = None
     RESULT = None
-    if corpus['gagarin']:
-        GAGARIN_PHRASES = extract_phrases(corpus['gagarin'])
-    if GAGARIN_PHRASES and stop_words:
-        RESULT = extract_candidate_keyword_phrases(GAGARIN_PHRASES, stop_words)
+    CANDIDATES = None
+    DICT_WITH_FREQUENCIES = None
+    DICT_WITH_DEGREES = None
+    DICT_WITH_SCORES = None
+    DICT_WITH_CUM = None
+    for key in corpus:
+        if corpus[key]:
+            PHRASES = extract_phrases(corpus[key])
+        if PHRASES and stop_words:
+            CANDIDATES = extract_candidate_keyword_phrases(PHRASES, stop_words)
+        if CANDIDATES:
+            DICT_WITH_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATES)
+        if CANDIDATES and DICT_WITH_FREQUENCIES:
+            DICT_WITH_DEGREES = calculate_word_degrees(CANDIDATES, list(DICT_WITH_FREQUENCIES.keys()))
+        if DICT_WITH_DEGREES and DICT_WITH_FREQUENCIES:
+            DICT_WITH_SCORES = calculate_word_scores(DICT_WITH_DEGREES, DICT_WITH_FREQUENCIES)
+        if CANDIDATES and DICT_WITH_SCORES:
+            DICT_WITH_CUM = calculate_cumulative_score_for_candidates(CANDIDATES, DICT_WITH_SCORES)
+        if DICT_WITH_CUM:
+            RESULT = get_top_n(DICT_WITH_CUM, 5, 2)
+            print('for', key, 'text, key phrases are', RESULT)
+
     assert RESULT, 'Keywords are not extracted'
