@@ -171,7 +171,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in candidate_keyword_phrases:
         score = 0
         for word in phrase:
-            score += word_scores.get(word)
+            score += word_scores.get(word, 0)
         keyword_phrases_with_scores[phrase] = score
     return keyword_phrases_with_scores
 
@@ -193,11 +193,13 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         return None
     if not (isinstance(keyword_phrases_with_scores, dict) and isinstance(top_n, int) and isinstance(max_length, int)):
         return None
-    if max_length <= 0:
+    if isinstance(max_length, bool) or isinstance(top_n, bool):
         return None
     for key, value in keyword_phrases_with_scores.items():
         if not (isinstance(key, tuple) and isinstance(value, float)):
             return None
+    if (max_length and top_n) < 0:
+        return None
     appropriate_phrases = {}
     for phrase, score in keyword_phrases_with_scores.items():
         if len(phrase) <= max_length:
@@ -232,18 +234,17 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
         if pair not in possible_pairs:
-            possible_pairs[pair] = 0
+            possible_pairs[pair] = 1
         else:
             possible_pairs[pair] += 1
     appropriate_pairs = []
     for pair in possible_pairs:
-        x = []
+        list_of_pairs = []
         if possible_pairs[pair] > 1:
-            for i in pair:
-                i = ' '.join(i)
-                x.append(i)
-            if x:
-                appropriate_pairs.append(x)
+            for element in pair:
+                element = ' '.join(element)
+                list_of_pairs.append(element)
+            appropriate_pairs.append(list_of_pairs)
     phrases_with_stopwords = []
     for phrase in phrases:
         for elem in appropriate_pairs:
@@ -251,7 +252,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 a = phrase.index(elem[0])
                 b = phrase.index(elem[1]) + len(elem[1])
                 needed_phrase = phrase[a:b]
-                phrases_with_stopwords.append(needed_phrase)
+                phrases_with_stopwords.append(needed_phrase)    #каждую фразу нужно превратить в кортеж
     return phrases_with_stopwords
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -269,6 +270,20 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
+    if not (candidate_keyword_phrases and stop_words and word_scores):
+        return None
+    cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        x = []  # придумать нормальное название для переменной
+        score = 0
+        for word in phrase:
+            if word not in stop_words:
+                x.append(word)
+                score += word_scores.get(word)
+        x = tuple(x)
+        cumulative_score[x] = score
+    return cumulative_score
+
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
