@@ -152,7 +152,11 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     dict: A dictionary with tokens and corresponding term frequency score
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(frequencies, str, int, False):
+        return None
+    a = sum(frequencies.values())
+
+    return {key: value / a for key, value in frequencies.items()}
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
@@ -166,7 +170,10 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     Dict: A dictionary with tokens and its corresponding TF-IDF values
     In case of corrupt input arguments, None is returned
     """
-    pass
+    my_dict = {}
+    for key, value in term_freq.items():
+        my_dict[key] = value*idf.get(key,log(47))
+    return my_dict
 
 
 def calculate_expected_frequency(
