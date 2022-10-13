@@ -3,72 +3,21 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Type, Any
+from typing import Optional, Sequence, Mapping, Any
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_type_and_emptiness(check_object: Any, check_type: Type[Any], can_be_empty: bool = True) -> bool:
-    """
-    Checks if object's type matches required type.
-    Checks if the object is empty if necessary.
-    """
-    if not isinstance(check_object, check_type):
+def check_tuple(check_object: Any, element_type: type, can_be_empty: bool):
+    if not isinstance(check_object, tuple):
         return False
-    if not check_object and not can_be_empty:
+    if not can_be_empty and not check_object:
         return False
-    return True
-
-
-def check_list(check_object: Any, token_type: Type[Any], can_be_empty: bool = True) -> bool:
-    """
-    Checks if an object is a list and checks types of its elements.
-    Checks if the object is empty if necessary.
-    """
-    if not check_type_and_emptiness(check_object, list, can_be_empty):
-        return False
-    for i in check_object:
-        if not isinstance(i, token_type):
+    for element in check_object:
+        if not isinstance(element, element_type):
             return False
-    return True
-
-
-def check_dict(check_object: Any, key_type: Type[Any], value_type: Type[Any],
-               can_be_empty: bool = True) -> bool:
-    """
-    Checks if an object is a dictionary and checks types of its keys and values.
-    Checks if the object is empty if necessary.
-    """
-    if not check_type_and_emptiness(check_object, dict, can_be_empty):
-        return False
-    for key, value in check_object.items():
-        if not isinstance(key, key_type) or not isinstance(value, value_type):
-            return False
-    return True
-
-
-def check_tuple(check_object: Any, token_type: Type[Any], can_be_empty: bool = True) -> bool:
-    """
-    Checks if an object is a tuple and checks types of its elements.
-    Checks if the object is empty if necessary.
-    """
-    if not check_type_and_emptiness(check_object, tuple, can_be_empty):
-        return False
-    for i in check_object:
-        if not isinstance(i, token_type):
-            return False
-    return True
-
-
-def check_int(check_object: Any) -> bool:
-    """
-    Checks if an object is a positive integer.
-    """
-    if not isinstance(check_object, int) or isinstance(check_object, bool):
-        return False
-    if not check_object > 0:
-        return False
     return True
 
 
@@ -82,11 +31,14 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or len(text) == 0:
         return None
-    punctuation_list = [',;:¡!¿?…⋯‹›«»\\\\"“”\\[\\]()⟨⟩}{&]|[-–~—]']
+    punctuation_str = ',;:¡!¿?…⋯‹›«»\\\\"“”\\[\\]()⟨⟩}{&]|[-–~—]'
+    clean_text = ''
     for symbol in text:
-        if symbol in punctuation_list:
-            text.replace(symbol, '.')
-    text_list = text.split('.')
+        if symbol in punctuation_str:
+            clean_text += '.'
+        else:
+            clean_text += symbol
+    text_list = clean_text.split('.')
     phrases = []
     for phrase in text_list:
         phrase = phrase.strip()
@@ -104,19 +56,19 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(phrases, str, False) or not check_list(stop_words, str):
+    if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     candidate_keyword_phrases = []
     for phrase in phrases:
         phrase = phrase.lower().split()
-        candidate_keyword_phrase = []
-        for word in phrase:
-            if word not in stop_words:
-                candidate_keyword_phrase.append(word)
-            else:
-                if candidate_keyword_phrase:
-                    candidate_keyword_phrases.append(tuple(candidate_keyword_phrase))
-                candidate_keyword_phrase = []
+        for index, word in enumerate(phrase):
+            if word in stop_words:
+                phrase[index] = '.'
+        no_stop_words = extract_phrases(' '.join(phrase))
+        for no_stop_words_phrase in no_stop_words:
+            candidate_phrase = no_stop_words_phrase.split()
+            if candidate_phrase:
+                candidate_keyword_phrases.append(tuple(candidate_phrase))
     return candidate_keyword_phrases
 
 
