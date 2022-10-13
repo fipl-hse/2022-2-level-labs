@@ -11,6 +11,9 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 def check_tuple(check_object: Any, element_type: type, can_be_empty: bool):
+    """
+    Checks if an object is a tuple, checks its elements' types and its emptiness.
+    """
     if not isinstance(check_object, tuple):
         return False
     if not can_be_empty and not check_object:

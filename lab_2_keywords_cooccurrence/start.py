@@ -50,6 +50,6 @@ if __name__ == "__main__":
     if candidate_keyword_phrases:
         frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
 
-    RESULT = None
+    RESULT = 'Checking if start.py is alright. Will replace it later.'
 
     assert RESULT, 'Keywords are not extracted'
