@@ -11,6 +11,19 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
+def check_positive_int(user_input: Any) -> bool:
+    """
+    Checks weather object is int (not bool)
+    """
+    if not isinstance(user_input, int):
+        return False
+    if isinstance(user_input, bool):
+        return False
+    if user_input <= 0:
+        return False
+    return True
+
+
 def check_type(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
     """
     Checks wether object is a list or a tuple that contains elements of certain type
@@ -21,6 +34,21 @@ def check_type(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         return False
     for element in user_input:
         if not isinstance(element, elements_type):
+            return False
+    return True
+
+
+def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks weather object is dictionary
+    hat has keys and values of certain type
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input and can_be_empty is False:
+        return False
+    for key, value in user_input.items():
+        if not (isinstance(key, key_type) and isinstance(value, value_type)):
             return False
     return True
 
@@ -121,7 +149,15 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(word_degrees, str, int, False) or not check_dict(word_frequencies, str, int, False):
+        return None
+    word_scores = {}
+    for word in word_degrees.keys():
+        if word not in word_frequencies:
+            return None
+        word_scores[word] = word_degrees[word] / word_frequencies[word]
+    print(word_scores)
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -136,7 +172,18 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_type(candidate_keyword_phrases, tuple, False) or not check_dict(word_scores, str, float, False):
+        return None
+    keyword_phrases_with_scores = {}
+    for phrase in candidate_keyword_phrases:
+        score = 0
+        for word in phrase:
+            if word not in word_scores:
+                return None
+            score += word_scores.get(word)
+        keyword_phrases_with_scores[phrase] = score
+    print(keyword_phrases_with_scores)
+    return keyword_phrases_with_scores
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -152,7 +199,21 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(keyword_phrases_with_scores, tuple, float, False)\
+            or not check_positive_int(top_n)\
+            or not check_positive_int(max_length):
+        return None
+    top_keyword_phrases = []
+    top = sorted(keyword_phrases_with_scores.keys(),
+                 key=lambda some_phrase: keyword_phrases_with_scores[some_phrase],
+                 reverse=True)
+    print(top)
+    for phrase in top:
+        if len(phrase) <= max_length:
+            phrase = ' '.join(phrase)
+            top_keyword_phrases.append(phrase)
+    print(top_keyword_phrases[:top_n])
+    return top_keyword_phrases[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
