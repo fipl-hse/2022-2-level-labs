@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-
+import re
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -17,7 +17,15 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str) or len(text) == 0:
+        return None
+    delimiters_list = ([',', '!', '?', '\n', ':', ';', ' – ', '¡', '¿', '…', '⋯', '‹', '›', '«', '»', '[', ']',
+                        '(', ')', '⟨', '⟩', '}', '{', '&', '|', '-', '–', '~', '—', '\\\\"“”\\', '\\'])
+    for item in delimiters_list:
+        text = text.replace(item, '.')
+    phrases_list = text.split('.')
+    not_empty_phrases_list = [phrase.strip() for phrase in phrases_list if phrase]
+    return not_empty_phrases_list
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +37,43 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    #что делать с Sequence
+    if not isinstance(phrases, list):
+        return None
+    for item in phrases:
+        if not isinstance(item, str):
+            return None
+    if not isinstance(stop_words, list):
+        return None
+    if len(stop_words) == 0:
+        return None
+    for item1 in stop_words:
+        if not isinstance(item1, str):
+            return None
+
+    key_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower()
+        phrase_word_list = phrase.split()
+        for element in phrase_word_list:
+            if element in stop_words:
+                phrase = phrase.replace(f' {element} ', ',')
+                if phrase_word_list[0] == element:
+                    phrase = phrase.replace(f'{element} ', ',')
+                if phrase_word_list[-1] == element:
+                    phrase = phrase.replace(f' {element}', ',')
+        keyword_phrase = phrase.split(',')
+        for element1 in keyword_phrase:
+            if len(element1) == 0:
+                keyword_phrase.remove(element1)
+        key_phrases.append(keyword_phrase)
+
+    probably_keywords = []
+    for lst in key_phrases:
+        for words_str in lst:
+            words_tuple = tuple(words_str.split())
+            probably_keywords.append(words_tuple)
+    return probably_keywords
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
