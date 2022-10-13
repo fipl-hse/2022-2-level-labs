@@ -21,9 +21,9 @@ print(example)
 print('*' * 30)
 
 # Create a dict (second way)
-example = dict([(1, 'Hello'), (2, 'there')])
+pair_example = dict([(1, 'Hello'), (2, 'there')])
 print("\nDictionary with each item as a pair: ")
-print(example)
+print(pair_example)
 print('*' * 30)
 
 # Add a key:value pair
