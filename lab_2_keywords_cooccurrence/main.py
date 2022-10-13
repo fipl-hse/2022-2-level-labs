@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from string import punctuation
+import re
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -12,6 +12,7 @@ KeyPhrases = Sequence[KeyPhrase]
 
 # проверку на keyphrase и keyphrases нужно поменять в функциях
 #написать функцию для проверки на тип
+#где возможно сделать генераторы?
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
@@ -23,8 +24,10 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not (text and isinstance(text, str)):
         return None
+    punctuation = """!\"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
     for mark in punctuation:
         text = text.replace(mark, ',')  # нужно проверить, что будет, если код встретит дефис внутри слова
+        #может быть много пустых списков, убрать их
     cleaned_text = text.split(',')
     return cleaned_text
 
@@ -247,13 +250,16 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             appropriate_pairs.append(list_of_pairs)
     phrases_with_stopwords = []
     for phrase in phrases:
-        for elem in appropriate_pairs:
-            if (elem[0] and elem[1]) in phrase:
-                a = phrase.index(elem[0])
-                b = phrase.index(elem[1]) + len(elem[1])
-                needed_phrase = phrase[a:b]
-                phrases_with_stopwords.append(needed_phrase)    #каждую фразу нужно превратить в кортеж
-    return phrases_with_stopwords
+        for pair in appropriate_pairs:
+            if (pair[0] and pair[1]) in phrase:
+                b = re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase)
+                phrases_with_stopwords.extend(b)
+    new_phrases_with_sw = []
+    for phrase in phrases_with_stopwords:
+        for exp in phrase:
+            new_phrases_with_sw.append(exp.split())
+    final_phrases = [tuple(phrase) for phrase in new_phrases_with_sw]
+    return final_phrases
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
