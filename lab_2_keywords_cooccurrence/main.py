@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-from lab_1_keywords_tfidf.main import check_list, check_dict
+from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -109,7 +109,19 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) \
+            or not check_list(content_words, str, False):
+        return None
+    word_degrees = {}
+    for word in content_words:
+        word_degrees[word] = 0
+    for phrase in candidate_keyword_phrases:
+        if not check_tuple(phrase, str, False):
+            return None
+        for word in content_words:
+            if word in phrase:
+                word_degrees[word] += len(phrase)
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -123,7 +135,15 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(word_degrees, str, int, False) \
+            or not check_dict(word_frequencies, str, int, False):
+        return None
+    word_scores = {}
+    for word in word_degrees.keys():
+        if word not in word_frequencies.keys():
+            return None
+        word_scores[word] = word_degrees[word] / word_frequencies[word]
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -138,7 +158,19 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) \
+            or not check_dict(word_scores, str, float, False):
+        return None
+    cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        if not check_tuple(phrase, str, False):
+            return None
+        cumulative_score[phrase] = 0
+        for word in phrase:
+            if word not in word_scores.keys():
+                return None
+            cumulative_score[phrase] += word_scores[word]
+    return cumulative_score
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -154,7 +186,20 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_dict(keyword_phrases_with_scores, tuple, float, False) \
+            or not check_positive_int(top_n) or not check_positive_int(max_length):
+        return None
+    for phrase in keyword_phrases_with_scores:
+        if not check_tuple(phrase, str, False):
+            return None
+    top_with_long_phrases = sorted(
+        keyword_phrases_with_scores.keys(), key=lambda key: keyword_phrases_with_scores[key],
+        reverse=True)
+    top_result = []
+    for phrase in top_with_long_phrases:
+        if len(phrase) <= max_length:
+            top_result.append(' '.join(phrase))
+    return top_result[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
