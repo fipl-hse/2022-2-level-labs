@@ -4,6 +4,8 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
+import re
+
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -17,7 +19,13 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(text, str) and text):
+        return None
+    phrases = list(filter(None, re.split('''[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]''', text)))
+    for phrase in phrases:
+        phrases[phrases.index(phrase)] = phrase.strip()
+    return phrases
+
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
