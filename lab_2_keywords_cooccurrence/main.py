@@ -17,7 +17,10 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    punctuation = '''.?!…,;:—()'",<>./'''
+    for a in text:
+        if a in punctuation:
+            return text.split(a)
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
