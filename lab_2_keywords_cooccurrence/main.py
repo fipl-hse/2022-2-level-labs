@@ -13,7 +13,7 @@ KeyPhrases = Sequence[KeyPhrase]
 
 def type_check(data: Any, expected: Any) -> bool:
     """
-    Checks any type used in a program. For str, list, tuple and dict also checks if they are empty.
+    Checks any type used in the program. For str, list, tuple and dict also checks if they are empty.
     :param data: An object which type is checked
     :param expected: A type we expect data to be
     :return: True if data has the expected type and not empty, False otherwise
@@ -49,9 +49,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     candidates = []
     for phrase in [phrase.lower().split() for phrase in phrases]:
-        splits = [-1] + [count for count, word in enumerate(phrase) if word in stop_words] + [len(phrase)]
-        candidates.extend(candidate for count, split in enumerate(splits[:-1])
-                          if (candidate := tuple(phrase[split+1:splits[count+1]])))
+        splits = [count for count, word in enumerate(phrase) if word in stop_words]
+        candidates.extend(candidate for split1, split2 in zip([-1] + splits, splits + [len(phrase)])
+                          if (candidate := tuple(phrase[split1+1:split2])))
     return candidates
 
 
