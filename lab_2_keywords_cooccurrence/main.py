@@ -99,11 +99,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     word_degrees_dict = {}
     for phrase in candidate_keyword_phrases:
         for word in phrase:
-            if word in word_degrees_dict:
-                if word in content_words:
-                    word_degrees_dict[word] += len(phrase)
-            else:
-                if word in content_words:
+            if word in word_degrees_dict and word in content_words:
+                word_degrees_dict[word] += len(phrase)
+            elif word in content_words:
                     word_degrees_dict[word] = len(phrase)
     for content_word in content_words:
         if content_word not in word_degrees_dict.keys():
