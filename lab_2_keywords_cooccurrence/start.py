@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import check_input, check_list, extract_phrases, extract_candidate_keyword_phrases
+from main import extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -38,6 +38,11 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
+    #RESULT = None
+    for one_text in corpus.values():
+        PHRASES = extract_phrases(one_text)
+        if PHRASES:
+            CANDIDATE_KEYWORD_PHR = extract_candidate_keyword_phrases(PHRASES, stop_words)
 
+    #RESULT = candidate_keyword_phr
     assert RESULT, 'Keywords are not extracted'

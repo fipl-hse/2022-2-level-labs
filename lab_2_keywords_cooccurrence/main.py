@@ -354,8 +354,29 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
-
+    if not check_input(text, str) or not check_input(max_length, int):
+        return None
+    extracted_phr = extract_phrases(text)
+    if extracted_phr:
+        extracted_words = []
+        for phrase in extracted_phr:
+            phrase = phrase.split()
+            for words in phrase:
+                extracted_words.append(words.lower())
+    if extracted_words:
+        for word in extracted_words:
+            if len(word) > max_length:
+                extracted_words.remove(word)
+        frequencies_words = calculate_frequencies_for_content_words(extracted_words)
+    if frequencies_words:
+        #sort_frequency = sorted(correct_len.keys(), key=lambda key: correct_len[key], reverse=True)
+        sort_frequency = sorted(frequencies_words, key=frequencies_words.get)
+        sorted_dict = {}
+        for i in sort_frequency:
+            sorted_dict[i] = frequencies_words[i]
+        print(sorted_dict.items())
+    # используй калькюлэйт фрикуенси
+print(generate_stop_words('cats and, cats cats dogs dogs aRE animals: domestic', 6))
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
@@ -363,6 +384,21 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    # with open(path) as file:
-    #     result_dict = json.load(file)
-    # return result_dict
+    if not isinstance(path, Path) or not path:
+        return None
+    with open(path, 'r', encoding='utf-8') as file:
+        result_dict = json.load(file)
+    return result_dict
+
+def work_with_text(text: str, stop_words: list[str]):
+    """
+    Calling all the needed functions to process a text:
+    extracting phrases, candidate keyword phrases, frequencies for
+    content words, word degrees
+    """
+    if not check_input(text, str) or not check_list(stop_words, str):
+        return None
+    extracted_phr = extract_phrases(text)
+    candidate_keyword_phr = extract_candidate_keyword_phrases(extracted_phr)
+    frequencies_content = calculate_frequencies_for_content_words(candidate_keyword_phr)
+
