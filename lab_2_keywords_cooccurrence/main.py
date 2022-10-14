@@ -5,23 +5,10 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 from string import punctuation
-
+from lab_1_keywords_tfidf.main import check_dict, check_positive_int
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
-
-
-def check_positive_int(user_input: Any) -> bool:
-    """
-    Checks weather object is int (not bool)
-    """
-    if not isinstance(user_input, int):
-        return False
-    if isinstance(user_input, bool):
-        return False
-    if user_input <= 0:
-        return False
-    return True
 
 
 def check_type(user_input: Any, elements_type: type, can_be_empty: bool) -> bool:
@@ -34,21 +21,6 @@ def check_type(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
         return False
     for element in user_input:
         if not isinstance(element, elements_type):
-            return False
-    return True
-
-
-def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
-    """
-    Checks weather object is dictionary
-    hat has keys and values of certain type
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input and can_be_empty is False:
-        return False
-    for key, value in user_input.items():
-        if not (isinstance(key, key_type) and isinstance(value, value_type)):
             return False
     return True
 
@@ -156,7 +128,6 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
         if word not in word_frequencies:
             return None
         word_scores[word] = word_degrees[word] / word_frequencies[word]
-    print(word_scores)
     return word_scores
 
 
@@ -182,7 +153,6 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
                 return None
             score += word_scores.get(word)
         keyword_phrases_with_scores[phrase] = score
-    print(keyword_phrases_with_scores)
     return keyword_phrases_with_scores
 
 
@@ -212,7 +182,6 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         if len(phrase) <= max_length:
             phrase = ' '.join(phrase)
             top_keyword_phrases.append(phrase)
-    print(top_keyword_phrases[:top_n])
     return top_keyword_phrases[:top_n]
 
 
