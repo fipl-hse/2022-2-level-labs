@@ -4,8 +4,12 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 
-
-from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases)
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores,
+                                              calculate_cumulative_score_for_candidates,
+                                              get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -41,11 +45,36 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    candidates = [None for notdef in range(5)]
-    extract = extract_phrases(corpus['gagarin'])
+    CANDIDATE_PHRASES = None
+    CALCULATE = None
+    DEGREES = None
+    SCORES = None
+    CUMULATIVE = None
+    EXTRACTION = extract_phrases(corpus['gagarin'])
+    print(EXTRACTION)
+    if EXTRACTION:
+        CANDIDATE_PHRASES = extract_candidate_keyword_phrases(EXTRACTION, stop_words)
+    print(CANDIDATE_PHRASES)
 
-    if extract:
-         candidates = extract_candidate_keyword_phrases(extract, stop_words)
-    RESULT = extract_candidate_keyword_phrases(corpus['gagarin'], stop_words)
+    if CANDIDATE_PHRASES:
+        CALCULATE = calculate_frequencies_for_content_words(CANDIDATE_PHRASES)
+        print(CALCULATE)
+
+    if CALCULATE:
+        DEGREES = calculate_word_degrees(CANDIDATE_PHRASES, list(CALCULATE.keys()))
+        print(DEGREES)
+
+    if DEGREES:
+        SCORES = calculate_word_scores(DEGREES, CALCULATE)
+        print(SCORES)
+
+    if SCORES:
+        CUMULATIVE = calculate_cumulative_score_for_candidates(CANDIDATE_PHRASES, SCORES)
+        print(CUMULATIVE)
+
+    if CUMULATIVE:
+        print(get_top_n(CUMULATIVE, 6, 3))
+
+    RESULT = CUMULATIVE
 
     assert RESULT, 'Keywords are not extracted'
