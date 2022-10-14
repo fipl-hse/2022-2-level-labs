@@ -241,8 +241,6 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         for word in phrase:
             if word not in stop_words:
                 cumulative_score_with_stop_words_dict[phrase] += word_scores[word]
-            elif word not in word_scores:
-                return None
     return cumulative_score_with_stop_words_dict
 
 
