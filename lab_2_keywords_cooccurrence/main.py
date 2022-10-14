@@ -231,7 +231,19 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple, False)
+            and check_dict(word_scores, str, float, False)
+            and check_list(stop_words, str, False)):
+        return None
+    cumulative_score_with_stop_words_dict = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_score_with_stop_words_dict[phrase] = 0
+        for word in phrase:
+            if word not in stop_words:
+                cumulative_score_with_stop_words_dict[phrase] += word_scores[word]
+            elif word not in word_scores:
+                return None
+    return cumulative_score_with_stop_words_dict
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
