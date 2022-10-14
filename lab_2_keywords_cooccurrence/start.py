@@ -3,7 +3,9 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases
+from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
+    calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores, \
+    calculate_cumulative_score_for_candidates, get_top_n
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -41,6 +43,22 @@ if __name__ == "__main__":
     tokens = extract_phrases(corpus['gagarin'])
     if tokens:
         possible_keywords = extract_candidate_keyword_phrases(tokens, stop_words)
-    RESULT = extract_candidate_keyword_phrases(tokens, stop_words)
+
+    if possible_keywords:
+        content_words = calculate_frequencies_for_content_words(possible_keywords)
+
+    if content_words:
+        word_degrees = calculate_word_degrees(possible_keywords, list(content_words.keys()))
+
+    if word_degrees:
+        word_scores = calculate_word_scores(word_degrees, content_words)
+
+    if word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates(possible_keywords, word_degrees)
+
+    if cumulative_score:
+        top_n = get_top_n(cumulative_score, 2, 3)
+
+    RESULT = top_n
 
     assert RESULT, 'Keywords are not extracted'
