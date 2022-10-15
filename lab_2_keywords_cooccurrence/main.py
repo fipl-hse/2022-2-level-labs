@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from itertools import pairwise
 import re
-from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
+from lab_1_keywords_tfidf.main import check_positive_int
 
 
 KeyPhrase = tuple[str, ...]
@@ -44,14 +44,14 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(phrases, str, False) and check_list(stop_words, str, False)):
+    if not (isinstance(phrases, Sequence) and isinstance(stop_words, Sequence)):
         return None
     tuples_candidate_phrases = []
     candidate_phrases = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
+        split_phrase = phrase.lower().split()
         temp_candidate_phrase = []
-        for word in phrase:
+        for word in split_phrase:
             if word not in stop_words:
                 temp_candidate_phrase.append(word)
             else:
@@ -73,7 +73,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, tuple, False):
+    if not isinstance(candidate_keyword_phrases, Sequence):
         return None
     tokens = []
     for phrase in candidate_keyword_phrases:
@@ -95,7 +95,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False) and check_list(content_words, str, False)):
+    if not (isinstance(candidate_keyword_phrases, Sequence) and isinstance(content_words, Sequence)):
         return None
     word_degrees_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -121,7 +121,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, False)
+    if not (isinstance(word_degrees, Mapping) and isinstance(word_frequencies, Mapping)
             and word_degrees.keys() == word_frequencies.keys()):
         return None
     return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
@@ -139,7 +139,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)):
+    if not (isinstance(candidate_keyword_phrases, Sequence) and isinstance(word_scores, Mapping)):
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -164,7 +164,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(keyword_phrases_with_scores, tuple, float, False)
+    if not (isinstance(keyword_phrases_with_scores, Mapping)
             and check_positive_int(top_n)
             and check_positive_int(max_length)):
         return None
@@ -199,7 +199,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False) and check_list(phrases, str, False)):
+    if not (isinstance(candidate_keyword_phrases, Sequence) and isinstance(phrases, Sequence)):
         return None
     kw_phrases_join = [' '.join(kw_phrase) for kw_phrase in candidate_keyword_phrases]
     kw_phrases_pairs = list(pairwise(kw_phrases_join))
@@ -232,9 +232,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False)
-            and check_dict(word_scores, str, float, False)
-            and check_list(stop_words, str, False)):
+    if not (isinstance(candidate_keyword_phrases, Sequence)
+            and isinstance(word_scores, Mapping)
+            and isinstance(stop_words, Sequence)):
         return None
     cumulative_score_with_stop_words_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -243,11 +243,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
             if word not in stop_words:
                 cumulative_score_with_stop_words_dict[phrase] += int(word_scores[word])
     return cumulative_score_with_stop_words_dict
-# None != {('важнейших', 'задач'): 4,
-#  ('времена', 'советского', 'союза', 'исследование', 'космоса'): 23,
-#  ('времена', 'союза', 'прошли'): 11,
-#  ('одной',): 1,
-#  ('одной', 'из', 'важнейших', 'задач'): 5}
+
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
