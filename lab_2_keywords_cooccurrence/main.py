@@ -19,11 +19,11 @@ def check_types(user_var: Any, expected_type: Any) -> bool:
     """
     if not (isinstance(user_var, expected_type) and user_var):
         return False
-    if expected_type == list or Sequence:
+    if expected_type == list:
         for element in user_var:
             if not element:
                 return False
-    elif expected_type == dict or Mapping:
+    elif expected_type == dict:
         for key, value in user_var.items():
             if not (key and value):
                 return False
@@ -61,7 +61,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(phrases, Sequence) and check_types(stop_words, Sequence)):
+    if not (check_types(phrases, list) and check_types(stop_words, list)):
         return None
     tuples_candidate_phrases = []
     candidate_phrases = []
@@ -90,7 +90,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_types(candidate_keyword_phrases, Sequence):
+    if not check_types(candidate_keyword_phrases, list):
         return None
     tokens = []
     for phrase in candidate_keyword_phrases:
@@ -112,7 +112,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, Sequence) and check_types(content_words, Sequence)):
+    if not (check_types(candidate_keyword_phrases, list) and check_types(content_words, list)):
         return None
     word_degrees_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -138,7 +138,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(word_degrees, Mapping) and check_types(word_frequencies, Mapping)
+    if not (check_types(word_degrees, dict) and check_types(word_frequencies, dict)
             and word_degrees.keys() == word_frequencies.keys()):
         return None
     return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
@@ -156,7 +156,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, Sequence) and check_types(word_scores, Mapping)):
+    if not (check_types(candidate_keyword_phrases, list) and check_types(word_scores, dict)):
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -181,7 +181,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(keyword_phrases_with_scores, Mapping)
+    if not (check_types(keyword_phrases_with_scores, dict)
             and check_positive_int(top_n)
             and check_positive_int(max_length)):
         return None
@@ -217,7 +217,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, Sequence) and check_types(phrases, Sequence)):
+    if not (check_types(candidate_keyword_phrases, list) and check_types(phrases, list)):
         return None
     kw_phrases_join = [' '.join(kw_phrase) for kw_phrase in candidate_keyword_phrases]
     kw_phrases_pairs = list(pairwise(kw_phrases_join))
@@ -250,9 +250,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, Sequence)
-            and check_types(word_scores, Mapping)
-            and check_types(stop_words, Sequence)):
+    if not (check_types(candidate_keyword_phrases, list)
+            and check_types(word_scores, dict)
+            and check_types(stop_words, list)):
         return None
     cumulative_score_with_stop_words_dict = {}
     for phrase in candidate_keyword_phrases:
