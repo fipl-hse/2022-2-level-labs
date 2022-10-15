@@ -292,3 +292,49 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return None
     with open(path, 'r', encoding='utf-8') as file:
         return dict(json.load(file))
+
+
+def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = None,
+                            max_length: Optional[int] = None) -> Optional[Sequence]:
+    """
+    Using previous functions, extracts keyword phrases from user's text
+    """
+    candidates, keyword_phrases_with_stop_words = [None for notdef in range(2)]
+    extracted_phrases = extract_phrases(target_text)
+    if stop_words is None:
+        stop_words = generate_stop_words(target_text, max_length)
+    if extracted_phrases:
+        candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+    if candidates and extracted_phrases:
+        keyword_phrases_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
+    if keyword_phrases_with_stop_words:
+        return keyword_phrases_with_stop_words
+    return None
+
+
+def calculate_cumulative_score(target_text: str, stop_words: Optional[Sequence] = None,
+                               max_length: Optional[int] = None) -> Optional[Mapping]:
+    """
+    Using previous functions, calculates cumulative score of tokens in user's text
+    """
+    candidates, content_words, word_degrees, word_scores, \
+        keyword_phrases_with_stop_words, cumulative_score_with_stop_words = [None for notdef in range(6)]
+    extracted_phrases = extract_phrases(target_text)
+    if stop_words is None:
+        stop_words = generate_stop_words(target_text, max_length)
+    if extracted_phrases and stop_words:
+        candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+    if candidates:
+        content_words = calculate_frequencies_for_content_words(candidates)
+    if content_words and candidates:
+        word_degrees = calculate_word_degrees(candidates, list(content_words.keys()))
+    if word_degrees and content_words:
+        word_scores = calculate_word_scores(word_degrees, content_words)
+    if candidates and extracted_phrases:
+        candidates_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
+        if candidates_with_stop_words and word_scores and stop_words:
+            cumulative_score_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
+                candidates_with_stop_words, word_scores, stop_words)
+    if cumulative_score_with_stop_words:
+        return cumulative_score_with_stop_words
+    return None

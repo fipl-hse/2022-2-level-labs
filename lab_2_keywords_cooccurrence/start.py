@@ -3,15 +3,10 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from lab_2_keywords_cooccurrence.main import (extract_phrases,
-                                              extract_candidate_keyword_phrases,
-                                              calculate_frequencies_for_content_words,
-                                              calculate_word_degrees,
-                                              calculate_word_scores,
-                                              calculate_cumulative_score_for_candidates,
-                                              get_top_n,
-                                              extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words)
+from lab_2_keywords_cooccurrence.main import (get_top_n,
+                                              load_stop_words,
+                                              extract_keyword_phrases,
+                                              calculate_cumulative_score)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -47,34 +42,36 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    candidates, content_words, word_degrees, word_scores, cumulative_score, candidates_with_stop_words, \
-    cumulative_score_with_stop_words = [None for notdef in range(7)]
+    STOP_WORDS_PATH = ASSETS_PATH / 'stopwords.json'
+    POLISH_TEXT_PATH = ASSETS_PATH / 'polish.txt'
+    UNKNOWN_TEXT_PATH = ASSETS_PATH / 'unknown.txt'
 
-    extracted_phrases = extract_phrases(corpus['gagarin'])
-    if extracted_phrases:
-        candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+    gagarin_cumulative_score = calculate_cumulative_score(corpus['gagarin'], stop_words)
+    if gagarin_cumulative_score:
+        print(get_top_n(gagarin_cumulative_score, 5, 5))
 
-    if candidates:
-        content_words = calculate_frequencies_for_content_words(candidates)
+    albatross_cumulative_score = calculate_cumulative_score(corpus['albatross'], stop_words)
+    if albatross_cumulative_score:
+        print(get_top_n(albatross_cumulative_score, 5, 5))
 
-    if content_words and candidates:
-        word_degrees = calculate_word_degrees(candidates, list(content_words.keys()))
+    genome_engineering_cumulative_score = calculate_cumulative_score(corpus['genome_engineering'], stop_words)
+    if genome_engineering_cumulative_score:
+        print(get_top_n(genome_engineering_cumulative_score, 5, 5))
 
-    if word_degrees and content_words:
-        word_scores = calculate_word_scores(word_degrees, content_words)
+    pain_detection_cumulative_score = calculate_cumulative_score(corpus['pain_detection'], stop_words)
+    if pain_detection_cumulative_score:
+        print(get_top_n(pain_detection_cumulative_score, 5, 5))
 
-    if word_scores and candidates:
-        cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
+    stop_words = load_stop_words(STOP_WORDS_PATH)
+    if stop_words:
+        print(extract_keyword_phrases(read_target_text(POLISH_TEXT_PATH), stop_words['pl']))
 
-    if candidates and extracted_phrases:
-        candidates_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
+    unknown_text = read_target_text(UNKNOWN_TEXT_PATH)
+    if unknown_text:
+        unknown_text_cumulative_score = calculate_cumulative_score(unknown_text)
+        if unknown_text_cumulative_score:
+            print(extract_keyword_phrases(unknown_text))
+            print(unknown_text_cumulative_score)
 
-    if candidates_with_stop_words and word_scores:
-        cumulative_score_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidates_with_stop_words, word_scores, stop_words)
-
-    if cumulative_score:
-        RESULT = get_top_n(cumulative_score, 2, 3)
-    print(RESULT)
-
+    RESULT = 'Hello'
     assert RESULT, 'Keywords are not extracted'
