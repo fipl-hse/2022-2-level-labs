@@ -24,7 +24,7 @@ def check_types(user_var: Any, expected_type: Any) -> bool:
             if not element:
                 return False
     elif expected_type == dict or Mapping:
-        for k, v in user_var:
+        for k, v in user_var.items():
             if not (k and v):
                 return False
     return True
