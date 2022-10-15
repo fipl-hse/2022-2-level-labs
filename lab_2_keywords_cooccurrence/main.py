@@ -17,9 +17,17 @@ def check_types(user_var: Any, expected_type: Any) -> bool:
     """
     Checks type of variable and compares it with expected type
     """
-    if isinstance(user_var, expected_type) and user_var:
-        return True
-    return False
+    if not (isinstance(user_var, expected_type) and user_var):
+        return False
+    if expected_type == list or Sequence:
+        for element in user_var:
+            if not element:
+                return False
+    elif expected_type == dict or Mapping:
+        for k, v in user_var:
+            if not (k and v):
+                return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
