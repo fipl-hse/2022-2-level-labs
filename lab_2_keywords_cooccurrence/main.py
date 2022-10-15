@@ -311,12 +311,11 @@ def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = N
 
 
 def calculate_cumulative_score(target_text: str, stop_words: Optional[Sequence] = None,
-                               max_length: Optional[int] = None) -> Optional[Mapping]:
+                               max_length: Optional[int] = 10) -> Optional[Mapping]:
     """
     Using previous functions, calculates cumulative score of tokens in user's text
     """
-    candidates, content_words, word_degrees, word_scores, \
-        cumulative_score_with_stop_words = [None for notdef in range(5)]
+    candidates, content_words, word_degrees, word_scores, candidates_with_stop_words = [None for notdef in range(5)]
     extracted_phrases = extract_phrases(target_text)
     if stop_words is None and max_length:
         stop_words = generate_stop_words(target_text, max_length)
@@ -330,9 +329,7 @@ def calculate_cumulative_score(target_text: str, stop_words: Optional[Sequence] 
         word_scores = calculate_word_scores(word_degrees, content_words)
     if candidates and extracted_phrases:
         candidates_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
-        if candidates_with_stop_words and word_scores and stop_words:
-            cumulative_score_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
-                candidates_with_stop_words, word_scores, stop_words)
-    if cumulative_score_with_stop_words:
-        return cumulative_score_with_stop_words
+    if candidates_with_stop_words and word_scores and stop_words:
+        return calculate_cumulative_score_for_candidates_with_stop_words(candidates_with_stop_words,
+                                                                         word_scores, stop_words)
     return None

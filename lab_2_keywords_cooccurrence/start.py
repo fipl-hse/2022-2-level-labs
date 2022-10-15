@@ -47,21 +47,11 @@ if __name__ == "__main__":
     UNKNOWN_TEXT_PATH = ASSETS_PATH / 'unknown.txt'
     all_stop_words = load_stop_words(STOP_WORDS_PATH)
 
-    gagarin_cumulative_score = calculate_cumulative_score(corpus['gagarin'], stop_words)
-    if gagarin_cumulative_score:
-        print(get_top_n(gagarin_cumulative_score, 5, 5))
-
-    albatross_cumulative_score = calculate_cumulative_score(corpus['albatross'], stop_words)
-    if albatross_cumulative_score:
-        print(get_top_n(albatross_cumulative_score, 5, 5))
-
-    genome_engineering_cumulative_score = calculate_cumulative_score(corpus['genome_engineering'], stop_words)
-    if genome_engineering_cumulative_score:
-        print(get_top_n(genome_engineering_cumulative_score, 5, 5))
-
-    pain_detection_cumulative_score = calculate_cumulative_score(corpus['pain_detection'], stop_words)
-    if pain_detection_cumulative_score:
-        print(get_top_n(pain_detection_cumulative_score, 5, 5))
+    for text in corpus:
+        cumulative_score = calculate_cumulative_score(corpus[text], stop_words)
+        print(cumulative_score)
+        if cumulative_score:
+            print(get_top_n(cumulative_score, 5, 5))
 
     if all_stop_words:
         print(extract_keyword_phrases(read_target_text(POLISH_TEXT_PATH), all_stop_words['pl']))
