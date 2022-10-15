@@ -45,6 +45,7 @@ if __name__ == "__main__":
     STOP_WORDS_PATH = ASSETS_PATH / 'stopwords.json'
     POLISH_TEXT_PATH = ASSETS_PATH / 'polish.txt'
     UNKNOWN_TEXT_PATH = ASSETS_PATH / 'unknown.txt'
+    all_stop_words = load_stop_words(STOP_WORDS_PATH)
 
     gagarin_cumulative_score = calculate_cumulative_score(corpus['gagarin'], stop_words)
     if gagarin_cumulative_score:
@@ -62,9 +63,8 @@ if __name__ == "__main__":
     if pain_detection_cumulative_score:
         print(get_top_n(pain_detection_cumulative_score, 5, 5))
 
-    stop_words = load_stop_words(STOP_WORDS_PATH)
-    if stop_words:
-        print(extract_keyword_phrases(read_target_text(POLISH_TEXT_PATH), stop_words['pl']))
+    if all_stop_words:
+        print(extract_keyword_phrases(read_target_text(POLISH_TEXT_PATH), all_stop_words['pl']))
 
     unknown_text = read_target_text(UNKNOWN_TEXT_PATH)
     if unknown_text:
