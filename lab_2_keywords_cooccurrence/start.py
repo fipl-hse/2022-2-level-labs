@@ -63,7 +63,8 @@ if __name__ == "__main__":
     if word_scores and candidates:
         cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
 
-    RESULT = get_top_n(cumulative_score, 2, 3)
+    if cumulative_score:
+        RESULT = get_top_n(cumulative_score, 2, 3)
     print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'
