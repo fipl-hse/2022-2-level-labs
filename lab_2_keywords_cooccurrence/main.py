@@ -4,6 +4,8 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
+from lab_1_keywords_tfidf.main import (check_dict, check_list, check_float, check_positive_int)
+import re
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -17,7 +19,23 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    print('come on, lads, move that cart!')
+    if not (isinstance(text, str) and text):
+        return None
+    punctuation = r'''!"“”#$%&'()*+,-–—./:;<=>?@[\\]^_`{|}~¡¿⟨⟩«»'…⋯‹›'''
+    txt = ''
+    list_with_phrases = []
+    for char in text.replace('\n', ' '):
+        if char in punctuation:
+            if txt:
+                no_blank_lines = txt.strip()
+                if no_blank_lines:
+                    list_with_phrases.append(no_blank_lines)
+                txt = ''
+            continue
+        txt += char
+    if txt:
+        list_with_phrases.append(txt)
+    return list_with_phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +47,19 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    key_phrases = []
+    for phrase in phrases:
+        lower_case = phrase.lower()
+        list_of_words_in_phrase = lower_case.split()
+        for word in list_of_words_in_phrase:
+            if word in stop_words:
+                index = list_of_words_in_phrase.index(word)
+                before_word = list_of_words_in_phrase[:index]
+                del list_of_words_in_phrase[index]
+                key_phrases.append(tuple(before_word))
+    return key_phrases
+
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
