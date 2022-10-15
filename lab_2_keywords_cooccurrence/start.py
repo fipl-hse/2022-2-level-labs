@@ -37,7 +37,6 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-#added some changes to check comething
     RESULT = None
 
     assert RESULT, 'Keywords are not extracted'
