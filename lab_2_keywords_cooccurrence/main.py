@@ -4,9 +4,10 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
 from itertools import pairwise
 import re
+from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
+
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -240,7 +241,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         cumulative_score_with_stop_words_dict[phrase] = 0
         for word in phrase:
             if word not in stop_words:
-                cumulative_score_with_stop_words_dict[phrase] += word_scores[word]
+                cumulative_score_with_stop_words_dict[phrase] += int(word_scores[word])
     return cumulative_score_with_stop_words_dict
 # None != {('важнейших', 'задач'): 4,
 #  ('времена', 'советского', 'союза', 'исследование', 'космоса'): 23,
