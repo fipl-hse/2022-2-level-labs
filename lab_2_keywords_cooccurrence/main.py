@@ -316,7 +316,7 @@ def calculate_cumulative_score(target_text: str, stop_words: Optional[Sequence] 
     Using previous functions, calculates cumulative score of tokens in user's text
     """
     candidates, content_words, word_degrees, word_scores, \
-        cumulative_score_with_stop_words = [None for notdef in range(6)]
+        cumulative_score_with_stop_words = [None for notdef in range(5)]
     extracted_phrases = extract_phrases(target_text)
     if stop_words is None:
         stop_words = generate_stop_words(target_text, max_length)
