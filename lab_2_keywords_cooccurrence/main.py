@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-from re import split as rsplit, sub
+import re
 from json import load as json_load
 
 KeyPhrase = tuple[str, ...]
@@ -32,8 +32,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not type_check(text, str):
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    return [clean for phrase in rsplit(''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation)), text)
-            if (clean := phrase.strip())]
+    expression = ''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation))
+    return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -49,7 +49,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     candidates = []
     for phrase in [phrase.lower().split() for phrase in phrases]:
-        splits = [count for count, word in enumerate(phrase) if word in stop_words]
+        splits = [index for index, word in enumerate(phrase) if word in stop_words]
         candidates.extend(candidate for split1, split2 in zip([-1] + splits, splits + [len(phrase)])
                           if (candidate := tuple(phrase[split1+1:split2])))
     return candidates
@@ -65,8 +65,11 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     """
     if not type_check(candidate_keyword_phrases, list):
         return None
-    return {token: sum(look.count(token) for look in candidate_keyword_phrases)
-            for phrase in set(candidate_keyword_phrases) for token in set(phrase)}
+    frequencies = {}
+    for phrase in set(candidate_keyword_phrases):
+        for token in set(phrase):
+            frequencies[token] = sum(look.count(token) for look in candidate_keyword_phrases)
+    return frequencies
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -168,7 +171,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                       for marker1, sample in enumerate(candidate_keyword_phrases[:-3])
                       for marker2, phrase in enumerate(candidate_keyword_phrases[marker1+2:-1])
                       if phrase == sample
-                      and candidate_keyword_phrases[marker2 + 1] == candidate_keyword_phrases[marker1 + 1]}
+                      and candidate_keyword_phrases[marker2+1] == candidate_keyword_phrases[marker1+1]}
     possible_phrases = [phrase[index:index+len1+len2+1]
                         for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
                         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
@@ -210,7 +213,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
     punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    tokens = sub(''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation)), '', text).lower().split()
+    tokens = re.sub(''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation)), '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
