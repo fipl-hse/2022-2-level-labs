@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any, Union
+from typing import Optional, Sequence, Mapping, Any
 from itertools import pairwise
 import re
 from lab_1_keywords_tfidf.main import check_positive_int
