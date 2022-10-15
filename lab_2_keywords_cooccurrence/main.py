@@ -13,15 +13,16 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_types(user_var: Any, expected_type: Any) -> bool:
+def check_types(user_var: Any, expected_type: Any, can_be_empty: bool = False) -> bool:
     """
-    Checks type of variable and compares it with expected type
+    Checks type of variable and compares it with expected type.
+    For dict and list checks whether their elements are empty (regulated with can_be_empty)
     """
     if not (isinstance(user_var, expected_type) and user_var):
         return False
     if expected_type == list:
         for element in user_var:
-            if not element:
+            if not element and can_be_empty is False:
                 return False
     elif expected_type == dict:
         for key, value in user_var.items():
@@ -217,7 +218,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, list) and check_types(phrases, list) and phrases):
+    if not (check_types(candidate_keyword_phrases, list) and check_types(phrases, list, True)):
         return None
     kw_phrases_join = [' '.join(kw_phrase) for kw_phrase in candidate_keyword_phrases]
     kw_phrases_pairs = list(pairwise(kw_phrases_join))
