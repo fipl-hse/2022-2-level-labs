@@ -217,7 +217,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, list) and check_types(phrases, list)):
+    if not (check_types(candidate_keyword_phrases, list) and check_types(phrases, list) and phrases):
         return None
     kw_phrases_join = [' '.join(kw_phrase) for kw_phrase in candidate_keyword_phrases]
     kw_phrases_pairs = list(pairwise(kw_phrases_join))
