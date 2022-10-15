@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, Union
 from itertools import pairwise
 import re
 from lab_1_keywords_tfidf.main import check_positive_int
@@ -13,7 +13,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_types(user_var: Any, expected_type: type or Sequence or Mapping) -> bool:
+def check_types(user_var: Any, expected_type: Union[Union[Sequence, Mapping], type]) -> bool:
     """
     Checks type of variable and compares it with expected type
     """
@@ -182,9 +182,10 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
                  reverse=True)
     top_str = []
     for phrase in top:
-        if len(phrase) <= max_length:
-            phrase = ' '.join(phrase)
-            top_str.append(phrase)
+        phrase_length = len(phrase)
+        if  phrase_length <= max_length:
+            phrase_join = ' '.join(phrase)
+            top_str.append(phrase_join)
     return top_str[:top_n]
 
 
