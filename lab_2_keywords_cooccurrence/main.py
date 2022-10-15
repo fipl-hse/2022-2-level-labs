@@ -102,7 +102,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             if word in word_degrees_dict and word in content_words:
                 word_degrees_dict[word] += len(phrase)
             elif word in content_words:
-                    word_degrees_dict[word] = len(phrase)
+                word_degrees_dict[word] = len(phrase)
     for content_word in content_words:
         if content_word not in word_degrees_dict.keys():
             word_degrees_dict[content_word] = 0
@@ -239,11 +239,14 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     for phrase in candidate_keyword_phrases:
         cumulative_score_with_stop_words_dict[phrase] = 0
         for word in phrase:
-            if word in stop_words:
-                word_scores[word] = 0
-            cumulative_score_with_stop_words_dict[phrase] += word_scores[word]
+            if word not in stop_words:
+                cumulative_score_with_stop_words_dict[phrase] += word_scores[word]
     return cumulative_score_with_stop_words_dict
-
+# None != {('важнейших', 'задач'): 4,
+#  ('времена', 'советского', 'союза', 'исследование', 'космоса'): 23,
+#  ('времена', 'союза', 'прошли'): 11,
+#  ('одной',): 1,
+#  ('одной', 'из', 'важнейших', 'задач'): 5}
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
