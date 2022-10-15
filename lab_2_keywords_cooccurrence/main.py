@@ -306,9 +306,7 @@ def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = N
     if extracted_phrases:
         candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
     if candidates and extracted_phrases:
-        keyword_phrases_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
-    if keyword_phrases_with_stop_words:
-        return keyword_phrases_with_stop_words
+        return extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
     return None
 
 
