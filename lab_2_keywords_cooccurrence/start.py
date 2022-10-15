@@ -60,7 +60,7 @@ if __name__ == "__main__":
     if word_degrees and content_words:
         word_scores = calculate_word_scores(word_degrees, content_words)
 
-    if word_scores:
+    if word_scores and candidates:
         cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
 
     RESULT = get_top_n(cumulative_score, 2, 3)

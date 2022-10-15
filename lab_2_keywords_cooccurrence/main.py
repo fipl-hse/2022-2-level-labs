@@ -13,7 +13,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_types(user_var: Any, expected_type: Union[Union[Sequence, Mapping], type]) -> bool:
+def check_types(user_var: Any, expected_type: Any) -> bool:
     """
     Checks type of variable and compares it with expected type
     """
@@ -156,7 +156,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            cumulative_score_dict[phrase] += word_scores[word]
+            cumulative_score_dict[phrase] += int(word_scores[word])
     return cumulative_score_dict
 
 
