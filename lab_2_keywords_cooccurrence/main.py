@@ -6,7 +6,8 @@ from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 from itertools import pairwise
 import re
-from lab_1_keywords_tfidf.main import check_positive_int
+import json
+from lab_1_keywords_tfidf.main import check_positive_int, clean_and_tokenize
 
 
 KeyPhrase = tuple[str, ...]
@@ -272,7 +273,13 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not (check_types(text, str) and check_positive_int(max_length)):
+        return None
+    phrases = clean_and_tokenize(text)
+    freq_dict = {phrase: text.count(phrase) for phrase in phrases}
+    freq_dict_80_percentile = \
+        sorted(freq_dict.keys(), key=lambda key: freq_dict[key], reverse=True)[:int(len(freq_dict) * 0.2) + 1]
+    return [stop_word for stop_word in freq_dict_80_percentile if len(stop_word) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -281,4 +288,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not check_types(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as file:
+        return dict(json.load(file))

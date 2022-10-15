@@ -9,7 +9,9 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n)
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -45,7 +47,8 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    candidates, content_words, word_degrees, word_scores, cumulative_score = [None for notdef in range(5)]
+    candidates, content_words, word_degrees, word_scores, cumulative_score, candidates_with_stop_words, \
+    cumulative_score_with_stop_words = [None for notdef in range(7)]
 
     extracted_phrases = extract_phrases(corpus['gagarin'])
     if extracted_phrases:
@@ -62,6 +65,13 @@ if __name__ == "__main__":
 
     if word_scores and candidates:
         cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
+
+    if candidates and extracted_phrases:
+        candidates_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
+
+    if candidates_with_stop_words and word_scores:
+        cumulative_score_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidates_with_stop_words, word_scores, stop_words)
 
     if cumulative_score:
         RESULT = get_top_n(cumulative_score, 2, 3)
