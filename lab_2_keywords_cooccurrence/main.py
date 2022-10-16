@@ -14,6 +14,10 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 def check_dict(user_input: Any, type_k: Any, type_v: Any, can_be_empty: bool) -> bool:
+    """
+    Checks if an object is a dictionary
+    with requested keys and values types
+    """
     if not isinstance(user_input, dict):
         return False
     if not user_input and can_be_empty is False:
