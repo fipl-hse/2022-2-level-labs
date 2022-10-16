@@ -166,23 +166,23 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     In case of corrupt input arguments, None is returned
     """
     if not(check_lst(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)
-           and (word for phrase in candidate_keyword_phrases for word in phrase) in word_scores
            and all(word_scores.get(word) for phrase in candidate_keyword_phrases for word in phrase)):
         return None
     # dict = {phrase: score for phrase in candidate_keyword_phrases for word, score in word_scores.items() if word in phrase}
     dict = {}
     counted_words = []
-    for phrase in candidate_keyword_phrases:
+    for phrase in set(candidate_keyword_phrases):
         for word, score in word_scores.items():
+            if word in phrase:
 
-            if phrase not in dict and word in phrase:
-                counted_words = []
-                dict[phrase] = score
-                counted_words.append(word)
+                if phrase not in dict:
+                    counted_words = []
+                    dict[phrase] = int(score)
+                    counted_words.append(word)
 
-            elif phrase in dict and word in phrase and word not in counted_words:
-                counted_words.append(word)
-                dict[phrase] += score
+                elif phrase in dict and word not in counted_words:
+                    counted_words.append(word)
+                    dict[phrase] += int(score)
     return dict
 
 
