@@ -79,7 +79,16 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []:
+        return None
+    frequencies_list = {}
+    for candidate in candidate_keyword_phrases:
+        for i in candidate:
+            if i not in frequencies_list:
+                frequencies_list[i] = candidate.count(i)
+            else:
+                frequencies_list[i] += 1
+    return frequencies_list
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -94,7 +103,16 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(content_words, list) or not isinstance(candidate_keyword_phrases, list)\
+            or content_words == [] or candidate_keyword_phrases == []:
+        return None
+    word_degrees = {}
+    for i in content_words:
+        word_degrees[i] = 0
+        for phrase in candidate_keyword_phrases:
+            if i in phrase:
+                word_degrees[i] += len(phrase)
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -108,7 +126,15 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(word_degrees, dict) or not isinstance(word_frequencies, dict)\
+            or word_degrees == {} or word_frequencies == {}:
+        return None
+    word_scores = {}
+    for i in word_degrees.keys():
+        if i not in word_frequencies.keys():
+            return None
+        word_scores[i] = word_degrees[i]/word_frequencies[i]
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -123,7 +149,18 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict) \
+            or candidate_keyword_phrases == [] or word_scores == {}:
+        return None
+    cum_score_list = {}
+    for phrase in candidate_keyword_phrases:
+        cum_score_list[phrase] = 0
+        for i in phrase:
+            if i not in word_scores:
+                return None
+            cum_score_list[phrase] += word_scores[i]
+    return cum_score_list
+
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
