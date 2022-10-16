@@ -47,13 +47,8 @@ if __name__ == "__main__":
     }
 
     # def extract_keyword_phrases(text: str, stop_words_list: Sequence[str]):
-    candidate_phrases = None
-    word_degree = None
-    word_score = None
-    freq_dict = None
-    cumulative_score = None
-    candidate_phrases_with_adjoining = None
-    cumulative_score_for_candidates_with_stop_words = None
+    candidate_phrases, word_degree, word_score, freq_dict, cumulative_score, candidate_phrases_with_adjoining,\
+        cumulative_score_for_candidates_with_stop_words = [None for i in range(7)]
 
     TARGET_PATH_POLISH = read_target_text(ASSETS_PATH / 'polish.txt')
     TARGET_PATH_GAGARIN = read_target_text(TARGET_TEXT_PATH_GAGARIN)
@@ -65,7 +60,7 @@ if __name__ == "__main__":
         freq_dict = calculate_frequencies_for_content_words(candidate_phrases)
     if candidate_phrases and freq_dict:
         word_degree = calculate_word_degrees(candidate_phrases, list(freq_dict.keys()))
-#       print(word_degree)
+    #       print(word_degree)
     if word_degree and freq_dict:
         word_score = calculate_word_scores(word_degree, freq_dict)
     # print(word_score)
