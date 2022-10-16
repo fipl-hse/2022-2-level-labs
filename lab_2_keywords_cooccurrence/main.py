@@ -50,15 +50,15 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     candidate_keyword_phrases = []
     for phrase in phrases:
         phrase = phrase.lower()
-        phrases = phrase.split()
+        phrases1 = phrase.split()
         first_keywords_candidate = []
-        for word in phrases:
+        for word in phrases1:
             if word in stop_words:
                 if first_keywords_candidate:
                     second_keywords_candidate = tuple(first_keywords_candidate)
                     candidate_keyword_phrases.append(second_keywords_candidate)
                     first_keywords_candidate.clear()
-            elif word == phrase[len(phrase) - 1]:
+            elif word == phrases1[len(phrases1) - 1]:
                 first_keywords_candidate.append(word)
                 second_keywords_candidate = tuple(first_keywords_candidate)
                 candidate_keyword_phrases.append(second_keywords_candidate)
@@ -99,15 +99,14 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False) or check_list(content_words, str, False)):
+    if not check_list(candidate_keyword_phrases, tuple, False) or not  check_list(content_words, str, False):
         return None
     dict_degree = {}
     for phrase in candidate_keyword_phrases:
-        for word in phrase:
-            if word in content_words:
-                dict_degree[word] = len(phrase) + dict_degree.get(word, 0)
         for word in content_words:
-            if word not in dict_degree.keys():
+            if word in phrase:
+                dict_degree[word] = len(phrase) + dict_degree.get(word, 0)
+            if word not in dict_degree:
                 dict_degree[word] = 0
     return dict_degree
 
@@ -146,17 +145,18 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False) or check_list(word_scores, str, False)):
+    if not check_list(candidate_keyword_phrases, tuple, False) or not  check_dict(word_scores, str, float, False):
         return None
-    cumulative_score_for_candidates = {}
+    cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
         cumulative_score = 0
         for word in phrase:
             if word not in word_scores:
                 return None
-            cumulative_score += int(word_scores[word])
-        cumulative_score_for_candidates[phrase] = cumulative_score
-    return cumulative_score_for_candidates
+            else:
+                cumulative_score += word_scores[word]
+        cumulative_score_dict[phrase] = cumulative_score
+    return cumulative_score_dict
 
 
 
