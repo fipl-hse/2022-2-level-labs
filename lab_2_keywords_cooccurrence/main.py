@@ -7,6 +7,7 @@ from typing import Optional, Sequence, Mapping, Any
 import re
 import json
 from copy import deepcopy
+from math import floor
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -35,19 +36,26 @@ def check_list(user_input: Any, elements_required_type: type) -> bool:
     return True
 
 
-def check_dict(user_input: Any, keys_type: type, values_type: type) -> bool:
+def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type=None) -> bool:
     """
     Checks if the input is a non-empty dictionary with required keys and values
     :param user_input: An input, which is checked
     :param keys_type: The type of dictionary's keys
     :param values_type: The type of dictionary's values
+    :param values_sec_type: Optional parameter, takes a second value type if it's required
     :return: True if the input is correct and keys and values are as required
     """
     if not user_input or not isinstance(user_input, dict):
         return False
-    for key, value in user_input.items():
-        if not isinstance(key, keys_type) or not isinstance(value, values_type):
-            return False
+    if values_sec_type:
+        for key, value in user_input.items():
+            if not isinstance(key, keys_type) or not (isinstance(value, values_type)
+                                                      or isinstance(value, values_sec_type)):
+                return False
+    else:
+        for key, value in user_input.items():
+            if not isinstance(key, keys_type) or not isinstance(value, values_type):
+                return False
     return True
 
 
@@ -78,12 +86,12 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not check_input(text, str):
         return None
-    punctuat = """!\"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
+    punctuat = """!\"#$%&'()*+,-./:;<=>?@[]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
     sep_phrases = text[:]
     for i in sep_phrases:
         if i in punctuat:
             sep_phrases = sep_phrases.replace(i, '*')
-    sep_phrases = re.split(r'[*]{1,}', sep_phrases)
+    sep_phrases = re.split(r'[*]+', sep_phrases)
     new_sep = sep_phrases[:]
     for j in sep_phrases:
         if re.fullmatch(r'\s+', j) or len(j) == 0:
@@ -225,7 +233,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_dict(keyword_phrases_with_scores, tuple, float) or not check_input(top_n, int) or not check_input(max_length, int) or max_length < 0:
+    if (not check_dict(keyword_phrases_with_scores, tuple, float)
+            or not check_input(top_n, int) or not check_input(max_length, int) or max_length < 0):
         return None
     if top_n < 1 or max_length < 1:
         return None
@@ -233,7 +242,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for key, val in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
             correct_len[key] = val
-    correct_len = sorted(correct_len.keys(), key=lambda key: correct_len[key], reverse=True)[:top_n]
+    correct_len = sorted(correct_len.keys(), key=lambda keys: correct_len[keys], reverse=True)[:top_n]
     top_phr = []
     for i in correct_len:
         top_phr.append(' '.join(i))
@@ -260,14 +269,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases) or not check_list(phrases, str): # checking types
+    if not check_keyphrases(candidate_keyword_phrases) or not check_list(phrases, str):  # checking types
         return None
     possible_phr = {}  # a dictionary for possible phrases, values = frequency of the phrase
-    for one_phrase in range(0, len(candidate_keyword_phrases)-1):
-        for sec_phrase in range(one_phrase + 1, len(candidate_keyword_phrases)):
-            key_phr = tuple([candidate_keyword_phrases[one_phrase], candidate_keyword_phrases[sec_phrase]])
-            possible_phr[key_phr] = possible_phr.get(key_phr, 0) + 1
-            break
+    for one_phrase in range(len(candidate_keyword_phrases)-1):
+        key_phr = tuple([candidate_keyword_phrases[one_phrase], candidate_keyword_phrases[one_phrase+1]])
+        possible_phr[key_phr] = possible_phr.get(key_phr, 0) + 1
     neighbours = []
     for key, val in possible_phr.items():
         if val > 1:
@@ -276,7 +283,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for one_phrase in phrases:
         all_words.append(one_phrase.lower().split())  # turning phrases into words
     result_list = deepcopy(neighbours)
-    for one_phrase in range(len(neighbours)):
+    for one_phrase in range(len(neighbours)):  # I'm sorry for this long code
         for words in range(len(neighbours[one_phrase])-1):
             for sentences in all_words:
                 first_phr = ' '.join(neighbours[one_phrase][words])
@@ -286,7 +293,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     counter_first = str_sentence.count(first_phr)
                     counter_sec = str_sentence.count(second_phr)
                     if counter_first == 1 and counter_sec == 1:
-                        stop_word = sentences.index(first_phr)+1 #index of stop_w
+                        stop_word = sentences.index(first_phr)+1  # index of stop_w
                         if len(result_list[one_phrase]) == 2:
                             result_list[one_phrase].insert(1, (sentences[stop_word],))
                         else:
@@ -296,7 +303,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     elif counter_first == counter_sec and counter_first > 1:
                         for i in range(len(sentences)):
                             if sentences[i] == first_phr:
-                                stop_word = sentences.index(first_phr, i)+1 #index of stop_w
+                                stop_word = sentences.index(first_phr, i)+1  # index of stop_w
                                 if len(result_list[one_phrase]) == 2:
                                     result_list[one_phrase].insert(1, (sentences[stop_word],))
                                 else:
@@ -311,7 +318,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         key_phrase = tuple((' '.join(list_for_str)).split())
         freq_dict[key_phrase] = freq_dict.get(key_phrase, 0) + 1
     return [j for j, i in freq_dict.items() if i > 1]
-
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -329,7 +335,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases) or not check_dict(word_scores, str, float | int) or not check_list(stop_words, str):
+    if (not check_keyphrases(candidate_keyword_phrases) or not check_dict(word_scores, str, float, int)
+            or not check_list(stop_words, str)):
         return None
     cumul_score_dict = {}
     for one_phrase in candidate_keyword_phrases:
@@ -345,7 +352,6 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     return cumul_score_dict
 
 
-
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     Generates the list of stop words from the given text
@@ -354,7 +360,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    if not check_input(text, str) or not check_input(max_length, int):
+    if not check_input(text, str) or not check_input(max_length, int) or max_length < 1:
         return None
     extracted_phr = extract_phrases(text)
     if extracted_phr:
@@ -363,20 +369,24 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
             phrase = phrase.split()
             for words in phrase:
                 extracted_words.append(words.lower())
-    if extracted_words:
-        for word in extracted_words:
-            if len(word) > max_length:
-                extracted_words.remove(word)
-        frequencies_words = calculate_frequencies_for_content_words(extracted_words)
-    if frequencies_words:
-        #sort_frequency = sorted(correct_len.keys(), key=lambda key: correct_len[key], reverse=True)
-        sort_frequency = sorted(frequencies_words, key=frequencies_words.get)
+        freq_dict = {}
+        for i in extracted_words:
+            freq_dict[i] = freq_dict.get(i, 0) + 1
+        correct_length_dict = freq_dict.copy()
+        for keys in freq_dict.keys():
+            if len(keys) > max_length:
+                del correct_length_dict[keys]
+        sort_frequency = sorted(correct_length_dict, key=correct_length_dict.get, reverse=True)
         sorted_dict = {}
         for i in sort_frequency:
-            sorted_dict[i] = frequencies_words[i]
-        print(sorted_dict.items())
-    # используй калькюлэйт фрикуенси
-print(generate_stop_words('cats and, cats cats dogs dogs aRE animals: domestic', 6))
+            sorted_dict[i] = correct_length_dict[i]
+        if len(sorted_dict) % 10 == 0:
+            percent_word = (len(sorted_dict) // 10) * 2 + 1
+        else:
+            percent_word = floor((len(sorted_dict)/10)*2)
+        new_dict = [key for key, value in sorted_dict.items()]
+        return new_dict[:percent_word]
+
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
@@ -389,16 +399,3 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     with open(path, 'r', encoding='utf-8') as file:
         result_dict = json.load(file)
     return result_dict
-
-def work_with_text(text: str, stop_words: list[str]):
-    """
-    Calling all the needed functions to process a text:
-    extracting phrases, candidate keyword phrases, frequencies for
-    content words, word degrees
-    """
-    if not check_input(text, str) or not check_list(stop_words, str):
-        return None
-    extracted_phr = extract_phrases(text)
-    candidate_keyword_phr = extract_candidate_keyword_phrases(extracted_phr)
-    frequencies_content = calculate_frequencies_for_content_words(candidate_keyword_phr)
-
