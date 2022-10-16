@@ -176,7 +176,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in set(candidate_keyword_phrases):
         for word, score in word_scores.items():
             if word in phrase:
-                cmltv_score_dict.update({phrase: cmltv_score_dict.get(phrase, 0) + int(score)})
+                cmltv_score_dict.update({phrase: cmltv_score_dict.get(phrase, 0.0) + score})
 
     return cmltv_score_dict
 
@@ -194,7 +194,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_dict(keyword_phrases_with_scores, tuple, int or float, False) and isinstance(top_n, int) and top_n > 0
+    if not(check_dict(keyword_phrases_with_scores, tuple, float, False) and isinstance(top_n, int) and top_n > 0
            and isinstance(max_length, int) and max_length > 0):
         return None
 
@@ -268,7 +268,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     for phrase in set(candidate_keyword_phrases):
         for word, score in word_scores.items():
             if word in phrase and word not in stop_words:
-                cmltv_score_dict_wtih_stops.update({phrase: cmltv_score_dict_wtih_stops.get(phrase, 0) + int(score)})
+                cmltv_score_dict_wtih_stops.update({phrase: cmltv_score_dict_wtih_stops.get(phrase, 0.0) + score})
 
     return cmltv_score_dict_wtih_stops
 
