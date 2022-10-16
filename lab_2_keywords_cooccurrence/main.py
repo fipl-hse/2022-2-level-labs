@@ -192,15 +192,13 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_dict(keyword_phrases_with_scores, tuple, float, False) and isinstance(top_n, int) and top_n > 0
+    if not(check_dict(keyword_phrases_with_scores, tuple, int, False) and isinstance(top_n, int) and top_n > 0
            and isinstance(max_length, int) and max_length > 0):
         return None
 
     score_sorted_phrases = sorted(keyword_phrases_with_scores.keys(), key=lambda key: keyword_phrases_with_scores[key],
                                   reverse=True)
-    top_lst = [' '.join(phrase) for phrase in score_sorted_phrases if len(phrase) <= max_length][:top_n]
-
-    return top_lst
+    return [' '.join(phrase) for phrase in score_sorted_phrases if len(phrase) <= max_length][:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,

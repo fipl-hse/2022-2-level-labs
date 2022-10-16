@@ -51,24 +51,36 @@ if __name__ == "__main__":
     }
 
     for title, text in corpus.items():
+        print(f'info about the text called {title}')
         phrases = extract_phrases(text)
+
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+
         word_frequency = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-        print('word freq: ', word_frequency)
+        print(f'word freq: {word_frequency}')
 
         word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequency.keys()))
-        print('word degrees: ', word_degrees)
+        print(f'word degrees: {word_degrees}')
 
         word_scores = calculate_word_scores(word_degrees, word_frequency)
-        print('word scores: ', word_scores)
+        print(f'word scores: {word_scores}')
 
         keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
-        print('keyword phrases with scores: ', keyword_phrases_with_scores)
+        print(f'keyword phrases with scores: {keyword_phrases_with_scores}')
 
-        top_lst = get_top_n(keyword_phrases_with_scores, 10, 5)
-        print('top n lst', top_lst)
+        top_lst = get_top_n(keyword_phrases_with_scores, 10, 3)
+        print(f'top n lst {top_lst}')
 
+        candidate_keyword_phrases_with_adj = extract_candidate_keyword_phrases_with_adjoining(
+            candidate_keyword_phrases, phrases)
 
+        keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidate_keyword_phrases, word_scores, stop_words)
+
+        top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 3)
+        print(f'top n lst with stop words: {top_lst_with_stops}')
+
+        print()
 
     #RESULT = None
 
