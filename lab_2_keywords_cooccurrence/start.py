@@ -70,7 +70,7 @@ if __name__ == "__main__":
         keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
         print(f'keyword phrases with scores: {keyword_phrases_with_scores}')
 
-        top_lst = get_top_n(keyword_phrases_with_scores, 10, 3)
+        top_lst = get_top_n(keyword_phrases_with_scores, 10, 6)
         print(f'top n lst {top_lst}')
 
         candidate_keyword_phrases_with_adj = extract_candidate_keyword_phrases_with_adjoining(
@@ -79,7 +79,7 @@ if __name__ == "__main__":
         keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(
             candidate_keyword_phrases, word_scores, stop_words)
 
-        top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 3)
+        top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 6)
         print(f'top n lst with stop words: {top_lst_with_stops}')
 
         print()

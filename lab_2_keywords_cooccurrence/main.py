@@ -102,7 +102,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(candidate_keyword_phrases, (str, list, tuple), False)):
+    if not check_lst(candidate_keyword_phrases, (str, list, tuple), False):
         return None
     keyword_freq = {}
     for phrase in candidate_keyword_phrases:
