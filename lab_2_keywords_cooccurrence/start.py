@@ -10,7 +10,9 @@ from lab_2_keywords_cooccurrence.main import (
     calculate_word_degrees,
     calculate_word_scores,
     calculate_cumulative_score_for_candidates,
-    get_top_n
+    get_top_n,
+    extract_candidate_keyword_phrases_with_adjoining,
+    calculate_cumulative_score_for_candidates_with_stop_words
 )
 
 def read_target_text(file_path: Path) -> str:
@@ -49,6 +51,8 @@ if __name__ == "__main__":
     PHRASES = extract_phrases(corpus['gagarin'])
     TOP = 5
     MAX_LENGTH = 3
+    CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS = None
+    CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = None
 
     if PHRASES:
         CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
@@ -57,7 +61,7 @@ if __name__ == "__main__":
         WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
 
     if WORD_FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
-        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES,list(WORD_FREQUENCIES.keys()))
+        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
 
     if WORD_FREQUENCIES and WORD_DEGREES:
         WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
@@ -68,6 +72,12 @@ if __name__ == "__main__":
     if KEYWORD_PHRASES_WITH_SCORES and TOP and MAX_LENGTH:
         GET_TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, TOP, MAX_LENGTH)
 
-    RESULT = GET_TOP_N
+    if CANDIDATE_KEYWORD_PHRASES and PHRASES:
+        CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
+
+    if CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING and WORD_SCORES:
+        CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING, WORD_SCORES, stop_words)
+
+    RESULT = CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS
 
     assert RESULT, 'Keywords are not extracted'
