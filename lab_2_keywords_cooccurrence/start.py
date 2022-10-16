@@ -3,7 +3,15 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-
+from main import (extract_phrases,
+                  extract_candidate_keyword_phrases,
+                  calculate_frequencies_for_content_words,
+                  calculate_word_degrees,
+                  calculate_word_scores,
+                  calculate_cumulative_score_for_candidates,
+                  get_top_n,
+                  extract_candidate_keyword_phrases_with_adjoining,
+                  calculate_cumulative_score_for_candidates_with_stop_words)
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -37,7 +45,40 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
+    text = corpus['gagarin']
 
-    RESULT = None
+    if text:
+        phrases = extract_phrases(text)
+
+    if phrases and stop_words:
+        candidate_keywords_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+
+    if candidate_keywords_phrases:
+        frequencies = calculate_frequencies_for_content_words(candidate_keywords_phrases)
+
+    content_words = list(frequencies.keys())
+    if candidate_keywords_phrases and content_words:
+        word_degrees = calculate_word_degrees(candidate_keywords_phrases, content_words)
+
+    if word_degrees and frequencies:
+        word_scores = calculate_word_scores(word_degrees, frequencies)
+
+    if candidate_keywords_phrases and word_scores:
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keywords_phrases, word_scores)
+
+    top_n = 5
+    max_length = 3
+    if keyword_phrases_with_scores and top_n and max_length:
+        print(get_top_n(keyword_phrases_with_scores, top_n, max_length))
+
+    if candidate_keywords_phrases and phrases:
+        final_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keywords_phrases, phrases)
+
+    if candidate_keywords_phrases and stop_words and word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates_with_stop_words(candidate_keywords_phrases, word_scores, stop_words)
+
+
+
+    RESULT = cumulative_score
 
     assert RESULT, 'Keywords are not extracted'
