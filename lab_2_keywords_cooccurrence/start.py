@@ -53,8 +53,10 @@ if __name__ == "__main__":
     for title, text in corpus.items():
         print(f'info about the text called {title}')
         phrases = extract_phrases(text)
+        print(f'phrases: {phrases}')
 
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+        print(f'candidate keyword phrases: {candidate_keyword_phrases}')
 
         word_frequency = calculate_frequencies_for_content_words(candidate_keyword_phrases)
         print(f'word freq: {word_frequency}')

@@ -9,34 +9,36 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_lst(object: Any, element_type: type or tuple, can_be_empty: bool) -> bool:
+def check_lst(obj: Any, element_type: type or tuple, can_be_empty: bool) -> bool:
     """
     Checks if the object is a list containing elements of a certain type
 
-    :param object: an object that is expected to be a list
+    :param obj: an object that is expected to be a list
     :param element_type: the expected type of list elements
+    :param can_be_empty: True if the object can be empty, False otherwise
     :return: bool - True if the object is list containing elements of the given type, False otherwise
     """
-    if (can_be_empty is False and object) or (can_be_empty is True and not object):
-        if isinstance(object, list):
-            for element in object:
+    if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
+        if isinstance(obj, list):
+            for element in obj:
                 if isinstance(element, element_type):
                     return True
     return False
 
 
-def check_dict(object: Any, key_type: type or tuple, val_type: type or tuple, can_be_empty: bool) -> bool:
+def check_dict(obj: Any, key_type: type or tuple, val_type: type or tuple, can_be_empty: bool) -> bool:
     """
     Checks if the object is a dictionary containing keys and values of a certain type
 
-    :param object: an object that is expected to be a dictionary
+    :param obj: an object that is expected to be a dictionary
     :param key_type: the expected type of dictionary keys
     :param val_type: the expected type of dictionary values
+    :param can_be_empty: True if the object can be empty, False otherwise
     :return: bool - True if the object is a dictionary containing keys and values of the given type, False otherwise
     """
-    if (can_be_empty is False and object) or (can_be_empty is True and not object):
-        if isinstance(object, dict):
-            for key, val in object.items():
+    if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
+        if isinstance(obj, dict):
+            for key, val in obj.items():
                 if isinstance(key, key_type) and isinstance(val, val_type):
                     return True
     return False
@@ -192,7 +194,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_dict(keyword_phrases_with_scores, tuple, int, False) and isinstance(top_n, int) and top_n > 0
+    if not(check_dict(keyword_phrases_with_scores, tuple, int or float, False) and isinstance(top_n, int) and top_n > 0
            and isinstance(max_length, int) and max_length > 0):
         return None
 
@@ -225,17 +227,20 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     lst = []
 
-    for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):  # look at phrase and a keyword phrase it consists of
+    # look at phrase and a keyword phrase it consists of
+    for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
         phrase = phrase.split()
-        keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)  #freq of phrase 1 tuple
-        next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1] # the next phrase tuple
+        keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)  # freq of phrase 1 tuple
+        next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1]  # the next phrase
         next_phrase_freq = candidate_keyword_phrases.count(next_phrase)  # freq of phrase 2 tuple
 
         for keyword, word in zip(keyword_phrase, next_phrase):  # for words in these phrase and next phrase tuples
-            if keyword in phrase and word in phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:  # if both of them are in the same phrase and their freq is 1+
+            # if both of them are in the same phrase and their freq is 1+
+            if keyword in phrase and word in phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
                 next_phrase_start_idx = phrase.index(next_phrase[0])
                 stop_word = phrase[next_phrase_start_idx - 1]
-                lst.append(tuple([keyword for keyword in keyword_phrase] + [stop_word] + [word for word in next_phrase]))
+                lst.append(tuple([keyword for keyword in keyword_phrase] + [stop_word]
+                                 + [word for word in next_phrase]))
     return lst
 
 
@@ -266,6 +271,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
                 cmltv_score_dict_wtih_stops.update({phrase: cmltv_score_dict_wtih_stops.get(phrase, 0) + int(score)})
 
     return cmltv_score_dict_wtih_stops
+
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
