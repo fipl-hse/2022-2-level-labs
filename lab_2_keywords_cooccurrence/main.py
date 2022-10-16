@@ -11,8 +11,7 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 # проверку на keyphrase и keyphrases нужно поменять в функциях
-#написать функцию для проверки на тип
-#где возможно сделать генераторы?
+# где возможно сделать генераторы?
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
@@ -27,9 +26,13 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     punctuation = """!\"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
     for mark in punctuation:
         text = text.replace(mark, ',')  # нужно проверить, что будет, если код встретит дефис внутри слова
-        #может быть много пустых списков, убрать их
+        # может быть много пустых списков, убрать их
     cleaned_text = text.split(',')
-    return cleaned_text
+    new_cleaned_text = []
+    for i in cleaned_text:
+        if i and i != ' ':
+            new_cleaned_text.append(i.strip())
+    return new_cleaned_text
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -61,11 +64,12 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 list_for_tuples.append(word)
             else:
                 phrase_tuple = tuple(list_for_tuples)
-                if phrase_tuple:
+                if len(phrase_tuple) != 0 :
                     candidate_keywords_phrases.append(phrase_tuple)
                 list_for_tuples.clear()
-        candidate_keywords_phrases.append(tuple(list_for_tuples))  # без этой строчки   в list for tuples остаются слова на конце фразы, оставшиеся после стоп-слова
-        list_for_tuples.clear() # без этой строчки слова на границах фраз собираются в один кортеж
+        if list_for_tuples:
+            candidate_keywords_phrases.append(tuple(list_for_tuples))
+            list_for_tuples.clear()
     return candidate_keywords_phrases
 
 
@@ -148,8 +152,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             return None
     word_scores = {}
     for key in word_degrees:
-        if key in word_frequencies:
-            word_scores[key] = word_degrees[key] / word_frequencies[key]
+        if key not in word_frequencies.keys():
+            return None
+        word_scores[key] = word_degrees[key] / word_frequencies[key]
     return word_scores
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
                                               word_scores: Mapping[str, float]) -> Optional[Mapping[KeyPhrase, float]]:
@@ -174,7 +179,9 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in candidate_keyword_phrases:
         score = 0
         for word in phrase:
-            score += word_scores.get(word, 0)
+            if word not in word_scores.keys():
+                return None
+            score += word_scores[word]
         keyword_phrases_with_scores[phrase] = score
     return keyword_phrases_with_scores
 
@@ -201,13 +208,13 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for key, value in keyword_phrases_with_scores.items():
         if not (isinstance(key, tuple) and isinstance(value, float)):
             return None
-    if (max_length and top_n) < 0:
+    if max_length < 0 or top_n < 0:
         return None
     appropriate_phrases = {}
     for phrase, score in keyword_phrases_with_scores.items():
         if len(phrase) <= max_length:
             appropriate_phrases[' '.join(phrase)] = score
-    top_score = [key for (key, value) in sorted(keyword_phrases_with_scores.items(), key = lambda val: val[1], reverse = True)][:top_n]
+    top_score = [key for (key, value) in sorted(appropriate_phrases.items(), key = lambda val: val[1], reverse = True)][:top_n]
     return top_score
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -232,7 +239,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not (candidate_keyword_phrases and phrases):
         return None
-    #тут будет проверка на тип
+    if not (isinstance(candidate_keyword_phrases, list) and isinstance(phrases, list)):
+        return None
+    for elem in candidate_keyword_phrases:
+        if not isinstance(elem, tuple):
+            return None
+    for elem in phrases:
+        if not isinstance(elem, str):
+            return None
     possible_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
@@ -252,12 +266,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for phrase in phrases:
         for pair in appropriate_pairs:
             if (pair[0] and pair[1]) in phrase:
-                b = re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase)
-                phrases_with_stopwords.extend(b)
+                kw_phrase_with_sw = re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase)
+                phrases_with_stopwords.extend(kw_phrase_with_sw)
+    phrases_with_stopwords = set(phrases_with_stopwords)
     new_phrases_with_sw = []
     for phrase in phrases_with_stopwords:
-        for exp in phrase:
-            new_phrases_with_sw.append(exp.split())
+        new_phrases_with_sw.append(phrase.split())
     final_phrases = [tuple(phrase) for phrase in new_phrases_with_sw]
     return final_phrases
 
@@ -278,16 +292,30 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     """
     if not (candidate_keyword_phrases and stop_words and word_scores):
         return None
+    if not (isinstance(candidate_keyword_phrases, list) and isinstance(stop_words, list) and isinstance(word_scores, dict)):
+        return None
+    for elem in candidate_keyword_phrases:
+        if not isinstance(elem, tuple):
+            return None
+    for key, value in word_scores.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
+            if isinstance(value, int):
+                value = float(value)
+            else:
+                return None
+    for elem in stop_words:
+        if not isinstance(elem, str):
+            return None
     cumulative_score = {}
     for phrase in candidate_keyword_phrases:
-        x = []  # придумать нормальное название для переменной
+        kw_phrase = []
         score = 0
         for word in phrase:
+            kw_phrase.append(word)
             if word not in stop_words:
-                x.append(word)
                 score += word_scores.get(word)
-        x = tuple(x)
-        cumulative_score[x] = score
+        kw_phrase = tuple(kw_phrase)
+        cumulative_score[kw_phrase] = score
     return cumulative_score
 
 
