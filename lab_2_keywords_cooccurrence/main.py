@@ -168,22 +168,15 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     if not(check_lst(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)
            and all(word_scores.get(word) for phrase in candidate_keyword_phrases for word in phrase)):
         return None
-    # dict = {phrase: score for phrase in candidate_keyword_phrases for word, score in word_scores.items() if word in phrase}
-    dict = {}
-    counted_words = []
+
+    cmltv_score_dict = {}
+
     for phrase in set(candidate_keyword_phrases):
         for word, score in word_scores.items():
             if word in phrase:
+                cmltv_score_dict.update({phrase: cmltv_score_dict.get(phrase, 0) + int(score)})
 
-                if phrase not in dict:
-                    counted_words = []
-                    dict[phrase] = int(score)
-                    counted_words.append(word)
-
-                elif phrase in dict and word not in counted_words:
-                    counted_words.append(word)
-                    dict[phrase] += int(score)
-    return dict
+    return cmltv_score_dict
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -266,7 +259,15 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     if not(check_lst(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)
            and check_lst(stop_words, str, False)):
         return None
-    pass
+
+    cmltv_score_dict_wtih_stops = {}
+
+    for phrase in set(candidate_keyword_phrases):
+        for word, score in word_scores.items():
+            if word in phrase and word not in stop_words:
+                cmltv_score_dict_wtih_stops.update({phrase: cmltv_score_dict_wtih_stops.get(phrase, 0) + int(score)})
+
+    return cmltv_score_dict_wtih_stops
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
