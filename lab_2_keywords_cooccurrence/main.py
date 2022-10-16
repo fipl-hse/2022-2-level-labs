@@ -228,7 +228,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     + len(k[0].split()) + len(k[1].split()) + 1]
                     if set(possible_phrase).issubset(phrase_with_stop_words):
                         candidates_with_adjoining.append(tuple(phrase_with_stop_words))
-    for phrase in set(candidates_with_adjoining):
+    for phrase in tuple(set(candidates_with_adjoining)):
         candidates_with_adjoining.remove(phrase)
     return list(set(candidates_with_adjoining))
 
