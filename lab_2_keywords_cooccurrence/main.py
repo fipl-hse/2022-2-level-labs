@@ -157,7 +157,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            score += float(word_scores.get(word))
+            score += word_scores.get(word)
         keyword_phrases_with_scores[phrase] = score
     return keyword_phrases_with_scores
 
@@ -228,7 +228,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     + len(k[0].split()) + len(k[1].split()) + 1]
                     if set(possible_phrase).issubset(set(phrase_with_stop_words)):
                         candidates_with_adjoining.append(tuple(phrase_with_stop_words))
-    for phrase in set(candidates_with_adjoining):
+    for phrase in candidates_with_adjoining:
         candidates_with_adjoining.remove(phrase)
     return list(set(candidates_with_adjoining))
 
