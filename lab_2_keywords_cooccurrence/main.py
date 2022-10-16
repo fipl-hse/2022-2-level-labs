@@ -177,7 +177,6 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     top = sorted(keyword_phrases_with_scores.keys(),
                  key=lambda some_phrase: keyword_phrases_with_scores[some_phrase],
                  reverse=True)
-    print(top)
     for phrase in top:
         if len(phrase) <= max_length:
             phrase = ' '.join(phrase)
@@ -205,7 +204,40 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_type(candidate_keyword_phrases, tuple, False) or not check_type(phrases, str, False):
+        return None
+    list_of_phrases = [tuple(candidate_keyword_phrases[index:index + 2])
+                       for index in range(len(candidate_keyword_phrases))]
+    frequent_phrases = []
+    for phrase in list_of_phrases:
+        count = 0
+        for compare in list_of_phrases:
+            if compare == phrase:
+                count += 1
+        if count >= 2:
+            frequent_phrases.append(phrase)
+    result = set(frequent_phrases)
+
+    final_key_phrases = []
+    for phrase in phrases:
+        for frequent_phrase in result:
+            first_word = frequent_phrase[0][0]
+            last_word = frequent_phrase[1][len(frequent_phrase[1]) - 1]
+            if (first_word in phrase) and (last_word in phrase):
+                first_index = phrase.find(first_word)
+                last_index = phrase.rfind(last_word[len(last_word) - 1]) + (len(last_word[len(last_word) - 1]) - 1)
+                final_key_phrases.append(phrase[first_index:last_index + 1])
+    if not final_key_phrases:
+        return []
+    count = 0
+    for phrase in final_key_phrases:
+        for compare in final_key_phrases:
+            if phrase == compare:
+                count += 1
+    start = final_key_phrases[0][0]
+    list_result = {tuple(phrase.split()) for phrase in final_key_phrases if (count >= 2) and (start == phrase[0])}
+    print(list_result)
+    return list(list_result)
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
