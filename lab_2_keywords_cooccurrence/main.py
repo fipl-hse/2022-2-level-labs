@@ -157,8 +157,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            if word:
-                score += int(word_scores.get(word))
+            score += int(word_scores.get(word))
         keyword_phrases_with_scores[phrase] = score
     return keyword_phrases_with_scores
 
@@ -187,6 +186,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for phrase in top:
         if len(phrase) <= max_length:
             phrase = " ".join(phrase)
+            top_keyword_phrases = list(top_keyword_phrases)
             top_keyword_phrases.append(phrase)
     return top_keyword_phrases[:top_n]
 
