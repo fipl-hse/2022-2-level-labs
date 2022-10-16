@@ -9,7 +9,7 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate
                                               calculate_word_scores, calculate_cumulative_score_for_candidates,
                                               extract_candidate_keyword_phrases_with_adjoining,
                                               calculate_cumulative_score_for_candidates_with_stop_words,
-                                              load_stop_words, get_top_n)
+                                              load_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -67,7 +67,7 @@ if __name__ == "__main__":
     if candidate_phrases and word_score:
         cumulative_score = calculate_cumulative_score_for_candidates(candidate_phrases, word_score)
         print(cumulative_score)
-    print(get_top_n(cumulative_score, 3, 5))
+    # print(main.get_top_n(cumulative_score, 3, 5))
     if candidate_phrases and phrases:
         candidate_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_phrases,
                                                                                             phrases)
