@@ -2,6 +2,7 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
+import json
 from pathlib import Path
 from string import punctuation
 from typing import Optional, Sequence, Mapping, Any
@@ -247,7 +248,18 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)
+            and check_list(stop_words, str, False)):
+        return None
+    candidates_cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        value = 0
+        for word in phrase:
+            if word in stop_words:
+                word_scores[word] = 0
+            value += word_scores[word]
+        candidates_cumulative_score[phrase] = value
+    return candidates_cumulative_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -258,6 +270,9 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
+    if not (isinstance(text, str) and text and max_length and isinstance(max_length, int)
+            and not isinstance(max_length, bool) and max_length > 0):
+        return None
     pass
 
 
@@ -267,4 +282,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not isinstance(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as stop_words:
+        return dict(json.load(stop_words))
