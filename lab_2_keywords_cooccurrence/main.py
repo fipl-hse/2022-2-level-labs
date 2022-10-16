@@ -4,7 +4,6 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from string import punctuation
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -20,19 +19,16 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or len(text) == 0:
         return None
-    text = text.join('').split()
-    add_punctuation = "¡¿…⋯‹›«»“”⟨⟩-—"
+    punctuation = """.,;:¡!¿?…⋯‹›«»"“”\/()⟨⟩}{&|-–~—[]"""
     for i in text:
-        if i in punctuation or i in add_punctuation:
+        if i in punctuation:
             text = text.replace(i, '.')
-    prev = ''
-    text_new = ''
-    for i in text:
-        if i == prev and i == '.':
-            continue
-        text_new += i
-        prev = i
-    phrases = text_new.split('.')
+    text_split = text.split('.')
+    phrases = []
+    for i in text_split:
+        i = i.strip()
+        if i:
+            phrases.append(i)
     return phrases
 
 
@@ -55,16 +51,24 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     for i in stop_words:
         if not isinstance(i, str):
             return None
-    candidate_keyword_phrase = []
     candidate_keyword_phrases = []
+    tuple_candidates = []
     for phrase in phrases:
-        phrase = phrase.lower()
+        phrase = phrase.lower().split()
+        no_stops = []
         for i in phrase:
             if i not in stop_words:
-                candidate_keyword_phrase.append(i)
+                no_stops.append(i)
             else:
-                candidate_keyword_phrases.append(tuple(candidate_keyword_phrases))
+                tuple_candidates.append(no_stops)
+                no_stops = []
+        tuple_candidates.append(no_stops)
+    for i in tuple_candidates:
+        if i:
+            candidate_keyword_phrases.append(tuple(i))
     return candidate_keyword_phrases
+
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
