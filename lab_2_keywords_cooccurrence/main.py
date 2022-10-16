@@ -50,8 +50,7 @@ def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_t
         return False
     if values_sec_type:
         for key, value in user_input.items():
-            if not isinstance(key, keys_type) or not (isinstance(value, values_type)
-                                                      or isinstance(value, values_sec_type)):
+            if not isinstance(key, keys_type) or not isinstance(value, (values_type, values_sec_type)):
                 return False
     else:
         for key, value in user_input.items():
@@ -283,7 +282,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for one_phrase in phrases:
         all_words.append(one_phrase.lower().split())  # turning phrases into words
     result_list = deepcopy(neighbours)
-    for idx_neighb, one_phrase in enumerate(neighbours):  # I'm sorry for this long code
+    for idx_neighb, one_phrase in enumerate(neighbours):  # I don't know how to correct this yet
         for words in range(len(one_phrase)-1):
             for sentences in all_words:
                 first_phr = ' '.join(one_phrase[words])
@@ -301,9 +300,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                             another_word.insert(1, (sentences[stop_word],))
                             result_list.append(another_word)
                     elif counter_first == counter_sec and counter_first > 1:
-                        for i in range(len(sentences)):
-                            if sentences[i] == first_phr:
-                                stop_word = sentences.index(first_phr, i)+1  # index of stop_w
+                        for idx_sent, one_sent in enumerate(sentences):
+                            if one_sent == first_phr:
+                                stop_word = sentences.index(first_phr, idx_sent)+1  # index of stop_w
                                 if len(result_list[idx_neighb]) == 2:
                                     result_list[idx_neighb].insert(1, (sentences[stop_word],))
                                 else:

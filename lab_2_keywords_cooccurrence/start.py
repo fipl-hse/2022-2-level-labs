@@ -46,11 +46,11 @@ if __name__ == "__main__":
     for key, values in corpus.items():
         (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, CONTENT_WORDS, WORD_DEGREE, WORD_SCORE,
          CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN) = [None for notdef in range(9)]
-        file_name = key
-        file_read = values
+        FILE_NAME = key
+        FILE_READ = values
         NUM_FOR_TOP += 2
-        if file_read:
-            EXTRACTED_PHRASES = extract_phrases(file_read)
+        if FILE_READ:
+            EXTRACTED_PHRASES = extract_phrases(FILE_READ)
         if EXTRACTED_PHRASES:
             CANDIDATE_KEY_PHR = extract_candidate_keyword_phrases(EXTRACTED_PHRASES, stop_words)
 
