@@ -20,16 +20,17 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(text, str) or text):
+    if not isinstance(text, str) or not text:
         return None
-    punctuation = '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—' + '\n'
-    for i in punctuation:
-        text = text.replace(i, ',')
+    punctuation = '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—'
+    for i in text:
+        if i in punctuation:
+            text = text.replace(i, ',')
     separator_list = text.split(',')
     tokens = []
     for token in separator_list:
         token = token.strip()
-        if not token:
+        if token:
             tokens.append(token)
     return tokens
 
@@ -44,26 +45,27 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(phrases, str, False) or check_list(stop_words, str, False)):
+    if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     candidate_keyword_phrases = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
+        phrase = phrase.lower()
+        phrases = phrase.split()
         first_keywords_candidate = []
-        for word in phrase:
+        for word in phrases:
             if word in stop_words:
                 if first_keywords_candidate:
                     second_keywords_candidate = tuple(first_keywords_candidate)
                     candidate_keyword_phrases.append(second_keywords_candidate)
                     first_keywords_candidate.clear()
-                elif word == phrase[len(phrase) - 1]:
-                    first_keywords_candidate.append(word)
-                    second_keywords_candidate = tuple(first_keywords_candidate)
-                    candidate_keyword_phrases.append(second_keywords_candidate)
-                    first_keywords_candidate.clear()
-                else:
-                    first_keywords_candidate.append(word)
-            return candidate_keyword_phrases
+            elif word == phrase[len(phrase) - 1]:
+                first_keywords_candidate.append(word)
+                second_keywords_candidate = tuple(first_keywords_candidate)
+                candidate_keyword_phrases.append(second_keywords_candidate)
+                first_keywords_candidate.clear()
+            else:
+                first_keywords_candidate.append(word)
+    return candidate_keyword_phrases
 
 
 
@@ -108,9 +110,6 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             if word not in dict_degree.keys():
                 dict_degree[word] = 0
     return dict_degree
-
-
-
 
 
 
@@ -177,7 +176,14 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not check_dict(keyword_phrases_with_scores, tuple, float, False) or not isinstance(top_n, int) \
             or not isinstance(max_length, int) or not top_n > 0 or not max_length > 0:
         return None
-
+    top_words_list = []
+    sorted_keys = sorted(keyword_phrases_with_scores, reverse=True,
+                         key=lambda word: keyword_phrases_with_scores[word])
+    for phrase in sorted_keys:
+        if len(phrase) <= max_length:
+            phrase = ' '.join(phrase)
+            top_words_list.append(phrase)
+    return top_words_list[:top_n]
 
 
 
@@ -202,7 +208,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
