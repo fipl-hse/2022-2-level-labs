@@ -2,9 +2,9 @@
 Lab 1
 Extract keywords based on frequency related metrics
 """
+import string
 from typing import Optional, Union
 from math import log
-import re
 
 
 def clean_and_tokenize(text: str) -> Optional[list[str]]:
@@ -23,7 +23,8 @@ def clean_and_tokenize(text: str) -> Optional[list[str]]:
         return None
 
     text = text.lower().strip()
-    text = re.sub(r'[^\w\s]', '', text)
+    for symbol in string.punctuation:
+        text = text.replace(symbol, '')
     tokens = text.split()
 
     return tokens
@@ -157,10 +158,11 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
     for token in term_freq:
         if not isinstance(token, str):
             return None
-        if token in idf:
-            tf_idf[token] = term_freq[token] * idf[token]
-        else:
-            tf_idf[token] = term_freq[token] * log(47)
+        #if token in idf:
+        #    tf_idf[token] = term_freq[token] * idf[token]
+        #else:
+        #    tf_idf[token] = term_freq[token] * log(47)
+        tf_idf[token] = term_freq[token]* idf.get(token, log(47))
 
     return tf_idf
 
