@@ -11,7 +11,6 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 # проверку на keyphrase и keyphrases нужно поменять в функциях
-# где возможно сделать генераторы?
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
@@ -23,15 +22,11 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not (text and isinstance(text, str)):
         return None
-    punctuation = """!\"#$%&'()*+,\-./:;<=>?@\[\]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
+    punctuation = """!"#$%&'()*+,-./:;<=>?@[]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
     for mark in punctuation:
-        text = text.replace(mark, ',')  # нужно проверить, что будет, если код встретит дефис внутри слова
-        # может быть много пустых списков, убрать их
+        text = text.replace(mark, ',')
     cleaned_text = text.split(',')
-    new_cleaned_text = []
-    for i in cleaned_text:
-        if i and i != ' ':
-            new_cleaned_text.append(i.strip())
+    new_cleaned_text = [i.strip() for i in cleaned_text if i and i != ' ']
     return new_cleaned_text
 
 
@@ -90,13 +85,8 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     for phrase in candidate_keyword_phrases:
         if not isinstance(phrase, tuple):
             return None
-    tokens_list = []
-    for phrase in candidate_keyword_phrases:
-        for word in phrase:
-            tokens_list.append(word)
-    frequencies = {}    # тут возможно стоит импортировать функцию из другой лабы
-    for word in tokens_list:
-        frequencies[word] = tokens_list.count(word)
+    tokens_list = [word for phrase in candidate_keyword_phrases for word in phrase]
+    frequencies = {word: tokens_list.count(word) for word in tokens_list}
     return frequencies
 
 
@@ -201,20 +191,20 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     """
     if not (keyword_phrases_with_scores and top_n and max_length):
         return None
-    if not (isinstance(keyword_phrases_with_scores, dict) and isinstance(top_n, int) and isinstance(max_length, int)):
+    if not (isinstance(keyword_phrases_with_scores, dict) and isinstance(top_n, int)
+            and isinstance(max_length, int)):
         return None
-    if isinstance(max_length, bool) or isinstance(top_n, bool):
+    if isinstance(max_length, bool) or isinstance(top_n, bool) or max_length < 0 or top_n < 0:
         return None
     for key, value in keyword_phrases_with_scores.items():
         if not (isinstance(key, tuple) and isinstance(value, float)):
             return None
-    if max_length < 0 or top_n < 0:
-        return None
     appropriate_phrases = {}
     for phrase, score in keyword_phrases_with_scores.items():
         if len(phrase) <= max_length:
             appropriate_phrases[' '.join(phrase)] = score
-    top_score = [key for (key, value) in sorted(appropriate_phrases.items(), key = lambda val: val[1], reverse = True)][:top_n]
+    top_score = [key for (key, value) in sorted(appropriate_phrases.items(),
+                                                key=lambda val: val[1], reverse=True)][:top_n]
     return top_score
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -247,6 +237,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for elem in phrases:
         if not isinstance(elem, str):
             return None
+        '''for string in elem:
+            for phrase in phrases:
+                if string not in phrase:
+                    return []'''
     possible_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
@@ -292,7 +286,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     """
     if not (candidate_keyword_phrases and stop_words and word_scores):
         return None
-    if not (isinstance(candidate_keyword_phrases, list) and isinstance(stop_words, list) and isinstance(word_scores, dict)):
+    if not (isinstance(candidate_keyword_phrases, list) and isinstance(stop_words, list)
+            and isinstance(word_scores, dict)):
         return None
     for elem in candidate_keyword_phrases:
         if not isinstance(elem, tuple):
