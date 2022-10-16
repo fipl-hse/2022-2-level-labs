@@ -19,6 +19,7 @@ def check_input(user_input: Any, required_type: type) -> bool:
     """
     if user_input and isinstance(user_input, required_type):
         return True
+    return False
 
 
 def check_list(user_input: Any, elements_required_type: type) -> bool:
@@ -114,10 +115,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     if not check_list(phrases, str) or not check_list(stop_words, str):
         return None
     lowed_phrases = []  # put lower phrases
-    for i in phrases:
-        lowed_phrases.append(i.lower())  # putting lower phrases
-    for i in range(len(lowed_phrases)):
-        lowed_phrases[i] = lowed_phrases[i].split()  # splitting lowed phrases by ' '. until here okay
+    for idx, phrs in enumerate(phrases):
+        lowed_phrases.append(phrs.lower())
+        lowed_phrases[idx] = lowed_phrases[idx].split()
     key_candidates = []
     for one_phrase in lowed_phrases:  # going through each phrase
         future_tuple = []  # here will be materials for a tuple
@@ -283,33 +283,33 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for one_phrase in phrases:
         all_words.append(one_phrase.lower().split())  # turning phrases into words
     result_list = deepcopy(neighbours)
-    for one_phrase in range(len(neighbours)):  # I'm sorry for this long code
-        for words in range(len(neighbours[one_phrase])-1):
+    for idx_neighb, one_phrase in enumerate(neighbours):  # I'm sorry for this long code
+        for words in range(len(one_phrase)-1):
             for sentences in all_words:
-                first_phr = ' '.join(neighbours[one_phrase][words])
-                second_phr = ' '.join(neighbours[one_phrase][words+1])
+                first_phr = ' '.join(one_phrase[words])
+                second_phr = ' '.join(one_phrase[words+1])
                 str_sentence = ' '.join(sentences)
                 if first_phr in str_sentence and second_phr in str_sentence:
                     counter_first = str_sentence.count(first_phr)
                     counter_sec = str_sentence.count(second_phr)
                     if counter_first == 1 and counter_sec == 1:
                         stop_word = sentences.index(first_phr)+1  # index of stop_w
-                        if len(result_list[one_phrase]) == 2:
-                            result_list[one_phrase].insert(1, (sentences[stop_word],))
+                        if len(result_list[idx_neighb]) == 2:
+                            result_list[idx_neighb].insert(1, (sentences[stop_word],))
                         else:
-                            a = neighbours[one_phrase][:]
-                            a.insert(1, (sentences[stop_word],))
-                            result_list.append(a)
+                            another_word = one_phrase[:]
+                            another_word.insert(1, (sentences[stop_word],))
+                            result_list.append(another_word)
                     elif counter_first == counter_sec and counter_first > 1:
                         for i in range(len(sentences)):
                             if sentences[i] == first_phr:
                                 stop_word = sentences.index(first_phr, i)+1  # index of stop_w
-                                if len(result_list[one_phrase]) == 2:
-                                    result_list[one_phrase].insert(1, (sentences[stop_word],))
+                                if len(result_list[idx_neighb]) == 2:
+                                    result_list[idx_neighb].insert(1, (sentences[stop_word],))
                                 else:
-                                    a = neighbours[one_phrase][:]
-                                    a.insert(1, (sentences[stop_word],))
-                                    result_list.append(a)
+                                    another_word = one_phrase[:]
+                                    another_word.insert(1, (sentences[stop_word],))
+                                    result_list.append(another_word)
     freq_dict = {}
     for one_phrase in result_list:
         list_for_str = []
@@ -373,7 +373,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         for i in extracted_words:
             freq_dict[i] = freq_dict.get(i, 0) + 1
         correct_length_dict = freq_dict.copy()
-        for keys in freq_dict.keys():
+        for keys in freq_dict:
             if len(keys) > max_length:
                 del correct_length_dict[keys]
         sort_frequency = sorted(correct_length_dict, key=correct_length_dict.get, reverse=True)
@@ -386,6 +386,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
             percent_word = floor((len(sorted_dict)/10)*2)
         new_dict = [key for key, value in sorted_dict.items()]
         return new_dict[:percent_word]
+    return None
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:

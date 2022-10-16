@@ -42,13 +42,13 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    num_for_top = 0
-    for key, values in corpus.items:
+    NUM_FOR_TOP = 0
+    for key, values in corpus.items():
         (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, CONTENT_WORDS, WORD_DEGREE, WORD_SCORE,
          CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN) = [None for notdef in range(9)]
         file_name = key
         file_read = values
-        num_for_top += 2
+        NUM_FOR_TOP += 2
         if file_read:
             EXTRACTED_PHRASES = extract_phrases(file_read)
         if EXTRACTED_PHRASES:
@@ -57,8 +57,7 @@ if __name__ == "__main__":
         if CANDIDATE_KEY_PHR:
             FREQ_CONT = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR)
 
-        if FREQ_CONT:  # is this how we're supposed to extract content words?
-            CONTENT_WORDS = [keys for keys in FREQ_CONT.keys()]
+        CONTENT_WORDS = [keys for keys in FREQ_CONT.keys()]  # is this how we're supposed to extract content words?
 
         if CANDIDATE_KEY_PHR:
             WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEY_PHR, CONTENT_WORDS)
@@ -70,8 +69,8 @@ if __name__ == "__main__":
             CUMULATIVE_SCORE = calculate_cumulative_score_for_candidates(CANDIDATE_KEY_PHR, WORD_SCORE)
 
         if CUMULATIVE_SCORE:
-            TOP_N = get_top_n(CUMULATIVE_SCORE, num_for_top, num_for_top+1)
-            print(TOP_N)
+            TOP_N = get_top_n(CUMULATIVE_SCORE, NUM_FOR_TOP, NUM_FOR_TOP + 1)
+            print('Top key phrases without stop words: ', TOP_N)
 
         if CANDIDATE_KEY_PHR and EXTRACTED_PHRASES:
             KEY_PHR_ADJOIN = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEY_PHR, EXTRACTED_PHRASES)
@@ -81,8 +80,8 @@ if __name__ == "__main__":
                                                                                                 WORD_SCORE, stop_words)
 
         if CUMULATIVE_SCORE_ADJOIN:
-            TOP_N_ADJOIN = get_top_n(CUMULATIVE_SCORE_ADJOIN, num_for_top, num_for_top+1)
-            print(TOP_N_ADJOIN)
+            TOP_N_ADJOIN = get_top_n(CUMULATIVE_SCORE_ADJOIN, NUM_FOR_TOP, NUM_FOR_TOP + 1)
+            print('Top key phrases with adjoining: ', TOP_N_ADJOIN)
 
     (EXTRACTED_PHRASES_POLISH, CANDIDATE_KEY_PHR_POLISH, FREQ_CONT_POLISH, CONTENT_WORDS_POLISH, WORD_DEGREE_POLISH,
      WORD_SCORE_POLISH, KEY_PHR_ADJOIN_POLISH) = [None for notdef in range(9)]
@@ -101,8 +100,7 @@ if __name__ == "__main__":
     if CANDIDATE_KEY_PHR_POLISH:
         FREQ_CONT_POLISH = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_POLISH)
 
-    if FREQ_CONT_POLISH:
-        CONTENT_WORDS_POLISH = [keys for keys in FREQ_CONT_POLISH.keys()]
+    CONTENT_WORDS_POLISH = [keys for keys in FREQ_CONT_POLISH.keys()]
 
     if CANDIDATE_KEY_PHR_POLISH:
         WORD_DEGREE_POLISH = calculate_word_degrees(CANDIDATE_KEY_PHR_POLISH, CONTENT_WORDS_POLISH)
