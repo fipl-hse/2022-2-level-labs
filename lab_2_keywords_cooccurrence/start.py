@@ -39,6 +39,7 @@ if __name__ == "__main__":
     }
 
 
+
     RESULT = None
 
     assert RESULT, 'Keywords are not extracted'

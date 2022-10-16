@@ -18,6 +18,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     In case of corrupt input arguments, None is returned
     """
 
+
     pass
 
 
