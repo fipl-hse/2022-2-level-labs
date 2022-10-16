@@ -3,6 +3,19 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from typing import Sequence
+from lab_2_keywords_cooccurrence.main import (extract_phrases,
+                                              extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores,
+                                              calculate_cumulative_score_for_candidates,
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words,
+                                              generate_stop_words,
+                                              load_stop_words)
+
 
 
 def read_target_text(file_path: Path) -> str:
@@ -13,6 +26,8 @@ def read_target_text(file_path: Path) -> str:
     """
     with open(file_path, 'r', encoding='utf-8') as target_text_file:
         return target_text_file.read()
+
+
 
 
 if __name__ == "__main__":
@@ -38,8 +53,29 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    PHRASES = None
     RESULT = None
+    CANDIDATES = None
+    DICT_WITH_FREQUENCIES = None
+    DICT_WITH_DEGREES = None
+    DICT_WITH_SCORES = None
+    DICT_WITH_CUM = None
+    for key in corpus:
+        if corpus[key]:
+            PHRASES = extract_phrases(corpus[key])
+        if PHRASES and stop_words:
+            CANDIDATES = extract_candidate_keyword_phrases(PHRASES, stop_words)
+        if CANDIDATES:
+            DICT_WITH_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATES)
+        if CANDIDATES and DICT_WITH_FREQUENCIES:
+            DICT_WITH_DEGREES = calculate_word_degrees(CANDIDATES, list(DICT_WITH_FREQUENCIES.keys()))
+        if DICT_WITH_DEGREES and DICT_WITH_FREQUENCIES:
+            DICT_WITH_SCORES = calculate_word_scores(DICT_WITH_DEGREES, DICT_WITH_FREQUENCIES)
+        if CANDIDATES and DICT_WITH_SCORES:
+            DICT_WITH_CUM = calculate_cumulative_score_for_candidates(CANDIDATES, DICT_WITH_SCORES)
+        if DICT_WITH_CUM:
+            RESULT = get_top_n(DICT_WITH_CUM, 5, 2)
+            print('for', key, 'text, key phrases are', RESULT)
 
     assert RESULT, 'Keywords are not extracted'
 
-    #Hi
