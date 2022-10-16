@@ -211,7 +211,56 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list) \
+            or not candidate_keyword_phrases or not phrases:
+        return None
+
+    phrases_list = []
+    for phrase in candidate_keyword_phrases:
+        phrase_str = ' '.join(phrase)
+        phrases_list.append(phrase_str)
+
+    list_of_pairs = []
+    for i in range(len(phrases_list) - 1):
+        list_of_pairs.append(tuple((phrases_list[i:i + 2])))
+
+    pairs_dict = {}
+    for phrases_pair in list_of_pairs:
+        number_of_phrases = list_of_pairs.count(phrases_pair)
+        pairs_dict[phrases_pair] = number_of_phrases
+
+    phrases_tokenized = []
+    for i in phrases:
+        i = i.split(' ')
+        phrases_tokenized.append(i)
+    phrases_tokenized = [item.lower() for i in phrases_tokenized for item in i if item]
+
+    new_keywords = []
+    for k, v in pairs_dict.items():
+        if v >= 2:
+            tokenized_key = ' '.join(k)
+            tokenized_key = tokenized_key.split()
+
+            for ind, word in enumerate(phrases_tokenized):
+                list_with_stopword = []
+                if word in tokenized_key:
+                    list_with_stopword.append(phrases_tokenized[ind:ind + (len(tokenized_key) + 1)])
+
+                if list_with_stopword:
+                    list_with_stopword = [item for i in list_with_stopword for item in i if item]
+                    if list_with_stopword[0] == tokenized_key[0]:
+                        new_keywords.append(tuple(list_with_stopword))
+
+    for i in new_keywords.copy():
+        if new_keywords.count(i) < 2:
+            new_keywords.remove(i)
+
+    new_keywords_final = []
+    for i in new_keywords:
+        if i not in new_keywords_final:
+            new_keywords_final.append(i)
+
+    return new_keywords_final
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
