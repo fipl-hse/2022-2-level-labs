@@ -66,17 +66,17 @@ if __name__ == "__main__":
     if candidate_keywords_phrases and word_scores:
         keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keywords_phrases, word_scores)
 
-    top_n = 5
-    max_length = 3
-    if keyword_phrases_with_scores and top_n and max_length:
-        print(get_top_n(keyword_phrases_with_scores, top_n, max_length))
+    TOP_N = 5
+    MAX_LENGTH = 3
+    if keyword_phrases_with_scores and TOP_N and MAX_LENGTH:
+        print(get_top_n(keyword_phrases_with_scores, TOP_N, MAX_LENGTH))
 
     if candidate_keywords_phrases and phrases:
         final_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keywords_phrases, phrases)
 
     if candidate_keywords_phrases and stop_words and word_scores:
-        cumulative_score = calculate_cumulative_score_for_candidates_with_stop_words(candidate_keywords_phrases, word_scores, stop_words)
-
+        cumulative_score = calculate_cumulative_score_for_candidates_with_stop_words(candidate_keywords_phrases,
+                                                                                     word_scores, stop_words)
 
 
     RESULT = cumulative_score
