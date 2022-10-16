@@ -6,7 +6,7 @@ from pathlib import Path
 from main import (extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words,
                   calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates,
                   get_top_n, extract_candidate_keyword_phrases_with_adjoining,
-                  calculate_cumulative_score_for_candidates_with_stop_words, load_stop_words)
+                  calculate_cumulative_score_for_candidates_with_stop_words, load_stop_words, generate_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -44,11 +44,12 @@ if __name__ == "__main__":
 
     NUM_FOR_TOP = 0
     for key, values in corpus.items():
-        (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, CONTENT_WORDS, WORD_DEGREE, WORD_SCORE,
-         CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN) = [None for notdef in range(9)]
+        (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, WORD_DEGREE, WORD_SCORE,
+         CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN) = [None for notdef in range(8)]
         FILE_NAME = key
         FILE_READ = values
         NUM_FOR_TOP += 2
+        print(f'Process for {FILE_NAME} text')
         if FILE_READ:
             EXTRACTED_PHRASES = extract_phrases(FILE_READ)
         if EXTRACTED_PHRASES:
@@ -57,7 +58,7 @@ if __name__ == "__main__":
         if CANDIDATE_KEY_PHR:
             FREQ_CONT = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR)
 
-        CONTENT_WORDS = [keys for keys in FREQ_CONT.keys()]  # is this how we're supposed to extract content words?
+        CONTENT_WORDS = [keys for keys in FREQ_CONT]  # is this how we're supposed to extract content words?
 
         if CANDIDATE_KEY_PHR:
             WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEY_PHR, CONTENT_WORDS)
@@ -84,7 +85,7 @@ if __name__ == "__main__":
             print('Top key phrases with adjoining: ', TOP_N_ADJOIN)
 
     (EXTRACTED_PHRASES_POLISH, CANDIDATE_KEY_PHR_POLISH, FREQ_CONT_POLISH, CONTENT_WORDS_POLISH, WORD_DEGREE_POLISH,
-     WORD_SCORE_POLISH, KEY_PHR_ADJOIN_POLISH) = [None for notdef in range(9)]
+     WORD_SCORE_POLISH, KEY_PHR_ADJOIN_POLISH) = [None for notdef in range(7)]
 
     JSON_PATH = ASSETS_PATH / 'stopwords.json'
     POLISH_STOPS = load_stop_words(JSON_PATH)
@@ -100,7 +101,7 @@ if __name__ == "__main__":
     if CANDIDATE_KEY_PHR_POLISH:
         FREQ_CONT_POLISH = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_POLISH)
 
-    CONTENT_WORDS_POLISH = [keys for keys in FREQ_CONT_POLISH.keys()]
+    CONTENT_WORDS_POLISH = [keys for keys in FREQ_CONT_POLISH]
 
     if CANDIDATE_KEY_PHR_POLISH:
         WORD_DEGREE_POLISH = calculate_word_degrees(CANDIDATE_KEY_PHR_POLISH, CONTENT_WORDS_POLISH)
@@ -114,9 +115,53 @@ if __name__ == "__main__":
 
     print(KEY_PHR_ADJOIN_POLISH)  # do we need to print it?
 
-    # UNKNOWN_PATH = ASSETS_PATH / 'unknown.txt'
-    # UNKNOWN_TXT = read_target_text(UNKNOWN_PATH)
-    # this task is not finished yet
+    UNKNOWN_PATH = ASSETS_PATH / 'unknown.txt'
+    UNKNOWN_TXT = read_target_text(UNKNOWN_PATH)
+    print('Process for unknown text and language:')
+
+    (EXTRACTED_PHRASES_UNKNOWN, STOPS_UNKNOWN, CANDIDATE_KEY_PHR_UNKNOWN, FREQ_CONT_UNKNOWN, WORD_DEGREE_UNKNOWN,
+     WORD_SCORE_UNKNOWN, CUMULATIVE_SCORE_UNKNOWN,
+     KEY_PHR_ADJOIN_UNKNOWN, CUMULATIVE_SCORE_ADJOIN_UNKNOWN) = [None for notdef in range(9)]
+
+    if UNKNOWN_TXT:
+        EXTRACTED_PHRASES_UNKNOWN = extract_phrases(UNKNOWN_TXT)
+
+    if UNKNOWN_TXT:
+        STOPS_UNKNOWN = generate_stop_words(UNKNOWN_TXT, 5)
+
+    if EXTRACTED_PHRASES_UNKNOWN and STOPS_UNKNOWN:
+        CANDIDATE_KEY_PHR_UNKNOWN = extract_candidate_keyword_phrases(EXTRACTED_PHRASES_UNKNOWN, STOPS_UNKNOWN)
+
+    if CANDIDATE_KEY_PHR_UNKNOWN:
+        FREQ_CONT_UNKNOWN = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_UNKNOWN)
+
+    CONTENT_WORDS_UNKNOWN = [keys for keys in FREQ_CONT_UNKNOWN]  # is this how we're supposed to extract content words?
+
+    if CANDIDATE_KEY_PHR_UNKNOWN:
+        WORD_DEGREE_UNKNOWN = calculate_word_degrees(CANDIDATE_KEY_PHR_UNKNOWN, CONTENT_WORDS_UNKNOWN)
+
+    if WORD_DEGREE_UNKNOWN and FREQ_CONT_UNKNOWN:
+        WORD_SCORE_UNKNOWN = calculate_word_scores(WORD_DEGREE_UNKNOWN, FREQ_CONT_UNKNOWN)
+
+    if WORD_SCORE_UNKNOWN and CANDIDATE_KEY_PHR_UNKNOWN:
+        CUMULATIVE_SCORE_UNKNOWN = calculate_cumulative_score_for_candidates(CANDIDATE_KEY_PHR_UNKNOWN,
+                                                                             WORD_SCORE_UNKNOWN)
+
+    if CUMULATIVE_SCORE_UNKNOWN:
+        TOP_N_UNKNOWN = get_top_n(CUMULATIVE_SCORE_UNKNOWN, 3, 5)
+        print('3 Top key phrases without stop words: ', TOP_N_UNKNOWN)
+
+    if CANDIDATE_KEY_PHR_UNKNOWN and EXTRACTED_PHRASES_UNKNOWN:
+        KEY_PHR_ADJOIN_UNKNOWN = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEY_PHR_UNKNOWN,
+                                                                                  EXTRACTED_PHRASES_UNKNOWN)
+
+    if KEY_PHR_ADJOIN_UNKNOWN and WORD_SCORE_UNKNOWN:
+        CUMULATIVE_SCORE_ADJOIN_UNKNOWN = calculate_cumulative_score_for_candidates_with_stop_words(
+            KEY_PHR_ADJOIN_UNKNOWN, WORD_SCORE_UNKNOWN, STOPS_UNKNOWN)
+
+    if CUMULATIVE_SCORE_ADJOIN_UNKNOWN:
+        TOP_N_ADJOIN_UNKNOWN = get_top_n(CUMULATIVE_SCORE_ADJOIN_UNKNOWN, 3, 5)
+        print('Top key phrases with adjoining: ', TOP_N_ADJOIN_UNKNOWN)
 
     RESULT = KEY_PHR_ADJOIN_POLISH
     assert RESULT, 'Keywords are not extracted'
