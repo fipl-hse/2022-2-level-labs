@@ -67,16 +67,20 @@ if __name__ == "__main__":
         WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
 
     if WORD_SCORES and CANDIDATE_KEYWORD_PHRASES:
-        KEYWORD_PHRASES_WITH_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
+        KEYWORD_PHRASES_WITH_SCORES =\
+            calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
 
     if KEYWORD_PHRASES_WITH_SCORES and TOP and MAX_LENGTH:
         GET_TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, TOP, MAX_LENGTH)
 
     if CANDIDATE_KEYWORD_PHRASES and PHRASES:
-        CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
+        CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING =\
+            extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
 
     if CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING and WORD_SCORES:
-        CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING, WORD_SCORES, stop_words)
+        CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS =\
+            calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING,
+                                                                      WORD_SCORES, stop_words)
 
     RESULT = CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS
 
