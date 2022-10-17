@@ -28,7 +28,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text: str, stops: list) -> List[Any]:
+def analysis(text: str, stops: list):
     new_top = []
     phrases = extract_phrases(text)
 
@@ -47,9 +47,9 @@ def analysis(text: str, stops: list) -> List[Any]:
     if candidates and word_scores:
         cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidates, word_scores)
 
-    #if cumulative_score_for_candidates:
-        #top = get_top_n(cumulative_score_for_candidates, 10, 3)
-        #print(top)
+    if cumulative_score_for_candidates:
+        top = get_top_n(cumulative_score_for_candidates, 10, 3)
+        print(top)
 
     if candidates and phrases:
         candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
@@ -61,10 +61,7 @@ def analysis(text: str, stops: list) -> List[Any]:
     if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         new_top = get_top_n(merged_cum, 10, 2)
-        #print(new_top)
-    if new_top:
-        return new_top
-    return None
+        print(new_top)
 
 
 if __name__ == "__main__":
@@ -91,24 +88,22 @@ if __name__ == "__main__":
     }
 
 
-    print(analysis(corpus['gagarin'], stop_words))
+    analysis(corpus['gagarin'], stop_words)
 
     dict_of_stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')
     print(dict_of_stop_words)
 
     polish = read_target_text(ASSETS_PATH / 'polish.txt')
     if dict_of_stop_words and polish:
-        polish_text_analysed = analysis(polish, dict_of_stop_words['pl'])
-        print(polish_text_analysed)
+        analysis(polish, dict_of_stop_words['pl'])
 
     esperanto_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     stops_for_esperanto = generate_stop_words(esperanto_text, 5)
     print(stops_for_esperanto)
 
     if esperanto_text and stops_for_esperanto:
-        esperanto_results = analysis(esperanto_text, stops_for_esperanto)
-        print(esperanto_results)
+        analysis(esperanto_text, stops_for_esperanto)
 
-    RESULT = esperanto_results
+    RESULT = 'Done'
 
     assert RESULT, 'Keywords are not extracted'
