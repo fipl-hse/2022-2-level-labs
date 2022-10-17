@@ -31,8 +31,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str):
         return None
-    punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    expression = ''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation))
+    expression = re.compile(r"[^\s\w\d]+(?![\w\d])|(?!=[\w\d])[^\s\w\d]+")
     return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
@@ -212,8 +211,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
-    punctuation = r"[–—!¡\"“”#$%&'()⟨⟩«»*+,./:;‹›<=>?¿@\]\[\\_`{|}~…⋯-]+"
-    tokens = re.sub(''.join((punctuation, r"(?=[$\s])|(?!=[\w\d])", punctuation)), '', text).lower().split()
+    expression = re.compile(r"[^\s\w\d]+(?![\w\d])|(?!=[\w\d])[^\s\w\d]+")
+    tokens = re.sub(expression, '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
