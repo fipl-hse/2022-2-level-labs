@@ -184,10 +184,11 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
                  key=lambda some_phrase: keyword_phrases_with_scores[some_phrase],
                  reverse=True)
     for phrase in top:
-        if len(phrase) <= max_length:
-            list_of_phrases = " ".join(phrase)
-            top_keyword_phrases = list(top_keyword_phrases)
-            top_keyword_phrases.append(list_of_phrases)
+        if len(phrase) > max_length:
+            continue
+        list_of_phrases = " ".join(phrase)
+        top_keyword_phrases = list(top_keyword_phrases)
+        top_keyword_phrases.append(list_of_phrases)
     return top_keyword_phrases[:top_n]
 
 
