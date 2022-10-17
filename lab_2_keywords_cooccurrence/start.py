@@ -22,13 +22,16 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> None:
+def extract_and_show_keyword_phrases(title: str, text: str, stopwords: Sequence[str]) -> None:
     """
     Given a text, prints keyword phrases obtained by different algorithms
     """
     (key_phrases, frequencies, word_degrees, word_scores,
      with_adjoining, cumulative_scores,
-     candidates_with_stop_words, stop_word_key_phrases) = [None for _ in range(8)]
+     candidates_with_stop_words, stop_word_key_phrases) = (None for _ in range(8))
+
+    print(title)
+
     phrases = extract_phrases(text)
     if phrases:
         key_phrases = extract_candidate_keyword_phrases(phrases, stopwords)
@@ -57,6 +60,7 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
 
     if candidates_with_stop_words:
         print(get_top_n(candidates_with_stop_words, 5, 3))
+
     print()
 
 
@@ -84,18 +88,18 @@ if __name__ == "__main__":
     }
 
     for ARTICLE in corpus:
-        extract_and_show_keyword_phrases(corpus[ARTICLE], stop_words)
+        extract_and_show_keyword_phrases(ARTICLE, corpus[ARTICLE], stop_words)
 
     POLISH_TEXT = read_target_text(ASSETS_PATH / 'polish.txt')
     STOPWORDS_FOR_DIFFERENT_LANGUAGES = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
     if STOPWORDS_FOR_DIFFERENT_LANGUAGES:
-        extract_and_show_keyword_phrases(POLISH_TEXT, STOPWORDS_FOR_DIFFERENT_LANGUAGES['pl'])
+        extract_and_show_keyword_phrases('Polish', POLISH_TEXT, STOPWORDS_FOR_DIFFERENT_LANGUAGES['pl'])
 
     ESPERANTO_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
     ESPERANTO_STOPWORDS = generate_stop_words(ESPERANTO_TEXT, 2)
     if ESPERANTO_STOPWORDS:
-        extract_and_show_keyword_phrases(ESPERANTO_TEXT, ESPERANTO_STOPWORDS)
+        extract_and_show_keyword_phrases('Esperanto', ESPERANTO_TEXT, ESPERANTO_STOPWORDS)
 
     RESULT = "I've made it!"
 
