@@ -27,7 +27,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text, stops):
+def analysis(text: str, stops: list):
     phrases = extract_phrases(text)
 
     if phrases:
