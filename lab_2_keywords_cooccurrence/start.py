@@ -49,25 +49,25 @@ if __name__ == "__main__":
     if candidate_keyword_phrases:
         content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
 
-    if content_words:
+    if content_words and candidate_keyword_phrases:
         word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(content_words.keys()))
 
-    if word_degrees:
+    if word_degrees and content_words:
         word_scores = calculate_word_scores(word_degrees, content_words)
 
-    if word_scores:
+    if word_scores and candidate_keyword_phrases:
         keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_degrees)
 
     if keyword_phrases_with_scores:
         top_n = get_top_n(keyword_phrases_with_scores, 2, 3)
 
-    if top_n:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
+    if candidate_keyword_phrases and phrases:
+        candidate_keyphrases_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
                                                                                     phrases)
 
-    if candidate_keyword_phrases:
+    if candidate_keyphrases_adjoining and word_scores:
         cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidate_keyword_phrases, word_scores, stop_words)
+            candidate_keyphrases_adjoining, word_scores, stop_words)
 
     RESULT = cumulative_score_with_stopwords
 
