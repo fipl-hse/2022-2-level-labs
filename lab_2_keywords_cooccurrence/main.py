@@ -231,16 +231,16 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     # look at phrase and a keyword phrase it consists of
     for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
-        phrase = phrase.split()
+        spltd_phrase = phrase.split()
         keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)  # freq of phrase 1 tuple
         next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1]  # the next phrase
         next_phrase_freq = candidate_keyword_phrases.count(next_phrase)  # freq of phrase 2 tuple
 
         for keyword, word in zip(keyword_phrase, next_phrase):  # for words in these phrase and next phrase tuples
             # if both of them are in the same phrase and their freq is 1+
-            if keyword in phrase and word in phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
+            if keyword in spltd_phrase and word in spltd_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
                 next_phrase_start_idx = phrase.index(next_phrase[0])
-                stop_word = phrase[next_phrase_start_idx - 1]
+                stop_word = spltd_phrase[next_phrase_start_idx - 1]
                 word_idx = next_phrase.index(word)
                 keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
     return keyword_phrases_with_adj
