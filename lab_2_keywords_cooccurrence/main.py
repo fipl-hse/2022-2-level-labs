@@ -31,11 +31,13 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not check_type_and_not_empty(text, str):
         return None
     pattern = re.compile(r'''
-    [^\w\s](?!\w)   # first pattern matches punctuation that is not followed by alphanumeric characters
-    |
-    (?<!\w)[^\w\s]  # second pattern matches punctuation that is not preceeded by alphanumeric characters
-    ''', re.VERBOSE)
-    return [clean_phrase for phrase in re.split(pattern, text) if (clean_phrase := phrase.strip())]
+    [^\w\s]+        #  matches any non whitespace and non alphanumeric character
+    (?:\W|$)+      #  matches any non alphanumeric character and end of string
+    |                       #  second pattern (punctuation before word)
+    (?:\W|^)+      #  matches any non alphanumeric character and start of string
+    [^\w\s]+        #  matches any non whitespace and non alphanumeric character''',
+                         re.VERBOSE)
+    return [phrase.strip() for phrase in re.split(pattern, text) if phrase]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -67,7 +69,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     if not check_type_and_not_empty(candidate_keyword_phrases, list):
         return None
     words = list(chain(*candidate_keyword_phrases))
-    return calculate_frequencies(words)
+    return {word: words.count(word) for word in words}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -155,8 +157,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
             or top_n < 0):
         return None
     normal_length_phrases = [phrase for phrase in keyword_phrases_with_scores if len(phrase) <= max_length]
-    sorted_phrases = sorted(normal_length_phrases, key=lambda x: keyword_phrases_with_scores[x], reverse=True)
-    return [' '.join(words) for words in sorted_phrases[:top_n]]
+    sorted_phrase = sorted(normal_length_phrases, key=lambda x: keyword_phrases_with_scores[x], reverse=True)
+    return [' '.join(words) for words in sorted_phrase[:top_n]]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -183,14 +185,19 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
 
     pairs = list(pairwise(candidate_keyword_phrases))
-    neighbours = [pair for pair in set(pairs) if pairs.count(pair) > 1]
+    neighbours = []
+    distance = 3
+    for i in range(len(pairs) - distance):
+        if pairs[i] == pairs[i + distance]:
+            neighbours.append(pairs[i])
 
     phrases = [phrase.lower() for phrase in phrases]
     keyword_phrases_with_stop_words = []
     for phrase in phrases:
         for pair in neighbours:
             part1, part2 = ' '.join(pair[0]), ' '.join(pair[1])
-            keyword_phrases_with_stop_words.extend(re.findall(fr'{part1}.*?{part2}', phrase))
+            if part1 in phrase and part2 in phrase:
+                keyword_phrases_with_stop_words.extend(re.findall(fr'{part1}.*?{part2}', phrase))
 
     return [tuple(phrase.split()) for phrase in set(keyword_phrases_with_stop_words)
             if keyword_phrases_with_stop_words.count(phrase) > 1]
@@ -217,7 +224,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         return None
     cumulative = {}
     for phrase in candidate_keyword_phrases:
-        cumulative[phrase] = sum(word_scores[word] for word in phrase if word not in stop_words)
+        cumulative[phrase] = sum([word_scores[word] for word in phrase if word not in stop_words])
     return cumulative
 
 
