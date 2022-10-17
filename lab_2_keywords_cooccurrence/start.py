@@ -49,7 +49,7 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
 
     if key_phrases and phrases:
         stop_word_key_phrases = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
-    if key_phrases and stop_word_key_phrases:
+    if key_phrases and stop_word_key_phrases is not None:
         with_adjoining = [*key_phrases, *stop_word_key_phrases]
     if with_adjoining and word_scores:
         candidates_with_stop_words \
@@ -57,6 +57,7 @@ def extract_and_show_keyword_phrases(text: str, stopwords: Sequence[str]) -> Non
 
     if candidates_with_stop_words:
         print(get_top_n(candidates_with_stop_words, 5, 3))
+    print()
 
 
 if __name__ == "__main__":

@@ -185,19 +185,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
 
     pairs = list(pairwise(candidate_keyword_phrases))
-    neighbours = []
-    distance = 3
-    for i in range(len(pairs) - distance):
-        if pairs[i] == pairs[i + distance]:
-            neighbours.append(pairs[i])
+    neighbours = [pair for pair in set(pairs) if pairs.count(pair) > 1]
 
     phrases = [phrase.lower() for phrase in phrases]
     keyword_phrases_with_stop_words = []
     for phrase in phrases:
         for pair in neighbours:
             part1, part2 = ' '.join(pair[0]), ' '.join(pair[1])
-            if part1 in phrase and part2 in phrase:
-                keyword_phrases_with_stop_words.extend(re.findall(fr'{part1}.*?{part2}', phrase))
+            keyword_phrases_with_stop_words.extend(re.findall(fr'\b{part1}\b.*?\b{part2}\b', phrase))
 
     return [tuple(phrase.split()) for phrase in set(keyword_phrases_with_stop_words)
             if keyword_phrases_with_stop_words.count(phrase) > 1]
