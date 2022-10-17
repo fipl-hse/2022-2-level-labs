@@ -19,7 +19,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or not text:
         return None
-    punctuation = """.,;:¡!¿?…⋯‹›«»/\\"“”[]()⟨⟩}{&|-–~—"""
+    punctuation = """,;:¡!¿?…⋯‹›«»/\\"“”[]()⟨⟩}{&|-–~—"""
     for i in text:
         if i in punctuation:
             text = text.replace(i, '.')
@@ -49,21 +49,17 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     keywords = []
     for sentence in phrases:
         sublist = []
-        element = ""
-        for symbol in sentence:
-            element += symbol
+        element = ''.join(sentence)
         words = element.split()
         tokens.append(words)
         for word in words:
             if word not in stop_words:
                 sublist.append(word)
-            else:
-                if sublist:
-                    sublist = tuple(sublist)
-                    keywords.append(sublist)
-                    sublist = []
-                else:
-                    continue
+                continue
+            if sublist:
+                sublist = tuple(sublist)
+                keywords.append(sublist)
+                sublist = []
         if sublist:
             sublist = tuple(sublist)
             keywords.append(sublist)
@@ -88,6 +84,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     for i in keywords_list:
         frequencies[i] = keywords_list.count(i)
     return frequencies
+
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
                            content_words: Sequence[str]) -> Optional[Mapping[str, int]]:
@@ -131,10 +128,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             or not word_degrees or not word_frequencies:
         return None
     wordscore_dict = {}
-    for k, v in word_degrees.items():
+    for k, value in word_degrees.items():
         if k not in word_frequencies.keys():
             return None
-        wordscore_dict[k] = v / word_frequencies[k]
+        wordscore_dict[k] = value / word_frequencies[k]
     return wordscore_dict
 
 
@@ -178,8 +175,9 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(keyword_phrases_with_scores, dict) or not isinstance(top_n, int) \
-            or not isinstance(max_length, int) or not keyword_phrases_with_scores \
-            or not max_length or not top_n or (max_length < 0) or (top_n < 0):
+            or not isinstance(max_length, int):
+        return None
+    elif not keyword_phrases_with_scores or not max_length or not top_n or (max_length < 0) or (top_n < 0):
         return None
     top_list = []
     sorted_keys = sorted(keyword_phrases_with_scores, reverse=True, key=lambda word: keyword_phrases_with_scores[word])
@@ -236,20 +234,22 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     phrases_tokenized = [item.lower() for i in phrases_tokenized for item in i if item]
 
     new_keywords = []
-    for k, v in pairs_dict.items():
-        if v >= 2:
-            tokenized_key = ' '.join(k)
-            tokenized_key = tokenized_key.split()
+    for k, value in pairs_dict.items():
+        if value < 2:
+            continue
+        tokenized_key = ' '.join(k)
+        tokenized_key = tokenized_key.split()
 
-            for ind, word in enumerate(phrases_tokenized):
-                list_with_stopword = []
-                if word in tokenized_key:
-                    list_with_stopword.append(phrases_tokenized[ind:ind + (len(tokenized_key) + 1)])
+        for ind, word in enumerate(phrases_tokenized):
+            list_with_stopword = []
+            if word in tokenized_key:
+                list_with_stopword.append(phrases_tokenized[ind:ind + (len(tokenized_key) + 1)])
 
-                if list_with_stopword:
-                    list_with_stopword = [item for i in list_with_stopword for item in i if item]
-                    if list_with_stopword[0] == tokenized_key[0]:
-                        new_keywords.append(tuple(list_with_stopword))
+            if not list_with_stopword:
+                continue
+            list_with_stopword = [item for i in list_with_stopword for item in i if item]
+            if list_with_stopword[0] == tokenized_key[0]:
+                new_keywords.append(tuple(list_with_stopword))
 
     for i in new_keywords.copy():
         if new_keywords.count(i) < 2:
@@ -279,8 +279,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict) \
-            or not isinstance(stop_words, list) or not candidate_keyword_phrases or not word_scores \
-            or not stop_words:
+            or not isinstance(stop_words, list):
+        return None
+    elif not candidate_keyword_phrases or not word_scores or not stop_words:
         return None
     c_score_dict = {}
     for phrase in candidate_keyword_phrases:
