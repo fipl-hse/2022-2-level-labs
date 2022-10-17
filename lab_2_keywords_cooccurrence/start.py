@@ -63,7 +63,8 @@ def analysis(text: str, stops: Sequence[str]) -> None:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         if merged_cum:
             new_top = get_top_n(merged_cum, 10, 2)
-            print(new_top)
+            if new_top:
+                print(new_top)
 
 
 if __name__ == "__main__":
