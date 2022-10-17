@@ -12,7 +12,9 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_cumulative_score_for_candidates,
                                               get_top_n,
                                               extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words)
+                                              calculate_cumulative_score_for_candidates_with_stop_words,
+                                              load_stop_words,
+                                              generate_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -23,6 +25,42 @@ def read_target_text(file_path: Path) -> str:
     """
     with open(file_path, 'r', encoding='utf-8') as target_text_file:
         return target_text_file.read()
+
+
+def analysis(text, stops):
+    phrases = extract_phrases(text)
+
+    if phrases:
+        candidates = extract_candidate_keyword_phrases(phrases, stops)
+
+    if candidates:
+        frequencies_for_content_words = calculate_frequencies_for_content_words(candidates)
+
+    if candidates and frequencies_for_content_words:
+        word_degrees = calculate_word_degrees(candidates, list(frequencies_for_content_words.keys()))
+
+    if word_degrees and frequencies_for_content_words:
+        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+
+    if candidates and word_scores:
+        cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidates, word_scores)
+
+    if cumulative_score_for_candidates:
+        top = get_top_n(cumulative_score_for_candidates, 10, 3)
+        #print(top)
+
+    if candidates and phrases:
+        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
+
+    if stop_words:
+        cumulative_score_for_candidates_wsw = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidates_with_adjoining, word_scores, stops)
+
+    if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
+        merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
+        new_top = get_top_n(merged_cum, 10, 2)
+        #print(new_top)
+    return new_top
 
 
 if __name__ == "__main__":
@@ -48,40 +86,24 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    phrases = extract_phrases(corpus['gagarin'])
 
-    if phrases:
-        candidates = extract_candidate_keyword_phrases(phrases, stop_words)
+    print(analysis(corpus['gagarin'], stop_words))
 
-    if candidates:
-        frequencies_for_content_words = calculate_frequencies_for_content_words(candidates)
+    dict_of_stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    print(dict_of_stop_words)
 
-    if candidates and frequencies_for_content_words:
-        word_degrees = calculate_word_degrees(candidates, list(frequencies_for_content_words.keys()))
+    polish = read_target_text(ASSETS_PATH / 'polish.txt')
+    if dict_of_stop_words:
+        polish_text_analysed = analysis(polish, dict_of_stop_words['pl'])
+        print(polish_text_analysed)
 
-    if word_degrees and frequencies_for_content_words:
-        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+    esperanto_text = read_target_text(ASSETS_PATH / 'unknown.txt')
+    stops_for_esperanto = generate_stop_words(esperanto_text, 5)
+    print(stops_for_esperanto)
 
-    if candidates and word_scores:
-        cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidates, word_scores)
+    esperanto_results = analysis(esperanto_text, stops_for_esperanto)
+    print(esperanto_results)
 
-    if cumulative_score_for_candidates:
-        top_ten = get_top_n(cumulative_score_for_candidates, 10, 2)
-        print(top_ten)
-
-    if candidates and phrases:
-        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
-
-    if stop_words:
-        cumulative_score_for_candidates_wsw = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidates_with_adjoining, word_scores, stop_words)
-        print(cumulative_score_for_candidates_wsw)
-
-    if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
-        merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
-        new_top = get_top_n(merged_cum, 10, 2)
-        print(new_top)
-
-    RESULT = new_top
+    RESULT = esperanto_results
 
     assert RESULT, 'Keywords are not extracted'
