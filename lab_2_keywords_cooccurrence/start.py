@@ -28,6 +28,7 @@ def read_target_text(file_path: Path) -> str:
 
 
 def analysis(text: str, stops: list) -> list:
+    new_top = []
     phrases = extract_phrases(text)
 
     if phrases:
@@ -60,7 +61,8 @@ def analysis(text: str, stops: list) -> list:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         new_top = get_top_n(merged_cum, 10, 2)
         #print(new_top)
-        return new_top
+
+    return new_top
 
 
 if __name__ == "__main__":
