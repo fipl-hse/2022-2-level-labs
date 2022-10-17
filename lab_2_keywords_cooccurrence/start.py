@@ -10,7 +10,9 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n)
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -46,10 +48,10 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    extracted_phrases = extract_phrases(corpus['gagarin'])
+    phrases = extract_phrases(corpus['gagarin'])
 
-    if extracted_phrases:
-        candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+    if phrases:
+        candidates = extract_candidate_keyword_phrases(phrases, stop_words)
 
     if candidates:
         frequencies_for_content_words = calculate_frequencies_for_content_words(candidates)
@@ -65,7 +67,21 @@ if __name__ == "__main__":
 
     if cumulative_score_for_candidates:
         top_ten = get_top_n(cumulative_score_for_candidates, 10, 2)
+        print(top_ten)
 
-    RESULT = top_ten
+    if candidates and phrases:
+        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
+
+    if stop_words:
+        cumulative_score_for_candidates_wsw = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidates_with_adjoining, word_scores, stop_words)
+        print(cumulative_score_for_candidates_wsw)
+
+    if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
+        merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
+        new_top = get_top_n(merged_cum, 10, 2)
+        print(new_top)
+
+    RESULT = new_top
 
     assert RESULT, 'Keywords are not extracted'

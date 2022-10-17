@@ -221,7 +221,51 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return None
+    if not isinstance(phrases, list) or not phrases:
+        return None
+    new_keyword_phrases = []
+    all_pairs = []
+    for i in range(len(candidate_keyword_phrases) - 1):
+        pair = []
+        pair.append(candidate_keyword_phrases[i])
+        pair.append(candidate_keyword_phrases[i+1])
+        all_pairs.append(pair)
+    dict_of_pairs = {}
+    for pair in all_pairs:
+        dict_of_pairs[tuple(pair)] = all_pairs.count(pair)
+    important_pairs = []
+    for p, num in dict_of_pairs.items():
+        if num > 1:
+            important_pairs.append(p)
+    for imp_pair in important_pairs:
+        part1 = ' '.join(imp_pair[0])
+        part2 = ' '.join(imp_pair[1])
+        for phrase in phrases:
+            phrase = phrase.lower()
+            if part1 in phrase and part2 in phrase:
+                tokens = phrase.split()
+                if ' ' in part1:
+                    last_word_in_part1 = part1.split()[-1]
+                else:
+                    last_word_in_part1 = part1
+                tokens = phrase.split()
+                if ' ' in part2:
+                    first_word_in_part2 = part2.split()[0]
+                else:
+                    first_word_in_part2 = part2
+                for i in range(len(tokens) - 2):
+                    if tokens[i] == last_word_in_part1 and tokens[i+2] == first_word_in_part2:
+                        new_phrase = part1 + ' ' + tokens[i+1] + ' ' + part2
+                        if new_phrase in phrase:
+                            new_keyword_phrases.append(tuple(new_phrase.split()))
+    keyword_phrases = []
+    for key in new_keyword_phrases:
+        if key not in keyword_phrases and new_keyword_phrases.count(key) > 1:
+            keyword_phrases.append(key)
+
+    return keyword_phrases
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -239,7 +283,25 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return None
+    if not isinstance(word_scores, dict) or not word_scores:
+        return None
+    if not isinstance(stop_words, list) or not stop_words:
+        return None
+
+    cumulative_scores = {}
+
+    for phrase in candidate_keyword_phrases:
+        phrase_score = 0.0
+        for word in phrase:
+            if word not in stop_words:
+                if word not in word_scores.keys():
+                    return None
+                phrase_score += word_scores[word]
+        cumulative_scores[phrase] = phrase_score
+
+    return cumulative_scores
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
