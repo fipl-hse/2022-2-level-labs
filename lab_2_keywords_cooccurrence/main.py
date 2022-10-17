@@ -17,8 +17,8 @@ def correct_type(variable: Any, expected_type: type) -> bool:
     """
     if not isinstance(variable, expected_type) or not variable:
         return False
-    if isinstance(variable, int) and variable < 0:
-        return False
+    if isinstance(variable, int) and variable >= 0:
+        return True
     return True
 
 
@@ -75,7 +75,11 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
         return None
     freq_dict = {}
     for phrase in candidate_keyword_phrases:
-        freq_dict |= {token: (freq_dict[token] + 1 if token in freq_dict else phrase.count(token)) for token in phrase}
+        for token in phrase:
+            if token in freq_dict:
+                freq_dict[token] += 1
+            else:
+                freq_dict[token] = phrase.count(token)
     return freq_dict
 
 
@@ -98,7 +102,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         for i in candidate_keyword_phrases:
             if word in i:
                 word_degree |= {word: word_degree.get(word, 0) + len(i)}
-        if word not in word_degree.keys():
+        if word not in word_degree:
             word_degree[word] = 0
     return word_degree
 
@@ -117,7 +121,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not correct_type(word_degrees, dict) or not correct_type(word_frequencies, dict) \
             or not all(word_frequencies.get(word) for word in word_degrees.keys()):
         return None
-    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees.keys()}
+    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -185,14 +189,15 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     new_phrases = [tuple((join_phrases[ind: ind + 2])) for ind in range(len(join_phrases))]
     freq_dict = {token: new_phrases.count(token) for token in new_phrases}
     new_candidates = []
-    for key in freq_dict.keys():
-        if freq_dict[key] >= 2:
-            for token in [" ".join(list(key)).split()]:
-                for phrase in phrases:
-                    for ind in range(len(phrase)):
-                        with_stop = phrase.lower().split()[ind:ind + len(key[0].split()) + len(key[1].split()) + 1]
-                        if set(token).issubset(with_stop):
-                            new_candidates.append(tuple(with_stop))
+    for key in freq_dict:
+        if freq_dict[key] < 2:
+            continue
+        for token in [" ".join(list(key)).split()]:
+            for phrase in phrases:
+                for ind in range(len(phrase)):
+                    with_stop = phrase.lower().split()[ind:ind + len(key[0].split()) + len(key[1].split()) + 1]
+                    if set(token).issubset(with_stop):
+                        new_candidates.append(tuple(with_stop))
     for element in set(new_candidates):
         new_candidates.remove(element)
     return new_candidates
