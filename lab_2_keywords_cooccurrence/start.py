@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from typing import Sequence
+from typing import Sequence, Optional
 
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               extract_candidate_keyword_phrases,
@@ -29,7 +29,6 @@ def read_target_text(file_path: Path) -> str:
 
 
 def analysis(text: str, stops: Sequence[str]) -> None:
-    new_top = []
     phrases = extract_phrases(text)
 
     if phrases:
@@ -62,7 +61,7 @@ def analysis(text: str, stops: Sequence[str]) -> None:
     if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         if merged_cum:
-            new_top = get_top_n(merged_cum, 10, 2)
+            new_top: Optional[Sequence[str]] = get_top_n(merged_cum, 8, 2)
             if new_top:
                 print(new_top)
 
@@ -89,7 +88,6 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-
 
     analysis(corpus['gagarin'], stop_words)
 
