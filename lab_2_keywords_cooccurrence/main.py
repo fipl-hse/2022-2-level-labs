@@ -9,7 +9,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_lst(obj: Any, element_type: type or tuple, can_be_empty: bool) -> bool:
+def check_lst(obj: Any, element_type: type, can_be_empty: bool) -> bool:
     """
     Checks if the object is a list containing elements of a certain type
 
@@ -26,7 +26,7 @@ def check_lst(obj: Any, element_type: type or tuple, can_be_empty: bool) -> bool
     return False
 
 
-def check_dict(obj: Any, key_type: type or tuple, val_type: type or tuple, can_be_empty: bool) -> bool:
+def check_dict(obj: Any, key_type: type, val_type: type, can_be_empty: bool) -> bool:
     """
     Checks if the object is a dictionary containing keys and values of a certain type
 
@@ -102,7 +102,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_lst(candidate_keyword_phrases, (str, list, tuple), False):
+    if not check_lst(candidate_keyword_phrases, tuple, False):
         return None
     keyword_freq = {}
     for phrase in candidate_keyword_phrases:
