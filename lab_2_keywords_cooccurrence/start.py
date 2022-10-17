@@ -60,8 +60,6 @@ def analysis(text: str, stops: list) -> list:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         new_top = get_top_n(merged_cum, 10, 2)
         #print(new_top)
-
-    if new_top:
         return new_top
 
 
