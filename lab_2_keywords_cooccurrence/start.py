@@ -27,7 +27,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text: str, stops: list):
+def analysis(text: str, stops: list) -> None:
     new_top = []
     phrases = extract_phrases(text)
 
@@ -49,6 +49,7 @@ def analysis(text: str, stops: list):
     if cumulative_score_for_candidates:
         top = get_top_n(cumulative_score_for_candidates, 10, 3)
         print(top)
+    print()
 
     if candidates and phrases:
         candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
