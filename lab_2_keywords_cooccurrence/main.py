@@ -213,25 +213,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             or not candidate_keyword_phrases or not phrases:
         return None
 
-    phrases_list = []
-    for phrase in candidate_keyword_phrases:
-        phrase_str = ' '.join(phrase)
-        phrases_list.append(phrase_str)
+    phrases_list = [' '.join(phrase) for phrase in candidate_keyword_phrases]
 
-    list_of_pairs = []
-    for i in range(len(phrases_list) - 1):
-        list_of_pairs.append(tuple((phrases_list[i:i + 2])))
+    list_of_pairs = [tuple(phrases_list[i:i + 2]) for i in range(len(phrases_list) - 1)]
 
-    pairs_dict = {}
-    for phrases_pair in list_of_pairs:
-        number_of_phrases = list_of_pairs.count(phrases_pair)
-        pairs_dict[phrases_pair] = number_of_phrases
+    pairs_dict = {phrases_pair: list_of_pairs.count(phrases_pair) for phrases_pair in list_of_pairs}
 
-    phrases_tokenized = []
-    for i in phrases:
-        i = i.split(' ')
-        phrases_tokenized.append(i)
-    phrases_tokenized = [item.lower() for i in phrases_tokenized for item in i if item]
+    phrases_tokenized = [i.lower().split(' ') for i in phrases]
+    phrases_tokenized = [item for i in phrases_tokenized for item in i if item]
 
     new_keywords = []
     for k, value in pairs_dict.items():
