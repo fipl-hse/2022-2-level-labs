@@ -221,10 +221,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases or\
+            not isinstance(phrases, list) or not phrases:
         return None
-    if not isinstance(phrases, list) or not phrases:
-        return None
+
     new_keyword_phrases = []
     all_pairs = []
     for i in range(len(candidate_keyword_phrases) - 1):
@@ -236,9 +236,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for pair in all_pairs:
         dict_of_pairs[tuple(pair)] = all_pairs.count(pair)
     important_pairs = []
-    for p, num in dict_of_pairs.items():
+    for ph, num in dict_of_pairs.items():
         if num > 1:
-            important_pairs.append(p)
+            important_pairs.append(ph)
     for imp_pair in important_pairs:
         part1 = ' '.join(imp_pair[0])
         part2 = ' '.join(imp_pair[1])
