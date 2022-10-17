@@ -48,13 +48,13 @@ if __name__ == "__main__":
 
     phrases = extract_phrases(corpus['gagarin'])
     if phrases:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases)
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
     if candidate_keyword_phrases:
         word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
     if word_frequencies:
-        word_degrees = calculate_word_degrees(word_frequencies)
-    if word_frequencies:
-        word_scores = calculate_word_scores(word_frequencies)
+        word_degrees = calculate_word_degrees(word_frequencies, content_words)
+    if word_degrees:
+        word_scores = calculate_word_scores(word_degrees, word_frequencies)
     if word_scores:
         RESULT = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
     print(RESULT)
