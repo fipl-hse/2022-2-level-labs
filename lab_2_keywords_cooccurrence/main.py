@@ -304,7 +304,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :return: a list of stop words
     """
     if not isinstance(text, str) or not text:
-        return
+        return None
     if not isinstance(max_length, int) or not max_length > 0:
         return None
 

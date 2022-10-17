@@ -45,8 +45,8 @@ def analysis(text, stops):
     if candidates and word_scores:
         cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidates, word_scores)
 
-    if cumulative_score_for_candidates:
-        top = get_top_n(cumulative_score_for_candidates, 10, 3)
+    #if cumulative_score_for_candidates:
+        #top = get_top_n(cumulative_score_for_candidates, 10, 3)
         #print(top)
 
     if candidates and phrases:
