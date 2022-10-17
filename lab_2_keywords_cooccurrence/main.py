@@ -243,15 +243,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             phrase = phrase.lower()
             if part1 in phrase and part2 in phrase:
                 tokens = phrase.split()
-                if ' ' in part1:
-                    last_word_in_part1 = part1.split()[-1]
-                else:
-                    last_word_in_part1 = part1
-                tokens = phrase.split()
-                if ' ' in part2:
-                    first_word_in_part2 = part2.split()[0]
-                else:
-                    first_word_in_part2 = part2
+                last_word_in_part1 = part1.split()[-1] if ' ' in part1 else part1
+                first_word_in_part2 = part2.split()[0] if ' ' in part2 else part2
                 for i in range(len(tokens) - 2):
                     if tokens[i] == last_word_in_part1 and tokens[i+2] == first_word_in_part2:
                         new_phrase = part1 + ' ' + tokens[i+1] + ' ' + part2
