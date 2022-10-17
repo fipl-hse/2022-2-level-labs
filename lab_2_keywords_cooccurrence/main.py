@@ -32,8 +32,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str):
         return None
-    expression = re.compile(r"[^\s\w\d]+(?![\w\d])|((?<=[\s])|(?<=^))[^\s\w\d]+")
-    return [clean for phrase in re.split(expression, text) if phrase and (clean := phrase.strip())]
+    expression = re.compile(r"[^\w\s]+(?=[\s])|[^\w\s]+(?=$)|(?<=\s)[^\s\w]+|(?<=^)[^\s\w]+")
+    return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -208,7 +208,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
-    tokens = re.sub(r"[^\s\w\d]+(?![\w\d])|((?<=[\s])|(?<=^))[^\s\w\d]+", '', text).lower().split()
+    tokens = re.sub(r"[^\w\s]+(?=[\s])|[^\w\s]+(?=$)|(?<=\s)[^\s\w]+|(?<=^)[^\s\w]+", '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
