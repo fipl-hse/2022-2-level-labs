@@ -9,9 +9,6 @@ import re
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-
-# проверку на keyphrase и keyphrases нужно поменять в функциях
-
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -51,15 +48,14 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     candidate_keywords_phrases = []
     for phrase in phrases:
         phrase = phrase.lower()
-        words_list = phrase.split()
-        phrase_list.append(words_list)
+        phrase_list.append(phrase.split())
     for phrase in phrase_list:
         for word in phrase:
             if word not in stop_words:
                 list_for_tuples.append(word)
             else:
                 phrase_tuple = tuple(list_for_tuples)
-                if len(phrase_tuple) != 0 :
+                if len(phrase_tuple) != 0:
                     candidate_keywords_phrases.append(phrase_tuple)
                 list_for_tuples.clear()
         if list_for_tuples:
@@ -234,13 +230,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for elem in candidate_keyword_phrases:
         if not isinstance(elem, tuple):
             return None
-    for elem in phrases:
-        if not isinstance(elem, str):
+    punct = """!"#$%&'()*+,-./:;<=>?@[]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
+    for phrase in phrases:
+        if not isinstance(phrase, str):
             return None
-        '''for string in elem:
-            for phrase in phrases:
-                if string not in phrase:
-                    return []'''
+        #for mark in punct:
+            #if mark in phrase:
+                #phrases.remove(phrase)
     possible_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
@@ -250,22 +246,16 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             possible_pairs[pair] += 1
     appropriate_pairs = []
     for pair in possible_pairs:
-        list_of_pairs = []
         if possible_pairs[pair] > 1:
-            for element in pair:
-                element = ' '.join(element)
-                list_of_pairs.append(element)
-            appropriate_pairs.append(list_of_pairs)
+            appropriate_pairs.append([' '.join(element) for element in pair])
     phrases_with_stopwords = []
     for phrase in phrases:
         for pair in appropriate_pairs:
             if (pair[0] and pair[1]) in phrase:
-                kw_phrase_with_sw = re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase)
-                phrases_with_stopwords.extend(kw_phrase_with_sw)
-    phrases_with_stopwords = set(phrases_with_stopwords)
-    new_phrases_with_sw = []
-    for phrase in phrases_with_stopwords:
-        new_phrases_with_sw.append(phrase.split())
+                phrases_with_stopwords.extend(re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase))
+            else:
+                return []
+    new_phrases_with_sw = [phrase.split() for phrase in set(phrases_with_stopwords)]
     final_phrases = [tuple(phrase) for phrase in new_phrases_with_sw]
     return final_phrases
 
@@ -309,8 +299,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
             kw_phrase.append(word)
             if word not in stop_words:
                 score += word_scores.get(word)
-        kw_phrase = tuple(kw_phrase)
-        cumulative_score[kw_phrase] = score
+        cumulative_score[tuple(kw_phrase)] = score
     return cumulative_score
 
 
