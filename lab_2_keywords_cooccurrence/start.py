@@ -51,6 +51,21 @@ if __name__ == "__main__":
     if extracted_phrases:
         candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
 
-    RESULT = None
+    if candidates:
+        frequencies_for_content_words = calculate_frequencies_for_content_words(candidates)
+
+    if candidates and frequencies_for_content_words:
+        word_degrees = calculate_word_degrees(candidates, list(frequencies_for_content_words.keys()))
+
+    if word_degrees and frequencies_for_content_words:
+        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+
+    if candidates and word_scores:
+        cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidates, word_scores)
+
+    if cumulative_score_for_candidates:
+        top_ten = get_top_n(cumulative_score_for_candidates, 10, 2)
+
+    RESULT = top_ten
 
     assert RESULT, 'Keywords are not extracted'
