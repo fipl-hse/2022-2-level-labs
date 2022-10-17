@@ -61,8 +61,9 @@ def analysis(text: str, stops: Sequence[str]) -> None:
 
     if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
-        new_top = get_top_n(merged_cum, 10, 2)
-        print(new_top)
+        if merged_cum:
+            new_top = get_top_n(merged_cum, 10, 2)
+            print(new_top)
 
 
 if __name__ == "__main__":
