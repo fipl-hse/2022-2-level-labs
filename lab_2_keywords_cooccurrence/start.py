@@ -9,7 +9,8 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n)
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -74,6 +75,8 @@ if __name__ == "__main__":
 
     if CUMULATIVE:
         print(get_top_n(CUMULATIVE, 6, 3))
+        ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
+        print(ADJOINING)
 
     RESULT = CUMULATIVE
 
