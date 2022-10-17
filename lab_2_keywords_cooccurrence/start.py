@@ -3,7 +3,6 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from typing import Any, List
 
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               extract_candidate_keyword_phrases,
