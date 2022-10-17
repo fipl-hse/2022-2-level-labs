@@ -56,7 +56,7 @@ if __name__ == "__main__":
         word_scores = calculate_word_scores(word_degrees, content_words)
 
     if word_scores and candidate_keyword_phrases:
-        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_degrees)
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
 
     if keyword_phrases_with_scores:
         top_n = get_top_n(keyword_phrases_with_scores, 2, 3)

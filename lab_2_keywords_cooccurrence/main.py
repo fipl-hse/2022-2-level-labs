@@ -57,12 +57,12 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 sublist.append(word)
                 continue
             if sublist:
-                sublist = tuple(sublist)
-                keywords.append(sublist)
+                subtuple = tuple(sublist)
+                keywords.append(subtuple)
                 sublist = []
         if sublist:
-            sublist = tuple(sublist)
-            keywords.append(sublist)
+            subtuple = tuple(sublist)
+            keywords.append(subtuple)
     return keywords
 
 
@@ -226,8 +226,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for k, value in pairs_dict.items():
         if value < 2:
             continue
-        tokenized_key = ' '.join(k)
-        tokenized_key = tokenized_key.split()
+        token_key = ' '.join(k)
+        tokenized_key = token_key.split()
 
         for ind, word in enumerate(phrases_tokenized):
             list_with_stopword = []
