@@ -107,7 +107,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     keyword_freq = {}
     for phrase in candidate_keyword_phrases:
         for word in phrase:
-            keyword_freq.update({word: (1 if word not in keyword_freq else keyword_freq.get(word) + 1)})
+            keyword_freq.update({word: (1 if word not in keyword_freq else keyword_freq.get(word, 0) + 1)})
     return keyword_freq
 
 
