@@ -230,13 +230,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for elem in candidate_keyword_phrases:
         if not isinstance(elem, tuple):
             return None
-    punct = """!"#$%&'()*+,-./:;<=>?@[]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
     for phrase in phrases:
         if not isinstance(phrase, str):
             return None
-        #for mark in punct:
-            #if mark in phrase:
-                #phrases.remove(phrase)
     possible_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
@@ -249,12 +245,15 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if possible_pairs[pair] > 1:
             appropriate_pairs.append([' '.join(element) for element in pair])
     phrases_with_stopwords = []
-    for phrase in phrases:
-        for pair in appropriate_pairs:
+    for pair in appropriate_pairs:
+        counter = 0
+        for phrase in phrases:
             if (pair[0] and pair[1]) in phrase:
-                phrases_with_stopwords.extend(re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase))
-            else:
-                return []
+                counter += 1
+                if extract_phrases(phrase) == [phrase]:
+                    phrases_with_stopwords.extend(re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase))
+        if counter ==0:
+            return []
     new_phrases_with_sw = [phrase.split() for phrase in set(phrases_with_stopwords)]
     final_phrases = [tuple(phrase) for phrase in new_phrases_with_sw]
     return final_phrases
