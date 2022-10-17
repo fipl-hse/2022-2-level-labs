@@ -73,7 +73,8 @@ if __name__ == "__main__":
             print(f'word scores: {word_scores}')
 
         if candidate_keyword_phrases and word_scores:
-            keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+            keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
+                                                                                    word_scores)
             print(f'keyword phrases with scores: {keyword_phrases_with_scores}')
 
         if keyword_phrases_with_scores:

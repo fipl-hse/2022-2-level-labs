@@ -19,7 +19,7 @@ def check_sequence(obj: Any, element_type: type, can_be_empty: bool) -> bool:
     :return: bool - True if the object is list containing elements of the given type, False otherwise
     """
     if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
-        if isinstance(obj, Sequence):
+        if isinstance(obj, list or tuple):
             for element in obj:
                 if isinstance(element, element_type):
                     return True
@@ -37,7 +37,7 @@ def check_mapping(obj: Any, key_type: type, val_type: type, can_be_empty: bool) 
     :return: bool - True if the object is a dictionary containing keys and values of the given type, False otherwise
     """
     if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
-        if isinstance(obj, Mapping):
+        if isinstance(obj, dict):
             for key, val in obj.items():
                 if isinstance(key, key_type) and isinstance(val, val_type):
                     return True
