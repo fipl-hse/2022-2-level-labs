@@ -60,7 +60,11 @@ def analysis(text: str, stops: list) -> list:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         new_top = get_top_n(merged_cum, 10, 2)
         #print(new_top)
-    return new_top
+
+    if new_top:
+        return new_top
+    else:
+        return None
 
 
 if __name__ == "__main__":
@@ -93,7 +97,7 @@ if __name__ == "__main__":
     print(dict_of_stop_words)
 
     polish = read_target_text(ASSETS_PATH / 'polish.txt')
-    if dict_of_stop_words:
+    if dict_of_stop_words and polish:
         polish_text_analysed = analysis(polish, dict_of_stop_words['pl'])
         print(polish_text_analysed)
 
@@ -101,8 +105,9 @@ if __name__ == "__main__":
     stops_for_esperanto = generate_stop_words(esperanto_text, 5)
     print(stops_for_esperanto)
 
-    esperanto_results = analysis(esperanto_text, stops_for_esperanto)
-    print(esperanto_results)
+    if esperanto_text and stops_for_esperanto:
+        esperanto_results = analysis(esperanto_text, stops_for_esperanto)
+        print(esperanto_results)
 
     RESULT = esperanto_results
 
