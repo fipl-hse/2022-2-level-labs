@@ -232,13 +232,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         pair.append(candidate_keyword_phrases[i])
         pair.append(candidate_keyword_phrases[i+1])
         all_pairs.append(pair)
-    dict_of_pairs = {}
-    for pair in all_pairs:
-        dict_of_pairs[tuple(pair)] = all_pairs.count(pair)
     important_pairs = []
-    for ph, num in dict_of_pairs.items():
-        if num > 1:
-            important_pairs.append(ph)
+    for pair in all_pairs:
+        if all_pairs.count(pair) > 1 and pair not in important_pairs:
+            important_pairs.append(pair)
     for imp_pair in important_pairs:
         part1 = ' '.join(imp_pair[0])
         part2 = ' '.join(imp_pair[1])
