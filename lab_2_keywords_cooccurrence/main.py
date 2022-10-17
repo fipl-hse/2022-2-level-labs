@@ -17,7 +17,15 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    #some changes
+    if not isinstance(text, str):
+        return None
+    punctuation = '''.,!?;'''
+    my_text = ()
+    for char in text.replace('\n', ' '):
+        if char not in punctuation:
+            my_text += char
+    return my_text.split()
+    
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +37,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
