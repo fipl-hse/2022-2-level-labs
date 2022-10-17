@@ -63,7 +63,6 @@ def analysis(text: str, stops: list) -> list:
 
     if new_top:
         return new_top
-    return None
 
 
 if __name__ == "__main__":
