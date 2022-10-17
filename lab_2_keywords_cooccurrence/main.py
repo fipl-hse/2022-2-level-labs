@@ -17,7 +17,21 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str) or not text:
+        return None
+
+    punctuation = r'''.,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'''
+    for i in text:
+        if i in punctuation:
+            text = text.replace(i, ',')
+    list_of_tokens = text.split(',')
+    phrases = []
+    for token in list_of_tokens:
+        phrase = token.strip()
+        if phrase:
+            phrases.append(phrase)
+
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +43,28 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(phrases, list) or not phrases:
+        return None
+    if not isinstance(stop_words, list) or not stop_words:
+        return None
+
+    candidate_keyword_phrases = []
+
+    for phrase in phrases:
+        tokens = phrase.lower()
+        tokens = tokens.split()
+        list_of_tokens = []
+        for token in tokens:
+            if token not in stop_words:
+                list_of_tokens.append(token)
+            else:
+                if list_of_tokens:
+                    candidate_keyword_phrases.append(tuple(list_of_tokens))
+                list_of_tokens = []
+        if list_of_tokens:
+            candidate_keyword_phrases.append(tuple(list_of_tokens))
+
+    return candidate_keyword_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:

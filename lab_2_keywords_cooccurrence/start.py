@@ -38,6 +38,11 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    extracted_phrases = main.extract_phrases(corpus['gagarin'])
+
+    if extracted_phrases:
+        candidates = main.extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+
     RESULT = None
 
     assert RESULT, 'Keywords are not extracted'
