@@ -239,8 +239,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             if keyword in phrase and word in phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
                 next_phrase_start_idx = phrase.index(next_phrase[0])
                 stop_word = phrase[next_phrase_start_idx - 1]
-                lst.append(tuple([keyword for keyword in keyword_phrase] + [stop_word]
-                                 + [word for word in next_phrase]))
+                lst.append(tuple([keyword] + [stop_word] + [word]))
     return lst
 
 
