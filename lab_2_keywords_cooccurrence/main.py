@@ -239,6 +239,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             list_with_stopword = [item for i in list_with_stopword for item in i if item]
             if list_with_stopword[0] == tokenized_key[0]:
                 tuple_with_stopword = tuple(list_with_stopword)
+                for word in tuple_with_stopword:
+                    word = str(word)
                 new_keywords.append(tuple_with_stopword)
 
     for i in new_keywords.copy():
