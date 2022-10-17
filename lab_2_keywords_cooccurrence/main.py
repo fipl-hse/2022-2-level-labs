@@ -4,7 +4,6 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Any, Optional, Sequence, Mapping
-from string import punctuation
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
