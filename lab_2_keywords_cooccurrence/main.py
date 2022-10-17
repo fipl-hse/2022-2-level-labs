@@ -5,7 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
-from itertools import repeat, pairwise
+from itertools import repeat, pairwise, chain
 from json import load as json_load
 
 KeyPhrase = tuple[str, ...]
@@ -64,11 +64,8 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     """
     if not type_check(candidate_keyword_phrases, list):
         return None
-    frequencies = {}
-    for phrase in set(candidate_keyword_phrases):
-        for token in set(phrase):
-            frequencies[token] = sum(look.count(token) for look in candidate_keyword_phrases)
-    return frequencies
+    candidates_chained = chain.from_iterable(candidate_keyword_phrases)
+    return {token: list(candidates_chained).count(token) for token in set(candidates_chained)}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -166,13 +163,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
-    possible_pairs = [pair for pair in set(pairwise(candidate_keyword_phrases))
-                      if list(pairwise(candidate_keyword_phrases)).count(pair) > 1]
+    pairs = pairwise(candidate_keyword_phrases)
+    possible_pairs = [pair for pair in set(pairs) if list(pairs).count(pair) > 1]
     possible_phrases = [phrase[index:index+len1+len2+1]
                         for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
                         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
-                        for index in range(len(phrase[:-(len1 + len2)]))
-                        if phrase[index:index+len1] == pair[0] and phrase[index+len1+1:index+len1+len2+1] == pair[1]]
+                        for index in range(len(phrase)-len1-len2)
+                        if phrase[index:index+len1] == pair[0] and phrase[index+len1+1:index+len1+1+len2] == pair[1]]
     return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
