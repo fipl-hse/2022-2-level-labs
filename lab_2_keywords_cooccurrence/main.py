@@ -4,8 +4,6 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-import re
-
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -21,11 +19,50 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not (isinstance(text, str) and text):
         return None
-    phrases = list(filter(None, re.split('''[!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~]''', text)))
+    new_string = ''
+    for sym in text:
+        if not (sym.isalnum() or sym.isspace()):
+            sym = ','
+        new_string += sym
+    phrases = new_string.split(',')
+    phrases = list(filter(None, phrases))
+    phrases[:] = [x for x in phrases if x.strip()]
     for phrase in phrases:
         phrases[phrases.index(phrase)] = phrase.strip()
     return phrases
 
+
+def check_content(massive, type_name) -> Optional[bool]:
+    """
+    Checks if all elements in a sequence is the same type
+
+    Parameters:
+    massive: A sequence to check
+    type_name: name of type (str, int, etc)
+
+    Returns:
+    True
+
+    In case of different types of elements, None is returned
+    """
+    if not (massive and all(isinstance(el, type_name) for el in massive)):
+        return None
+    return True
+
+
+def check_list(lst: list[str], stop_words: list[str]) -> list[str]:
+    """
+    Checks if there are stop-words in list and delete them
+
+    :param lst: a list of words to check
+    :param stop_words: a list of the stop words
+    :return: list without stop-words
+    """
+    for el in lst:
+        if el in stop_words:
+            while el in lst:
+                lst.remove(el)
+    return lst
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -37,7 +74,30 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(phrases, list) and isinstance(stop_words, list) and
+            check_content(phrases, str) and check_content(stop_words, str)):
+        return None
+    candidate = []
+    for phrase in phrases:
+        idx_lst = []
+        split_phrase = phrase.lower().split()
+        for idx, token in enumerate(split_phrase):
+            if token in stop_words:
+                idx_lst.append(idx)
+        if len(idx_lst) == len(split_phrase):
+            return candidate
+        if not idx_lst:
+            candidate.append(tuple(split_phrase))
+        for i in range(len(idx_lst)):
+            if len(idx_lst) == 1:
+                new_phrase = check_list(split_phrase[:idx_lst[i]], stop_words)
+                candidate.append(tuple(new_phrase))
+            if i == len(idx_lst) - 1:
+                new_phrase = check_list(split_phrase[idx_lst[i] + 1:], stop_words)
+            else:
+                new_phrase = check_list(split_phrase[idx_lst[i] + 1: idx_lst[i + 1]], stop_words)
+            candidate.append(tuple(new_phrase))
+    return list(filter(None, candidate))
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
