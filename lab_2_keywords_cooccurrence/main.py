@@ -4,9 +4,11 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
+from string import punctuation
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,11 +19,11 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(text, str) or len(text) == 0:
+    if not isinstance(text, str) or not text:
         return None
-    punctuation = """.,;:¡!¿?…⋯‹›«»"“”\/()⟨⟩}{&|-–~—[]"""
+    add_punctuation = "¡¿…⋯‹›«»“”⟨⟩–—"
     for i in text:
-        if i in punctuation:
+        if i in add_punctuation + punctuation:
             text = text.replace(i, '.')
     text_split = text.split('.')
     phrases = []
@@ -41,16 +43,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(stop_words, list) or not isinstance(phrases, list):
+    if not isinstance(stop_words, list) or not isinstance(phrases, list)\
+            or not stop_words or not phrases:
         return None
-    if stop_words == [] or phrases == []:
-        return None
-    for i in phrases:
-        if not isinstance(i, str):
-            return None
-    for i in stop_words:
-        if not isinstance(i, str):
-            return None
     candidate_keyword_phrases = []
     tuple_candidates = []
     for phrase in phrases:
@@ -69,8 +64,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     return candidate_keyword_phrases
 
 
-
-
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
     Extracts the content words from the candidate keyword phrases list and computes their frequencies
@@ -79,7 +72,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []:
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
         return None
     frequencies_list = {}
     for candidate in candidate_keyword_phrases:
@@ -104,7 +97,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(content_words, list) or not isinstance(candidate_keyword_phrases, list)\
-            or content_words == [] or candidate_keyword_phrases == []:
+            or not content_words or not candidate_keyword_phrases:
         return None
     word_degrees = {}
     for i in content_words:
@@ -127,7 +120,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(word_degrees, dict) or not isinstance(word_frequencies, dict)\
-            or word_degrees == {} or word_frequencies == {}:
+            or not word_degrees or not word_frequencies:
         return None
     word_scores = {}
     for i in word_degrees.keys():
@@ -150,7 +143,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict) \
-            or candidate_keyword_phrases == [] or word_scores == {}:
+            or not candidate_keyword_phrases or not word_scores:
         return None
     cum_score_list = {}
     for phrase in candidate_keyword_phrases:
@@ -160,7 +153,6 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
                 return None
             cum_score_list[phrase] += word_scores[i]
     return cum_score_list
-
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -176,7 +168,16 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(keyword_phrases_with_scores, dict) or not isinstance(top_n, int)\
+        or not isinstance(max_length, int) or not keyword_phrases_with_scores or max_length<=0:
+        return None
+    sorted_phrases = []
+    for i in keyword_phrases_with_scores:
+        if len(i) > max_length:
+            continue
+        sorted_phrases.append(i)
+    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True, key=lambda i: keyword_phrases_with_scores[i])
+    return sorted_phrases[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -218,6 +219,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     In case of corrupt input arguments, None is returned
     """
     pass
+
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
