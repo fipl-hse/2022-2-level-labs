@@ -28,7 +28,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text: str, stops: list) -> Optional[Sequence[str]]:
+def analysis(text: str, stops: list) -> list | None:
     new_top = []
     phrases = extract_phrases(text)
 
@@ -62,8 +62,9 @@ def analysis(text: str, stops: list) -> Optional[Sequence[str]]:
         merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
         new_top = get_top_n(merged_cum, 10, 2)
         #print(new_top)
-
-    return new_top
+    if new_top:
+        return new_top
+    return None
 
 
 if __name__ == "__main__":
