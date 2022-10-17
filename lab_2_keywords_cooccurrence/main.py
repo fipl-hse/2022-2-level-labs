@@ -64,8 +64,8 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     """
     if not type_check(candidate_keyword_phrases, list):
         return None
-    candidates_chained = chain.from_iterable(candidate_keyword_phrases)
-    return {token: list(candidates_chained).count(token) for token in set(candidates_chained)}
+    candidates_chained = list(chain.from_iterable(candidate_keyword_phrases))
+    return {token: candidates_chained.count(token) for token in set(candidates_chained)}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -163,8 +163,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
-    pairs = pairwise(candidate_keyword_phrases)
-    possible_pairs = [pair for pair in set(pairs) if list(pairs).count(pair) > 1]
+    pairs = list(pairwise(candidate_keyword_phrases))
+    possible_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
     possible_phrases = [phrase[index:index+len1+len2+1]
                         for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
                         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
