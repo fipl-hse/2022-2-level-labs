@@ -51,19 +51,19 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     candidate_phrases_tuple = []
     for phrase in phrases:
         phrase = phrase.lower()
-        phrases1 = phrase.split()
-        first_keywords_candidate = []
-        for word in phrases1:
+        words = phrase.split()
+        remove_stop_words = []
+        for word in words:
             if word in stop_words:
-                second_keywords_candidate = tuple(first_keywords_candidate)
-                candidate_phrases_tuple.append(second_keywords_candidate)
-                first_keywords_candidate = []
+                help_keywords_candidate = tuple(remove_stop_words)
+                candidate_phrases_tuple.append(help_keywords_candidate)
+                remove_stop_words = []
             else:
-                first_keywords_candidate.append(word)
-        candidate_phrases_tuple.append(first_keywords_candidate)
-    for phrase1 in candidate_phrases_tuple:
-        if phrase1:
-            candidate_keyword_phrases.append(tuple(phrase1))
+                remove_stop_words.append(word)
+        candidate_phrases_tuple.append(remove_stop_words)
+    for words in candidate_phrases_tuple:
+        if words:
+            candidate_keyword_phrases.append(tuple(words))
     return candidate_keyword_phrases
 
 
@@ -207,6 +207,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(phrases, str, False):
+        return None
+
 
 
 
