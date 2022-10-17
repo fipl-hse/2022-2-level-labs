@@ -27,7 +27,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text: str, stops: list):
+def analysis(text: str, stops: list) -> list:
     phrases = extract_phrases(text)
 
     if phrases:
@@ -52,7 +52,7 @@ def analysis(text: str, stops: list):
     if candidates and phrases:
         candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
 
-    if stop_words:
+    if stop_words and candidates_with_adjoining and word_scores:
         cumulative_score_for_candidates_wsw = calculate_cumulative_score_for_candidates_with_stop_words(
             candidates_with_adjoining, word_scores, stops)
 
