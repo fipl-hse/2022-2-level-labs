@@ -48,23 +48,22 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     candidate_keyword_phrases = []
+    candidate_phrases_tuple = []
     for phrase in phrases:
         phrase = phrase.lower()
         phrases1 = phrase.split()
         first_keywords_candidate = []
         for word in phrases1:
             if word in stop_words:
-                if first_keywords_candidate:
-                    second_keywords_candidate = tuple(first_keywords_candidate)
-                    candidate_keyword_phrases.append(second_keywords_candidate)
-                    first_keywords_candidate.clear()
-            elif word == phrases1[len(phrases1) - 1]:
-                first_keywords_candidate.append(word)
                 second_keywords_candidate = tuple(first_keywords_candidate)
-                candidate_keyword_phrases.append(second_keywords_candidate)
-                first_keywords_candidate.clear()
+                candidate_phrases_tuple.append(second_keywords_candidate)
+                first_keywords_candidate = []
             else:
                 first_keywords_candidate.append(word)
+        candidate_phrases_tuple.append(first_keywords_candidate)
+    for phrase1 in candidate_phrases_tuple:
+        if phrase1:
+            candidate_keyword_phrases.append(tuple(phrase1))
     return candidate_keyword_phrases
 
 
@@ -208,6 +207,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+
+
 
 
 
