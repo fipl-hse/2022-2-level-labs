@@ -177,7 +177,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not isinstance(keyword_phrases_with_scores, dict) or not isinstance(top_n, int) \
             or not isinstance(max_length, int):
         return None
-    elif not keyword_phrases_with_scores or not max_length or not top_n or (max_length < 0) or (top_n < 0):
+    if not keyword_phrases_with_scores or not max_length or not top_n or (max_length < 0) or (top_n < 0):
         return None
     top_list = []
     sorted_keys = sorted(keyword_phrases_with_scores, reverse=True, key=lambda word: keyword_phrases_with_scores[word])
@@ -281,7 +281,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict) \
             or not isinstance(stop_words, list):
         return None
-    elif not candidate_keyword_phrases or not word_scores or not stop_words:
+    if not candidate_keyword_phrases or not word_scores or not stop_words:
         return None
     c_score_dict = {}
     for phrase in candidate_keyword_phrases:
