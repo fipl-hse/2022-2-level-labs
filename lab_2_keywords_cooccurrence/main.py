@@ -17,8 +17,8 @@ def correct_type(variable: Any, expected_type: type) -> bool:
     """
     if not isinstance(variable, expected_type) or not variable:
         return False
-    if isinstance(variable, int) and variable >= 0:
-        return True
+    if isinstance(variable, int) and variable < 0:
+        return False
     return True
 
 
