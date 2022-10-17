@@ -52,7 +52,7 @@ if __name__ == "__main__":
     if candidate_keyword_phrases:
         word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
     if word_frequencies:
-        word_degrees = calculate_word_degrees(word_frequencies, list(content_words.keys()))
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
     if word_degrees:
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
     if word_scores:
