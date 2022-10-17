@@ -146,34 +146,42 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates Term Frequency score for each word in a token sequence
     based on the raw frequency
+
     Parameters:
     frequencies (Dict): Raw number of occurrences for each of the tokens
+
     Returns:
     dict: A dictionary with tokens and corresponding term frequency score
+
     In case of corrupt input arguments, None is returned
     """
     if not check_dict(frequencies, str, int, False):
         return None
-    a = sum(frequencies.values())
-
-    return {key: value / a for key, value in frequencies.items()}
+    sum_freq = sum(frequencies.values())
+    tf_dict = {word: (frequency / sum_freq) for word, frequency in frequencies.items()}
+    return tf_dict
 
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
     Calculates TF-IDF score for each of the tokens
     based on its TF and IDF scores
+
     Parameters:
     term_freq (Dict): A dictionary with tokens and its corresponding TF values
     idf (Dict): A dictionary with tokens and its corresponding IDF values
+
     Returns:
     Dict: A dictionary with tokens and its corresponding TF-IDF values
+
     In case of corrupt input arguments, None is returned
     """
-    my_dict = {}
-    for key, value in term_freq.items():
-        my_dict[key] = value*idf.get(key,log(47))
-    return my_dict
+    if not (check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True)):
+        return None
+    tfidf_dict = {}
+    for word in term_freq.keys():
+        tfidf_dict[word] = term_freq[word] * idf.get(word, log(47))
+    return tfidf_dict
 
 
 def calculate_expected_frequency(
@@ -182,43 +190,74 @@ def calculate_expected_frequency(
     """
     Calculates expected frequency for each of the tokens based on its
     Term Frequency score for both target document and general corpus
+
     Parameters:
     doc_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in document
     corpus_freqs (Dict): A dictionary with tokens and its corresponding number of occurrences in corpus
+
     Returns:
     Dict: A dictionary with tokens and its corresponding expected frequency
+
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(doc_freqs, str, int, False) and check_dict(corpus_freqs, str, int, True)):
+        return None
+    dict_exp_freqs = {}
+    for word, freq in doc_freqs.items():
+        except_word_doc_freq = sum(doc_freqs.values()) - freq
+        corpus_freq = corpus_freqs.get(word, 0)
+        except_word_corpus_freq = sum(corpus_freqs.values()) - corpus_freq
+        dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) /\
+                                (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
+    return dict_exp_freqs
 
 
 def calculate_chi_values(expected: dict[str, float], observed: dict[str, int]) -> Optional[dict[str, float]]:
     """
     Calculates chi-squared value for the tokens
     based on their expected and observed frequency rates
+
     Parameters:
     expected (Dict): A dictionary with tokens and
     its corresponding expected frequency
     observed (Dict): A dictionary with tokens and
     its corresponding observed frequency
+
     Returns:
     Dict: A dictionary with tokens and its corresponding chi-squared value
+
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(expected, str, float, False) and check_dict(observed, str, int, False)):
+        return None
+    chi_dict = {}
+    for word, freq in expected.items():
+        chi_dict[word] = ((observed.get(word, 0) - freq) ** 2) / freq
+    return chi_dict
 
 
 def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Optional[dict[str, float]]:
     """
     Select those tokens from the token sequence that
     have a chi-squared value greater than the criterion
+
     Parameters:
     chi_values (Dict): A dictionary with tokens and
     its corresponding chi-squared value
     alpha (float): Level of significance that controls critical value of chi-squared metric
+
     Returns:
     Dict: A dictionary with significant tokens
     and its corresponding chi-squared value
+
     In case of corrupt input arguments, None is returned
     """
-    pass
+    criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
+    if not (check_dict(chi_values, str, float, False) and check_float(alpha)\
+            and alpha in criterion.keys()):
+        return None
+    significant_words_dict = {}
+    for word, chi_value in chi_values.items():
+        if chi_value > criterion[alpha]:
+            significant_words_dict[word] = chi_value
+    return significant_words_dict
