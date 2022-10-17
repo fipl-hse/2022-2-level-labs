@@ -5,7 +5,8 @@ Co-occurrence-driven keyword extraction starter
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores, \
-    calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining
+    calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
+    calculate_cumulative_score_for_candidates_with_stop_words
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -40,29 +41,34 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    tokens = extract_phrases(corpus['gagarin'])
+    phrases = extract_phrases(corpus['gagarin'])
 
-    if tokens:
-        possible_keywords = extract_candidate_keyword_phrases(tokens, stop_words)
+    if phrases:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
 
-    if possible_keywords:
-        content_words = calculate_frequencies_for_content_words(possible_keywords)
+    if candidate_keyword_phrases:
+        content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
 
     if content_words:
-        word_degrees = calculate_word_degrees(possible_keywords, list(content_words.keys()))
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(content_words.keys()))
 
     if word_degrees:
         word_scores = calculate_word_scores(word_degrees, content_words)
 
     if word_scores:
-        cumulative_score = calculate_cumulative_score_for_candidates(possible_keywords, word_degrees)
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_degrees)
 
-    if cumulative_score:
-        top_n = get_top_n(cumulative_score, 2, 3)
+    if keyword_phrases_with_scores:
+        top_n = get_top_n(keyword_phrases_with_scores, 2, 3)
 
     if top_n:
-        candidate_keyphrases_adjoining = extract_candidate_keyword_phrases_with_adjoining(possible_keywords, tokens)
+        candidate_keyword_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
+                                                                                    phrases)
 
-    RESULT = candidate_keyphrases_adjoining
+    if candidate_keyword_phrases:
+        cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidate_keyword_phrases, word_scores, stop_words)
+
+    RESULT = cumulative_score_with_stopwords
 
     assert RESULT, 'Keywords are not extracted'
