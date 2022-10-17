@@ -123,7 +123,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(candidate_keyword_phrases, (str, list, tuple), False) and check_lst(content_words, str, False)):
+    if not(check_lst(candidate_keyword_phrases, tuple, False) and check_lst(content_words, str, False)):
         return None
 
     degree_dict = {}
@@ -239,7 +239,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             if keyword in phrase and word in phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
                 next_phrase_start_idx = phrase.index(next_phrase[0])
                 stop_word = phrase[next_phrase_start_idx - 1]
-                lst.append(tuple([keyword] + [stop_word] + [word for word in next_phrase]))
+                word_idx = next_phrase.index(word)
+                lst.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
     return lst
 
 
