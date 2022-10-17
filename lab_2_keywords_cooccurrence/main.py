@@ -200,7 +200,34 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list)\
+        or not candidate_keyword_phrases or not phrases:
+        return None
+    new_candidates = []
+    possible_candidates = []
+    new_candidates.append(pairwise(candidate_keyword_phrases))
+    no_duplicates = list(dict.fromkeys(new_candidates))
+    for i in new_candidates:
+        if i not in no_duplicates:
+            possible_candidates.append(i)
+    possible_candidates = list(dict.fromkeys(possible_candidates))
+    for i in phrases:
+        i = i.split()
+    phrases_with_ajoin = possible_candidates
+    for i in phrases:
+        for candidate in possible_candidates:
+            stops = re.search(r'(\b\w*\b)(?<=(re.escape(candidate[0][-1])))(?=(re.escape(candidate[-1][0])))', i)
+            phrases_with_ajoin.insert(1, stops)
+    return phrases_with_ajoin
+
+
+
+
+
+
+
+
+
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -219,6 +246,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     In case of corrupt input arguments, None is returned
     """
     pass
+
 
 
 
