@@ -33,7 +33,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not type_check(text, str):
         return None
     expression = re.compile(r"[^\s\w\d]+(?![\w\d])|((?<=[\s])|(?<=^))[^\s\w\d]+")
-    return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
+    return [clean for phrase in re.split(expression, text) if phrase and (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -237,7 +237,6 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
         candidates_adjoined, cumulative_score_with_stop_words = repeat(None, 7)
     phrases = extract_phrases(text)
-    print(phrases)
     if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
         stop_words = stop_words_generated
     if phrases and stop_words:
