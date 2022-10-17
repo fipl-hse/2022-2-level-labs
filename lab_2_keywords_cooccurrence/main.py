@@ -32,7 +32,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str):
         return None
-    expression = re.compile(r"[^\w\s]+(?=[\s])|[^\w\s]+(?=$)|(?<=\s)[^\s\w]+|(?<=^)[^\s\w]+")
+    expression = re.compile(r"(?<=\s)[^\s\w]+|(?<=^)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)")
     return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
@@ -165,11 +165,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     pairs = list(pairwise(candidate_keyword_phrases))
     possible_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
-    possible_phrases = [phrase[index:index+len1+len2+1]
-                        for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
+    possible_phrases = [phrase[start:end+1]
+                        for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]
                         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
-                        for index in range(len(phrase)-len1-len2)
-                        if phrase[index:index+len1] == pair[0] and phrase[index+len1+1:index+len1+1+len2] == pair[1]]
+                        for start, stop_word, end in [(i, i+len1, i+len1+len2) for i in range(len(phrase)-len1-len2)]
+                        if pair[0] == phrase[start:stop_word] and pair[1] == phrase[stop_word+1:end+1]]
     return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
@@ -205,7 +205,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
-    tokens = re.sub(r"[^\w\s]+(?=[\s])|[^\w\s]+(?=$)|(?<=\s)[^\s\w]+|(?<=^)[^\s\w]+", '', text).lower().split()
+    tokens = re.sub(r"(?<=\s)[^\s\w]+|(?<=^)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)", '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
