@@ -9,7 +9,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_lst(obj: Any, element_type: type, can_be_empty: bool) -> bool:
+def check_sequence(obj: Any, element_type: type, can_be_empty: bool) -> bool:
     """
     Checks if the object is a list containing elements of a certain type
 
@@ -19,14 +19,14 @@ def check_lst(obj: Any, element_type: type, can_be_empty: bool) -> bool:
     :return: bool - True if the object is list containing elements of the given type, False otherwise
     """
     if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
-        if isinstance(obj, list):
+        if isinstance(obj, Sequence):
             for element in obj:
                 if isinstance(element, element_type):
                     return True
     return False
 
 
-def check_dict(obj: Any, key_type: type, val_type: type, can_be_empty: bool) -> bool:
+def check_mapping(obj: Any, key_type: type, val_type: type, can_be_empty: bool) -> bool:
     """
     Checks if the object is a dictionary containing keys and values of a certain type
 
@@ -37,7 +37,7 @@ def check_dict(obj: Any, key_type: type, val_type: type, can_be_empty: bool) -> 
     :return: bool - True if the object is a dictionary containing keys and values of the given type, False otherwise
     """
     if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
-        if isinstance(obj, dict):
+        if isinstance(obj, Mapping):
             for key, val in obj.items():
                 if isinstance(key, key_type) and isinstance(val, val_type):
                     return True
@@ -69,7 +69,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(phrases, str, False) and check_lst(stop_words, str, False)):
+    if not(check_sequence(phrases, str, False) and not isinstance(phrases, str)
+           and check_sequence(stop_words, str, False) and not isinstance(stop_words, str)):
         return None
 
     splt_phrases = [phrase.lower().split() for phrase in phrases]
@@ -102,7 +103,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_lst(candidate_keyword_phrases, tuple, False):
+    if not check_sequence(candidate_keyword_phrases, tuple, False):
         return None
     keyword_freq = {}
     for phrase in candidate_keyword_phrases:
@@ -123,7 +124,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(candidate_keyword_phrases, tuple, False) and check_lst(content_words, str, False)):
+    if not(check_sequence(candidate_keyword_phrases, tuple, False) and check_sequence(content_words, str, False)):
         return None
 
     degree_dict = {}
@@ -148,7 +149,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, False)
+    if not(check_mapping(word_degrees, str, int, False) and check_mapping(word_frequencies, str, int, False)
            and word_degrees.keys() == word_frequencies.keys()):
         return None
     return {word1: (degree / frequency) for word1, degree in word_degrees.items()
@@ -167,7 +168,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)
+    if not(check_sequence(candidate_keyword_phrases, tuple, False) and check_mapping(word_scores, str, float, False)
            and all(word_scores.get(word) for phrase in candidate_keyword_phrases for word in phrase)):
         return None
 
@@ -194,7 +195,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_dict(keyword_phrases_with_scores, tuple, float, False) and isinstance(top_n, int) and top_n > 0
+    if not(check_mapping(keyword_phrases_with_scores, tuple, float, False) and isinstance(top_n, int) and top_n > 0
            and isinstance(max_length, int) and max_length > 0):
         return None
 
@@ -223,9 +224,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(candidate_keyword_phrases, tuple, False) and check_lst(phrases, str, False)):
+    if not(check_sequence(candidate_keyword_phrases, tuple, False) and check_sequence(phrases, str, False)):
         return None
-    lst = []
+
+    keyword_phrases_with_adj = []
 
     # look at phrase and a keyword phrase it consists of
     for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
@@ -240,8 +242,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 next_phrase_start_idx = phrase.index(next_phrase[0])
                 stop_word = phrase[next_phrase_start_idx - 1]
                 word_idx = next_phrase.index(word)
-                lst.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
-    return lst
+                keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
+    return keyword_phrases_with_adj
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -259,8 +261,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not(check_lst(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)
-           and check_lst(stop_words, str, False)):
+    if not(check_sequence(candidate_keyword_phrases, tuple, False) and check_mapping(word_scores, str, float, False)
+           and check_sequence(stop_words, str, False) and not isinstance(stop_words, str)):
         return None
 
     cmltv_score_dict_wtih_stops = {}
