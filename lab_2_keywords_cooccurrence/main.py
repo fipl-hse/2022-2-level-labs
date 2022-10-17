@@ -5,6 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
+from itertools import repeat, pairwise
 from json import load as json_load
 
 KeyPhrase = tuple[str, ...]
@@ -13,10 +14,10 @@ KeyPhrases = Sequence[KeyPhrase]
 
 def type_check(data: Any, expected: Any) -> bool:
     """
-    Checks any type used in the program. For str, list, tuple and dict also checks if they are empty.
+    Checks any type used in the program. And object's falsiness.
     :param data: An object which type is checked
     :param expected: A type we expect data to be
-    :return: True if data has the expected type and not empty, False otherwise
+    :return: True if data has the expected type and not falsy, False otherwise
     """
     return isinstance(data, expected) and not (expected == int and isinstance(data, bool)) and data
 
@@ -48,9 +49,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     candidates = []
     for phrase in [phrase.lower().split() for phrase in phrases]:
-        splits = [index for index, word in enumerate(phrase) if word in stop_words]
-        candidates.extend(candidate for split1, split2 in zip([-1] + splits, splits + [len(phrase)])
-                          if (candidate := tuple(phrase[split1+1:split2])))
+        splits = [-1] + [index for index, word in enumerate(phrase) if word in stop_words] + [len(phrase)]
+        candidates.extend(tuple(candidate) for start, end in pairwise(splits) if (candidate := phrase[start+1:end]))
     return candidates
 
 
@@ -166,11 +166,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
-    possible_pairs = {(sample, candidate_keyword_phrases[marker1+1])
-                      for marker1, sample in enumerate(candidate_keyword_phrases[:-3])
-                      for marker2, phrase in enumerate(candidate_keyword_phrases[marker1+2:-1])
-                      if phrase == sample
-                      and candidate_keyword_phrases[marker2+1] == candidate_keyword_phrases[marker1+1]}
+    possible_pairs = [pair for pair in set(pairwise(candidate_keyword_phrases))
+                      if list(pairwise(candidate_keyword_phrases)).count(pair) > 1]
     possible_phrases = [phrase[index:index+len1+len2+1]
                         for pair, len1, len2 in [(p_pair, len(p_pair[0]), len(p_pair[1])) for p_pair in possible_pairs]
                         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
@@ -239,7 +236,7 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     Returns extracted key phrases or None if something goes wrong.
     """
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
-        candidates_adjoined, cumulative_score_with_stop_words = [None for not_undefined in range(7)]
+        candidates_adjoined, cumulative_score_with_stop_words = repeat(None, 7)
     phrases = extract_phrases(text)
     if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
         stop_words = stop_words_generated
