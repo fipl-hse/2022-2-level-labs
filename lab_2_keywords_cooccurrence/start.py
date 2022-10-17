@@ -38,6 +38,6 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
+    RESULT = extract_candidate_keyword_phrases(extract_phrases(corpus['albatross']), stop_words)
 
     assert RESULT, 'Keywords are not extracted'
