@@ -32,7 +32,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str):
         return None
-    expression = re.compile(r"[^\s\w\d]+(?![\w\d])|(?!=[\w\d])[^\s\w\d]+")
+    expression = re.compile(r"[^\s\w\d]+(?![\w\d])|((?<=[\s])|(?<=^))[^\s\w\d]+")
     return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
@@ -208,7 +208,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
-    tokens = re.sub(r"[^\s\w\d]+(?![\w\d])|(?!=[\w\d])[^\s\w\d]+", '', text).lower().split()
+    tokens = re.sub(r"[^\s\w\d]+(?![\w\d])|((?<=[\s])|(?<=^))[^\s\w\d]+", '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
@@ -237,6 +237,7 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
         candidates_adjoined, cumulative_score_with_stop_words = repeat(None, 7)
     phrases = extract_phrases(text)
+    print(phrases)
     if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
         stop_words = stop_words_generated
     if phrases and stop_words:
