@@ -123,8 +123,8 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             or not word_degrees or not word_frequencies:
         return None
     word_scores = {}
-    for i in word_degrees.keys():
-        if i not in word_frequencies.keys():
+    for i in word_degrees:
+        if i not in word_frequencies:
             return None
         word_scores[i] = word_degrees[i]/word_frequencies[i]
     return word_scores
@@ -221,15 +221,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     return phrases_with_ajoin
 
 
-
-
-
-
-
-
-
-
-
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
                                                               stop_words: Sequence[str]) \
@@ -245,9 +236,17 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
-
+    if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict)\
+        or not isinstance(stop_words, list) or not candidate_keyword_phrases or not word_scores\
+        or not stop_words:
+        return None
+    advanced_cum_score = {}
+    for i in candidate_keyword_phrases:
+        if i in stop_words:
+            continue
+        for i in word_scores:
+            advanced_cum_score[i] += word_scores[i]
+    return advanced_cum_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
