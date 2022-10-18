@@ -46,6 +46,8 @@ if __name__ == "__main__":
 
     print(extract_candidate_keyword_phrases(phrases, stop_words))
 
+
+
     RESULT = True
 
     assert RESULT, 'Keywords are not extracted'

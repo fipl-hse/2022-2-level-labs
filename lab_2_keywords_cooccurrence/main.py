@@ -47,19 +47,25 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    key_phrases = []
+    if not (isinstance(phrases, list) and isinstance(stop_words, list) and stop_words and phrases):
+        return None
+    key_word_phrases = []
     for phrase in phrases:
         lower_case = phrase.lower()
         list_of_words_in_phrase = lower_case.split()
+        candidates = []
         for word in list_of_words_in_phrase:
             if word in stop_words:
-                index = list_of_words_in_phrase.index(word)
-                before_word = list_of_words_in_phrase[:index]
-                del list_of_words_in_phrase[index]
-                key_phrases.append(tuple(before_word))
-    return key_phrases
-
-
+                if candidates:
+                    candidates_tuple = tuple(candidates)
+                    key_word_phrases.append(candidates_tuple)
+                    candidates.clear()
+                continue
+            candidates.append(word)
+        if candidates:
+            rest_of_words = tuple(candidates)
+            key_word_phrases.append(rest_of_words)
+    return key_word_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
