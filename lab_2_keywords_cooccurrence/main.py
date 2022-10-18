@@ -49,8 +49,42 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
+    if not (isinstance(phrases, list) or isinstance(stop_words, list)) or len(phrases) == 0 or len(stop_words) == 0:
+        return None
+    for i in phrases:
+        if not isinstance(i, str):
+            return None
+    for i in stop_words:
+        if not isinstance(i, str):
+            return None
+    final_list = []
+    final_list_tuples = []
+    for phrase in phrases:
+        phrase = phrase.lower().split()
+        for word in phrase:
+            if word in stop_words:
+                index = phrase.index(word)
+                phrase[index] = ','
+        phrase = " ".join(phrase)
+        phrase = phrase.split(',')
+        # разделяет по запятым на элементы, далее работа со списком
+        for i in phrase:
+            i = i.strip(',')
+            # Метод strip() возвращает копию строки, удаляя как начальные, так и конечные символы
+            # (в зависимости от переданного строкового аргумента).
+            # Метод удаляет символы как слева, так и справа в зависимости от аргумента
+            # (строка, определяющая набор символов, которые необходимо удалить).
+            if i:
+                i = i.strip()
+                final_list.append(i)
+            # проверка пустой ли i или нет, потому что если там были пробелы,
+            # то пердыдущее действия их все удалило и он пуст, нам такой мусор не нужен
 
+    for string in final_list:
+        if string:
+            final_list_tuples.append(tuple(string.split(' ')))
 
+    return final_list_tuples
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
