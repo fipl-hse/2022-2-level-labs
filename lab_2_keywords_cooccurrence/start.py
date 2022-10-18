@@ -102,4 +102,5 @@ if __name__ == "__main__":
         keyword_phrases(esperanto, stop_words_esperanto)
 
     RESULT = 'Esperanto'
+    assert RESULT, 'Keywords are not extracted'
 
