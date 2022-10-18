@@ -58,9 +58,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         for token in tokens:
             if token not in stop_words:
                 list_of_tokens.append(token)
-            else:
-                if list_of_tokens:
-                    candidate_keyword_phrases.append(tuple(list_of_tokens))
+            elif list_of_tokens:
+                candidate_keyword_phrases.append(tuple(list_of_tokens))
                 list_of_tokens = []
         if list_of_tokens:
             candidate_keyword_phrases.append(tuple(list_of_tokens))
@@ -109,10 +108,10 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     for phrase in candidate_keyword_phrases:
         for word in content_words:
-            if word in phrase:
-                word_degrees[word] = len(phrase) + word_degrees.get(word, 0)
             if word not in word_degrees.keys():
                 word_degrees[word] = 0
+            if word in phrase:
+                word_degrees[word] = len(phrase) + word_degrees[word]
 
     return word_degrees
 
@@ -165,7 +164,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in candidate_keyword_phrases:
         phrase_score = 0.0
         for word in phrase:
-            if word not in word_scores.keys():
+            if word not in word_scores:
                 return None
             phrase_score += word_scores[word]
         cumulative_score_for_candidates[phrase] = phrase_score
@@ -237,24 +236,27 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for pair in all_pairs:
         if all_pairs.count(pair) > 1 and pair not in important_pairs:
             important_pairs.append(pair)
-    for imp_pair in important_pairs:
-        part1 = ' '.join(imp_pair[0])
-        part2 = ' '.join(imp_pair[1])
+    for part_1, part_2 in important_pairs:
+        part1 = ' '.join(part_1)
+        part2 = ' '.join(part_2)
         for phrase in phrases:
             phrase = phrase.lower()
-            if part1 in phrase and part2 in phrase:
-                tokens = phrase.split()
-                last_word_in_part1 = part1.split()[-1] if ' ' in part1 else part1
-                first_word_in_part2 = part2.split()[0] if ' ' in part2 else part2
-                for i in range(len(tokens) - 2):
-                    if tokens[i] == last_word_in_part1 and tokens[i+2] == first_word_in_part2:
-                        new_phrase = part1 + ' ' + tokens[i+1] + ' ' + part2
-                        if new_phrase in phrase:
-                            new_keyword_phrases.append(tuple(new_phrase.split()))
+            if part1 not in phrase or part2 not in phrase:
+                continue
+            tokens = phrase.split()
+            last_word_in_part1 = part1.split()[-1] if ' ' in part1 else part1
+            first_word_in_part2 = part2.split()[0] if ' ' in part2 else part2
+            for i in range(len(tokens) - 2):
+                if tokens[i] != last_word_in_part1 or tokens[i+2] != first_word_in_part2:
+                    continue
+                new_phrase = part1 + ' ' + tokens[i+1] + ' ' + part2
+                if new_phrase in phrase:
+                    new_keyword_phrases.append(tuple(new_phrase.split()))
     keyword_phrases = []
     for key in new_keyword_phrases:
-        if key not in keyword_phrases and new_keyword_phrases.count(key) > 1:
-            keyword_phrases.append(key)
+        if key in keyword_phrases or new_keyword_phrases.count(key) < 2:
+            continue
+        keyword_phrases.append(key)
 
     return keyword_phrases
 
@@ -286,10 +288,11 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     for phrase in candidate_keyword_phrases:
         phrase_score = 0.0
         for word in phrase:
-            if word not in stop_words:
-                if word not in word_scores.keys():
-                    return None
-                phrase_score += word_scores[word]
+            if word in stop_words:
+                continue
+            if word not in word_scores.keys():
+                return None
+            phrase_score += word_scores[word]
         cumulative_scores[phrase] = phrase_score
 
     return cumulative_scores
