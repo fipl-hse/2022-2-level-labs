@@ -20,8 +20,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
             return False
     return True
 
-
-def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: Any, can_be_empty: bool) -> bool:
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
