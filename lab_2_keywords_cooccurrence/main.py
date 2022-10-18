@@ -52,7 +52,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 list_for_tuples.append(word)
             else:
                 phrase_tuple = tuple(list_for_tuples)
-                if len(phrase_tuple):
+                if phrase_tuple:
                     candidate_keywords_phrases.append(phrase_tuple)
                 list_for_tuples.clear()
         if list_for_tuples:
@@ -71,7 +71,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False)):
+    if not check_list(candidate_keyword_phrases, tuple, False):
         return None
     tokens_list = [word for phrase in candidate_keyword_phrases for word in phrase]
     frequencies = {word: tokens_list.count(word) for word in tokens_list}
