@@ -115,6 +115,15 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
+    word_degree_dict = {}
+    word_degree = 0
+    for word in content_words:
+        for phrase in candidate_keyword_phrases:
+            if word in phrase:
+                word_degree += len(phrase)
+        word_degree_dict[word] = word_degree
+        word_degree = 0
+    return word_degree_dict
     pass
 
 
