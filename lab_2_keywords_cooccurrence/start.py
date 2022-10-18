@@ -101,5 +101,5 @@ if __name__ == "__main__":
     if esperanto and stop_words_esperanto:
         keyword_phrases(esperanto, stop_words_esperanto)
 
-    RESULT = 'esperanto'
+    RESULT = 'Esperanto'
 
