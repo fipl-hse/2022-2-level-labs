@@ -24,7 +24,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for item in delimiters_list:
         text = text.replace(item, '.')
     phrases_list = text.split('.')
-    not_empty_phrases_list = [phrase.strip() for phrase in phrases_list if phrase]
+    not_empty_phrases_list = [phrase.strip() for phrase in phrases_list if phrase and phrase != ' ']
     return not_empty_phrases_list
 
 
@@ -45,7 +45,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             return None
     if not isinstance(stop_words, list):
         return None
-    if len(stop_words) == 0:
+    if len(stop_words) == 0 or len(phrases) == 0:
         return None
     for item1 in stop_words:
         if not isinstance(item1, str):
@@ -57,16 +57,21 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         phrase_word_list = phrase.split()
         for element in phrase_word_list:
             if element in stop_words:
-                phrase = phrase.replace(f' {element} ', ',')
+                #phrase = phrase.replace(f' {element} ', ',')
                 if phrase_word_list[0] == element:
-                    phrase = phrase.replace(f'{element} ', ',')
+                    phrase = phrase.replace(f'{element} ', ' , ')
                 if phrase_word_list[-1] == element:
-                    phrase = phrase.replace(f' {element}', ',')
+                    phrase = phrase.replace(f' {element}', ' , ')
+                else:
+                    phrase = phrase.replace(f' {element} ', ' , ')
+
+        phrase = " ".join(phrase.split())
         keyword_phrase = phrase.split(',')
+        keyword_phrase1 = []
         for element1 in keyword_phrase:
-            if len(element1) == 0:
-                keyword_phrase.remove(element1)
-        key_phrases.append(keyword_phrase)
+            if len(element1) != 0 and element1 != ' ':
+                keyword_phrase1.append(element1)
+        key_phrases.append(keyword_phrase1)
 
     probably_keywords = []
     for lst in key_phrases:
