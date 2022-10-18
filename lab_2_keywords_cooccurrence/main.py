@@ -4,6 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -49,14 +50,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(phrases, list) or isinstance(stop_words, list)) or len(phrases) == 0 or len(stop_words) == 0:
+    if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
-    for i in phrases:
-        if not isinstance(i, str):
-            return None
-    for i in stop_words:
-        if not isinstance(i, str):
-            return None
     final_list = []
     final_list_tuples = []
     for phrase in phrases:
