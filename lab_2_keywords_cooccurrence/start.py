@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import extract_phrases, extract_candidate_keyword_phrases
+from main import extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -42,8 +42,9 @@ if __name__ == "__main__":
     gagarin = corpus['gagarin']
     step1 = extract_phrases(gagarin)
     step2 = extract_candidate_keyword_phrases(step1, stop_words)
-    print(step2)
+    step3 = calculate_frequencies_for_content_words(step2)
+    print(step2, '\n', step3)
 
-    RESULT = step2
+    RESULT = step3
 
     assert RESULT, 'Keywords are not extracted'

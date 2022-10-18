@@ -89,6 +89,17 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
+    frequencies_dict = {}
+    word_list = []
+    for tpl in candidate_keyword_phrases:
+        for element in tpl:
+            word_list.append(element)
+    unique_words = set(word_list)
+
+    for phrase in unique_words:
+        count = word_list.count(phrase)
+        frequencies_dict[phrase] = count
+    return frequencies_dict
     pass
 
 
