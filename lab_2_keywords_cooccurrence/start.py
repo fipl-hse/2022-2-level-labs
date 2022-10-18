@@ -58,7 +58,7 @@ if __name__ == "__main__":
         if CANDIDATE_KEY_PHR:
             FREQ_CONT = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR)
 
-        CONTENT_WORDS = [keys for keys in FREQ_CONT]  # is this how we're supposed to extract content words?
+        CONTENT_WORDS = list(FREQ_CONT)  # is this how we're supposed to extract content words?
 
         if CANDIDATE_KEY_PHR:
             WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEY_PHR, CONTENT_WORDS)
@@ -70,14 +70,14 @@ if __name__ == "__main__":
             CUMULATIVE_SCORE = calculate_cumulative_score_for_candidates(CANDIDATE_KEY_PHR, WORD_SCORE)
 
         if CUMULATIVE_SCORE:
-            TOP_N = get_top_n(CUMULATIVE_SCORE, NUM_FOR_TOP, NUM_FOR_TOP + 1)
+            TOP_N = get_top_n(CUMULATIVE_SCORE, NUM_FOR_TOP, NUM_FOR_TOP + 3)
             print('Top key phrases without stop words: ', TOP_N)
 
         if CANDIDATE_KEY_PHR and EXTRACTED_PHRASES:
             KEY_PHR_ADJOIN = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEY_PHR, EXTRACTED_PHRASES)
 
-        if KEY_PHR_ADJOIN and WORD_SCORE:
-            CUMULATIVE_SCORE_ADJOIN = calculate_cumulative_score_for_candidates_with_stop_words(KEY_PHR_ADJOIN,
+        if CANDIDATE_KEY_PHR and WORD_SCORE:
+            CUMULATIVE_SCORE_ADJOIN = calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEY_PHR,
                                                                                                 WORD_SCORE, stop_words)
 
         if CUMULATIVE_SCORE_ADJOIN:
@@ -88,7 +88,8 @@ if __name__ == "__main__":
      WORD_SCORE_POLISH, KEY_PHR_ADJOIN_POLISH) = [None for notdef in range(7)]
 
     JSON_PATH = ASSETS_PATH / 'stopwords.json'
-    POLISH_STOPS = load_stop_words(JSON_PATH)
+    ALL_STOPS = load_stop_words(JSON_PATH)
+    POLISH_STOPS = ALL_STOPS['pl']
     POLISH_FILE = ASSETS_PATH / 'polish.txt'
     POLISH_TEXT = read_target_text(POLISH_FILE)
 
@@ -101,7 +102,7 @@ if __name__ == "__main__":
     if CANDIDATE_KEY_PHR_POLISH:
         FREQ_CONT_POLISH = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_POLISH)
 
-    CONTENT_WORDS_POLISH = [keys for keys in FREQ_CONT_POLISH]
+    CONTENT_WORDS_POLISH = list(FREQ_CONT_POLISH)
 
     if CANDIDATE_KEY_PHR_POLISH:
         WORD_DEGREE_POLISH = calculate_word_degrees(CANDIDATE_KEY_PHR_POLISH, CONTENT_WORDS_POLISH)
@@ -135,7 +136,7 @@ if __name__ == "__main__":
     if CANDIDATE_KEY_PHR_UNKNOWN:
         FREQ_CONT_UNKNOWN = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_UNKNOWN)
 
-    CONTENT_WORDS_UNKNOWN = [keys for keys in FREQ_CONT_UNKNOWN]  # is this how we're supposed to extract content words?
+    CONTENT_WORDS_UNKNOWN = list(FREQ_CONT_UNKNOWN)  # is this how we're supposed to extract content words?
 
     if CANDIDATE_KEY_PHR_UNKNOWN:
         WORD_DEGREE_UNKNOWN = calculate_word_degrees(CANDIDATE_KEY_PHR_UNKNOWN, CONTENT_WORDS_UNKNOWN)
@@ -155,9 +156,9 @@ if __name__ == "__main__":
         KEY_PHR_ADJOIN_UNKNOWN = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEY_PHR_UNKNOWN,
                                                                                   EXTRACTED_PHRASES_UNKNOWN)
 
-    if KEY_PHR_ADJOIN_UNKNOWN and WORD_SCORE_UNKNOWN:
+    if CANDIDATE_KEY_PHR_UNKNOWN and WORD_SCORE_UNKNOWN:
         CUMULATIVE_SCORE_ADJOIN_UNKNOWN = calculate_cumulative_score_for_candidates_with_stop_words(
-            KEY_PHR_ADJOIN_UNKNOWN, WORD_SCORE_UNKNOWN, STOPS_UNKNOWN)
+            CANDIDATE_KEY_PHR_UNKNOWN, WORD_SCORE_UNKNOWN, STOPS_UNKNOWN)
 
     if CUMULATIVE_SCORE_ADJOIN_UNKNOWN:
         TOP_N_ADJOIN_UNKNOWN = get_top_n(CUMULATIVE_SCORE_ADJOIN_UNKNOWN, 3, 5)

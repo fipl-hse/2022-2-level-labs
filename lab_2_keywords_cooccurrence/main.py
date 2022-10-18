@@ -113,7 +113,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     if not check_list(phrases, str) or not check_list(stop_words, str):
         return None
     lowed_phrases = []
-    for idx, phrs in enumerate(phrases):
+    for phrs in phrases:
         lowed_phrases.append(phrs.lower().split())
     key_candidates = []
     for one_phrase in lowed_phrases:
