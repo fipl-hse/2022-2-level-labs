@@ -64,7 +64,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 remove_stop_words = []
             else:
                 remove_stop_words.append(word)
-        candidate_phrases_tuple.append(remove_stop_words)
+        candidate_phrases_tuple.append(tuple(remove_stop_words))
     for words in candidate_phrases_tuple:
         if words:
             candidate_keyword_phrases.append(tuple(words))
@@ -175,7 +175,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_dict(keyword_phrases_with_scores, tuple, float, False) or not isinstance(top_n, int) \
+    if not check_dict(keyword_phrases_with_scores, dict) or not isinstance(top_n, int) \
             or not isinstance(max_length, int) or not top_n > 0 or not max_length > 0:
         return None
     top_words_list = []
