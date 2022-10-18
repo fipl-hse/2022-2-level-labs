@@ -83,5 +83,6 @@ if __name__ == "__main__":
 
     if ajoin_phrases and word_scores and stop_words:
         RESULT = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
+    print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'
