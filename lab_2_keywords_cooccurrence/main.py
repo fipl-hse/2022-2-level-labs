@@ -240,7 +240,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for key, val in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
             correct_len[key] = val
-    sorted_dictionary = sorted(correct_len.keys(), key=lambda keys: correct_len[keys], reverse=True)[:top_n]
+    sorted_dictionary = sorted(correct_len.keys(), key=correct_len.get, reverse=True)[:top_n]
     top_phr = []
     for i in sorted_dictionary:
         top_phr.append(' '.join(i))
@@ -353,7 +353,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         for keys in freq_dict:
             if len(keys) > max_length:
                 del correct_length_dict[keys]
-        sort_frequency = sorted(correct_length_dict, key=lambda x: correct_length_dict.get(x), reverse=True)
+        sort_frequency = sorted(correct_length_dict.keys(), key=correct_length_dict.get, reverse=True)
         sorted_dict = {}
         for i in sort_frequency:
             sorted_dict[i] = correct_length_dict[i]
