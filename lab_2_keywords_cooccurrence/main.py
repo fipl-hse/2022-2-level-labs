@@ -5,6 +5,8 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from string import punctuation
+import re
+from itertools import pairwise
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
