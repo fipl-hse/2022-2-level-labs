@@ -42,7 +42,7 @@ def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_t
     :param user_input: An input, which is checked
     :param keys_type: The type of dictionary's keys
     :param values_type: The type of dictionary's values
-    :param values_sec_type: Optional parameter, takes a second value type if it's required
+    :param values_sec_type: by default=None. Optional parameter, takes a second value type if it's required
     :return: True if the input is correct and keys and values are as required
     """
     if not user_input or not isinstance(user_input, dict):
@@ -315,11 +315,11 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         return None
     cumul_score_dict = {}
     for one_phrase in candidate_keyword_phrases:
-        metric = 0
+        metric = 0.0
         for words in one_phrase:
             if words in stop_words:
-                metric += 0
-            elif word_scores.get(words, 0):
+                metric += 0.0
+            elif word_scores.get(words, 0.0):
                 metric += word_scores[words]
             else:
                 return None
@@ -341,8 +341,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if extracted_phr:
         extracted_words = []
         for phrase in extracted_phr:
-            phrase = phrase.split()
-            for words in phrase:
+            split_phrase = phrase.split()
+            for words in split_phrase:
                 extracted_words.append(words.lower())
         freq_dict = {}
         for i in extracted_words:
@@ -373,5 +373,4 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not isinstance(path, Path) or not path:
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        result_dict = json.load(file)
-    return result_dict
+        return dict(json.load(file))
