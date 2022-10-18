@@ -36,13 +36,14 @@ def check_list(user_input: Any, elements_required_type: type) -> bool:
     return True
 
 
-def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type: type = 0) -> bool:
+def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type: type = dict) -> bool:
     """
     Checks if the input is a non-empty dictionary with required keys and values
     :param user_input: An input, which is checked
     :param keys_type: The type of dictionary's keys
     :param values_type: The type of dictionary's values
-    :param values_sec_type: by default=0. Optional parameter, takes a second value type if it's required
+    :param values_sec_type: by default=dict (because it won't be used). Optional parameter,
+    takes a second value type if it's required
     :return: True if the input is correct and keys and values are as required
     """
     if not user_input or not isinstance(user_input, dict):
@@ -280,11 +281,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for each_phrase in phrases:
         all_words.append(each_phrase.lower())
     result_list = []
-    for each_phrase in neighbours:
+    for each_one in neighbours:
         for sentences in all_words:
             for idx in range(1):
-                first_phr = ' '.join(each_phrase[idx])
-                second_phr = ' '.join(each_phrase[idx+1])
+                first_phr = ' '.join(each_one[idx])
+                second_phr = ' '.join(each_one[idx+1])
                 if first_phr in sentences and second_phr in sentences:
                     result_list.extend(re.findall(r'{}\s\w+\s{}'.format(first_phr, second_phr), sentences))
     freq_dict = {}
@@ -352,7 +353,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         for keys in freq_dict:
             if len(keys) > max_length:
                 del correct_length_dict[keys]
-        sort_frequency = sorted(correct_length_dict, key=correct_length_dict.get, reverse=True)
+        sort_frequency = sorted(correct_length_dict, key=lambda x: correct_length_dict.get(x), reverse=True)
         sorted_dict = {}
         for i in sort_frequency:
             sorted_dict[i] = correct_length_dict[i]
