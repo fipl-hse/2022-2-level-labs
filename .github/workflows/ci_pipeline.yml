@@ -19,7 +19,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -52,7 +52,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -81,7 +81,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -110,7 +110,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -172,7 +172,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -203,7 +203,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -234,7 +234,7 @@ jobs:
       - name: Install Aspell
         run: |
           sudo apt-get install aspell aspell-en aspell-ru
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
@@ -265,7 +265,7 @@ jobs:
       - name: Install Aspell
         run: |
           sudo apt-get install aspell aspell-en aspell-ru
-      - name: Set up Python 3.9
+      - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
