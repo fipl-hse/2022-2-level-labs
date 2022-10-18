@@ -2,13 +2,32 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
-from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from itertools import pairwise
 from lab_1_keywords_tfidf.main import check_list, check_dict
+from pathlib import Path
+import re
+from typing import Optional, Sequence, Mapping, Any
 
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+def check_types(user_var: Any, expected_type: Any, can_be_empty: bool = False) -> bool:
+    """
+    Checks type of variable and compares it with expected type.
+    For dict and list checks whether their elements are empty (regulated with can_be_empty)
+    """
+    if not (isinstance(user_var, expected_type) and user_var):
+        return False
+    if expected_type == list:
+        for element in user_var:
+            if not element and can_be_empty is False:
+                return False
+    elif expected_type == dict:
+        for key, value in user_var.items():
+            if not (key and value):
+                return False
+    return True
 
 
 
@@ -105,7 +124,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         for word in content_words:
             if word in phrase:
                 dict_degree[word] = len(phrase) + dict_degree.get(word, 0)
-            if word not in dict_degree:
+            elif word not in dict_degree:
                 dict_degree[word] = 0
     return dict_degree
 
@@ -209,10 +228,26 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(phrases, str, False):
         return None
-
-
-
-
+    joining_phrases = []
+    for key_word in candidate_keyword_phrases:
+        phrase = ' '.join(key_word)
+        joining_phrases.append(phrase)
+    list_of_pairs = list(pairwise(joining_phrases))
+    frequencies = {}
+    for item in list_of_pairs:
+        frequencies[item] = frequencies.get(item, 0) + 1
+    stop_words_list = []
+    for key_word in frequencies.keys():
+        if frequencies[key_word] > 2:
+            continue
+        for phrase in phrases:
+            if (key_word[0] and key_word[1]) in phrase:
+                stop_words_list.extend(re.findall(f'{key_word[0]}.*{key_word[1]}', phrase))
+    new_keywords_phrases = []
+    for keywords_with_stop_words in dict.fromkeys(stop_words_list):
+        if stop_words_list.count(keywords_with_stop_words) > 1:
+            new_keywords_phrases.append(tuple(keywords_with_stop_words.lower().split()))
+    return new_keywords_phrases
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -230,7 +265,17 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_types(candidate_keyword_phrases, list) and check_types(word_scores, dict)
+            and check_types(stop_words, list)):
+        return None
+    candidates_cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        candidates_cumulative_score[phrase] = 0
+        for word in phrase:
+            if word not in stop_words:
+                candidates_cumulative_score[phrase] += word_scores[word]
+    return candidates_cumulative_score
+
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:

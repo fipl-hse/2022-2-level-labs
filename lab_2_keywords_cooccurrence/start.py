@@ -10,9 +10,9 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n)
-
-
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words)
 def read_target_text(file_path: Path) -> str:
     """
     Utility functions that reads the text content from the file
@@ -46,26 +46,40 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    candidates, content_words, word_degrees, word_scores, cumulative_score = [None for notdef in range(5)]
+    PHRASES = extract_phrases(corpus['gagarin'])
+    TOP = 5
+    MAX_LENGTH = 3
+    CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS = None
+    CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING = None
 
-    extracted_phrases = extract_phrases(corpus['gagarin'])
+    if PHRASES:
+        CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
 
-    if extracted_phrases:
-        candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+    if CANDIDATE_KEYWORD_PHRASES:
+        WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
 
-    if candidates:
-        content_words = calculate_frequencies_for_content_words(candidates)
+    if WORD_FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
+        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
 
-    if content_words and candidates:
-        word_degrees = calculate_word_degrees(candidates, list(content_words.keys()))
+    if WORD_FREQUENCIES and WORD_DEGREES:
+        WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
 
-    if word_degrees and content_words:
-        word_scores = calculate_word_scores(word_degrees, content_words)
+    if WORD_SCORES and CANDIDATE_KEYWORD_PHRASES:
+        KEYWORD_PHRASES_WITH_SCORES =\
+            calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
 
-    if word_scores:
-        cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
+    if KEYWORD_PHRASES_WITH_SCORES and TOP and MAX_LENGTH:
+        GET_TOP_N = get_top_n(KEYWORD_PHRASES_WITH_SCORES, TOP, MAX_LENGTH)
 
-    RESULT = get_top_n(cumulative_score, 2, 3)
-    print(RESULT)
+    if CANDIDATE_KEYWORD_PHRASES and PHRASES:
+        CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING =\
+            extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
+
+    if CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING and WORD_SCORES:
+        CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS =\
+            calculate_cumulative_score_for_candidates_with_stop_words(CANDIDATE_KEYWORD_PHRASES_WITH_ADJOINING,
+                                                                      WORD_SCORES, stop_words)
+
+    RESULT = CUMULATIVE_SCORE_FOR_CANDIDATES_WITH_STOP_WORDS
 
     assert RESULT, 'Keywords are not extracted'
