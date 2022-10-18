@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from typing import Sequence
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
                   extract_candidate_keyword_phrases,
                   calculate_frequencies_for_content_words,
@@ -49,7 +50,7 @@ if __name__ == "__main__":
     }
 
 
-    def keyword_phrases(text: str, stop_w: list) -> None:
+    def keyword_phrases(text: str, stop_w: Sequence[str]) -> None:
 
         phrases = extract_phrases(text)
 
