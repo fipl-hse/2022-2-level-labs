@@ -10,7 +10,6 @@ from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
 
-
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -41,7 +40,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(text, str) and text):
+    if not isinstance(text, str) or not text:
         return None
     punctuation = '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—'
     for i in text:
@@ -66,7 +65,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(phrases, list) and check_types(stop_words, list)):
+    if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     candidate_keyword_phrases = []
     candidate_phrases_tuple = []
@@ -97,7 +96,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_types(candidate_keyword_phrases, list):
+    if not check_list(candidate_keyword_phrases, tuple, False):
         return None
     frequencies = {}
     for phrase in candidate_keyword_phrases:
@@ -119,7 +118,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, list) and check_types(content_words, list)):
+    if not check_list(candidate_keyword_phrases, tuple, False) or not  check_list(content_words, str, False):
         return None
     dict_degree = {}
     for phrase in candidate_keyword_phrases:
@@ -143,8 +142,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(word_degrees, dict) and check_types(word_frequencies, dict)
-            and word_degrees.keys() == word_frequencies.keys()):
+    if not check_dict(word_degrees, str, int, False) or not check_dict(word_frequencies, str, int, False):
         return None
     dict_scores = {}
     for word in word_degrees.keys():
@@ -166,7 +164,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, list) and check_types(word_scores, dict)):
+    if not check_list(candidate_keyword_phrases, tuple, False) or not  check_dict(word_scores, str, float, False):
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
