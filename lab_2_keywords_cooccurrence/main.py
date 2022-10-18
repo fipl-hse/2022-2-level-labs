@@ -5,7 +5,7 @@ Extract keywords based on co-occurrence frequency
 from itertools import pairwise
 from pathlib import Path
 import re
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Union
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
@@ -13,22 +13,6 @@ from lab_1_keywords_tfidf.main import check_list, check_dict
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_types(user_var: Any, expected_type: Any, can_be_empty: bool = False) -> bool:
-    """
-    Checks type of variable and compares it with expected type.
-    For dict and list checks whether their elements are empty (regulated with can_be_empty)
-    """
-    if not (isinstance(user_var, expected_type) and user_var):
-        return False
-    if expected_type == list:
-        for element in user_var:
-            if not element and can_be_empty is False:
-                return False
-    elif expected_type == dict:
-        for key, value in user_var.items():
-            if not (key and value):
-                return False
-    return True
 
 
 
@@ -265,8 +249,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(candidate_keyword_phrases, list) and check_types(word_scores, dict)
-            and check_types(stop_words, list)):
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(stop_words, str, False) \
+            or not check_dict(word_scores, str, Union[int, float], False):
         return None
     candidates_cumulative_score = {}
     for phrase in candidate_keyword_phrases:
