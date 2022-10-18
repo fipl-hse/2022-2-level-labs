@@ -5,7 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import json
-
+from itertools import pairwise
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -215,39 +215,25 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not correct_list(candidate_keyword_phrases, tuple, False) or not correct_list(phrases, str, False):
         return None
-    count = 0
-    count = sum([count + 1 for keyword_phrase in candidate_keyword_phrases for item in candidate_keyword_phrases
-                 if keyword_phrase == item])
-    dict_key = {item: count for item in candidate_keyword_phrases if count >= 2}
-    list_of_tuples = [tuple(candidate_keyword_phrases[count:count + 2]) for count, item in
-                      enumerate(candidate_keyword_phrases) for key in dict_key.keys() if key == item]
-    final_list = []
-    for item in list_of_tuples:
-        count = 0
-        for tuple1 in list_of_tuples:
-            if tuple1 == item:
-                count += 1
-        if count >= 2:
-            final_list.append(item)
-    result = list(set(final_list))[::-1]
-
+    list_with_all_pairs = []
+    for value1, value2 in pairwise(candidate_keyword_phrases):
+        help_tuple = tuple([' '.join(value1), ' '.join(value2)])
+        list_with_all_pairs.append(help_tuple)
+    duplicates1 = [x for i, x in enumerate(list_with_all_pairs) if x in list_with_all_pairs[:i]]
     key_phrases = []
     for item1 in phrases:
-        for elem in result:
-            first_tuple, second_tuple = elem[0][0], elem[1][len(elem[1]) - 1]
-            if first_tuple in item1:
-                first_place, second_place = item1.find(first_tuple), item1.rfind(second_tuple[len(second_tuple) - 1])
-                len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
-                key_phrases.append(item1[first_place:len_second_word + 1])
+        for elem in duplicates1:
+            first_tuple, second_tuple = elem[0], elem[1]
+            if first_tuple not in item1:
+                continue
+            first_place, second_place = item1.find(first_tuple), item1.rfind(second_tuple[len(second_tuple) - 1])
+            len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
+            key_phrases.append(item1[first_place:len_second_word + 1])
     if not key_phrases:
         return []
-    count2 = 0
     previous = key_phrases[0][0:1]
-    for item2 in key_phrases:
-        for phrase in key_phrases:
-            if phrase == item2:
-                count2 += 1
-    list_result = {tuple(item2.split()) for item2 in key_phrases if count2 >= 2 and previous == item2[0:1]}
+    duplicates2 = [x for i, x in enumerate(key_phrases) if x in key_phrases[:i]]
+    list_result = {tuple(item2.split()) for item2 in duplicates2 if previous == duplicates2[0][0:1]}
     return list(list_result)
 
 
@@ -274,11 +260,12 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         count = 0
         for elem in item:
             for key, value in word_scores.items():
-                if elem == key:
-                    count += int(value)
-                    for stop_word in stop_words:
-                        if elem == stop_word:
-                            count -= int(value)
+                if elem != key:
+                    continue
+                count += int(value)
+                for stop_word in stop_words:
+                    if elem == stop_word:
+                        count -= int(value)
         result_dict[item] = count
     return result_dict
 
