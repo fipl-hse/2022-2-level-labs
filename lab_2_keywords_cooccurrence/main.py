@@ -61,12 +61,10 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 counter.clear()
             else:
                 counter.extend(word + ' ')
-        n_wrong_strings = new_list.count('00 ')
-        for num in range(n_wrong_strings):
+        while '00 ' in new_list:
             new_list.remove('00 ')
         final_list = [string.strip('00 ') for string in new_list]
-        for index, phrase in enumerate(final_list):
-            final_list[index] = tuple(phrase.split())
+        final_list = [tuple(phrase1.split()) for index1, phrase1 in enumerate(final_list)]
     return final_list
 
 
@@ -88,12 +86,11 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
                 return None
     words_in_text = []
     dict_of_keywords = {}
-    for idx, elem in enumerate(candidate_keyword_phrases):
+    for elem in candidate_keyword_phrases:
         words_in_text.extend(elem)
         for word in elem:
             dict_of_keywords[word] = words_in_text.count(word)
     return dict_of_keywords
-
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
                            content_words: Sequence[str]) -> Optional[Mapping[str, int]]:
@@ -211,7 +208,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         for elem in key1:
             if not isinstance(elem, str):
                 return None
-    top_n_phrases = sorted(keyword_phrases_with_scores.keys(), key=lambda k: keyword_phrases_with_scores[k], reverse=True)
+    list_of_kw = keyword_phrases_with_scores.keys()
+    top_n_phrases = sorted(list_of_kw, key=lambda k: keyword_phrases_with_scores[k], reverse=True)
     key_phrases = [' '.join(phrase) for phrase in top_n_phrases if len(phrase) <= max_length]
     return key_phrases[:top_n]
 
@@ -247,7 +245,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for word_1 in phrase0:
             if not isinstance(word_1, str):
                 return None
-    candidate_keyword_phrases_copy = [' '.join(list(item)) for item in candidate_keyword_phrases]
     list_of_phrases = [phrase.split() for phrase in phrases]
     phrases_lower = [phrase.lower() for phrase in phrases]
     key_phrases_with_stop_words = []
