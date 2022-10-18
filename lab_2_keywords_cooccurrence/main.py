@@ -53,7 +53,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(phrases) and not check_list(stop_words):
+    if not (check_list(phrases) and check_list(stop_words)):
         return None
     possible_key_phrases = []
     for phrase in phrases:
@@ -72,6 +72,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             phrase_tuple = tuple(i)
             tuple_possible_key_phrases.append(phrase_tuple)
     return tuple_possible_key_phrases
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
