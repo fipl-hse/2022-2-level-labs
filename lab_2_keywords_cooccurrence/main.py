@@ -218,27 +218,27 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         phrases_lower = [phrase.lower() for phrase in phrases]
         key_phrases_with_stop_words = []
         for phrase in candidate_keyword_phrases:
-            for idx, wrd in enumerate(list_of_phrases):
-                if phrase[-1] in list_of_phrases[idx]:
-                    phrase_index1 = list_of_phrases[idx].index(phrase[-1])
+            for index1, phrase1 in enumerate(list_of_phrases):
+                if phrase[-1] in list_of_phrases[index1]:
+                    phrase_index1 = list_of_phrases[index1].index(phrase[-1])
                     words_lst = []
-                    for phrs in wrd[phrase_index1 + 2:]:
-                        words_lst.append(phrs)
+                    for word in phrase1[phrase_index1 + 2:]:
+                        words_lst.append(word)
                         twords_lst = tuple(words_lst)
                         if twords_lst in candidate_keyword_phrases:
                             left_phrase = ' '.join(list(phrase))
                             right_phrase = ' '.join(words_lst)
-                            pair_of_phrases = re.findall(left_phrase + r" \w+ " + right_phrase, ' '.join(phrases_lower))
+                            pair_of_phrases = re.findall(left_phrase+r" \w+ "+right_phrase, ' '.join(phrases_lower))
                             pair_of_phrases_ext = []
-                            for index1, phrase1 in enumerate(pair_of_phrases):
-                                if index1 == 0:
-                                    pair_of_phrases_ext.append(c)
+                            for index2, phrase2 in enumerate(pair_of_phrases):
+                                if index2 == 0:
+                                    pair_of_phrases_ext.append(phrase2)
                                 else:
-                                    if phrase1 == pair_of_phrases_ext[i-1]:
-                                        pair_of_phrases_ext.append(c)
+                                    if phrase2 == pair_of_phrases_ext[index2-1]:
+                                        pair_of_phrases_ext.append(phrase2)
                             count_pairs = len(pair_of_phrases_ext)
                             if count_pairs >= 2:
-                                key_phrase = tuple(phrase + tuple(j[phrase_index1+1].split()) + twords_lst)
+                                key_phrase = tuple(phrase + tuple(phrase1[phrase_index1+1].split()) + twords_lst)
                                 if key_phrase not in key_phrases_with_stop_words:
                                     key_phrases_with_stop_words.append(key_phrase)
         return key_phrases_with_stop_words
