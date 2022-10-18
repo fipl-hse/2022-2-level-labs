@@ -4,7 +4,9 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (
-    extract_phrases, extract_candidate_keyword_phrases)
+    extract_phrases, extract_candidate_keyword_phrases,
+    calculate_frequencies_for_content_words, calculate_word_degrees,
+    calculate_word_scores)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -48,4 +50,14 @@ if __name__ == "__main__":
 
     if phrases and stop_words:
         candidate_keywords_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+
+    if candidate_keyword_phrases:
+        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+
+    if candidate_keyword_phrases and content_words:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, content_words)
+
+    if word_degrees and word_frequencies:
+        word_scores = calculate_word_scores(word_degrees, word_frequencies)
+
     # assert RESULT, 'Keywords are not extracted'

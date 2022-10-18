@@ -25,6 +25,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         text = text.replace(punc, ',')
     phrase_list = text.split(',')
     phrase_list = [phrase.strip() for phrase in phrase_list if phrase.strip()]
+
     return phrase_list
 
 
@@ -60,8 +61,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         if tuple_lst:
             candidate_keyword_phrases.append(tuple(tuple_lst))
             tuple_lst.clear()
+    print(candidate_keyword_phrases)
     return candidate_keyword_phrases
-
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -72,7 +73,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases):
+        return None
+    frequencies_dict = {}
+    for phrase in candidate_keyword_phrases:
+        for token in phrase:
+            frequencies_dict[token] = frequencies_dict.get(token, 0) + 1
+    return frequencies_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -87,7 +94,21 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return None
+    if not isinstance(content_words, list) or not content_words:
+        return None
+    word_degrees = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in word_degrees and word in content_words:
+                word_degrees[word] += len(phrase)
+            elif word in content_words:
+                word_degrees[word] = len(phrase)
+        for word in content_words:
+            if word not in word_degrees.keys():
+                word_degrees[word] = 0
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -101,7 +122,16 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(word_degrees, dict) and word_degrees):
+        return None
+    if not (isinstance(word_frequencies, dict) and word_frequencies):
+        return None
+    word_scores = {}
+    for word in word_degrees.keys():
+        if word not in word_frequencies.keys():
+            return None
+        word_scores[word] = word_degrees[word] / word_frequencies[word]
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
