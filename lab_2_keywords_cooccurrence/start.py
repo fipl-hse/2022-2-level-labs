@@ -52,6 +52,14 @@ if __name__ == "__main__":
     phrases = extract_phrases(corpus['gagarin'])
     top_n = 10
     max_length = 3
+
+    candidate_keyword_phrases = None
+    word_frequencies = None
+    word_degrees = None
+    word_scores = None
+    cum_score = None
+    ajoin_phrases = None
+
     if phrases:
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
 
@@ -74,8 +82,6 @@ if __name__ == "__main__":
         ajoin_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
 
     if ajoin_phrases and word_scores and stop_words:
-        advanced_score = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
-
-    RESULT = advanced_score
+        RESULT = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
 
     assert RESULT, 'Keywords are not extracted'
