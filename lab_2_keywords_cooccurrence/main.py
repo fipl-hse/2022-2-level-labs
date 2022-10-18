@@ -19,8 +19,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or len(text) == 0:
         return None
-    delimiters_list = ([',', '!', '?', '\n', ':', ';', ' – ', '¡', '¿', '…', '⋯', '‹', '›', '«', '»', '[', ']',
-                        '(', ')', '⟨', '⟩', '}', '{', '&', '|', '-', '–', '~', '—', '\\\\"“”\\', '\\'])
+    delimiters_list = (',', '!', '?', '\n', ':', ';', ' – ', '¡', '¿', '…', '⋯', '‹', '›', '«', '»', '[', ']',
+                        '(', ')', '⟨', '⟩', '}', '{', '&', '|', '-', '–', '~', '—', '\\\\"“”\\', '\\')
     for item in delimiters_list:
         text = text.replace(item, '.')
     phrases_list = text.split('.')
@@ -45,7 +45,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             return None
     if not isinstance(stop_words, list):
         return None
-    if len(stop_words) == 0 or len(phrases) == 0:
+    if not stop_words or not phrases:
         return None
     for item1 in stop_words:
         if not isinstance(item1, str):
@@ -69,7 +69,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         keyword_phrase = phrase.split(',')
         keyword_phrase1 = []
         for element1 in keyword_phrase:
-            if len(element1) != 0 and element1 != ' ':
+            if element1 and element1 != ' ':
                 keyword_phrase1.append(element1)
         key_phrases.append(keyword_phrase1)
 
