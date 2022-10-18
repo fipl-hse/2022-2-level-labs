@@ -64,7 +64,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 remove_stop_words = []
             else:
                 remove_stop_words.append(word)
-        candidate_phrases_tuple.append(tuple(remove_stop_words))
+        candidate_phrases_tuple.append(remove_stop_words)
     for words in candidate_phrases_tuple:
         if words:
             candidate_keyword_phrases.append(tuple(words))
@@ -156,7 +156,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            cumulative_score += word_scores[word]
+            cumulative_score += int(word_scores[word])
         cumulative_score_dict[phrase] = cumulative_score
     return cumulative_score_dict
 
@@ -257,7 +257,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         candidates_cumulative_score[phrase] = 0
         for word in phrase:
             if word not in stop_words:
-                candidates_cumulative_score[phrase] += word_scores[word]
+                candidates_cumulative_score[phrase] += int(word_scores[word])
     return candidates_cumulative_score
 
 
