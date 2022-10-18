@@ -46,7 +46,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for separator in separators:
         text = text.replace(separator, '.')
     split_text = text.split('.')
-    return [phrase.strip() for phrase in split_text if phrase]
+    return [phrase.strip() for phrase in split_text if phrase.strip()]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -69,7 +69,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 temp_candidate_phrase.append(word)
             else:
                 candidate_phrases.append(temp_candidate_phrase)
-                temp_candidate_phrase.clear()
+                temp_candidate_phrase = []
         candidate_phrases.append(temp_candidate_phrase)
     return [tuple(candidate_phrase) for candidate_phrase in candidate_phrases if candidate_phrase]
 
@@ -88,8 +88,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     for phrase in candidate_keyword_phrases:
         for word in phrase:
             tokens.append(word)
-    freq_dict = {token: tokens.count(token) for token in set(tokens)}
-    return freq_dict
+    return {token: tokens.count(token) for token in set(tokens)}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -183,7 +182,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     top_str = []
     for phrase in top:
         phrase_length = len(phrase)
-        if  phrase_length <= max_length:
+        if phrase_length <= max_length:
             phrase_join = ' '.join(phrase)
             top_str.append(phrase_join)
     return top_str[:top_n]
