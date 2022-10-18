@@ -59,6 +59,7 @@ if __name__ == "__main__":
     word_scores = None
     cum_score = None
     ajoin_phrases = None
+    phrases_and_stops = None
 
     if phrases:
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
@@ -82,7 +83,9 @@ if __name__ == "__main__":
         ajoin_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
 
     if ajoin_phrases and word_scores and stop_words:
-        RESULT = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
-    print(RESULT)
+        phrases_and_stops = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
+
+    if phrases_and_stops and top_n and max_length:
+        RESULT = get_top_n(phrases_and_stops, top_n, max_length)
 
     assert RESULT, 'Keywords are not extracted'
