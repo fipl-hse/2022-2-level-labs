@@ -5,6 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 
+
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -17,7 +18,14 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(text, str) and text):
+        return None
+    punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
+    for punc in punctuation:
+        text = text.replace(punc, ',')
+    phrase_list = text.split(',')
+    phrase_list = [phrase.strip() for phrase in phrase_list if phrase.strip()]
+    return phrase_list
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +37,31 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (phrases and isinstance(phrases, list) and stop_words and isinstance(stop_words, list)):
+        return None
+    for phrase in phrases:
+        if not isinstance(phrase, str):
+            return None
+    phrase_lst = []
+    tuple_lst = []
+    candidate_keyword_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower()
+        phrase_lst.append(phrase.split())
+    for phrase in phrase_lst:
+        for w in phrase:
+            if w not in stop_words:
+                tuple_lst.append(w)
+            else:
+                phrase_tpl = tuple(tuple_lst)
+                if len(phrase_tpl) != 0:
+                    candidate_keyword_phrases.append(phrase_tpl)
+                tuple_lst.clear()
+        if tuple_lst:
+            candidate_keyword_phrases.append(tuple(tuple_lst))
+            tuple_lst.clear()
+    return candidate_keyword_phrases
+
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
