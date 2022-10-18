@@ -7,7 +7,6 @@ from typing import Optional, Sequence, Mapping
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
-import re
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -18,16 +17,28 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(text, str):
+    if not isinstance(text, str) or len(text) == 0:
         return None
-    only_phrases = []
-    text = "–~—]Во ;:¡!¿?времена]( ) ⟨⟩}{ &]«»Советского Союза"
+
     punct = '''.,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'''
-    phr_and_punct = re.findall(r'\w+|[^\s\w]+', text.replace('\n', ' '))
-    for i in phr_and_punct:
-        if i[0][0] not in punct:
-            only_phrases.append(i)
-    return(only_phrases)
+    for symbol in punct:
+        text = text.replace(symbol, ',')
+        # проходится по всем знакам пункуации и заменяет все на запятые
+    coma_split = text.split(',')
+    # разделяет по запятым на элементы, далее работа со списком
+    final_list = []
+    for i in coma_split:
+        i = i.strip()
+        # Метод strip() возвращает копию строки, удаляя как начальные, так и конечные символы
+        # (в зависимости от переданного строкового аргумента).
+        # Метод удаляет символы как слева, так и справа в зависимости от аргумента
+        # (строка, определяющая набор символов, которые необходимо удалить).
+        if i:
+            final_list.append(i)
+        # проверка пустой ли i или нет, потому что если там были пробелы,
+        # то пердыдущее действия их все удалило и он пуст, нам такой мусор не нужен
+    return final_list
+
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
     """
