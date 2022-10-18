@@ -89,6 +89,8 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(candidate_keyword_phrases, list):
+        return None
     for item in candidate_keyword_phrases:
         if not isinstance(item, tuple):
             return None
@@ -123,6 +125,8 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(candidate_keyword_phrases, list):
+        return None
     for item in candidate_keyword_phrases:
         if not isinstance(item, tuple):
             return None
@@ -130,6 +134,13 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             if not isinstance(word, str):
                 return None
     if not candidate_keyword_phrases:
+        return None
+    if not isinstance(content_words, list):
+        return None
+    for item in content_words:
+        if not isinstance(item, str):
+            return None
+    if not content_words:
         return None
     word_degree_dict = {}
     word_degree = 0
@@ -154,10 +165,14 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(word_degrees, dict):
+        return None
     for key, value in word_degrees.items():
         if not (isinstance(key, str) and isinstance(value, int)):
             return None
     if not word_degrees:
+        return None
+    if not isinstance(word_frequencies, dict):
         return None
     for key, value in word_frequencies.items():
         if not (isinstance(key, str) and isinstance(value, int)):
@@ -188,6 +203,10 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(word_scores, dict):
+        return None
+    if not isinstance(candidate_keyword_phrases, list):
+        return None
     if not candidate_keyword_phrases:
         return None
     if not word_scores:
