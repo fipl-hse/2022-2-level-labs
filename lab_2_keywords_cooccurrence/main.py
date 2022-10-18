@@ -240,7 +240,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for key, val in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
             correct_len[key] = val
-    sorted_dictionary = sorted(correct_len, key=lambda x: correct_len.get(x), reverse=True)[:top_n]
+    sorted_dictionary = sorted(correct_len.keys(), key=correct_len.get, reverse=True)[:top_n]
     top_phr = []
     for i in sorted_dictionary:
         top_phr.append(' '.join(i))
