@@ -61,9 +61,10 @@ if __name__ == "__main__":
         if CANDIDATE_KEY_PHR:
             FREQ_CONT = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR)
 
-        CONTENT_WORDS = list(FREQ_CONT)  # is this how we're supposed to extract content words?
+        if FREQ_CONT:
+            CONTENT_WORDS = list(FREQ_CONT)  # is this how we're supposed to extract content words?
 
-        if CANDIDATE_KEY_PHR:
+        if CANDIDATE_KEY_PHR and CONTENT_WORDS:
             WORD_DEGREE = calculate_word_degrees(CANDIDATE_KEY_PHR, CONTENT_WORDS)
 
         if WORD_DEGREE and FREQ_CONT:
@@ -105,9 +106,10 @@ if __name__ == "__main__":
     if CANDIDATE_KEY_PHR_POLISH:
         FREQ_CONT_POLISH = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_POLISH)
 
-    CONTENT_WORDS_POLISH = list(FREQ_CONT_POLISH)
+    if FREQ_CONT_POLISH:
+        CONTENT_WORDS_POLISH = list(FREQ_CONT_POLISH)
 
-    if CANDIDATE_KEY_PHR_POLISH:
+    if CANDIDATE_KEY_PHR_POLISH and CONTENT_WORDS_POLISH:
         WORD_DEGREE_POLISH = calculate_word_degrees(CANDIDATE_KEY_PHR_POLISH, CONTENT_WORDS_POLISH)
 
     if WORD_DEGREE_POLISH and FREQ_CONT_POLISH:
@@ -139,9 +141,10 @@ if __name__ == "__main__":
     if CANDIDATE_KEY_PHR_UNKNOWN:
         FREQ_CONT_UNKNOWN = calculate_frequencies_for_content_words(CANDIDATE_KEY_PHR_UNKNOWN)
 
-    CONTENT_WORDS_UNKNOWN = list(FREQ_CONT_UNKNOWN)  # is this how we're supposed to extract content words?
+    if FREQ_CONT_UNKNOWN:
+        CONTENT_WORDS_UNKNOWN = list(FREQ_CONT_UNKNOWN)  # is this how we're supposed to extract content words?
 
-    if CANDIDATE_KEY_PHR_UNKNOWN:
+    if CANDIDATE_KEY_PHR_UNKNOWN and CONTENT_WORDS_UNKNOWN:
         WORD_DEGREE_UNKNOWN = calculate_word_degrees(CANDIDATE_KEY_PHR_UNKNOWN, CONTENT_WORDS_UNKNOWN)
 
     if WORD_DEGREE_UNKNOWN and FREQ_CONT_UNKNOWN:
