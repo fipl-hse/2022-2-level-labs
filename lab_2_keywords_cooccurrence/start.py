@@ -9,7 +9,10 @@ from lab_2_keywords_cooccurrence.main import (
     calculate_frequencies_for_content_words,
     calculate_word_degrees,
     calculate_word_scores,
-    calculate_cumulative_score_for_candidates)
+    calculate_cumulative_score_for_candidates,
+    get_top_n,
+    extract_candidate_keyword_phrases_with_adjoining,
+    calculate_cumulative_score_for_candidates_with_stop_words)
 
 
 
@@ -56,7 +59,11 @@ if __name__ == "__main__":
     if word_degrees:
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
     if word_scores:
-        RESULT = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+        cum_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+    if cum_score:
+        top_list = get_top_n(cum_score, 10, 3)
+    if candidate_keyword_phrases:
+        RESULT = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
     print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'
