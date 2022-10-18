@@ -4,7 +4,8 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from main import (extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words,
-                  calculate_word_degrees, calculate_word_scores)
+                  calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates,
+                  get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -42,14 +43,19 @@ if __name__ == "__main__":
 
     RESULT = None
     gagarin = corpus['gagarin']
+    top_n = 10
+    max_length = 4
     extracted_phrases = extract_phrases(gagarin)
     candidate_keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
     frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
     word_degrees = calculate_word_degrees(candidate_keyword_phrases, frequencies_for_content_words)
     word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+    cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+    top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
 
-    print(candidate_keyword_phrases, '\n', frequencies_for_content_words, '\n', word_degrees, '\n', word_scores)
+    print(candidate_keyword_phrases, '\n', frequencies_for_content_words, '\n', word_degrees, '\n', word_scores,
+          '\n', cumulative_score_for_candidates, '\n', top_n_phrases)
 
-    RESULT = word_scores
+    RESULT = top_n_phrases
 
     assert RESULT, 'Keywords are not extracted'
