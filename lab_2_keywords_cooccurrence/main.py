@@ -261,7 +261,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         cumulative_score_with_stop_words_dict[phrase] = 0
         for word in phrase:
             if word not in stop_words:
-                cumulative_score_with_stop_words_dict[phrase] += int(word_scores[word])
+                cumulative_score_with_stop_words_dict[phrase] += int(word_scores.get(word, 0))
     return cumulative_score_with_stop_words_dict
 
 
@@ -295,7 +295,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
 
 
 def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = None,
-                            max_length: Optional[int] = None) -> Optional[Sequence]:
+                            max_length: Optional[int] = 10) -> Optional[Sequence]:
     """
     Using previous functions, extracts keyword phrases from user's text
     """
