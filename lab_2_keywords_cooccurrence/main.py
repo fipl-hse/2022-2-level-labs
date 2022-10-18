@@ -53,7 +53,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         list_of_phrases[index].append('00')
     new_list = []
     counter = []
-    # list_of_phrases[-1].append('@@')
     for index, phrase in enumerate(list_of_phrases):
         for idx, word in enumerate(phrase):
             if word == '00':
