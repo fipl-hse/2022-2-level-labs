@@ -89,7 +89,7 @@ if __name__ == "__main__":
 
     total_score = {}
     if cum_score and phrases_and_stops:
-        total_score.append(**cum_score, **phrases_and_stops)
+        total_score = {**cum_score, **phrases_and_stops}
     RESULT = total_score
 
     assert RESULT, 'Keywords are not extracted'
