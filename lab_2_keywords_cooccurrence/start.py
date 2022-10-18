@@ -103,4 +103,3 @@ if __name__ == "__main__":
 
     RESULT = 'Esperanto'
     assert RESULT, 'Keywords are not extracted'
-
