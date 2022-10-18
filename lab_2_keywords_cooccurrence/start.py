@@ -66,6 +66,6 @@ if __name__ == "__main__":
         ajoin_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
     if ajoin_phrases:
         advanced_score = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
-    RESULT = advanced_score
+        RESULT = advanced_score
 
     assert RESULT, 'Keywords are not extracted'
