@@ -36,7 +36,7 @@ def check_list(user_input: Any, elements_required_type: type) -> bool:
     return True
 
 
-def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type=None) -> bool:
+def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type: type = None) -> bool:
     """
     Checks if the input is a non-empty dictionary with required keys and values
     :param user_input: An input, which is checked
@@ -90,9 +90,9 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for i in sep_phrases:
         if i in punctuat:
             sep_phrases = sep_phrases.replace(i, '*')
-    sep_phrases = re.split(r'[*]+', sep_phrases)
-    new_sep = sep_phrases[:]
-    for j in sep_phrases:
+    phrases_by_re = re.split(r'[*]+', sep_phrases)
+    new_sep = phrases_by_re[:]
+    for j in phrases_by_re:
         if re.fullmatch(r'\s+', j) or len(j) == 0:
             new_sep.remove(j)
     result = []
@@ -282,10 +282,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     result_list = []
     for one_phrase in neighbours:
         for sentences in all_words:
-            first_phr = ' '.join(one_phrase[0])
-            second_phr = ' '.join(one_phrase[1])
-            if first_phr in sentences and second_phr in sentences:
-                result_list.extend(re.findall(r'{}\s\w+\s{}'.format(first_phr, second_phr), sentences))
+            for idx in range(1):
+                first_phr = ' '.join(one_phrase[idx])
+                second_phr = ' '.join(one_phrase[idx + 1])
+                if first_phr in sentences and second_phr in sentences:
+                    result_list.extend(re.findall(r'{}\s\w+\s{}'.format(first_phr, second_phr), sentences))
     freq_dict = {}
     words_list = []
     for one_phrase in result_list:

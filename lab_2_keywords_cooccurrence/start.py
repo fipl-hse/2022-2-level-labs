@@ -93,14 +93,15 @@ if __name__ == "__main__":
 
     JSON_PATH = ASSETS_PATH / 'stopwords.json'
     ALL_STOPS = load_stop_words(JSON_PATH)
-    POLISH_STOPS = ALL_STOPS['pl']
+    if ALL_STOPS:
+        POLISH_STOPS = ALL_STOPS['pl']
     POLISH_FILE = ASSETS_PATH / 'polish.txt'
     POLISH_TEXT = read_target_text(POLISH_FILE)
     print('Process for a polish text: ')
     if POLISH_TEXT:
         EXTRACTED_PHRASES_POLISH = extract_phrases(POLISH_TEXT)
 
-    if EXTRACTED_PHRASES_POLISH:
+    if EXTRACTED_PHRASES_POLISH and POLISH_STOPS:
         CANDIDATE_KEY_PHR_POLISH = extract_candidate_keyword_phrases(EXTRACTED_PHRASES_POLISH, POLISH_STOPS)
 
     if CANDIDATE_KEY_PHR_POLISH:
@@ -162,7 +163,7 @@ if __name__ == "__main__":
         KEY_PHR_ADJOIN_UNKNOWN = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEY_PHR_UNKNOWN,
                                                                                   EXTRACTED_PHRASES_UNKNOWN)
 
-    if CANDIDATE_KEY_PHR_UNKNOWN and WORD_SCORE_UNKNOWN:
+    if CANDIDATE_KEY_PHR_UNKNOWN and WORD_SCORE_UNKNOWN and STOPS_UNKNOWN:
         CUMULATIVE_SCORE_ADJOIN_UNKNOWN = calculate_cumulative_score_for_candidates_with_stop_words(
             CANDIDATE_KEY_PHR_UNKNOWN, WORD_SCORE_UNKNOWN, STOPS_UNKNOWN)
 
