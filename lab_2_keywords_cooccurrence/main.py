@@ -232,7 +232,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for ind, word in enumerate(phrases_tokenized):
             list_with_stopword = []
             if word in tokenized_key:
-                list_with_stopword.append(phrases_tokenized[ind:ind + (len(tokenized_key) + 1)])
+                needed_phrase = phrases_tokenized[ind:ind + (len(tokenized_key) + 1)]
+                needed_phrase2 = []
+                for i in needed_phrase:
+                    word_str = str(i)
+                    needed_phrase2.append(word_str)
+                list_with_stopword.append(needed_phrase2)
 
             if not list_with_stopword:
                 continue
