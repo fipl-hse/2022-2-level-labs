@@ -23,7 +23,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or not text:
         return None
 
-    punctuation = ',;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'
+    punctuation = r',;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'
     for punct_mark in punctuation:
         text = text.replace(punct_mark, '.')
     split_text = text.split('.')
@@ -63,9 +63,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 no_stop_words = []
         candidate_phrases.append(no_stop_words)
         candidate_keyword_phrases = []
-        for phrase in candidate_phrases:
-            if phrase:
-                candidate_keyword_phrases.append(tuple(phrase))
+        for candidate_phrase in candidate_phrases:
+            if candidate_phrase:
+                candidate_keyword_phrases.append(tuple(candidate_phrase))
     return candidate_keyword_phrases
 
 
@@ -206,7 +206,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not isinstance(max_length, int) or not max_length > 0:
         return None
 
-    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), key=lambda x: keyword_phrases_with_scores[x], reverse=True)
+    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), key=lambda x: keyword_phrases_with_scores[x],
+                            reverse=True)
 
     max_length_list = []
     for phrase in sorted_phrases:
@@ -239,9 +240,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     In case of corrupt input arguments, None is returned
     """
 
-    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
-        return None
-    if not isinstance(phrases, list) or not phrases:
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases or \
+            not isinstance(phrases, list) or not phrases:
         return None
 
     pairs_list = []
@@ -254,10 +254,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     pair_occurence = {}
     for pair in pairs_list:
         pair_occurence[pair] = pair_occurence.get(pair, 0) + 1
-    frequent_pairs = {}
-    for pair, occur in pair_occurence.items():
-        if pair_occurence[pair] > 1:
-            frequent_pairs[pair] = occur
+    frequent_pairs = {pair: occur for pair, occur in pair_occurence.items() if pair_occurence[pair] > 1}
     possible_candidate_phrases = []
     for pair in frequent_pairs:
         for phrase in phrases:
@@ -265,9 +262,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 possible_candidate_phrases.extend(re.findall(f'{pair[0]} .* {pair[1]}', phrase))
     new_candidate_keyword_phrases = []
     for phrase in possible_candidate_phrases:
-        if possible_candidate_phrases.count(phrase) > 1:
-            if tuple(phrase.split()) not in new_candidate_keyword_phrases:
-                new_candidate_keyword_phrases.append(tuple(phrase.split()))
+        if possible_candidate_phrases.count(phrase) > 1 and \
+                tuple(phrase.split()) not in new_candidate_keyword_phrases:
+            new_candidate_keyword_phrases.append(tuple(phrase.split()))
     return new_candidate_keyword_phrases
 
 
@@ -319,7 +316,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not isinstance(max_length, int) or not max_length > 0:
         return None
 
-    punctuation = ',;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'
+    punctuation = r',;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'
     for punct_mark in punctuation:
         text = text.replace(punct_mark, '')
     word_list = text.lower().split()
