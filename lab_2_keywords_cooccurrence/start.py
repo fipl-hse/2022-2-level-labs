@@ -92,7 +92,7 @@ if __name__ == "__main__":
     POLISH_STOPS = ALL_STOPS['pl']
     POLISH_FILE = ASSETS_PATH / 'polish.txt'
     POLISH_TEXT = read_target_text(POLISH_FILE)
-
+    print('Process for a polish text: ')
     if POLISH_TEXT:
         EXTRACTED_PHRASES_POLISH = extract_phrases(POLISH_TEXT)
 

@@ -285,7 +285,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             first_phr = ' '.join(one_phrase[0])
             second_phr = ' '.join(one_phrase[1])
             if first_phr in sentences and second_phr in sentences:
-                result_list.extend(re.findall(r'{}\s[а-я]+\s{}'.format(first_phr, second_phr), sentences))
+                result_list.extend(re.findall(r'{}\s\w+\s{}'.format(first_phr, second_phr), sentences))
     freq_dict = {}
     words_list = []
     for one_phrase in result_list:
