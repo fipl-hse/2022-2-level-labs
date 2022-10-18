@@ -218,23 +218,23 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         phrases_lower = [phrase.lower() for phrase in phrases]
         key_phrases_with_stop_words = []
         for phrase in candidate_keyword_phrases:
-            for i, j in enumerate(list_of_phrases):
-                if phrase[-1] in list_of_phrases[i]:
-                    phrase_index1 = list_of_phrases[i].index(phrase[-1])
+            for idx, wrd in enumerate(list_of_phrases):
+                if phrase[-1] in list_of_phrases[idx]:
+                    phrase_index1 = list_of_phrases[idx].index(phrase[-1])
                     words_lst = []
-                    for cccc in j[phrase_index1 + 2:]:
-                        words_lst.append(cccc)
+                    for phrs in wrd[phrase_index1 + 2:]:
+                        words_lst.append(phrs)
                         twords_lst = tuple(words_lst)
                         if twords_lst in candidate_keyword_phrases:
-                            u = ' '.join(list(phrase))
-                            o = ' '.join(words_lst)
-                            pair_of_phrases = re.findall(u+r" \w+ "+o, ' '.join(phrases_lower))
+                            left_phrase = ' '.join(list(phrase))
+                            right_phrase = ' '.join(words_lst)
+                            pair_of_phrases = re.findall(left_phrase + r" \w+ " + right_phrase, ' '.join(phrases_lower))
                             pair_of_phrases_ext = []
-                            for i, c in enumerate(pair_of_phrases):
-                                if i == 0:
+                            for index1, phrase1 in enumerate(pair_of_phrases):
+                                if index1 == 0:
                                     pair_of_phrases_ext.append(c)
                                 else:
-                                    if c == pair_of_phrases_ext[i-1]:
+                                    if phrase1 == pair_of_phrases_ext[i-1]:
                                         pair_of_phrases_ext.append(c)
                             count_pairs = len(pair_of_phrases_ext)
                             if count_pairs >= 2:
@@ -259,20 +259,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    #     return None
-    # for elem in candidate_keyword_phrases:
-    #     if not isinstance(elem, tuple):
-    #         return None
-    #     for wrd in elem:
-    #         if not isinstance(wrd, str):
-    #             return None
-    # for key_1, value_2 in word_scores.items():
-    #     if not (isinstance(key_1, str) and (isinstance(value_2, float) or isinstance(value_2, int))):
-    #         return None
-    # for element2 in stop_words:
-    #     if not isinstance(element2, str):
-    #         return None
-    if check_key_phrase(candidate_keyword_phrases) and check_dict(word_scores, str, Union[float,int], False)\
+    if check_key_phrase(candidate_keyword_phrases) and check_dict(word_scores,
+            str, Union[float, int], False)\
             and check_list(stop_words, str, False):
         set_of_candidates = set(candidate_keyword_phrases)
         phrases_scores = {phrase: 0.0 for phrase in set_of_candidates}
@@ -283,11 +271,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
                 else:
                     continue
         return phrases_scores
-print(calculate_cumulative_score_for_candidates_with_stop_words([('времена', 'советского', 'союза', 'исследование', 'космоса'),
-                                 ('одной',), ('важнейших', 'задач'), ('времена', 'союза', 'прошли'),
-                                 ('одной',), ('важнейших', 'задач'),
-                                 ('одной', 'из', 'важнейших', 'задач')],{'времена': 4.0, 'советского': 5.0, 'союза': 4.0, 'исследование': 5.0,
-                   'космоса': 5.0, 'одной': 1.0, 'важнейших': 2.0, 'задач': 2.0, 'прошли': 3.0, 'из': 1}, ['из']))
+    return None
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
