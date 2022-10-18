@@ -138,6 +138,13 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
+    word_score_dict = {}
+    for key, value in word_degrees.items():
+        for key1, value1 in word_frequencies.items():
+            if key == key1:
+                word_score = int(value)/int(value1)
+        word_score_dict[key] = word_score
+    return word_score_dict
     pass
 
 
