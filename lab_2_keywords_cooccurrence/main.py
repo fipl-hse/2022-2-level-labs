@@ -46,12 +46,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for separator in separators:
         text = text.replace(separator, '.')
     split_text = text.split('.')
-    new_split_text = []
-    for phrase in split_text:
-        phrase = phrase.strip()
-        if phrase:
-            new_split_text.append(phrase)
-    return new_split_text
+    return [phrase.strip() for phrase in split_text if phrase]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -74,7 +69,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 temp_candidate_phrase.append(word)
             else:
                 candidate_phrases.append(temp_candidate_phrase)
-                temp_candidate_phrase = []
+                temp_candidate_phrase.clear()
         candidate_phrases.append(temp_candidate_phrase)
     return [tuple(candidate_phrase) for candidate_phrase in candidate_phrases if candidate_phrase]
 
