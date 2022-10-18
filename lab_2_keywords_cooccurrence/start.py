@@ -76,7 +76,7 @@ if __name__ == "__main__":
             top_list = get_top_n(keyword_phrases_with_scores, 2, 3)
             print(top_list)
 
-        if candidate_keyword_phrases:
+        if candidate_keyword_phrases and phrases:
             candidate_kw_phrases_w_adjoining = \
                 extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
 
