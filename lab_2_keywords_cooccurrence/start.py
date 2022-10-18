@@ -63,7 +63,9 @@ if __name__ == "__main__":
     if cum_score:
         top_list = get_top_n(cum_score, 10, 3)
     if candidate_keyword_phrases:
-        RESULT = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, word_scores, stop_words)
-        print(RESULT)
+        ajoin_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
+    if ajoin_phrases:
+        RESULT = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
+    print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'
