@@ -36,13 +36,13 @@ def check_list(user_input: Any, elements_required_type: type) -> bool:
     return True
 
 
-def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type: type = None) -> bool:
+def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type: type = 0) -> bool:
     """
     Checks if the input is a non-empty dictionary with required keys and values
     :param user_input: An input, which is checked
     :param keys_type: The type of dictionary's keys
     :param values_type: The type of dictionary's values
-    :param values_sec_type: by default=None. Optional parameter, takes a second value type if it's required
+    :param values_sec_type: by default=0. Optional parameter, takes a second value type if it's required
     :return: True if the input is correct and keys and values are as required
     """
     if not user_input or not isinstance(user_input, dict):
@@ -208,7 +208,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     cumul_score_dict = {}
     for one_phrase in candidate_keyword_phrases:
-        metric = 0
+        metric = 0.0
         for words in one_phrase:
             if word_scores.get(words, 0) == 0:
                 return None
@@ -239,9 +239,9 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for key, val in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
             correct_len[key] = val
-    correct_len = sorted(correct_len.keys(), key=lambda keys: correct_len[keys], reverse=True)[:top_n]
+    sorted_dictionary = sorted(correct_len.keys(), key=lambda keys: correct_len[keys], reverse=True)[:top_n]
     top_phr = []
-    for i in correct_len:
+    for i in sorted_dictionary:
         top_phr.append(' '.join(i))
     return top_phr
 
@@ -277,14 +277,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if val > 1:
             neighbours.append(list(key))
     all_words = []
-    for one_phrase in phrases:
-        all_words.append(one_phrase.lower())
+    for each_phrase in phrases:
+        all_words.append(each_phrase.lower())
     result_list = []
-    for one_phrase in neighbours:
+    for each_phrase in neighbours:
         for sentences in all_words:
             for idx in range(1):
-                first_phr = ' '.join(one_phrase[idx])
-                second_phr = ' '.join(one_phrase[idx + 1])
+                first_phr = ' '.join(each_phrase[idx])
+                second_phr = ' '.join(each_phrase[idx+1])
                 if first_phr in sentences and second_phr in sentences:
                     result_list.extend(re.findall(r'{}\s\w+\s{}'.format(first_phr, second_phr), sentences))
     freq_dict = {}
