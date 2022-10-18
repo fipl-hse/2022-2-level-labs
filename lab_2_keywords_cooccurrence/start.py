@@ -6,6 +6,7 @@ from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (
     extract_phrases, extract_candidate_keyword_phrases)
 
+
 def read_target_text(file_path: Path) -> str:
     """
     Utility functions that reads the text content from the file

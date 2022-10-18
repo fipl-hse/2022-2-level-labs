@@ -53,6 +53,7 @@ def multiply_string(input_string: str, how_many: int) -> str:
     display the given string the number of times given in the `how_many`.
     """
     # student realisation goes here
+    print(input_string * how_many)
 
 
 # Function calls with expected result:
@@ -68,6 +69,7 @@ def front_times(input_string: str, how_many: int) -> str:
     Given the string, take its three leading characters and display them that many times as in `how_many`.
     """
     # student realisation goes here
+    print(input_string[:3]*how_many)
 
 
 # Function calls with expected result:
@@ -85,6 +87,7 @@ def extra_end(input_string: str) -> str:
     Given the string, take its two last characters and display them three times.
     """
     # student realisation goes here
+    print(input_string[-2:]*3)
 
 
 # Function calls with expected result:
@@ -100,6 +103,7 @@ def make_abba(first_string: str, second_string: str) -> str:
     Given two strings, concatenate them as a reflection.
     """
     # student realisation goes here
+    print(first_string+second_string+second_string[::-1]+first_string[::-1])
 
 
 # make_abba('Hi', 'Bye') → 'HiByeByeHi'
@@ -110,6 +114,14 @@ def make_abba(first_string: str, second_string: str) -> str:
 
 # Task 5
 def reverse_word(sentence: str) -> str:
+    a=sentence.split()
+    for el in a:
+        if el[4] is not IndexError:
+            el[::-1]
+
+
+
+
     """
     Write a function that takes in a string of one or more words,
     and returns the same string, but with all five or more letter words reversed.
@@ -119,7 +131,7 @@ def reverse_word(sentence: str) -> str:
     """
     pass
 
-
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAA
 # reverse_word("Hey fellow warriors") == "Hey wollef sroirraw"
 #
 # reverse_word("This is a test") == "This is a test"
@@ -129,6 +141,7 @@ def reverse_word(sentence: str) -> str:
 
 # Task 6
 def generate_hashtag(input_string: str) -> str:
+    a = input_string.capitalize()
     """
     The marketing team is spending way too much time typing in hashtags.
     Let's help them with our own Hashtag Generator!
@@ -145,7 +158,15 @@ def generate_hashtag(input_string: str) -> str:
     ""                                        =>  false
     """
     pass
-
+AAAAAAAAAAAAAAAAAAAAAAAAAAA
+# first_string="heloo"
+# second_string="pocket thaks freek"
+# a = second_string.split()
+# print(a)
+# for el in a:
+#     wer=el.capitalize()
+#     n='/'.join(wer)
+#     print(n)
 
 # Task 7:
 def combo_string(first_string: str, second_string: str) -> str:
@@ -153,6 +174,10 @@ def combo_string(first_string: str, second_string: str) -> str:
     Given two strings, concatenate like the following: shorter+longer+shorter
     """
     # student realisation goes here
+    if len(first_string)>len(second_string):
+        print(second_string+first_string+second_string)
+    else:
+        print(first_string+second_string+first_string)
 
 
 # combo_string('Hello', 'hi') → 'hiHellohi'
@@ -169,6 +194,8 @@ def string_splosion(input_string: str) -> str:
     Given the string, format it like in the example.
     """
     # student realisation goes here
+    for el in input_string:
+        print(el)
 
 
 # Function calls with expected result:
