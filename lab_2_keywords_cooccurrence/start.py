@@ -49,7 +49,6 @@ if __name__ == "__main__":
 
     for text in corpus:
         cumulative_score = calculate_cumulative_score(corpus[text], stop_words)
-        print(cumulative_score)
         if cumulative_score:
             print(get_top_n(cumulative_score, 5, 5))
 
