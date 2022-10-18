@@ -14,7 +14,7 @@ def check_list(user_input: Any) -> bool:
     Checks weather object is list
     that contains objects of certain type
     """
-    if not isinstance(user_input, list) and not user_input:
+    if not (isinstance(user_input, list) and user_input):
         return False
     for element in user_input:
         if not element:
@@ -74,6 +74,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     return tuple_possible_key_phrases
 
 
+wrong_inputs = [4, 4.0, False, {'dict': 0}, 'string']
+stop = ['s']
+print(extract_candidate_keyword_phrases(['hi'], []))
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
