@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 import re
 import json
-from copy import deepcopy
 from math import floor
 
 KeyPhrase = tuple[str, ...]
@@ -113,14 +112,13 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     """
     if not check_list(phrases, str) or not check_list(stop_words, str):
         return None
-    lowed_phrases = []  # put lower phrases
+    lowed_phrases = []
     for idx, phrs in enumerate(phrases):
-        lowed_phrases.append(phrs.lower())
-        lowed_phrases[idx] = lowed_phrases[idx].split()
+        lowed_phrases.append(phrs.lower().split())
     key_candidates = []
-    for one_phrase in lowed_phrases:  # going through each phrase
-        future_tuple = []  # here will be materials for a tuple
-        for words in one_phrase:  # going through each word
+    for one_phrase in lowed_phrases:
+        future_tuple = []
+        for words in one_phrase:
             if words not in stop_words:
                 future_tuple.append(words)
             elif future_tuple:
@@ -280,43 +278,21 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             neighbours.append(list(key))
     all_words = []
     for one_phrase in phrases:
-        all_words.append(one_phrase.lower().split())  # turning phrases into words
-    result_list = deepcopy(neighbours)
-    for idx_neighb, one_phrase in enumerate(neighbours):  # I don't know how to correct this yet
-        for words in range(len(one_phrase)-1):
-            for sentences in all_words:
-                first_phr = ' '.join(one_phrase[words])
-                second_phr = ' '.join(one_phrase[words+1])
-                str_sentence = ' '.join(sentences)
-                if first_phr in str_sentence and second_phr in str_sentence:
-                    counter_first = str_sentence.count(first_phr)
-                    counter_sec = str_sentence.count(second_phr)
-                    if counter_first == 1 and counter_sec == 1:
-                        stop_word = sentences.index(first_phr)+1  # index of stop_w
-                        if len(result_list[idx_neighb]) == 2:
-                            result_list[idx_neighb].insert(1, (sentences[stop_word],))
-                        else:
-                            another_word = one_phrase[:]
-                            another_word.insert(1, (sentences[stop_word],))
-                            result_list.append(another_word)
-                    elif counter_first == counter_sec and counter_first > 1:
-                        for idx_sent, one_sent in enumerate(sentences):
-                            if one_sent == first_phr:
-                                stop_word = sentences.index(first_phr, idx_sent)+1  # index of stop_w
-                                if len(result_list[idx_neighb]) == 2:
-                                    result_list[idx_neighb].insert(1, (sentences[stop_word],))
-                                else:
-                                    another_word = one_phrase[:]
-                                    another_word.insert(1, (sentences[stop_word],))
-                                    result_list.append(another_word)
+        all_words.append(one_phrase.lower())
+    result_list = []
+    for one_phrase in neighbours:
+        for sentences in all_words:
+            first_phr = ' '.join(one_phrase[0])
+            second_phr = ' '.join(one_phrase[1])
+            if first_phr in sentences and second_phr in sentences:
+                result_list.extend(re.findall(r'{}\s[а-я]+\s{}'.format(first_phr, second_phr), sentences))
     freq_dict = {}
+    words_list = []
     for one_phrase in result_list:
-        list_for_str = []
-        for words in one_phrase:
-            list_for_str.append(' '.join(words))
-        key_phrase = tuple((' '.join(list_for_str)).split())
-        freq_dict[key_phrase] = freq_dict.get(key_phrase, 0) + 1
-    return [j for j, i in freq_dict.items() if i > 1]
+        words_list.append(tuple(one_phrase.split()))
+    for phr_tuple in words_list:
+        freq_dict[phr_tuple] = freq_dict.get(phr_tuple, 0) + 1
+    return [key for key, value in freq_dict.items() if value > 1]
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -343,7 +319,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         for words in one_phrase:
             if words in stop_words:
                 metric += 0
-            elif word_scores.get(words, 0) != 0:
+            elif word_scores.get(words, 0):
                 metric += word_scores[words]
             else:
                 return None
