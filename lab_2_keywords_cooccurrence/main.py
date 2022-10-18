@@ -65,7 +65,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     """
     if not (check_types(phrases, list) and check_types(stop_words, list)):
         return None
-    tuples_candidate_phrases = []
     candidate_phrases = []
     for phrase in phrases:
         split_phrase = phrase.lower().split()
@@ -77,11 +76,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 candidate_phrases.append(temp_candidate_phrase)
                 temp_candidate_phrase = []
         candidate_phrases.append(temp_candidate_phrase)
-        tuples_candidate_phrases = []
-        for candidate_phrase in candidate_phrases:
-            if candidate_phrase:
-                tuples_candidate_phrases.append(tuple(candidate_phrase))
-    return tuples_candidate_phrases
+    return [tuple(candidate_phrase) for candidate_phrase in candidate_phrases if candidate_phrase]
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
