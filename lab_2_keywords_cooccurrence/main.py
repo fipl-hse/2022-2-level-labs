@@ -44,7 +44,6 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     return keyword_phrases_final
 
 
-
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
     """
     Creates a list of candidate keyword phrases by splitting the given phrases by the stop words
@@ -69,8 +68,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         possible_key_phrases.append(stringing_phrase)
     tuple_possible_key_phrases = []
     for i in possible_key_phrases:
-        phrase_tuple = tuple(i)
-        tuple_possible_key_phrases.append(phrase_tuple)
+        if i:
+            phrase_tuple = tuple(i)
+            tuple_possible_key_phrases.append(phrase_tuple)
     return tuple_possible_key_phrases
 
 
