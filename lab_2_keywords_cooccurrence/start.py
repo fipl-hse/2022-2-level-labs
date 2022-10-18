@@ -64,6 +64,6 @@ if __name__ == "__main__":
         top_list = get_top_n(cum_score, 10, 3)
     if candidate_keyword_phrases:
         RESULT = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
-    print(RESULT)
+        print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'
