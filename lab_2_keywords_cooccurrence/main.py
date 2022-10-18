@@ -89,6 +89,14 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return None
+        for word in item:
+            if not isinstance(word, str):
+                return None
+    if not candidate_keyword_phrases:
+        return None
     frequencies_dict = {}
     word_list = []
     for tpl in candidate_keyword_phrases:
@@ -115,6 +123,14 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return None
+        for word in item:
+            if not isinstance(word, str):
+                return None
+    if not candidate_keyword_phrases:
+        return None
     word_degree_dict = {}
     word_degree = 0
     for word in content_words:
@@ -138,11 +154,23 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
+    for key, value in word_degrees.items():
+        if not (isinstance(key, str) and isinstance(value, int)):
+            return None
+    if not word_degrees:
+        return None
+    for key, value in word_frequencies.items():
+        if not (isinstance(key, str) and isinstance(value, int)):
+            return None
+    if not word_frequencies:
+        return None
+
     word_score_dict = {}
     for key, value in word_degrees.items():
         for key1, value1 in word_frequencies.items():
             if key == key1:
                 word_score = int(value)/int(value1)
+
         word_score_dict[key] = word_score
     return word_score_dict
     pass
@@ -160,11 +188,28 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
+    if not candidate_keyword_phrases:
+        return None
+    if not word_scores:
+        return None
+    for key, value in word_scores.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
+            return None
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return None
+        for word in item:
+            if not isinstance(word, str):
+                return None
     cumulative_score_for_candidates_dict = {}
     cumulative_score = 0
     for phrase in candidate_keyword_phrases:
         for word in phrase:
-            cumulative_score += int(word_scores[word])
+            if word in word_scores.keys():
+                cumulative_score += int(word_scores[word])
+            else:
+                cumulative_score_for_candidates_dict[phrase] = None
+                break
         cumulative_score_for_candidates_dict[phrase] = cumulative_score
         cumulative_score = 0
     return cumulative_score_for_candidates_dict
@@ -184,13 +229,29 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
+    if not keyword_phrases_with_scores:
+        return None
+    if not isinstance(keyword_phrases_with_scores, dict):
+        return None
+    for key, value in keyword_phrases_with_scores.items():
+        if not isinstance(key, str) or not isinstance(value, float):
+            return None
+    if not isinstance(top_n, int):
+        return None
+    if not isinstance(max_length, int):
+        return None
     keyword_phrases_with_scores_limited = {}
     for phrase, score in keyword_phrases_with_scores.items():
         if len(phrase) <= max_length:
             phrase = ' '.join(phrase)
             keyword_phrases_with_scores_limited[phrase] = score
+    if not keyword_phrases_with_scores_limited:
+        return None
 
-    sorted_values = sorted(keyword_phrases_with_scores_limited.values(), reverse=True)  # Sort the values
+    if top_n > len(keyword_phrases_with_scores_limited.values()):
+        sorted_values = sorted(keyword_phrases_with_scores_limited.values(), reverse=True)
+    else:
+        sorted_values = sorted(keyword_phrases_with_scores_limited.values(), reverse=True)[:top_n]
     sorted_dict = {}
 
     for item in sorted_values:
