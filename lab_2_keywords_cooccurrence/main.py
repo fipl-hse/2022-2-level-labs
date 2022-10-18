@@ -7,6 +7,7 @@ from typing import Optional, Sequence, Mapping
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+import re
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -19,14 +20,14 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str):
         return None
-    punctuation = '''.,!?;'''
-    my_text = ()
-    for char in text.replace('\n', ' '):
-        if char not in punctuation:
-            my_text += char
-    return my_text.split()
-    
-
+    only_phrases = []
+    text = "–~—]Во ;:¡!¿?времена]( ) ⟨⟩}{ &]«»Советского Союза"
+    punct = '''.,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'''
+    phr_and_punct = re.findall(r'\w+|[^\s\w]+', text.replace('\n', ' '))
+    for i in phr_and_punct:
+        if i[0][0] not in punct:
+            only_phrases.append(i)
+    return(only_phrases)
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
     """
