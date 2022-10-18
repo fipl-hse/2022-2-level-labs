@@ -3,10 +3,12 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from itertools import pairwise
-from lab_1_keywords_tfidf.main import check_list, check_dict
 from pathlib import Path
 import re
 from typing import Optional, Sequence, Mapping, Any
+from lab_1_keywords_tfidf.main import check_list, check_dict
+
+
 
 
 KeyPhrase = tuple[str, ...]
@@ -171,8 +173,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            else:
-                cumulative_score += word_scores[word]
+            cumulative_score += word_scores[word]
         cumulative_score_dict[phrase] = cumulative_score
     return cumulative_score_dict
 
@@ -237,7 +238,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for item in list_of_pairs:
         frequencies[item] = frequencies.get(item, 0) + 1
     stop_words_list = []
-    for key_word in frequencies.keys():
+    for key_word in frequencies:
         if frequencies[key_word] > 2:
             continue
         for phrase in phrases:
