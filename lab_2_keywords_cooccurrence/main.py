@@ -137,12 +137,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     keyword_phrases_with_scores = {}
     for phrase in candidate_keyword_phrases:
-        score = 0
+        score = 0.0
         for word in phrase:
             if word not in word_scores.keys():
                 return None
-            add_to_ws = word_scores[word]
-            score += add_to_ws
+            score += word_scores[word]
         keyword_phrases_with_scores[phrase] = score
     return keyword_phrases_with_scores
 
