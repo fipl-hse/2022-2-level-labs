@@ -11,7 +11,7 @@ from lab_1_keywords_tfidf.main import (check_list, check_positive_int)
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_dict(user_input: Any, key_type: type, value_type: type):
+def check_dict(user_input: Any, key_type: type, value_type: type) -> bool:
     """
     Checks if the dict is not empty and
     if the keys and values are of a certain type
