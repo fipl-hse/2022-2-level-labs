@@ -9,7 +9,9 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n)
+                                              get_top_n,
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -50,6 +52,8 @@ if __name__ == "__main__":
     DEGREES = None
     SCORES = None
     CUMULATIVE_SCORE_FOR_CANDIDATES = None
+    ADJOINING = None
+    CUMULATIVE_SCORE_STOP_WORDS = None
     EXTRACTION = extract_phrases(corpus['gagarin'])
 
     if EXTRACTION:
@@ -68,8 +72,14 @@ if __name__ == "__main__":
         CUMULATIVE_SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_PHRASES, SCORES)
 
     if CUMULATIVE_SCORE_FOR_CANDIDATES:
-        print(get_top_n(CUMULATIVE_SCORE_FOR_CANDIDATES, 10, 2))
+        print(f'Top candidates by cumulative score: {get_top_n(CUMULATIVE_SCORE_FOR_CANDIDATES, 5, 2)}')
 
-    RESULT = CUMULATIVE_SCORE_FOR_CANDIDATES
+    if CANDIDATE_PHRASES and EXTRACTION:
+        ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
 
+    if ADJOINING:
+        CUMULATIVE_SCORE_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(ADJOINING, SCORES,
+                                                                                                stop_words)
+
+    RESULT = ADJOINING
     assert RESULT, 'Keywords are not extracted'
