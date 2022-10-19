@@ -73,7 +73,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             while '00 ' in new_list:
                 new_list.remove('00 ')
             final_list = [string.strip('00 ') for string in new_list]
-            tfinal_list = [tuple(phrase1.split()) for index1, phrase1 in enumerate(final_list)]
+            tfinal_list = [tuple(phrase1.split()) for phrase1 in final_list]
         return tfinal_list
     return None
 
