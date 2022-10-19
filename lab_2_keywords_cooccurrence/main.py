@@ -273,7 +273,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         for i in candidate:
             if i not in stop_words:
                 score += word_scores[i]
-        advanced_cum_score[i] = score
+            advanced_cum_score[i] = score
     return advanced_cum_score
 
 
