@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Mapping, Sequence
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores, \
     calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
@@ -74,7 +74,7 @@ if __name__ == "__main__":
                 candidate_keyphrases_adjoining, word_scores, stopwords)
 
             if cumulative_score_with_stopwords:
-                return cumulative_score_with_stopwords
+                return dict(cumulative_score_with_stopwords)
         return None
 
     keyphrases(corpus['gagarin'], stop_words)
@@ -84,11 +84,11 @@ if __name__ == "__main__":
 
     polish_stopwords = load_stop_words(ASSETS_PATH/'stopwords.json')
     if polish_stopwords:
-        print(keyphrases(read_target_text(ASSETS_PATH/'polish.txt'), polish_stopwords['pl']))
+        print(keyphrases(read_target_text(ASSETS_PATH/'polish.txt'), list(polish_stopwords['pl'])))
 
     unknown_stopwords = generate_stop_words(read_target_text(ASSETS_PATH/'unknown.txt'), 5)
     if unknown_stopwords:
-        unknown_keyphrases = keyphrases(read_target_text(ASSETS_PATH/'unknown.txt'), unknown_stopwords)
+        unknown_keyphrases = keyphrases(read_target_text(ASSETS_PATH/'unknown.txt'), list(unknown_stopwords))
         print(unknown_keyphrases)
 
     RESULT = unknown_keyphrases
