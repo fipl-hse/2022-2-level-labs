@@ -219,9 +219,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if value < 2:
             continue
         tokens = ' '.join(list(key)).split()
-        for idx, key in enumerate(tokens_with_stopword):
+        for idx, k in enumerate(tokens_with_stopword):
             list_stopwords = []
-            if key in tokens:
+            if k in tokens:
                 list_stopwords.append(tokens_with_stopword[idx:idx + len(tokens) + 1])
             if not list_stopwords:
                 continue
