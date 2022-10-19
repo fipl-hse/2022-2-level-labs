@@ -5,7 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 
-from typing import Any, Union
+from typing import Any
 import re
 from lab_1_keywords_tfidf.main import check_list
 
