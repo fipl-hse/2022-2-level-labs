@@ -29,7 +29,7 @@ def check_dict(user_input: Any) -> bool:
     """
     if not (isinstance(user_input, dict) and user_input):
         return False
-    for k, v in user_input:
+    for k, v in user_input.items():
         if not (k and v):
             return False
     return True
@@ -101,7 +101,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     for phrase in candidate_keyword_phrases:
         for word in phrase:
             tokens.append(word)
-    freq_dict = {tokens: tokens.count(token) for token in set(tokens)}
+    freq_dict = {token: tokens.count(token) for token in set(tokens)}
     return freq_dict
 
 
@@ -126,9 +126,6 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
                 word_degrees_dict[word] += len(phrase)
             elif content_words:
                 word_degrees_dict[word] = len(phrase)
-    # for content_word in content_words:
-    #     if content_word not in word_degrees_dict.keys():
-    #         word_degrees_dict[content_word] = 0
     return word_degrees_dict
 
 
