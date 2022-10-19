@@ -347,10 +347,10 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
             split_phrase = phrase.split()
             for words in split_phrase:
                 extracted_words.append(words.lower())
-        freq_dict = {}
+        freq_dict: Dict[str, int] = {}
         for i in extracted_words:
             freq_dict[i] = freq_dict.get(i, 0) + 1
-        correct_length_dict = {}
+        correct_length_dict: Dict[str, int] = {}
         for keys, values in freq_dict.items():
             if len(keys) <= max_length:
                 correct_length_dict[keys] = values
