@@ -284,7 +284,7 @@ def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = N
     """
     candidates = None
     extracted_phrases = extract_phrases(target_text)
-    if stop_words is None and max_length:
+    if not stop_words and max_length:
         stop_words = generate_stop_words(target_text, max_length)
     if extracted_phrases and stop_words:
         candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
@@ -298,21 +298,36 @@ def calculate_cumulative_score(target_text: str, stop_words: Optional[Sequence] 
     """
     Using previous functions, calculates cumulative score of tokens in user's text
     """
-    candidates, content_words, word_degrees, word_scores, candidates_with_stop_words = [None for notdef in range(5)]
+    candidates, content_words, word_degrees, word_scores, candidates_with_stop_words,\
+        cumulative_score, cumulative_score_stop_words = [None for notdef in range(7)]
     extracted_phrases = extract_phrases(target_text)
-    if stop_words is None and max_length:
+
+    if not stop_words and max_length:
         stop_words = generate_stop_words(target_text, max_length)
+
     if extracted_phrases and stop_words:
         candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+
     if candidates:
         content_words = calculate_frequencies_for_content_words(candidates)
+
     if content_words and candidates:
         word_degrees = calculate_word_degrees(candidates, list(content_words.keys()))
+
     if word_degrees and content_words:
         word_scores = calculate_word_scores(word_degrees, content_words)
+
+    if candidates and word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates(candidates, word_scores)
+
     if candidates and extracted_phrases:
         candidates_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
+
     if candidates_with_stop_words and word_scores and stop_words:
-        return calculate_cumulative_score_for_candidates_with_stop_words(candidates_with_stop_words,
-                                                                         word_scores, stop_words)
+        cumulative_score_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidates_with_stop_words, word_scores, stop_words)
+
+    if cumulative_score_stop_words and cumulative_score:
+        cumulative_score |= cumulative_score_stop_words
+        return cumulative_score
     return None

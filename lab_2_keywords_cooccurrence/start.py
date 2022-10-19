@@ -62,5 +62,5 @@ if __name__ == "__main__":
             print(extract_keyword_phrases(unknown_text))
             print(unknown_text_cumulative_score)
 
-    RESULT = 'Hello'
+    RESULT = 'Esperanto'
     assert RESULT, 'Keywords are not extracted'
