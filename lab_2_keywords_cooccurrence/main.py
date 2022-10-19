@@ -8,9 +8,6 @@ from typing import Optional, Sequence, Mapping
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-text = "Во времена Советского Союза: исследование космоса было одной из важнейших задач", "И именно из СССР была отправлена ракета, совершившая первый полет в космос. Произошло это 12 апреля 1961 года."
-stop_words = ["во", "было"]
-
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
