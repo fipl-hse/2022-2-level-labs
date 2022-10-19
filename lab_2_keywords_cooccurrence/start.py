@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -19,6 +20,7 @@ if __name__ == "__main__":
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
+    extract_phrases(ASSETS_PATH)
 
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
@@ -37,7 +39,11 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-
-    RESULT = None
-
+    for key in corpus:
+        if corpus[key]:
+            PHRASES = extract_phrases(corpus[key])
+            if PHRASES and stop_words:
+                CANDIDATES = extract_candidate_keyword_phrases(PHRASES, stop_words)
+                RESULT = CANDIDATES
+                print(RESULT)
     assert RESULT, 'Keywords are not extracted'

@@ -8,6 +8,9 @@ from typing import Optional, Sequence, Mapping
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
+text = "Во времена Советского Союза: исследование космоса было одной из важнейших задач", "И именно из СССР была отправлена ракета, совершившая первый полет в космос. Произошло это 12 апреля 1961 года."
+stop_words = ["во", "было"]
+
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
@@ -17,7 +20,22 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if text == "" or not isinstance(text, str):
+        return None
+    signs = """,;:¡!¿?…⋯‹›«»\\\\"“”\\[\\]()⟨⟩}{&]|[-–~—]"""
+    clean_text = ""
+    for word in text:
+        if word not in signs:
+            clean_text += word
+        else:
+            clean_text += "."
+    text_list = clean_text.split(".")
+    phrases = []
+    for phrase in text_list:
+        phrase = phrase.strip()
+        if phrase:
+            phrases.append(phrase)
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +47,25 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not phrases or not stop_words:
+        return None
+    if not isinstance(phrases, list) or not isinstance(stop_words, list):
+        return None
+    for element in phrases:
+        if not isinstance(element, str):
+            return None
+    final_text = []
+    for phrase in phrases:
+        phrase = phrase.lower().split()
+        for number, word in enumerate(phrase):
+            if word in stop_words:
+                phrase[number] = "."
+        clean_text = extract_phrases(" ".join(phrase))
+        for phrase in clean_text:
+            final_phrase = phrase.split()
+            if final_phrase:
+                final_text.append(tuple(final_phrase))
+    return final_text
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
