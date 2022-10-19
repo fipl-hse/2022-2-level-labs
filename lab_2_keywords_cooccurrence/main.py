@@ -108,13 +108,10 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases and
-            check_content(candidate_keyword_phrases, tuple)):
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases):
         return None
     word_freqs = {}
     for phrase in candidate_keyword_phrases:
-        if not check_content(phrase, str):
-            return None
         for word in phrase:
             if word not in word_freqs:
                 word_freqs[word] = 1
@@ -188,8 +185,6 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     phrase_scores = {}
     for el in candidate_keyword_phrases:
-        if not (isinstance(el, tuple) and el and check_content(el, str)):
-            return None
         phrase_scores[el] = 0
         for word in el:
             if word not in word_scores:
