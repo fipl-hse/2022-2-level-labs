@@ -76,7 +76,7 @@ if __name__ == "__main__":
         cum_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
 
     if cum_score:
-        top_list = get_top_n(cum_score, 10, 3)
+        top_list = get_top_n(cum_score, 7, 3)
         print(top_list)
 
     if candidate_keyword_phrases and phrases:
@@ -86,7 +86,7 @@ if __name__ == "__main__":
         phrases_and_stops = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
 
     if phrases_and_stops:
-        top_new = get_top_n(phrases_and_stops, 10, 3)
+        top_new = get_top_n(phrases_and_stops, 5, 3)
         print(top_new)
 
     RESULT = top_new
