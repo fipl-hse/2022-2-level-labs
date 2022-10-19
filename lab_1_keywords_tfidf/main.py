@@ -13,7 +13,7 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     """
     if not isinstance(user_input, list):
         return False
-    if not user_input and can_be_empty is False:
+    if not user_input and not can_be_empty:
         return False
     for element in user_input:
         if not isinstance(element, elements_type):
@@ -21,14 +21,14 @@ def check_list(user_input: Any, elements_type: type, can_be_empty: bool) -> bool
     return True
 
 
-def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
     """
     Checks weather object is dictionary
     hat has keys and values of certain type
     """
     if not isinstance(user_input, dict):
         return False
-    if not user_input and can_be_empty is False:
+    if not user_input and not can_be_empty:
         return False
     for key, value in user_input.items():
         if not (isinstance(key, key_type) and isinstance(value, value_type)):
@@ -118,7 +118,7 @@ def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
         return None
     if tokens:
         my_dict = {token: tokens.count(token) for token in tokens}
-    return my_dict
+        return my_dict
 
 
 def get_top_n(frequencies: dict[str, Union[int, float]], top: int) -> Optional[list[str]]:
@@ -207,8 +207,8 @@ def calculate_expected_frequency(
         except_word_doc_freq = sum(doc_freqs.values()) - freq
         corpus_freq = corpus_freqs.get(word, 0)
         except_word_corpus_freq = sum(corpus_freqs.values()) - corpus_freq
-        dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) /\
-                                (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
+        dict_exp_freqs[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) / \
+                               (freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
     return dict_exp_freqs
 
 
@@ -253,8 +253,7 @@ def extract_significant_words(chi_values: dict[str, float], alpha: float) -> Opt
     In case of corrupt input arguments, None is returned
     """
     criterion = {0.05: 3.842, 0.01: 6.635, 0.001: 10.828}
-    if not (check_dict(chi_values, str, float, False) and check_float(alpha)\
-            and alpha in criterion.keys()):
+    if not (check_dict(chi_values, str, float, False) and check_float(alpha) and alpha in criterion.keys()):
         return None
     significant_words_dict = {}
     for word, chi_value in chi_values.items():
