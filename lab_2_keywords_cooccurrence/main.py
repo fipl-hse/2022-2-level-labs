@@ -253,8 +253,11 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not isinstance(keyword_phrases_with_scores, dict):
         return None
     for key, value in keyword_phrases_with_scores.items():
-        if not isinstance(key, str) or not isinstance(value, float):
+        if not isinstance(key, tuple) or not isinstance(value, int):
             return None
+        for item in key:
+            if not isinstance(item, str):
+                return None
     if not isinstance(top_n, int):
         return None
     if not isinstance(max_length, int):

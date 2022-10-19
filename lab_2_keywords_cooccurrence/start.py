@@ -43,12 +43,12 @@ if __name__ == "__main__":
 
     RESULT = None
     gagarin = corpus['gagarin']
-    top_n = 10
-    max_length = 4
+    top_n = 1000000
+    max_length = 3
     extracted_phrases = extract_phrases(gagarin)
     candidate_keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
     frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-    word_degrees = calculate_word_degrees(candidate_keyword_phrases, frequencies_for_content_words)
+    word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words.keys()))
     word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
     cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
     top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
