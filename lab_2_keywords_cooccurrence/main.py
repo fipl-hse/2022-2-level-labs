@@ -201,27 +201,53 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list)\
-        or not candidate_keyword_phrases or not phrases:
+    if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list) \
+            or not candidate_keyword_phrases or not phrases:
         return None
-    new_candidates = []
-    possible_candidates = []
-    new_candidates.append(pairwise(candidate_keyword_phrases))
-    no_duplicates = list(dict.fromkeys(new_candidates))
-    for i in new_candidates:
-        if i not in no_duplicates:
-            possible_candidates.append(i)
-    possible_candidates = list(dict.fromkeys(possible_candidates))
-    for i in phrases:
-        i = i.split()
-    phrases_with_ajoin = []
-    for i in phrases:
-        for candidate in possible_candidates:
-            phrase = r'(\b\w*\b)(?<= ' + candidate[0][-1] + ')(?= ' + candidate[-1][0] + ')'
-            stops = re.findall(phrase, i)
-            for i in stops:
-                phrases_with_ajoin += (*candidate[0], i, *candidate[1])
-    return phrases_with_ajoin
+
+    phrases_list = [' '.join(phrase) for phrase in candidate_keyword_phrases]
+
+    list_of_pairs = [tuple(phrases_list[i:i + 2]) for i in range(len(phrases_list) - 1)]
+
+    pairs_dict = {phrases_pair: list_of_pairs.count(phrases_pair) for phrases_pair in list_of_pairs}
+
+    phrases_tokenized = [i.lower().split(' ') for i in phrases]
+    phrases_tokenized = [item for i in phrases_tokenized for item in i if item]
+
+    new_keywords = []
+    for k, value in pairs_dict.items():
+        if value < 2:
+            continue
+        token_key = ' '.join(k)
+        tokenized_key = token_key.split()
+
+        for ind, word in enumerate(phrases_tokenized):
+            list_with_stopword = []
+            if word in tokenized_key:
+                needed_phrase = phrases_tokenized[ind:ind + (len(tokenized_key) + 1)]
+                needed_phrase2 = []
+                for i in needed_phrase:
+                    word_str = str(i)
+                    needed_phrase2.append(word_str)
+                list_with_stopword.append(needed_phrase2)
+
+            if not list_with_stopword:
+                continue
+            flat_list_with_stopword = [item for i in list_with_stopword for item in i if item]
+            if flat_list_with_stopword[0] == tokenized_key[0]:
+                tuple_with_stopword = tuple(flat_list_with_stopword)
+                new_keywords.append(tuple_with_stopword)
+
+    for i in new_keywords.copy():
+        if new_keywords.count(i) < 2:
+            new_keywords.remove(i)
+
+    new_keywords_final = []
+    for i in new_keywords:
+        if i not in new_keywords_final:
+            new_keywords_final.append(i)
+
+    return new_keywords_final
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
