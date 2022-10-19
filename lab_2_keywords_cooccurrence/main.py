@@ -205,13 +205,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if possible_pairs.get(pair, 0) > 1:
             appropriate_pairs.append([' '.join(element) for element in pair])
     phrases_with_stopwords = []
-    for pair in appropriate_pairs:
+    for element in appropriate_pairs:
         counter = 0
         for phrase in phrases:
-            if (pair[0] and pair[1]) in phrase:
+            if (element[0] and element[1]) in phrase:
                 counter += 1
                 if extract_phrases(phrase) == [phrase]:
-                    phrases_with_stopwords.extend(re.findall(rf'{pair[0]}\s[а-я]+\s{pair[1]}', phrase))
+                    phrases_with_stopwords.extend(re.findall(rf'{element[0]}\s[а-я]+\s{element[1]}', phrase))
         if counter == 0:
             return []
     new_phrases_with_sw = [phrase.split() for phrase in set(phrases_with_stopwords)]
