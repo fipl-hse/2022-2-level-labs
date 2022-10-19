@@ -191,34 +191,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(phrases, str, False):
-        return None
-
-    phrases_list = [' '.join(phrase) for phrase in candidate_keyword_phrases]
-    pairs_of_phrases = [tuple((phrases_list[index: index + 2])) for index in range(len(phrases_list))]
-    tokens_phrases = [phrase.lower().split(' ') for phrase in phrases]
-    tokens_phrases = [word for phrase in tokens_phrases for word in phrase]
-    pairs_freq_dict = {phrase: pairs_of_phrases.count(phrase) for phrase in pairs_of_phrases}
-
-    candidates_with_adjoining = []
-    for word, value in pairs_freq_dict.items():
-        if value < 2:
-            continue
-        joining_key = ' '.join(word)
-        tokens_keys = joining_key.split()
-        for ele, key in enumerate(tokens_phrases):
-            stop_words = []
-            if key in tokens_keys:
-                stop_words.append(tokens_phrases[ele:ele + len(tokens_keys) + 1])
-            if not stop_words:
-                continue
-            stop_words = [word for lst in stop_words for word in lst if word]
-            if tokens_keys[0] == stop_words[0]:
-                candidates_with_adjoining.append(tuple(stop_words))
-
-    for phrase in set(candidates_with_adjoining):
-        candidates_with_adjoining.remove(phrase)
-    return candidates_with_adjoining
+    pass
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -236,18 +209,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict) \
-            or not isinstance(stop_words, list):
-        return None
-    if not candidate_keyword_phrases or not word_scores or not stop_words:
-        return None
-    cumulative_score = {}
-    for phrase in candidate_keyword_phrases:
-        cumulative_score[phrase] = 0
-        for word in word_scores:
-            if word in phrase and word not in stop_words:
-                cumulative_score[phrase] += int(word_scores[word])
-    return cumulative_score
+    pass
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:

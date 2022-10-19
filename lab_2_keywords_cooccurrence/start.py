@@ -9,9 +9,7 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n,
-                                              extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words)
+                                              get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -74,12 +72,5 @@ if __name__ == "__main__":
     if CUMULATIVE_SCORE_FOR_CANDIDATES:
         print(f'Top candidates by cumulative score: {get_top_n(CUMULATIVE_SCORE_FOR_CANDIDATES, 5, 2)}')
 
-    if CANDIDATE_PHRASES and EXTRACTION:
-        WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
-
-    if WITH_ADJOINING:
-        CUMULATIVE_SCORE_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(WITH_ADJOINING, SCORES,
-                                                                                                stop_words)
-
-    RESULT = WITH_ADJOINING
+    RESULT = CUMULATIVE_SCORE_FOR_CANDIDATES
     assert RESULT, 'Keywords are not extracted'
