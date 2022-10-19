@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Union
 import json
 from itertools import pairwise
 from lab_1_keywords_tfidf.main import check_list, check_dict
@@ -225,7 +225,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     In case of corrupt input arguments, None is returned
     """
     if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(stop_words, str, False) \
-            or not check_dict(word_scores, str, int | float, False):
+            or not check_dict(word_scores, str, Union[int, float], False):
         return None
     result_dict = {}
     for item in candidate_keyword_phrases:
