@@ -3,7 +3,8 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Union
+from itertools import pairwise
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 KeyPhrase = tuple[str, ...]
@@ -195,8 +196,42 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(phrases, str, False):
+        return None
+    list_of_phrases = []
+    for phrase in candidate_keyword_phrases:
+        list_of_phrases.append(' '.join(phrase))
 
+    phrases_pairs = list(pairwise(list_of_phrases))
+
+    tokens_with_stopword = []
+    for phrase in phrases:
+        tokens_with_stopword.append(phrase.split(' '))
+    tokens_with_stopword = [word.lower() for phrase in tokens_with_stopword for word in phrase]
+
+    dict_tuples = {}
+    for phrase in phrases_pairs:
+        value = phrases_pairs.count(phrase)
+        dict_tuples[phrase] = value
+
+    prepared_adjoining_phrases = []
+    for key, value in dict_tuples.items():
+        if value < 2:
+            continue
+        tokens = ' '.join(list(key)).split()
+        for idx, key in enumerate(tokens_with_stopword):
+            list_stopwords = []
+            if key in tokens:
+                list_stopwords.append(tokens_with_stopword[idx:idx + len(tokens) + 1])
+            if not list_stopwords:
+                continue
+            list_stopwords = [key for lst in list_stopwords for key in lst if key]
+            if list_stopwords[0] == tokens[0]:
+                prepared_adjoining_phrases.append(tuple(list_stopwords))
+
+    for some_phrase in set(prepared_adjoining_phrases):
+        prepared_adjoining_phrases.remove(some_phrase)
+    return list(set(prepared_adjoining_phrases))
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -214,7 +249,16 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(stop_words, str, False) \
+            or not check_dict(word_scores, str, Union[int, float], False):
+        return None
+    cumulative_scores_new_phrases = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_scores_new_phrases[phrase] = 0
+        for one_word in phrase:
+            if one_word not in stop_words:
+                cumulative_scores_new_phrases[phrase] += int(word_scores[one_word])
+    return cumulative_scores_new_phrases
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:

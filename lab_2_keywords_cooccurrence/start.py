@@ -10,7 +10,8 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
                                               get_top_n,
-                                              extract_candidate_keyword_phrases_with_adjoining)
+                                              extract_candidate_keyword_phrases_with_adjoining,
+                                              calculate_cumulative_score_for_candidates_with_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -51,33 +52,32 @@ if __name__ == "__main__":
     DEGREES = None
     SCORES = None
     CUMULATIVE = None
+    ADJOINING = None
+    CUMULATIVE_SCORES = None
     EXTRACTION = extract_phrases(corpus['gagarin'])
-    print(EXTRACTION)
     if EXTRACTION:
         CANDIDATE_PHRASES = extract_candidate_keyword_phrases(EXTRACTION, stop_words)
-    print(CANDIDATE_PHRASES)
 
     if CANDIDATE_PHRASES:
         CALCULATE = calculate_frequencies_for_content_words(CANDIDATE_PHRASES)
-        print(CALCULATE)
 
     if CALCULATE:
         DEGREES = calculate_word_degrees(CANDIDATE_PHRASES, list(CALCULATE.keys()))
-        print(DEGREES)
 
     if DEGREES:
         SCORES = calculate_word_scores(DEGREES, CALCULATE)
-        print(SCORES)
 
     if SCORES:
         CUMULATIVE = calculate_cumulative_score_for_candidates(CANDIDATE_PHRASES, SCORES)
-        print(CUMULATIVE)
 
     if CUMULATIVE:
         print(get_top_n(CUMULATIVE, 6, 3))
         ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
-        print(ADJOINING)
 
-    RESULT = CUMULATIVE
+    if ADJOINING:
+        CUMULATIVE_SCORES = calculate_cumulative_score_for_candidates_with_stop_words(ADJOINING, SCORES,
+                                                                                      stop_words)
+
+    RESULT = CUMULATIVE_SCORES
 
     assert RESULT, 'Keywords are not extracted'
