@@ -355,8 +355,9 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
             if len(keys) > max_length:
                 del correct_length_dict[keys]
         # sort_frequency = sorted(correct_length_dict.keys(), key=correct_length_dict.get, reverse=True)
-        sort_frequency = [key for (key, value) in sorted(correct_length_dict.items(), key=lambda x: x[1],
-                                                           reverse=True)]
+        # sort_frequency = [key for (key, value) in sorted(correct_length_dict.items(), key=lambda x: x[1],
+        #                                                reverse=True)]
+        sort_frequency = sorted(correct_length_dict.keys(), key=lambda x: correct_length_dict.get(x), reverse=True)
         sorted_dict = {}
         for i in sort_frequency:
             sorted_dict[i] = correct_length_dict[i]
