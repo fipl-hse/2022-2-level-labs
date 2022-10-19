@@ -45,7 +45,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     candidate_keywords_phrases = []
     for phrase in phrases:
         phrase = phrase.lower()
-        phrase_list.append(phrase.split())
+        split_phrase = phrase.split()
+        phrase_list.append(split_phrase)
     for phrase in phrase_list:
         for word in phrase:
             if word not in stop_words:
@@ -141,7 +142,8 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores.keys():
                 return None
-            score += word_scores[word]
+            add_to_ws = word_scores[word]
+            score += add_to_ws
         keyword_phrases_with_scores[phrase] = score
     return keyword_phrases_with_scores
 
