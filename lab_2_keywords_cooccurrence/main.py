@@ -5,31 +5,13 @@ Extract keywords based on co-occurrence frequency
 from itertools import pairwise
 from pathlib import Path
 import re
-from typing import Optional, Sequence, Mapping, Union, Any
-from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
+from typing import Optional, Sequence, Mapping, Union
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
-
-
-def check_types(user_var: Any, expected_type: Any, can_be_empty: bool = False) -> bool:
-    """
-    Checks type of variable and compares it with expected type.
-    For dict and list checks whether their elements are empty (regulated with can_be_empty)
-    """
-    if not (isinstance(user_var, expected_type) and user_var):
-        return False
-    if expected_type == list:
-        for element in user_var:
-            if not element and can_be_empty is False:
-                return False
-    elif expected_type == dict:
-        for key, value in user_var.items():
-            if not (key and value):
-                return False
-    return True
 
 
 
@@ -67,26 +49,21 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(phrases, list) and check_types(stop_words, list)):
+    if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     candidate_keyword_phrases = []
-    candidate_phrases_tuple = []
     for phrase in phrases:
         phrase = phrase.lower()
         words = phrase.split()
         remove_stop_words = []
         for word in words:
-            if word in stop_words:
-                help_keywords_candidate = tuple(remove_stop_words)
-                candidate_phrases_tuple.append(help_keywords_candidate)
-                remove_stop_words = []
-            else:
+            if word not in stop_words:
                 remove_stop_words.append(word)
-        candidate_phrases_tuple.append(remove_stop_words)
-    for words in candidate_phrases_tuple:
-        if words:
-            candidate_keyword_phrases.append(tuple(words))
-    return candidate_keyword_phrases
+            else:
+                candidate_keyword_phrases.append(remove_stop_words)
+                remove_stop_words = []
+        candidate_keyword_phrases.append(remove_stop_words)
+    return [tuple(candidate_phrase) for candidate_phrase in candidate_keyword_phrases if candidate_phrase]
 
 
 
@@ -193,12 +170,11 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_types(keyword_phrases_with_scores, dict)
-            and check_positive_int(top_n)
-            and check_positive_int(max_length)):
+    if not check_dict(keyword_phrases_with_scores, tuple, float, False) or not isinstance(top_n, int) \
+            or not isinstance(max_length, int) or not top_n > 0 or not max_length > 0:
         return None
     top_words_list = []
-    sorted_keys = sorted(keyword_phrases_with_scores, reverse=True,
+    sorted_keys = sorted(keyword_phrases_with_scores.keys(), reverse=True,
                          key=lambda word: keyword_phrases_with_scores[word])
     for phrase in sorted_keys:
         if len(phrase) <= max_length:
