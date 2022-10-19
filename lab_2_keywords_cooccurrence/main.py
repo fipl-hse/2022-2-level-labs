@@ -220,9 +220,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             continue
         joining_key = ' '.join(word)
         tokens_keys = joining_key.split()
-        for ele, word in enumerate(tokens_phrases):
+        for ele, key in enumerate(tokens_phrases):
             stop_words = []
-            if word in tokens_keys:
+            if key in tokens_keys:
                 stop_words.append(tokens_phrases[ele:ele + len(tokens_keys) + 1])
             if not stop_words:
                 continue
@@ -251,7 +251,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict) \
-            or not isinstance(stop_words, list) or not candidate_keyword_phrases or not word_scores or not stop_words:
+            or not isinstance(stop_words, list):
+        return None
+    if not candidate_keyword_phrases or not word_scores or not stop_words:
         return None
     cumulative_score = {}
     for phrase in candidate_keyword_phrases:
