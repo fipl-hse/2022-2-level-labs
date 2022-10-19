@@ -161,14 +161,10 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not check_dict(keyword_phrases_with_scores, tuple, float, False) or not isinstance(top_n, int) \
             or not isinstance(max_length, int) or not top_n > 0 or not max_length > 0:
         return None
-    true_phrases = [word for (word, value) in sorted(keyword_phrases_with_scores.items(), key=lambda val: val[1],
-                                                     reverse=True)]
-    top_true_phrases = []
-    for phrase in true_phrases:
-        if len(phrase) <= max_length:
-            phrase = list(phrase)
-            phrase = ' '.join(phrase)
-            top_true_phrases.append(phrase)
+    top_true_phrases = [' '.join(phrase) for phrase, value in
+                        sorted(keyword_phrases_with_scores.items(), key=lambda val: val[1],
+                               reverse=True) if len(phrase) <= max_length]
+
     return top_true_phrases[:top_n]
 
 
