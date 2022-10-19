@@ -50,8 +50,6 @@ if __name__ == "__main__":
     DEGREES = None
     SCORES = None
     CUMULATIVE_SCORE_FOR_CANDIDATES = None
-    WITH_ADJOINING = None
-    CUMULATIVE_SCORE_STOP_WORDS = None
     EXTRACTION = extract_phrases(corpus['gagarin'])
 
     if EXTRACTION:

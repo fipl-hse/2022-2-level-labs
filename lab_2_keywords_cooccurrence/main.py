@@ -90,13 +90,13 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     """
     if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(content_words, str, False):
         return None
-    word_degree = {}
+    word_degrees = {}
     for word in content_words:
-        word_degree[word] = 0
+        word_degrees[word] = 0
         for phrase in candidate_keyword_phrases:
             if word in phrase:
-                word_degree[word] += len(phrase)
-    return word_degree
+                word_degrees[word] += len(phrase)
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
