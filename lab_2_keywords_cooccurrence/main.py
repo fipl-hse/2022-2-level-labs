@@ -161,10 +161,13 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not check_dict(keyword_phrases_with_scores, tuple, float, False) or not isinstance(top_n, int) \
             or not isinstance(max_length, int) or not top_n > 0 or not max_length > 0:
         return None
-    top_true_phrases = [' '.join(phrase) for phrase, value in
-                        sorted(keyword_phrases_with_scores.items(), key=lambda val: val[1],
-                               reverse=True) if len(phrase) <= max_length]
-
+    true_phrases = [word for word, value in sorted(keyword_phrases_with_scores.items(), key=lambda val: val[1],
+                                                   reverse=True)]
+    top_true_phrases = []
+    for phrase in true_phrases:
+        if len(phrase) <= max_length:
+            phrase = ' '.join(phrase)
+            top_true_phrases.append(phrase)
     return top_true_phrases[:top_n]
 
 
@@ -192,13 +195,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
 
     phrases_list = [' '.join(phrase) for phrase in candidate_keyword_phrases]
+    pairs_of_phrases = [tuple((phrases_list[index: index + 2])) for index in range(len(phrases_list))]
     tokens_phrases = [phrase.lower().split(' ') for phrase in phrases]
     tokens_phrases = [word for phrase in tokens_phrases for word in phrase]
-
-    pairs_of_phrases = []
-    for phrase in range(len(phrases_list)):
-        tuples_of_pairs = tuple((phrases_list[phrase: phrase + 2]))
-        pairs_of_phrases.append(tuples_of_pairs)
     pairs_freq_dict = {phrase: pairs_of_phrases.count(phrase) for phrase in pairs_of_phrases}
 
     candidates_with_adjoining = []
@@ -219,7 +218,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     for phrase in set(candidates_with_adjoining):
         candidates_with_adjoining.remove(phrase)
-    return list(set(candidates_with_adjoining))
+    return candidates_with_adjoining
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
