@@ -5,7 +5,7 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from string import punctuation
-import re
+from re import findall
 from itertools import pairwise
 
 KeyPhrase = tuple[str, ...]
@@ -214,12 +214,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     possible_candidates = list(dict.fromkeys(possible_candidates))
     for i in phrases:
         i = i.split()
-    phrases_with_ajoin = possible_candidates
+    phrases_with_ajoin = []
     for i in phrases:
         for candidate in possible_candidates:
             phrase = r'(\b\w*\b)(?<= ' + candidate[0][-1] + ')(?= ' + candidate[-1][0] + ')'
-            stops = re.search(phrase, i)
-            phrases_with_ajoin.insert(1, stops)
+            stops = re.findall(phrase, i)
+            for i in stops:
+                phrases_with_ajoin += (*candidate[0], i, *candidate[1])
     return phrases_with_ajoin
 
 
