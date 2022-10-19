@@ -120,14 +120,11 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     if not(check_list(candidate_keyword_phrases) and check_list(content_words)):
         return None
     word_degrees_dict = {}
-    for phrase in content_words:
-        for word in phrase:
-            if word in word_degrees_dict and word in content_words:
+    for word in content_words:
+        word_degrees_dict[word] = 0
+        for phrase in candidate_keyword_phrases:
+            if word in phrase:
                 word_degrees_dict[word] += len(phrase)
-            elif content_words:
-                word_degrees_dict[word] = len(phrase)
-            else:
-                word_degrees_dict[word] = 0
     return word_degrees_dict
 
 
