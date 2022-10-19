@@ -128,9 +128,6 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
                 word_degrees_dict[word] = len(phrase)
             else:
                 word_degrees_dict[word] = 0
-    # for content_word in content_words:
-    #     if content_word not in word_degrees_dict.keys():
-    #         word_degrees_dict[content_word] = 0
     return word_degrees_dict
 
 
@@ -167,6 +164,9 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word not in word_scores:
+                return None
         cumulative_score_dict[phrase] = int(sum(word_scores[word] for word in phrase))
     return cumulative_score_dict
 
