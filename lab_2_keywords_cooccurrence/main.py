@@ -13,7 +13,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_tuple(check_object: Any, element_type: type, can_be_empty: bool):
+def check_tuple(check_object: Any, element_type: type, can_be_empty: bool) -> bool:
     """
     Checks if an object is a tuple, checks its elements' types and its emptiness.
     """
@@ -66,11 +66,11 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     candidate_keyword_phrases = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
-        for index, word in enumerate(phrase):
+        phrase_list = phrase.lower().split()
+        for index, word in enumerate(phrase_list):
             if word in stop_words:
-                phrase[index] = '.'
-        no_stop_words = extract_phrases(' '.join(phrase))
+                phrase_list[index] = '.'
+        no_stop_words = extract_phrases(' '.join(phrase_list))
         for no_stop_words_phrase in no_stop_words:
             candidate_phrase = no_stop_words_phrase.split()
             if candidate_phrase:
