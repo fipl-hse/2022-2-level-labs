@@ -355,5 +355,3 @@ def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
 
     if cumulative_with_stop_words:
         print('Top with stop words:', get_top_n(cumulative_with_stop_words, 10, 5))
-
-    return None
