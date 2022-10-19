@@ -270,17 +270,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not keyword_phrases_with_scores_limited:
         return None
 
-    if top_n > len(keyword_phrases_with_scores_limited.values()):
-        sorted_values = sorted(keyword_phrases_with_scores_limited.values(), reverse=True)
-    else:
-        sorted_values = sorted(keyword_phrases_with_scores_limited.values(), reverse=True)[:top_n]
-    sorted_dict = {}
-
-    for item in sorted_values:
-        for key in keyword_phrases_with_scores_limited.keys():
-            if keyword_phrases_with_scores_limited[key] == item:
-                sorted_dict[key] = keyword_phrases_with_scores_limited[key]
-
+    sorted_dict = dict(sorted(keyword_phrases_with_scores_limited.items(), key=lambda item: item[1], reverse=True)[:top_n])
     return sorted_dict
 
 
