@@ -87,9 +87,6 @@ if __name__ == "__main__":
     if phrases_and_stops:
         top_new = print(get_top_n(phrases_and_stops, 10, 3))
 
-    total_score = {}
-    if cum_score and phrases_and_stops:
-        total_score = {**cum_score, **phrases_and_stops}
-    RESULT = total_score
+    RESULT = top_new
 
     assert RESULT, 'Keywords are not extracted'

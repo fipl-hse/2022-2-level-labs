@@ -12,7 +12,6 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -218,7 +217,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     phrases_with_ajoin = possible_candidates
     for i in phrases:
         for candidate in possible_candidates:
-            stops = re.search(r'(\b\w*\b)(?<=(re.escape(candidate[0][-1])))(?=(re.escape(candidate[-1][0])))', i)
+            stops = re.search(r'(\b\w*\b)(?<=({candidate[0][-1]})(?=({candidate[-1][0]})', i)
             phrases_with_ajoin.insert(1, stops)
     return phrases_with_ajoin
 
