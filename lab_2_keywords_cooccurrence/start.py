@@ -4,7 +4,11 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import extract_phrases, \
-    extract_candidate_keyword_phrases, calculate_frequencies_for_content_words
+    extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
+    calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates, \
+    get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
+    calculate_cumulative_score_for_candidates_with_stop_words, generate_stop_words, \
+    load_stop_words, find_keyword_phrases
 
 
 def read_target_text(file_path: Path) -> str:
@@ -40,16 +44,25 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    candidate_keyword_phrases, frequencies = [None for i in range(2)]
+    for TEXT in corpus:
+        print(f'{TEXT}:')
+        find_keyword_phrases(corpus[TEXT], stop_words)
+        print()
 
-    phrases = extract_phrases(corpus['gagarin'])
+    POLISH_TEXT = read_target_text(ASSETS_PATH / 'polish.txt')
+    STOP_WORDS_DICT = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    if STOP_WORDS_DICT:
+        print('Polish text:')
+        find_keyword_phrases(POLISH_TEXT, STOP_WORDS_DICT['pl'])
+        print()
 
-    if phrases:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    UNKNOWN_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
+    UNKNOWN_STOP_WORDS = generate_stop_words(UNKNOWN_TEXT, 5)
+    if UNKNOWN_STOP_WORDS:
+        print('Esperanto text:')
+        find_keyword_phrases(UNKNOWN_TEXT, UNKNOWN_STOP_WORDS)
+        print()
 
-    if candidate_keyword_phrases:
-        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-
-    RESULT = 'Checking if start.py is alright. Will replace it later.'
+    RESULT = True
 
     assert RESULT, 'Keywords are not extracted'

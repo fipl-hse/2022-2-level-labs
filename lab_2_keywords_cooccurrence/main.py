@@ -4,7 +4,10 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int
+from itertools import pairwise
+import json
+from lab_1_keywords_tfidf.main import check_list, check_dict, check_positive_int, \
+    clean_and_tokenize, calculate_frequencies
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -222,7 +225,31 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) \
+            or not check_list(phrases, str, False):
+        return None
+    for keyword_phrase in candidate_keyword_phrases:
+        if not check_tuple(keyword_phrase, str, False):
+            return None
+    keyword_pairs = list(pairwise(candidate_keyword_phrases))
+    valid_keyword_pairs = [keyword_pair for keyword_pair in set(keyword_pairs)
+                           if keyword_pairs.count(keyword_pair) >= 2]
+    adjoined_phrases = []
+    for phrase in phrases:
+        phrase_list = phrase.lower().split()
+        for keyword_pair in valid_keyword_pairs:
+            pair_beg = keyword_pair[0]
+            pair_end = keyword_pair[1]
+            if ' '.join(pair_beg) not in phrase or ' '.join(pair_end) not in ' '.join(phrase_list):
+                continue
+            for index in range(len(phrase_list) - 2):
+                if phrase_list[index] == pair_beg[-1] and phrase_list[index + 2] == pair_end[0]:
+                    adjoined_phrase = phrase_list[index:index + 4]
+                    if ' '.join(adjoined_phrase) in ' '.join(phrase_list):
+                        adjoined_phrases.append(tuple(adjoined_phrase))
+    valid_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
+                              if adjoined_phrases.count(adjoined_phrase) >= 2]
+    return valid_adjoined_phrases
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -240,7 +267,19 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) \
+            or not word_scores or not isinstance(word_scores, dict) \
+            or not check_list(stop_words, str, False):
+        return None
+    cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        if not check_tuple(phrase, str, False):
+            return None
+        cumulative_score[phrase] = 0
+        for word in phrase:
+            if word not in stop_words:
+                cumulative_score[phrase] += word_scores[word]
+    return cumulative_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -251,7 +290,19 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not text or not isinstance(text, str) or not check_positive_int(max_length):
+        return None
+    tokens = clean_and_tokenize(text)
+    if not tokens:
+        return None
+    frequencies = calculate_frequencies(tokens)
+    frequencies_sorted = sorted(frequencies.values())
+    percentile_80 = frequencies_sorted[round(len(frequencies_sorted) / 100 * 80) - 1]
+    stop_words = []
+    for token in frequencies.keys():
+        if frequencies[token] >= percentile_80 and len(token) <= max_length:
+            stop_words.append(token)
+    return stop_words
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -260,4 +311,49 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not path or not isinstance(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as f:
+        stop_words = dict(json.load(f))
+    return stop_words
+
+
+def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
+    """
+    Finds keyword phrases without stop words in the given text and returns top n of these phrases.
+    """
+    candidate_keyword_phrases, frequencies, word_degrees, word_scores, \
+        cumulative_score, candidate_with_stop_words, cumulative_with_stop_words = [None for i in range(7)]
+
+    phrases = extract_phrases(text)
+
+    if phrases:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+
+    if candidate_keyword_phrases:
+        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+
+    if candidate_keyword_phrases and frequencies:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys()))
+
+    if frequencies and word_degrees:
+        word_scores = calculate_word_scores(word_degrees, frequencies)
+
+    if candidate_keyword_phrases and word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+
+    if cumulative_score:
+        print('Top without stop words:', get_top_n(cumulative_score, 10, 5))
+
+    if phrases and candidate_keyword_phrases:
+        candidate_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(
+            candidate_keyword_phrases, phrases)
+
+    if candidate_with_stop_words and word_scores and stop_words:
+        cumulative_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidate_with_stop_words, word_scores, stop_words)
+
+    if cumulative_with_stop_words:
+        print('Top with stop words:', get_top_n(cumulative_with_stop_words, 10, 5))
+
+    return None
