@@ -56,7 +56,7 @@ if __name__ == "__main__":
     word_degrees = None
     word_scores = None
     cum_score = None
-    ajoin_phrases = None
+    valid_adjoined_phrases = None
     phrases_and_stops = None
     top_new = None
 
@@ -81,13 +81,12 @@ if __name__ == "__main__":
     if candidate_keyword_phrases and phrases:
         ajoin_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
 
-    if ajoin_phrases and word_scores:
-        phrases_and_stops = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores, stop_words)
+    if valid_adjoined_phrases and word_scores:
+        phrases_and_stops = calculate_cumulative_score_for_candidates_with_stop_words(valid_adjoined_phrases, word_scores, stop_words)
 
     if phrases_and_stops:
         top_new = get_top_n(phrases_and_stops, 5, 3)
 
-    print(ajoin_phrases)
 
     RESULT = top_new
 
