@@ -43,7 +43,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     """
     if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
-    keyword_phrases = []
     tuples_candidate_phrases = []
     for phrase in phrases:
         phrase = phrase.lower().split()
@@ -55,10 +54,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 tuples_candidate_phrases.append(no_stop_words)
                 no_stop_words = []
         tuples_candidate_phrases.append(no_stop_words)
-    for phrase in tuples_candidate_phrases:
-        if phrase:
-            keyword_phrases.append(tuple(phrase))
-    return keyword_phrases
+    return [tuple(candidate_phrase) for candidate_phrase in tuples_candidate_phrases if candidate_phrase]
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -145,7 +141,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            score += word_scores.get(word)
+            score += int(word_scores[word])
         cumulative_score_for_candidates[phrase] = score
     return cumulative_score_for_candidates
 
