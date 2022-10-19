@@ -9,9 +9,7 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n,
-                                              extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words)
+                                              get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -52,8 +50,6 @@ if __name__ == "__main__":
     DEGREES = None
     SCORES = None
     CUMULATIVE = None
-    ADJOINING = None
-    CUMULATIVE_SCORES = None
     EXTRACTION = extract_phrases(corpus['gagarin'])
     if EXTRACTION:
         CANDIDATE_PHRASES = extract_candidate_keyword_phrases(EXTRACTION, stop_words)
@@ -72,12 +68,7 @@ if __name__ == "__main__":
 
     if CUMULATIVE:
         print(get_top_n(CUMULATIVE, 6, 3))
-        ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
 
-    if ADJOINING:
-        CUMULATIVE_SCORES = calculate_cumulative_score_for_candidates_with_stop_words(ADJOINING, SCORES,
-                                                                                      stop_words)
-
-    RESULT = CUMULATIVE_SCORES
+    RESULT = CUMULATIVE
 
     assert RESULT, 'Keywords are not extracted'
