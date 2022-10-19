@@ -173,8 +173,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         or not isinstance(max_length, int) or not keyword_phrases_with_scores or max_length<=0:
         return None
     new_phrases = []
-    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True,
-                            key=lambda i: keyword_phrases_with_scores[i])
+    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True, key=lambda i: keyword_phrases_with_scores[i])
     for i in sorted_phrases:
         if len(i) <= max_length:
             new_phrases.append(' '.join(i))
