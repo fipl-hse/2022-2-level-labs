@@ -87,7 +87,9 @@ if __name__ == "__main__":
         if cumulative_score_for_candidates_with_stop_words:
             top_with_stop_words = get_top_n(cumulative_score_for_candidates_with_stop_words, 10, 5)
             # print(top_with_stop_words)
-            with_all_phrases = {**cumulative_score_for_candidates_with_stop_words, **cumulative_score}
+        with_all_phrases = {**cumulative_score_for_candidates_with_stop_words, **cumulative_score}
+
+        if with_all_phrases:
             overall_top_list = get_top_n(with_all_phrases, 10, 5)
 
             stop_words_dict = load_stop_words(TARGET_PATH_STOP_WORDS)
