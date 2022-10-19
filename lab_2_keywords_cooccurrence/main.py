@@ -61,7 +61,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         if tuple_lst:
             candidate_keyword_phrases.append(tuple(tuple_lst))
             tuple_lst.clear()
-    print(candidate_keyword_phrases)
     return candidate_keyword_phrases
 
 
