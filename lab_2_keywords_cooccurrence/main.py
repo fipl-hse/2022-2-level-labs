@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from lab_1_keywords_tfidf.main import check_list
+from lab_1_keywords_tfidf.main import check_list, check_dict
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -146,8 +146,16 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
+    if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, True)):
+        return None
+    if len(word_degrees) == 0 or len(word_frequencies) == 0:
+        return None
+    word_scores = {}
+    for word in word_degrees.keys():
+        if word not in word_frequencies.keys():
+            return None
+        word_scores[word] = word_degrees[word] / word_frequencies[word]
+    return word_scores
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
                                               word_scores: Mapping[str, float]) -> Optional[Mapping[KeyPhrase, float]]:
