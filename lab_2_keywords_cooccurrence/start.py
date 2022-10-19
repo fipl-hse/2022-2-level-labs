@@ -74,7 +74,7 @@ if __name__ == "__main__":
 
             if cumulative_score_with_stopwords:
                 return cumulative_score_with_stopwords
-
+        return None
 
     keyphrases(corpus['gagarin'], stop_words)
     keyphrases(corpus['genome_engineering'], stop_words)
