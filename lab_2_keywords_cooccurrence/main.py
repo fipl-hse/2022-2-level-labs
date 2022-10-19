@@ -45,9 +45,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     tuples_candidate_phrases = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
         no_stop_words = []
-        for word in phrase:
+        for word in phrase.lower().split():
             if word not in stop_words:
                 no_stop_words.append(word)
             else:
@@ -167,6 +166,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     top_true_phrases = []
     for phrase in true_phrases:
         if len(phrase) <= max_length:
+            phrase = list(phrase)
             phrase = ' '.join(phrase)
             top_true_phrases.append(phrase)
     return top_true_phrases[:top_n]
@@ -196,18 +196,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
 
     phrases_list = [' '.join(phrase) for phrase in candidate_keyword_phrases]
+    tokens_phrases = [phrase.lower().split(' ') for phrase in phrases]
+    tokens_phrases = [word for phrase in tokens_phrases for word in phrase]
 
     pairs_of_phrases = []
     for phrase in range(len(phrases_list)):
         tuples_of_pairs = tuple((phrases_list[phrase: phrase + 2]))
         pairs_of_phrases.append(tuples_of_pairs)
-
-    tokens_phrases = []
-    for phrase in phrases:
-        phrase = phrase.split(' ')
-        tokens_phrases.append(phrase)
-    tokens_phrases = [word.lower() for phrase in tokens_phrases for word in phrase]
-
     pairs_freq_dict = {phrase: pairs_of_phrases.count(phrase) for phrase in pairs_of_phrases}
 
     candidates_with_adjoining = []
