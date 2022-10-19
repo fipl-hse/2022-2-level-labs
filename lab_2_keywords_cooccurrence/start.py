@@ -42,7 +42,7 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    def keyphrases(text, stopwords):
+    def keyphrases(text, stopwords) -> dict:
         phrases = extract_phrases(text)
 
         if phrases and stopwords:

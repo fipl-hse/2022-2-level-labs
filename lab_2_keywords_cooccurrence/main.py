@@ -305,8 +305,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         if i in punctuation:
             text = text.replace(i, '.')
     splited_text = text.split('.')
-    tokens = [i.lower().split(' ') for i in splited_text]
-    tokens = [item for i in tokens for item in i if item]
+    tokens_not_final = [i.lower().split(' ') for i in splited_text]
+    tokens = [item for i in tokens_not_final for item in i if item]
     freq_dict = {token: tokens.count(token) for token in tokens}
     percentile = sorted(freq_dict.values())[int((len(freq_dict) / 100 * 70))]
     stop_words = []
