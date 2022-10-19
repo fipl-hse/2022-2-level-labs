@@ -201,7 +201,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             possible_pairs[pair] += 1
     appropriate_pairs = []
     for pair in possible_pairs:
-        if possible_pairs.get(pair) > 1:
+        if possible_pairs.get(pair, 0) > 1:
             appropriate_pairs.append([' '.join(element) for element in pair])
     phrases_with_stopwords = []
     for pair in appropriate_pairs:
@@ -249,7 +249,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         for word in phrase:
             kw_phrase.append(word)
             if word not in stop_words:
-                score += word_scores.get(word)
+                score += word_scores.get(word, 0)
         cumulative_score[tuple(kw_phrase)] = score
     return cumulative_score
 
