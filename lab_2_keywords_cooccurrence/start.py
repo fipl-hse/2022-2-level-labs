@@ -3,15 +3,10 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import (extract_phrases,
-                  extract_candidate_keyword_phrases,
-                  calculate_frequencies_for_content_words,
-                  calculate_word_degrees,
-                  calculate_word_scores,
-                  calculate_cumulative_score_for_candidates,
-                  get_top_n,
-                  extract_candidate_keyword_phrases_with_adjoining,
-                  calculate_cumulative_score_for_candidates_with_stop_words)
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
+                calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores,
+                calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining,
+                calculate_cumulative_score_for_candidates_with_stop_words)
 
 def read_target_text(file_path: Path) -> str:
     """
