@@ -7,11 +7,24 @@ from typing import Optional, Sequence, Mapping
 
 from typing import Any, Union
 import re
-from lab_1_keywords_tfidf.main import check_dict
 from lab_1_keywords_tfidf.main import check_list
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+    """
+    Checks weather object is dictionary
+    hat has keys and values of certain type
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input and can_be_empty is False:
+        return False
+    for key, value in user_input.items():
+        if not (isinstance(key, key_type) and isinstance(value, value_type)):
+            return False
+    return True
 
 def check_key_phrase(arg_to_check: Any) -> bool:
     """
@@ -252,9 +265,8 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if check_key_phrase(candidate_keyword_phrases) and check_dict(word_scores,
-            str, Union[float, int], False)\
-            and check_list(stop_words, str, False):
+    if check_key_phrase(candidate_keyword_phrases) and isinstance(word_scores, dict)\
+            and word_scores and check_list(stop_words, str, False):
         set_of_candidates = set(candidate_keyword_phrases)
         phrases_scores = {phrase: 0.0 for phrase in set_of_candidates}
         for phrase in set_of_candidates:
