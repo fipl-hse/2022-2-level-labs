@@ -217,8 +217,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         list_of_phrases = [phrase.split() for phrase in phrases]
         phrases_lower = [phrase.lower() for phrase in phrases]
         key_phrases_with_stop_words = []
-        for phrase in candidate_keyword_phrases:
-            for index1, phrase1 in enumerate(list_of_phrases):
+        for index1, phrase1 in enumerate(list_of_phrases):
+            for phrase in candidate_keyword_phrases:
                 if phrase[-1] in list_of_phrases[index1]:
                     phrase_index1 = list_of_phrases[index1].index(phrase[-1])
                     words_lst = []
@@ -229,19 +229,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                             left_phrase = ' '.join(list(phrase))
                             right_phrase = ' '.join(words_lst)
                             pair_of_phrases = re.findall(left_phrase+r" \w+ "+right_phrase, ' '.join(phrases_lower))
-                            pair_of_phrases_ext = []
-                            for index2, phrase2 in enumerate(pair_of_phrases):
-                                if index2 == 0:
-                                    pair_of_phrases_ext.append(phrase2)
-                                else:
-                                    if phrase2 == pair_of_phrases_ext[index2-1]:
-                                        pair_of_phrases_ext.append(phrase2)
-                            count_pairs = len(pair_of_phrases_ext)
-                            if count_pairs >= 2:
-                                key_phrase = tuple(phrase + tuple(phrase1[phrase_index1+1].split()) + twords_lst)
-                                if key_phrase not in key_phrases_with_stop_words:
-                                    key_phrases_with_stop_words.append(key_phrase)
-        return key_phrases_with_stop_words
+                            key_phrases = [tuple(key_phrase.split()) for key_phrase
+                                    in pair_of_phrases if
+                                    len(set(pair_of_phrases)) == 1 and len(pair_of_phrases) >= 2]
+                            key_phrases_with_stop_words.extend(key_phrases)
+        key_phrases_with_stop_words_set = set(key_phrases_with_stop_words)
+        return list(key_phrases_with_stop_words_set)
     return None
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
