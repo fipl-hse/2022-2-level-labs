@@ -286,8 +286,10 @@ def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = N
     extracted_phrases = extract_phrases(target_text)
     if not stop_words and max_length:
         stop_words = generate_stop_words(target_text, max_length)
+
     if extracted_phrases and stop_words:
         candidates = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+
     if candidates and extracted_phrases:
         return extract_candidate_keyword_phrases_with_adjoining(candidates, extracted_phrases)
     return None
@@ -328,6 +330,6 @@ def calculate_cumulative_score(target_text: str, stop_words: Optional[Sequence] 
             candidates_with_stop_words, word_scores, stop_words)
 
     if cumulative_score_stop_words and cumulative_score:
-        cumulative_score |= cumulative_score_stop_words
+        cumulative_score.update(cumulative_score_stop_words)
         return cumulative_score
     return None
