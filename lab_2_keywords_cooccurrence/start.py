@@ -87,6 +87,8 @@ if __name__ == "__main__":
     if phrases_and_stops:
         top_new = get_top_n(phrases_and_stops, 5, 3)
 
+    print(ajoin_phrases)
+
     RESULT = top_new
 
     assert RESULT, 'Keywords are not extracted'
