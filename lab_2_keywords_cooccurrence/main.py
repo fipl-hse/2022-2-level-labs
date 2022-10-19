@@ -44,11 +44,10 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     list_for_tuples = []
     candidate_keywords_phrases = []
     for phrase in phrases:
-        phrase = phrase.lower()
-        split_phrase = phrase.split()
+        split_phrase = phrase.lower().split()
         phrase_list.append(split_phrase)
-    for phrase in phrase_list:
-        for word in phrase:
+    for elem in phrase_list:
+        for word in elem:
             if word not in stop_words:
                 list_for_tuples.append(word)
             else:
