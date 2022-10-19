@@ -169,8 +169,22 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return None
+    if not isinstance(word_scores, dict) or not word_scores:
+        return None
+    if len(candidate_keyword_phrases) == 0 or len(word_scores) == 0:
+        return None
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word not in word_scores:
+                return None
+    cumulative_score_for_candidates = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_score_for_candidates[phrase] = 0.0
+        for word in phrase:
+            cumulative_score_for_candidates[phrase] += word_scores[word]
+    return cumulative_score_for_candidates
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
               top_n: int,
