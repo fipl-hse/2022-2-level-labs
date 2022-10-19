@@ -253,25 +253,26 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not isinstance(keyword_phrases_with_scores, dict):
         return None
     for key, value in keyword_phrases_with_scores.items():
-        if not isinstance(key, tuple) or not isinstance(value, int):
+        if not isinstance(key, tuple) or not isinstance(value, (int, float)):
             return None
         for item in key:
             if not isinstance(item, str):
                 return None
-    if not isinstance(top_n, int):
+    if not isinstance(top_n, int) or top_n<1:
         return None
-    if not isinstance(max_length, int):
+    if not isinstance(max_length, int) or max_length<1:
         return None
+
     keyword_phrases_with_scores_limited = {}
     for phrase, score in keyword_phrases_with_scores.items():
         if len(phrase) <= max_length:
             phrase = ' '.join(phrase)
             keyword_phrases_with_scores_limited[phrase] = score
-    if not keyword_phrases_with_scores_limited:
-        return None
 
-    sorted_dict = dict(sorted(keyword_phrases_with_scores_limited.items(), key=lambda item: item[1], reverse=True)[:top_n])
-    return sorted_dict
+    sorted_dict = (dict(sorted(keyword_phrases_with_scores_limited.items(),
+                               key=lambda item: item[1], reverse=True)[:top_n]))
+    res = list(sorted_dict.keys())
+    return res
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
