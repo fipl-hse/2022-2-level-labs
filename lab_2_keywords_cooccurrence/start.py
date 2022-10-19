@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from typing import Optional, Mapping, Sequence
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores, \
     calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
@@ -42,7 +43,7 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    def keyphrases(text, stopwords) -> dict:
+    def keyphrases(text: str, stopwords: list) -> Optional[Mapping[Sequence[str]]]:
         phrases = extract_phrases(text)
 
         if phrases and stopwords:
