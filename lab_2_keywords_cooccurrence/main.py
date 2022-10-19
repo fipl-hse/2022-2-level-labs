@@ -11,13 +11,26 @@ KeyPhrases = Sequence[KeyPhrase]
 
 def check_list(user_input: Any) -> bool:
     """
-    Checks weather object is list
+    Checks whether object is list
     that contains objects of certain type
     """
     if not (isinstance(user_input, list) and user_input):
         return False
     for element in user_input:
         if not element:
+            return False
+    return True
+
+
+def check_dict(user_input: Any) -> bool:
+    """
+    Checks whether object is dict
+    that contains objects of certain type
+    """
+    if not (isinstance(user_input, dict) and user_input):
+        return False
+    for k, v in user_input:
+        if not (k and v):
             return False
     return True
 
@@ -74,10 +87,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     return tuple_possible_key_phrases
 
 
-wrong_inputs = [4, 4.0, False, {'dict': 0}, 'string']
-stop = ['s']
-print(extract_candidate_keyword_phrases(['hi'], []))
-
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
     Extracts the content words from the candidate keyword phrases list and computes their frequencies
@@ -86,7 +95,14 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases):
+        return None
+    tokens = []
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            tokens.append(word)
+    freq_dict = {tokens: tokens.count(token) for token in set(tokens)}
+    return freq_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -101,7 +117,19 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not(check_list(candidate_keyword_phrases) and check_list(content_words)):
+        return None
+    word_degrees_dict = {}
+    for phrase in content_words:
+        for word in phrase:
+            if word in word_degrees_dict and word in content_words:
+                word_degrees_dict[word] += len(phrase)
+            elif content_words:
+                word_degrees_dict[word] = len(phrase)
+    # for content_word in content_words:
+    #     if content_word not in word_degrees_dict.keys():
+    #         word_degrees_dict[content_word] = 0
+    return word_degrees_dict
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -115,7 +143,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(word_degrees) and check_dict(word_frequencies) and
+    word_degrees.keys() == word_frequencies.keys()):
+        return None
+    return {word: word_degrees[word] / word_frequencies[word] for word in word_frequencies.keys()}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -130,7 +161,13 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases) and check_dict(word_scores)):
+        return None
+    cumulative_score_dict = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            cumulative_score_dict[word] = int(sum(word_scores[word]))
+    return cumulative_score_dict
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -146,7 +183,19 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_dict(keyword_phrases_with_scores)
+            and isinstance(top_n, int) and top_n > 0
+            and isinstance(max_length, int) and max_length > 0):
+        return None
+    sorted_list = sorted(keyword_phrases_with_scores.keys(),
+                      key=lambda phrase: keyword_phrases_with_scores[phrase],
+                      reverse=True)
+    top_list = []
+    for top in sorted_list:
+        top_length = len(top)
+        if top_length <= max_length:
+            top_list.append(' '.join(top))
+    return top_list[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,

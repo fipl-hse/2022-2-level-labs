@@ -4,7 +4,12 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
-                                              extract_candidate_keyword_phrases)
+                                              extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores,
+                                              calculate_cumulative_score_for_candidates,
+                                              get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -41,11 +46,26 @@ if __name__ == "__main__":
     }
 
     keyword_phrases = None
+    content_words = None
+    word_degrees = None
+    word_scores = None
+    cumulative_scores = None
 
-    extacted_phrases = extract_phrases(corpus['gagarin'])
-    if extacted_phrases:
-        keyword_phrases = extract_candidate_keyword_phrases(extacted_phrases, stop_words)
+    for text in corpus:
+        extacted_phrases = extract_phrases(corpus[text])
+        if extacted_phrases:
+            keyword_phrases = extract_candidate_keyword_phrases(extacted_phrases, stop_words)
+        if keyword_phrases:
+            content_words = calculate_frequencies_for_content_words(keyword_phrases)
+        if keyword_phrases and content_words:
+            word_degrees = calculate_word_degrees(keyword_phrases, list(content_words.keys()))
+        if word_degrees:
+            word_scores = calculate_word_scores(word_degrees, content_words)
+        if word_scores:
+            cumulative_scores = calculate_cumulative_score_for_candidates(keyword_phrases, word_scores)
+        if cumulative_scores:
+            print(get_top_n(cumulative_scores, 5, 5))
 
-    RESULT = keyword_phrases
+    RESULT = 'hi'
 
     assert RESULT, 'Keywords are not extracted'
