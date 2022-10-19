@@ -51,12 +51,7 @@ if __name__ == "__main__":
     word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words.keys()))
     word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
     cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
-    top_n_phrases = get_top_n({
-            ('времена', 'советского', 'союза', 'исследование', 'космоса'): 23.0,
-            ('важнейших', 'задач'): 4.0,
-            ('времена', 'союза', 'прошли'): 11.0
-        }, 1000000, 1)
-    #top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
+    top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
 
     print(candidate_keyword_phrases, '\n', frequencies_for_content_words, '\n', word_degrees, '\n', word_scores,
           '\n', cumulative_score_for_candidates, '\n', top_n_phrases)
