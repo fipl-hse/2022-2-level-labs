@@ -68,6 +68,6 @@ if __name__ == "__main__":
     if UNKNOWN_PROCESSED:
         print(get_top_n(UNKNOWN_PROCESSED, 10, 5))  # эсперанто
 
-    RESULT = True
+    RESULT = UNKNOWN_PROCESSED
 
     assert RESULT, 'Keywords are not extracted'

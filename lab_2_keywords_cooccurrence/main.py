@@ -116,7 +116,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     In case of corrupt input arguments, None is returned
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(word_scores, dict) or \
-            not all(token in word_scores for phrase in candidate_keyword_phrases for token in phrase):
+            not all(token in word_scores for token in list(chain.from_iterable(candidate_keyword_phrases))):
         return None
     return {phrase: sum(word_scores[token] for token in phrase) for phrase in candidate_keyword_phrases}
 
