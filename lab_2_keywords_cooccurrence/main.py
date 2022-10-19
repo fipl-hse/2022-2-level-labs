@@ -177,10 +177,10 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in candidate_keyword_phrases:
         keyword_phrases_with_scores[phrase] = 0
         for token in phrase:
-            if token in word_scores.keys():
-                keyword_phrases_with_scores[phrase] += word_scores[token]
-            else:
+            if token not in word_scores.keys():
                 return None
+            keyword_phrases_with_scores[phrase] += word_scores[token]
+
 
     return keyword_phrases_with_scores
 
@@ -256,10 +256,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         pair_occurence[pair] = pair_occurence.get(pair, 0) + 1
     frequent_pairs = {pair: occur for pair, occur in pair_occurence.items() if pair_occurence[pair] > 1}
     possible_candidate_phrases = []
-    for pair in frequent_pairs:
+    for part1, part2 in frequent_pairs:
         for phrase in phrases:
-            if pair[0] in phrase and pair[1] in phrase:
-                possible_candidate_phrases.extend(re.findall(f'{pair[0]} .* {pair[1]}', phrase))
+            if part1 in phrase and part2 in phrase:
+                possible_candidate_phrases.extend(re.findall(f'{part1} .* {part2}', phrase))
     new_candidate_keyword_phrases = []
     for phrase in possible_candidate_phrases:
         if possible_candidate_phrases.count(phrase) > 1 and \
