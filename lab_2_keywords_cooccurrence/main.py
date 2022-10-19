@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from lab_1_keywords_tfidf.main import check_list, check_dict
+from lab_1_keywords_tfidf.main import check_list
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -89,7 +89,15 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return None
+    tokens = []
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            tokens.append(word)
+    if tokens:
+        my_dict = {token: tokens.count(token) for token in tokens}
+    return my_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -104,8 +112,28 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(content_words, str, False):
+        return None
+    if len(candidate_keyword_phrases) == 0 or len(content_words) == 0:
+        return None
+    word_degrees = {}
+    word_degrees_content = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in word_degrees:
+                for words in phrase:
+                    word_degrees[word] += [words]
+            else:
+                word_degrees[word] = []
+                for words in phrase:
+                    word_degrees[word] += [words]
+    for word in content_words:
+        if word not in word_degrees:
+            word_degrees_content[word] = 0
+        else:
+            count = len(word_degrees[word])
+            word_degrees_content[word] = count
+    return word_degrees_content
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:
