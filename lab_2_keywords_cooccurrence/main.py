@@ -162,11 +162,10 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     cumulative_score = {}
     for phrase in candidate_keyword_phrases:
-        cumulative_score[phrase] = 0
         for word in phrase:
             if word not in word_scores.keys():
                 return None
-            cumulative_score[phrase] += word_scores[word]
+        cumulative_score[phrase] = sum(word_scores[word] for word in phrase)
     return cumulative_score
 
 
@@ -264,10 +263,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         return None
     cumulative_score = {}
     for phrase in candidate_keyword_phrases:
-        cumulative_score[phrase] = 0
-        for word in phrase:
-            if word not in stop_words:
-                cumulative_score[phrase] += word_scores[word]
+        cumulative_score[phrase] = sum(word_scores[word] for word in phrase if word not in stop_words)
     return cumulative_score
 
 
