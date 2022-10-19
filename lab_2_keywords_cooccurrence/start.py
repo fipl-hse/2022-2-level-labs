@@ -49,7 +49,7 @@ if __name__ == "__main__":
     for text in corpus.values():
         # text =
         candidate_phrases, word_degree, word_score, freq_dict, cumulative_score, candidate_phrases_with_adjoining,\
-            cumulative_score_for_candidates_with_stop_words, top_list = [None for i in range(8)]
+            cumulative_score_for_candidates_with_stop_words, top_list, with_all_phrases = [None for i in range(9)]
 
     # TARGET_PATH_POLISH = read_target_text(ASSETS_PATH / 'polish.txt')
     # TARGET_PATH_GAGARIN = read_target_text(TARGET_TEXT_PATH_GAGARIN)
@@ -87,10 +87,7 @@ if __name__ == "__main__":
         if cumulative_score_for_candidates_with_stop_words:
             top_with_stop_words = get_top_n(cumulative_score_for_candidates_with_stop_words, 10, 5)
             # print(top_with_stop_words)
-        with_all_phrases = {**cumulative_score_for_candidates_with_stop_words, **cumulative_score}
-
-        if with_all_phrases:
-            overall_top_list = get_top_n(with_all_phrases, 10, 5)
+            print(get_top_n({**cumulative_score_for_candidates_with_stop_words, **cumulative_score}, 10, 5))
 
             stop_words_dict = load_stop_words(TARGET_PATH_STOP_WORDS)
     # print(cumulative_score(TARGET_PATH_POLISH, stop_words_dict['pl']))
@@ -99,6 +96,6 @@ if __name__ == "__main__":
     # print(extract_keyword_phrases(TARGET_TEXT_PATH_POLISH, stop_words_dict['pl']))
     # polish_phrases =
 
-            RESULT = overall_top_list
-
-            assert RESULT, 'Keywords are not extracted'
+            # RESULT = None
+            #
+            # assert RESULT, 'Keywords are not extracted'
