@@ -52,9 +52,9 @@ if __name__ == "__main__":
     cumulative_scores = None
 
     for text in corpus:
-        extacted_phrases = extract_phrases(corpus[text])
-        if extacted_phrases:
-            keyword_phrases = extract_candidate_keyword_phrases(extacted_phrases, stop_words)
+        extracted_phrases = extract_phrases(corpus[text])
+        if extracted_phrases:
+            keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
         if keyword_phrases:
             content_words = calculate_frequencies_for_content_words(keyword_phrases)
         if keyword_phrases and content_words:
