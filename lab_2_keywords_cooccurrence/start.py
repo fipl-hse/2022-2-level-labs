@@ -52,7 +52,7 @@ if __name__ == "__main__":
     DEGREES = None
     SCORES = None
     CUMULATIVE_SCORE_FOR_CANDIDATES = None
-    ADJOINING = None
+    WITH_ADJOINING = None
     CUMULATIVE_SCORE_STOP_WORDS = None
     EXTRACTION = extract_phrases(corpus['gagarin'])
 
@@ -75,11 +75,11 @@ if __name__ == "__main__":
         print(f'Top candidates by cumulative score: {get_top_n(CUMULATIVE_SCORE_FOR_CANDIDATES, 5, 2)}')
 
     if CANDIDATE_PHRASES and EXTRACTION:
-        ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
+        WITH_ADJOINING = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_PHRASES, EXTRACTION)
 
-    if ADJOINING:
-        CUMULATIVE_SCORE_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(ADJOINING, SCORES,
+    if WITH_ADJOINING:
+        CUMULATIVE_SCORE_STOP_WORDS = calculate_cumulative_score_for_candidates_with_stop_words(WITH_ADJOINING, SCORES,
                                                                                                 stop_words)
 
-    RESULT = ADJOINING
+    RESULT = WITH_ADJOINING
     assert RESULT, 'Keywords are not extracted'
