@@ -108,7 +108,19 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases and
+            check_content(candidate_keyword_phrases, tuple)):
+        return None
+    word_freqs = {}
+    for phrase in candidate_keyword_phrases:
+        if not check_content(phrase, str):
+            return None
+        for word in phrase:
+            if word not in word_freqs:
+                word_freqs[word] = 1
+            else:
+                word_freqs[word] = word_freqs[word] + 1
+    return word_freqs
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -123,7 +135,18 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (candidate_keyword_phrases and isinstance(candidate_keyword_phrases, Sequence) and content_words and
+            isinstance(content_words, Sequence)):
+        return None
+    w_degree = {}
+    for word in content_words:
+        if not isinstance(word, str):
+            return None
+        w_degree[word] = 0
+        for el in candidate_keyword_phrases:
+            if word in el:
+                w_degree[word] = w_degree[word] + len(el)
+    return w_degree
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -137,7 +160,15 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (word_frequencies and word_degrees and isinstance(word_degrees, Mapping) and
+            isinstance(word_frequencies, Mapping)):
+        return None
+    if word_frequencies.keys() != word_degrees.keys():
+        return None
+    word_scores = {}
+    for word in word_frequencies:
+        word_scores[word] = word_degrees[word] / word_frequencies[word]
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -152,7 +183,19 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases and word_scores
+            and isinstance(word_scores, Mapping)):
+        return None
+    phrase_scores = {}
+    for el in candidate_keyword_phrases:
+        if not (isinstance(el, tuple) and el and check_content(el, str)):
+            return None
+        phrase_scores[el] = 0
+        for word in el:
+            if word not in word_scores:
+                return None
+            phrase_scores[el] = phrase_scores[el] + word_scores[word]
+    return phrase_scores
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -168,7 +211,19 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (keyword_phrases_with_scores and isinstance(keyword_phrases_with_scores, Mapping) and isinstance(top_n, int)
+            and isinstance(max_length, int) and max_length > 0 and top_n > 0):
+        return None
+    new_dict = {}
+    for k, v in keyword_phrases_with_scores.items():
+        if len(k) <= max_length:
+            new_dict[k] = v
+    top_list = sorted(new_dict.keys(), key=lambda key: new_dict[key], reverse=True)[:top_n]
+    print(top_list)
+    top_n_list = []
+    for el in top_list:
+        top_n_list.append(' '.join(list(el)))
+    return top_n_list
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,

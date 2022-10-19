@@ -3,7 +3,11 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words, calculate_word_degrees,
+                                              calculate_word_scores, calculate_cumulative_score_for_candidates,
+                                              get_top_n)
+
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -38,6 +42,11 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = extract_candidate_keyword_phrases(extract_phrases(corpus['albatross']), stop_words)
+    CANDIDATE_PHRASES = extract_candidate_keyword_phrases(extract_phrases(corpus['albatross']), stop_words)
+    WORD_FREQS = calculate_frequencies_for_content_words(CANDIDATE_PHRASES)
+    WORD_DEGREE = calculate_word_degrees(CANDIDATE_PHRASES, list(WORD_FREQS.keys()))
+    WORD_SCORES = calculate_word_scores(WORD_DEGREE, WORD_FREQS)
+    PHRASES_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_PHRASES, WORD_SCORES)
+    RESULT = get_top_n(PHRASES_SCORES, 10, 4)
 
     assert RESULT, 'Keywords are not extracted'
