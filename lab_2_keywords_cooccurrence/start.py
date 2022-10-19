@@ -6,7 +6,8 @@ from pathlib import Path
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores, \
     calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
-    calculate_cumulative_score_for_candidates_with_stop_words
+    calculate_cumulative_score_for_candidates_with_stop_words, load_stop_words, generate_stop_words
+
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -41,34 +42,54 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    phrases = extract_phrases(corpus['gagarin'])
+    def keyphrases(text, stopwords):
+        phrases = extract_phrases(text)
 
-    if phrases:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+        if phrases and stopwords:
+            candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stopwords)
 
-    if candidate_keyword_phrases:
-        content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+        if candidate_keyword_phrases:
+            content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
 
-    if content_words and candidate_keyword_phrases:
-        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(content_words.keys()))
+        if content_words and candidate_keyword_phrases:
+            word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(content_words.keys()))
 
-    if word_degrees and content_words:
-        word_scores = calculate_word_scores(word_degrees, content_words)
+        if word_degrees and content_words:
+            word_scores = calculate_word_scores(word_degrees, content_words)
 
-    if word_scores and candidate_keyword_phrases:
-        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+        if word_scores and candidate_keyword_phrases:
+            keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
+                                                                                    word_scores)
 
-    if keyword_phrases_with_scores:
-        top_n = get_top_n(keyword_phrases_with_scores, 2, 3)
+        if keyword_phrases_with_scores:
+            print(get_top_n(keyword_phrases_with_scores, 10, 5))
 
-    if candidate_keyword_phrases and phrases:
-        candidate_keyphrases_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
-                                                                                    phrases)
+        if candidate_keyword_phrases and phrases:
+            candidate_keyphrases_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
+                                                                                              phrases)
 
-    if candidate_keyphrases_adjoining and word_scores:
-        cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidate_keyphrases_adjoining, word_scores, stop_words)
+        if candidate_keyphrases_adjoining and word_scores and stopwords:
+            cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
+                candidate_keyphrases_adjoining, word_scores, stopwords)
 
-    RESULT = cumulative_score_with_stopwords
+            if cumulative_score_with_stopwords:
+                return cumulative_score_with_stopwords
+
+
+    keyphrases(corpus['gagarin'], stop_words)
+    keyphrases(corpus['genome_engineering'], stop_words)
+    keyphrases(corpus['albatross'], stop_words)
+    keyphrases(corpus['pain_detection'], stop_words)
+
+    polish_stopwords = load_stop_words(ASSETS_PATH/'stopwords.json')
+    if polish_stopwords:
+        print(keyphrases(read_target_text(ASSETS_PATH/'polish.txt'), polish_stopwords['pl']))
+
+    unknown_stopwords = generate_stop_words(read_target_text(ASSETS_PATH/'unknown.txt'), 5)
+    if unknown_stopwords:
+        unknown_keyphrases = keyphrases(read_target_text(ASSETS_PATH/'unknown.txt'), unknown_stopwords)
+        print(unknown_keyphrases)
+
+    RESULT = unknown_keyphrases
 
     assert RESULT, 'Keywords are not extracted'
