@@ -11,14 +11,12 @@ from lab_1_keywords_tfidf.main import (check_list, check_positive_int)
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
+def check_dict(user_input: Any, key_type: type, value_type: type):
     """
-    Checks weather object is dictionary
-    hat has keys and values of certain type
+    Checks if the dict is not empty and
+    if the keys and values are of a certain type
     """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input and can_be_empty is False:
+    if not (user_input and isinstance(user_input, dict)):
         return False
     for key, value in user_input.items():
         if not (isinstance(key, key_type) and isinstance(value, value_type)):
@@ -127,7 +125,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, False)):
+    if not (check_dict(word_degrees, str, int) and check_dict(word_frequencies, str, int)):
         return None
     word_scores = {}
     for key in word_degrees:
@@ -147,7 +145,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_list(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float, False)):
+    if not (check_list(candidate_keyword_phrases, tuple, False) and check_dict(word_scores, str, float)):
         return None
     keyword_phrases_with_scores = {}
     for phrase in candidate_keyword_phrases:
@@ -173,7 +171,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not (check_dict(keyword_phrases_with_scores, tuple, float, False) and check_positive_int(top_n)
+    if not (check_dict(keyword_phrases_with_scores, tuple, float) and check_positive_int(top_n)
             and check_positive_int(max_length)):
         return None
     appropriate_phrases = {}
