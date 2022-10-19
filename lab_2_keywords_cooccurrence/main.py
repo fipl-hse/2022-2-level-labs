@@ -4,9 +4,9 @@ Extract keywords based on co-occurrence frequency
 """
 import json
 from pathlib import Path
+import re
 from string import punctuation
 from typing import Optional, Sequence, Mapping, Any
-import re
 from lab_1_keywords_tfidf.main import check_list
 
 KeyPhrase = tuple[str, ...]
@@ -43,7 +43,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         text = text.replace(i, '!')
     text_list = text.split('!')
     words_list = [strings.strip() for strings in text_list]
-    return [string for string in words_list if string != '']
+    return [string for string in words_list if string]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -116,9 +116,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         for word in phrase:
             if word in content_words:
                 degrees_dict[word] = degrees_dict.get(word, 0) + len(phrase)
-        for word in content_words:
-            if word not in degrees_dict.keys():
-                degrees_dict[word] = 0
+    for word in content_words:
+        if word not in degrees_dict.keys():
+            degrees_dict[word] = 0
     return degrees_dict
 
 
@@ -163,7 +163,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             if word not in word_scores.keys():
                 return None
             value += int(word_scores[word])
-            cumulative_score[phrase] = value
+        cumulative_score[phrase] = value
     return cumulative_score
 
 
