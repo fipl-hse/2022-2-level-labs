@@ -173,10 +173,10 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         or not isinstance(max_length, int) or not keyword_phrases_with_scores or max_length<=0:
         return None
     sorted_phrases = []
-    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True, key=lambda i: keyword_phrases_with_scores[i])
     for i in keyword_phrases_with_scores:
         if len(i) <= max_length:
-            sorted_phrases.append(' '.join(i))
+            sorted_phrases.append(i)
+    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True, key=lambda i: keyword_phrases_with_scores[i])
     return sorted_phrases[:top_n]
 
 
@@ -203,25 +203,24 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list)\
         or not candidate_keyword_phrases or not phrases:
         return None
-    keyword_pairs = list(pairwise(candidate_keyword_phrases))
-    valid_keyword_pairs = [keyword_pair for keyword_pair in set(keyword_pairs)
-                           if keyword_pairs.count(keyword_pair) >= 2]
-    adjoined_phrases = []
-    for phrase in phrases:
-        phrase_list = phrase.lower().split()
-        for keyword_pair in valid_keyword_pairs:
-            pair_beg = keyword_pair[0]
-            pair_end = keyword_pair[1]
-            if ' '.join(pair_beg) not in phrase or ' '.join(pair_end) not in ' '.join(phrase_list):
-                continue
-            for index in range(len(phrase_list) - 2):
-                if phrase_list[index] == pair_beg[-1] and phrase_list[index + 2] == pair_end[0]:
-                    adjoined_phrase = phrase_list[index:index + 4]
-                    if ' '.join(adjoined_phrase) in ' '.join(phrase_list):
-                        adjoined_phrases.append(tuple(adjoined_phrase))
-    valid_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
-                              if adjoined_phrases.count(adjoined_phrase) >= 2]
-    return valid_adjoined_phrases
+    new_candidates = []
+    possible_candidates = []
+    new_candidates.append(pairwise(candidate_keyword_phrases))
+    no_duplicates = list(dict.fromkeys(new_candidates))
+    for i in new_candidates:
+        if i not in no_duplicates:
+            possible_candidates.append(i)
+    possible_candidates = list(dict.fromkeys(possible_candidates))
+    for i in phrases:
+        i = i.split()
+    phrases_with_ajoin = []
+    for i in phrases:
+        for candidate in possible_candidates:
+            phrase = r'(\b\w*\b)(?<= ' + candidate[0][-1] + ')(?= ' + candidate[-1][0] + ')'
+            stops = re.findall(phrase, i)
+            for i in stops:
+                phrases_with_ajoin += (*candidate[0], i, *candidate[1])
+    return phrases_with_ajoin
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -243,14 +242,12 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         or not isinstance(stop_words, list) or not candidate_keyword_phrases or not word_scores\
         or not stop_words:
         return None
-    c_score_dict = {}
-    for phrase in candidate_keyword_phrases:
-        c_score = 0
-        for word in phrase:
-            if word not in stop_words:
-                c_score += word_scores[word]
-        c_score_dict[phrase] = c_score
-    return c_score_dict
+    advanced_cum_score = {}
+    for candidate in candidate_keyword_phrases:
+        for i in candidate:
+            if i not in stop_words:
+                advanced_cum_score[i] += word_scores[i]
+    return advanced_cum_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
