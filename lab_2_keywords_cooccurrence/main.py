@@ -200,28 +200,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list)\
-        or not candidate_keyword_phrases or not phrases:
-        return None
-    new_candidates = []
-    possible_candidates = []
-    new_candidates = pairwise(candidate_keyword_phrases)
-    no_duplicates = list(dict.fromkeys(new_candidates))
-    for i in new_candidates:
-        if i not in no_duplicates:
-            possible_candidates.append(i)
-    possible_candidates = list(dict.fromkeys(possible_candidates))
-    split_phrases = []
-    for i in phrases:
-        split_phrases.append(i.split())
-    phrases_with_ajoin = []
-    for i in split_phrases:
-        for candidate in possible_candidates:
-            phrase = fr'(\b\w*\b)(?<= {candidate[0][-1]})(?= {candidate[-1][0]})'
-            stops = re.findall(phrase, i)
-            for i in stops:
-                phrases_with_ajoin += (*candidate[0], i, *candidate[1])
-    return phrases_with_ajoin
+    pass
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -239,18 +218,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict)\
-        or not isinstance(stop_words, list) or not candidate_keyword_phrases or not word_scores\
-        or not stop_words:
-        return None
-    advanced_cum_score = {}
-    for candidate in candidate_keyword_phrases:
-        score = 0
-        for i in candidate:
-            if i not in stop_words:
-                score += word_scores[i]
-        advanced_cum_score[candidate] = score
-    return advanced_cum_score
+    pass
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
