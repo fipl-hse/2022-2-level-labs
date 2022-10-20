@@ -130,14 +130,19 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_types(candidate_keyword_phrases, tuple, False) or not correct_types(content_words, str, False):
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return None
+    if not isinstance(content_words, list) or not content_words:
         return None
     word_degrees = {}
     for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in word_degrees and word in content_words:
+                word_degrees[word] += len(phrase)
+            elif word in content_words:
+                word_degrees[word] = len(phrase)
         for word in content_words:
-            if word in phrase:
-                word_degrees[word] = len(phrase) + word_degrees.get(word, 0)
-            elif word not in word_degrees:
+            if word not in word_degrees.keys():
                 word_degrees[word] = 0
     return word_degrees
 
