@@ -53,17 +53,8 @@ if __name__ == "__main__":
     word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
     cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
     top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
-    #candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
-    #    candidate_keyword_phrases, extracted_phrases)
-    candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining([('времена', 'советского', 'союза', 'исследование', 'космоса'),
-                                     ('одной',), ('важнейших', 'задач'), ('времена', 'союза', 'прошли'),
-                                     ('одной',), ('важнейших', 'задач'), ('исследование', 'космоса'),
-                                     ('ящик',), ('железа',), ('самое',), ('ящик',), ('железа',)], ['Во времена Советского Союза исследование космоса было одной из важнейших задач',
-                   'И именно из СССР была отправлена ракета',
-                   'совершившая первый полет в космос',
-                   'Произошло это 12 апреля 1961 года',
-                   'было это одной из важнейших задач',
-                   'Ящик для железа не то же самое, что ящик из железа '])
+    candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
+        candidate_keyword_phrases, extracted_phrases)
     cumulative_score_for_candidates_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
         candidate_keyword_phrases_with_adjoining, word_scores, stop_words)
 

@@ -380,10 +380,10 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     for phrase in candidate_keyword_phrases:
         cumulative_score = 0
         for word in phrase:
-            if word in word_scores.keys():
-                cumulative_score += int(word_scores[word])
-            elif word in stop_words:
+            if word in stop_words:
                 cumulative_score += 0
+            elif word in word_scores.keys():
+                cumulative_score += int(word_scores[word])
         cumulative_score_for_candidates_dict[phrase] = cumulative_score
     return cumulative_score_for_candidates_dict
 
