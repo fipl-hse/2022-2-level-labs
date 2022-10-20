@@ -93,7 +93,6 @@ class TextPreprocessor:
         pass
 
 
-# 4
 class TextEncoder:
     """
     A class to encode string sequence into matching integer sequence
@@ -360,7 +359,6 @@ class AdjacencyMatrixGraph:
         pass
 
 
-# 8
 class EdgeListGraph:
     """
     A class to represent graph as a list of edges
@@ -516,7 +514,6 @@ class EdgeListGraph:
         pass
 
 
-# 6
 class VanillaTextRank:
     """
     Basic TextRank implementation
@@ -598,10 +595,10 @@ class VanillaTextRank:
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
                 incidental_vertices = [vertex for vertex in vertices
-                                       if self._graph.is_incidental(scored_vertex, vertex) == 0]
+                                       if self._graph.is_incidental(scored_vertex, vertex) == 1]
                 self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
-            if sum(abs_score_diff) >= self._convergence_threshold:  # convergence condition
+            if sum(abs_score_diff) <= self._convergence_threshold:
                 break
 
     # Step 5.4
@@ -629,7 +626,6 @@ class VanillaTextRank:
         pass
 
 
-# 8
 class PositionBiasedTextRank(VanillaTextRank):
     """
     Advanced TextRank implementation: positions of tokens in text are taken into consideration
