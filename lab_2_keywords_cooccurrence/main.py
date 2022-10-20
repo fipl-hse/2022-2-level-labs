@@ -208,12 +208,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
         if pair not in possible_pairs:
-            possible_pairs[pair] = 1
+            possible_pairs[pair] = possible_pairs.get(pair, 1)
         else:
             possible_pairs[pair] += 1
     appropriate_pairs = []
     for pair in possible_pairs:
-        if possible_pairs.get(pair, 0) > 1:
+        if possible_pairs[pair] > 1:
             appropriate_pairs.append([' '.join(element) for element in pair])
     phrases_with_stopwords = []
     for element in appropriate_pairs:
