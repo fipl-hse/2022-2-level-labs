@@ -12,13 +12,14 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_input(user_input: Any, required_type: type) -> object:
+def check_input(user_input: Any, required_type: type) -> object | bool:
     """
     Checks if the input is as required, and it is not empty (for int, float and str)
     """
-    if user_input and isinstance(user_input, required_type):
-        return user_input and isinstance(user_input, required_type)
-    return False
+    # if user_input and isinstance(user_input, required_type):
+    #     return user_input and isinstance(user_input, required_type)
+    # return False
+    return user_input and isinstance(user_input, required_type)
 
 
 def check_list(user_input: Any, elements_required_type: type) -> bool:
