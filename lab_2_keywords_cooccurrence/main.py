@@ -12,7 +12,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_input(user_input: Any, required_type: type) -> bool:
+def check_input(user_input: Any, required_type: type) -> object:
     """
     Checks if the input is as required, and it is not empty (for int, float and str)
     """
