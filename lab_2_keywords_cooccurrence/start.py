@@ -12,9 +12,7 @@ from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               calculate_cumulative_score_for_candidates,
                                               get_top_n,
                                               extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words,
-                                              load_stop_words,
-                                              generate_stop_words)
+                                              calculate_cumulative_score_for_candidates_with_stop_words)
 def read_target_text(file_path: Path) -> str:
     """
     Utility functions that reads the text content from the file

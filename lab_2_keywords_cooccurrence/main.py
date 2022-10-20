@@ -6,7 +6,6 @@ from itertools import pairwise
 from pathlib import Path
 import re
 from typing import Optional, Sequence, Mapping, Union
-import json
 from lab_1_keywords_tfidf.main import check_list, check_dict
 
 
