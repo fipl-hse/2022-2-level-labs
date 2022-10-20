@@ -100,12 +100,11 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     if not check_list(candidate_keyword_phrases, tuple, False) or not  check_list(content_words, str, False):
         return None
     dict_degree = {}
-    for phrase in candidate_keyword_phrases:
-        for word in content_words:
+    for word in content_words:
+        dict_degree[word] = 0
+        for phrase in candidate_keyword_phrases:
             if word in phrase:
-                dict_degree[word] = len(phrase) + dict_degree.get(word, 0)
-            elif word not in dict_degree:
-                dict_degree[word] = 0
+                dict_degree[word] += len(phrase)
     return dict_degree
 
 
@@ -147,11 +146,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
-        cumulative_score = 0
+        cumulative_score = 0.0
         for word in phrase:
             if word not in word_scores:
                 return None
-            cumulative_score += int(word_scores[word])
+            cumulative_score += word_scores[word]
         cumulative_score_dict[phrase] = cumulative_score
     return cumulative_score_dict
 
@@ -215,12 +214,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for item in list_of_pairs:
         frequencies[item] = frequencies.get(item, 0) + 1
     stop_words_list = []
-    for key_word in frequencies:
-        if frequencies[key_word] > 2:
-            continue
-        for phrase in phrases:
-            if (key_word[0] and key_word[1]) in phrase:
-                stop_words_list.extend(re.findall(f'{key_word[0]}.*{key_word[1]}', phrase))
+    for key_word in frequencies.keys():
+        if frequencies[key_word] > 1:
+            for phrase in phrases:
+                if (key_word[0] and key_word[1]) in phrase:
+                    stop_words_list.extend(re.findall(f'{key_word[0]}.*{key_word[1]}', phrase))
     new_keywords_phrases = []
     for keywords_with_stop_words in dict.fromkeys(stop_words_list):
         if stop_words_list.count(keywords_with_stop_words) > 1:
@@ -251,7 +249,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         candidates_cumulative_score[phrase] = 0
         for word in phrase:
             if word not in stop_words:
-                candidates_cumulative_score[phrase] += int(word_scores[word])
+                candidates_cumulative_score[phrase] += word_scores[word]
     return candidates_cumulative_score
 
 
