@@ -48,11 +48,10 @@ if __name__ == "__main__":
 
     def lab_2(text, top_n, max_length):
         extracted_phrases = extract_phrases(text)
-        if not extracted_phrases:
-            return None
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
-        if not candidate_keyword_phrases:
-            return None
+        if extracted_phrases:
+            candidate_keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+            if not candidate_keyword_phrases:
+                return None
         frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
         if not frequencies_for_content_words:
             return None
