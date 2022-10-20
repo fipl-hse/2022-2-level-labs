@@ -3,12 +3,15 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from typing import Optional, Sequence, Mapping
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words,
                                               calculate_word_degrees, calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
                                               get_top_n, extract_candidate_keyword_phrases_with_adjoining,
                                               calculate_cumulative_score_for_candidates_with_stop_words)
+KeyPhrase = tuple[str, ...]
+KeyPhrases = Sequence[KeyPhrase]
 
 
 def read_target_text(file_path: Path) -> str:
@@ -83,7 +86,8 @@ if __name__ == "__main__":
               'cumulative_score_for_candidates_with_stop_words = ', cumulative_score_with_stop_words)
         return True
 
-    def lab_2_2(candidate_keyword_phrases: list, extracted_phrases: list[str], word_scores: dict) -> tuple:
+    def lab_2_2(candidate_keyword_phrases: Optional[KeyPhrases],
+                extracted_phrases: Sequence[str], word_scores: Mapping[str, float]) -> tuple:
         candidate_keyword_phrases_with_adjoining = None
         cumulative_score_with_stop_words = None
         if candidate_keyword_phrases and extracted_phrases:
