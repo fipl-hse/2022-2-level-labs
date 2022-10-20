@@ -27,7 +27,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     return not_empty_phrases_list
 
 
-def check_type_for_extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]):
+def check_type_for_extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> bool:
     """
     check type for_extract_candidate_keyword_phrases()
     """
@@ -258,7 +258,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     return res
 
 
-def check_types(candidate_keyword_phrases: KeyPhrases, phrases: Sequence[str]):
+def check_types(candidate_keyword_phrases: KeyPhrases, phrases: Sequence[str]) -> bool:
     """
     chek types for extract_candidate_keyword_phrases_with_adjoining
     """
@@ -278,7 +278,7 @@ def check_types(candidate_keyword_phrases: KeyPhrases, phrases: Sequence[str]):
     return True
 
 
-def get_unique_twice_pair(candidate_keyword_phrases):
+def get_unique_twice_pair(candidate_keyword_phrases) -> tuple:
     """
     get_unique_twice_pair for extract_candidate_keyword_phrases_with_adjoining
     """
@@ -343,8 +343,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 begin_index = phrase.index(str1)
                 end_index = phrase.index(str2) + len(str2)
                 new_str = phrase[begin_index:end_index]
-                new_str = tuple(new_str.split())
-                new_phrases.append(new_str)
+                new_tuple = tuple(new_str.split())
+                new_phrases.append(new_tuple)
     new_candidates = []
     for item in new_phrases:
         if item:
@@ -355,7 +355,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
 def check_type_for_calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
-                                                              stop_words: Sequence[str]):
+                                                              stop_words: Sequence[str]) -> bool:
     """
     check_type_for_calculate_cumulative_score_for_candidates_with_stop_words
     """
