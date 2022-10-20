@@ -2,11 +2,97 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
+import re
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Union, Any, Type
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def for_i_empty_checker(collection: Union[set, dict, list, tuple]) -> bool:
+    """
+    Check if collection's items are False
+
+    Parameters:
+    collection: Union[set, dict, list, tuple]: collection, which includes some items
+
+    Returns:
+    bool: True, if items are not False (not empty, or not 0, if numbers) and False otherwise
+    """
+    return bool(collection and all(collection))
+
+
+def my_isinstance(instance: Any, type_of_instance: Type[Any]) -> bool:
+    """
+    Distincts int and bool compared to built-in isinstance() function.
+
+    Parameters:
+    instance: Any
+    type_of_instance: Any
+
+    Returns:
+    bool: True if instance's type is expected type, False, if instance's type is bool and expected type
+    """
+
+    if type_of_instance is not int:
+        return bool(isinstance(instance, type_of_instance) and instance)
+    return bool(instance and not isinstance(instance, bool) and isinstance(instance, int))
+
+
+def for_i_type_checker(collection: Union[set, list, tuple],
+                       type_of_collection: Type[Any],
+                       type_of_instance: Type[Any]) -> bool:
+    """
+    Acts like my_isinstance for every collection's item
+
+    Parameters:
+    collection: Union[set, dict, list, tuple]
+    type_of_collection: Union[set, dict, list, tuple]
+    type_of_instance: Any
+
+    Returns:
+    bool: True if instance's type is expected type, False, if instance's
+    type is bool and expected type is int or if expected collection's type
+    doesn't equal collection's type
+    """
+
+    return (my_isinstance(collection, type_of_collection)
+            and all(map(lambda x: my_isinstance(x, type_of_instance), collection)))
+
+
+def is_dic_correct(dic: dict,
+                   allow_false_items: bool,
+                   key_type: Type[Any],
+                   value_type: Any) -> bool:
+    """
+    Checks dictionary on being empty, having False items in keys and values,
+    correspondence of keys and values to the types we expect to observe
+
+    Parameters:
+    dic: dict
+    allow_false_items: bool
+    key_type: Union[int, float, str, tuple]
+    value_type: Any
+
+    Returns:
+    bool: True if dict is not empty,
+    it's keys and values correspond to expected type
+    and deprived of False items, else: False
+    """
+
+    if not my_isinstance(dic, dict):
+        return False
+
+    keys = list(dic.keys())
+    values = list(dic.values())
+    is_empty = bool(allow_false_items or dic)
+    if is_empty:
+        return (for_i_type_checker(keys, list, key_type)
+                and for_i_type_checker(values, list, value_type))
+
+    return (for_i_type_checker(keys, list, key_type) and for_i_type_checker(values, list, value_type)
+            and for_i_empty_checker(keys) and for_i_empty_checker(values) and is_empty)
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,7 +103,13 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not my_isinstance(text, str):
+        return None
+    punct = r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~–—«»“”"
+    pattern = re.compile(rf"[{punct}]+(?=[$\s])|(?!=\w)[{punct}]+")
+    #  ?= -- positive lookahead
+    #  ?!= -- negative lookahead
+    return [phrase.strip() for phrase in re.split(pattern, text) if phrase]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +121,14 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (my_isinstance(phrases, list) and my_isinstance(stop_words, list)):
+        return None
+
+    text_splited = " † ".join(phrases).lower().split()
+    stop_words_destroyed = " ".join([word if word not in stop_words else "†" for word in text_splited])
+    key_phrases_empty_items = [tuple(phrase.split()) for phrase in re.split("†", stop_words_destroyed)]
+    key_phrases = list(filter(lambda x: x != tuple(), key_phrases_empty_items))
+    return key_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
