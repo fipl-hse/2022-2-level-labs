@@ -108,8 +108,6 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         for phrase in candidate_keyword_phrases:
             if word in phrase:
                 wdegree += len(phrase)
-            else:
-                continue
         wd_dict[word] = wdegree
     return wd_dict
 
