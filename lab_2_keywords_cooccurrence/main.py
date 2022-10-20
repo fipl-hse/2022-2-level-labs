@@ -244,6 +244,12 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(stop_words, str, False) \
             or not check_dict(word_scores, str, Union[int, float], False):
         return None
+    for key, value in word_scores.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
+            if isinstance(value, int):
+                value = float(value)
+            else:
+                return None
     candidates_cumulative_score = {}
     for phrase in candidate_keyword_phrases:
         candidates_cumulative_score[phrase] = 0
