@@ -265,18 +265,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    if not isinstance(text, str) or not isinstance(max_length, int) or max_length < 0 or not text:
-        return None
-    punctuation = r',;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'
-    for substitute in punctuation:
-        text = text.replace(substitute, '')
-    word_list = text.lower().split()
-    frequencies_dict = {}
-    for word in word_list:
-        frequencies_dict[word] = word_list.count(word)
-    sorted_frequencies = sorted(frequencies_dict.values())
-    percentile = int((80/100) * len(sorted_frequencies))
-    return [key for key, value in frequencies_dict.items() if percentile <= value and len(key) <= max_length]
+    pass
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -285,7 +274,4 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    if not isinstance(path, Path):
-        return None
-    with open(path, 'r', encoding='utf-8') as stop_words:
-        return dict(json.load(stop_words))
+    pass
