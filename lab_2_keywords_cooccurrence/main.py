@@ -4,7 +4,6 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-import re
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -193,9 +192,8 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict):
-        return None
-    if not candidate_keyword_phrases or not word_scores:
+    if (not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict)
+            or not candidate_keyword_phrases or not word_scores):
         return None
     for key, value in word_scores.items():
         if not (isinstance(key, str) and isinstance(value, float)):
@@ -241,9 +239,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         for item in key:
             if not isinstance(item, str):
                 return None
-    if not isinstance(top_n, int) or top_n<1:
-        return None
-    if not isinstance(max_length, int) or max_length<1:
+    if not isinstance(top_n, int) or top_n<1 or not isinstance(max_length, int) or max_length<1:
         return None
 
     keyword_phrases_with_scores_limited = {}
@@ -351,9 +347,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list):
-        return None
-    if not candidate_keyword_phrases:
+    if (not isinstance(candidate_keyword_phrases, list)
+            or not isinstance(word_scores, dict) or not isinstance(stop_words, list) or
+            not candidate_keyword_phrases or not word_scores or not stop_words):
         return None
     for item in candidate_keyword_phrases:
         if not isinstance(item, tuple):
@@ -361,17 +357,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         for word in item:
             if not isinstance(word, str):
                 return None
-    if not isinstance(word_scores, dict):
-        return None
-    if not word_scores:
-        return None
     for key, value in word_scores.items():
         if not (isinstance(key, str) and isinstance(value, (int, float))):
             return None
-    if not isinstance(stop_words, list):
-        return None
-    if not stop_words:
-        return None
     for item1 in stop_words:
         if not isinstance(item1, str):
             return None
