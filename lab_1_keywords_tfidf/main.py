@@ -164,16 +164,15 @@ def calculate_tf(frequencies: dict[str, int]) -> Optional[dict[str, float]]:
 
 def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optional[dict[str, float]]:
     """
-       Calculates TF-IDF score for each of the tokens
-       based on its TF and IDF scores
+    Calculates TF-IDF score for each of the tokens
+    based on its TF and IDF scores
 
-       Parameters:
-       term_freq (Dict): A dictionary with tokens and its corresponding TF values
-       idf (Dict): A dictionary with tokens and its corresponding IDF values
+    Parameters:
+    term_freq (Dict): A dictionary with tokens and its corresponding TF values
+    idf (Dict): A dictionary with tokens and its corresponding IDF values
 
-       Returns:
-       Dict: A dictionary with tokens and its corresponding TF-IDF values
-
+    Returns:
+    Dict: A dictionary with tokens and its corresponding TF-IDF values
     In case of corrupt input arguments, None is returned
     """
     if not (check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True)):
