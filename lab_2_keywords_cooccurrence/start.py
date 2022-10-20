@@ -48,7 +48,7 @@ if __name__ == "__main__":
     }
 
 
-    def operations(text: str, stop_word: Sequence[str]):
+    def operations(text: str, stop_word: Sequence[str]) -> None:
         """
         Functions from main.py altogether
         """
