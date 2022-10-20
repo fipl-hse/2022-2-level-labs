@@ -47,8 +47,8 @@ if __name__ == "__main__":
 
     NUM_FOR_TOP = 0
     for key, values in corpus.items():
-        (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, WORD_DEGREE, WORD_SCORE,
-         CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN, CONTENT_WORDS, TOP_N_ADJOIN, TOP_N) = [None for notdef in range(11)]
+        (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, WORD_DEGREE, WORD_SCORE, CUMULATIVE_SCORE, KEY_PHR_ADJOIN,
+         CUMULATIVE_SCORE_ADJOIN, CONTENT_WORDS, TOP_N_ADJOIN, TOP_N) = [None for notdef in range(11)]
         FILE_NAME = key
         FILE_READ = values
         NUM_FOR_TOP += 2
