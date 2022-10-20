@@ -48,6 +48,14 @@ if __name__ == "__main__":
 
     def lab_2(text: str, top_n: int, max_length: int) -> list[str]:
         extracted_phrases = extract_phrases(text)
+        candidate_keyword_phrases = None
+        frequencies_for_content_words = None
+        word_degrees = None
+        word_scores = None
+        cumulative_score_for_candidates = None
+        top_n_phrases = None
+        candidate_keyword_phrases_with_adjoining = None
+        cumulative_score_for_candidates_with_stop_words = None
         if extracted_phrases:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
             if candidate_keyword_phrases:
@@ -62,10 +70,14 @@ if __name__ == "__main__":
                                 candidate_keyword_phrases, word_scores)
                             if cumulative_score_for_candidates:
                                 top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
-        candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
-            candidate_keyword_phrases, extracted_phrases)
-        cumulative_score_for_candidates_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidate_keyword_phrases_with_adjoining, word_scores, stop_words)
+                                if candidate_keyword_phrases and extracted_phrases:
+                                    candidate_keyword_phrases_with_adjoining = \
+                                        extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
+                                                                                         extracted_phrases)
+                                    if candidate_keyword_phrases_with_adjoining and word_scores and stop_words:
+                                        cumulative_score_for_candidates_with_stop_words = \
+                                            calculate_cumulative_score_for_candidates_with_stop_words(
+                                                candidate_keyword_phrases_with_adjoining, word_scores, stop_words)
         print('extracted_phrases = ', extracted_phrases, '\n',
               'candidate_keyword_phrases = ',  candidate_keyword_phrases, '\n',
               'frequencies_for_content_words = ', frequencies_for_content_words, '\n',
@@ -75,7 +87,7 @@ if __name__ == "__main__":
               'top_n_phrases = ', top_n_phrases, '\n',
               'candidate_keyword_phrases_with_adjoining = ', candidate_keyword_phrases_with_adjoining, '\n',
               'cumulative_score_for_candidates_with_stop_words = ', cumulative_score_for_candidates_with_stop_words)
-        return top_n_phrases
+        return True
 
     for value in corpus.values():
         RESULT = lab_2(value, 3, 3)
