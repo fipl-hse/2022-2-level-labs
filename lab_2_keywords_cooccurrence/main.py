@@ -206,7 +206,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list)\
         or not candidate_keyword_phrases or not phrases:
         return None
-    new_candidates = []
     new_candidates = pairwise(candidate_keyword_phrases)
     possible_candidates = []
     no_duplicates = list(dict.fromkeys(new_candidates))
@@ -220,7 +219,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     phrases_with_ajoin = []
     for i in split_phrases:
         for candidate in possible_candidates:
-            phrase = fr'(\b\w*\b)(?<= {candidate[0][-1]})(?= {candidate[-1][0]})'
+            phrase = fr'(\b\w*\b)(?<={candidate[0][-1]} )(?= {candidate[1][0]})'
             stops = findall(phrase, i)
             for stop in stops:
                 phrases_with_ajoin += (*candidate[0], stop, *candidate[1])
