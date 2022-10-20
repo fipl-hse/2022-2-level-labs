@@ -274,5 +274,3 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :return: a dictionary containing the language names and corresponding stop word lists
     """
     pass
-
-
