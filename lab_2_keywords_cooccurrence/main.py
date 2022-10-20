@@ -79,9 +79,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     low_phrases = []
     for i in phrases:
-        low_phrases.append(i.lower())
+        low_phrases.append(i.lower().split())
     for i in range(len(low_phrases)):
-        low_phrases[i] = low_phrases[i].split()
+        low_phrases[i] = low_phrases[i]
     candidate_keyword_phrases = []
     for one_phrase in low_phrases:
         new_tuple = []
@@ -130,7 +130,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not correct_types(candidate_keyword_phrases, tuple, False) or not check_dict(content_words, str, False):
+    if not correct_types(candidate_keyword_phrases, tuple, False) or not correct_types(content_words, str, False):
         return None
     word_degrees = {}
     for phrase in candidate_keyword_phrases:
@@ -243,6 +243,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+    pass
+
 
 
 

@@ -3,18 +3,13 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from typing import Sequence
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words,
                                               calculate_word_degrees,
                                               calculate_word_scores,
                                               calculate_cumulative_score_for_candidates,
-                                              get_top_n,
-                                              extract_candidate_keyword_phrases_with_adjoining,
-                                              calculate_cumulative_score_for_candidates_with_stop_words,
-                                              generate_stop_words,
-                                              load_stop_words)
+                                              get_top_n)
 
 
 
@@ -53,29 +48,28 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    PHRASES = None
-    RESULT = None
-    CANDIDATES = None
-    DICT_WITH_FREQUENCIES = None
-    DICT_WITH_DEGREES = None
-    DICT_WITH_SCORES = None
-    DICT_WITH_CUM = None
-    for key in corpus:
-        if corpus[key]:
-            PHRASES = extract_phrases(corpus[key])
-        if PHRASES and stop_words:
-            CANDIDATES = extract_candidate_keyword_phrases(PHRASES, stop_words)
-        if CANDIDATES:
-            DICT_WITH_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATES)
-        if CANDIDATES and DICT_WITH_FREQUENCIES:
-            DICT_WITH_DEGREES = calculate_word_degrees(CANDIDATES, list(DICT_WITH_FREQUENCIES.keys()))
-        if DICT_WITH_DEGREES and DICT_WITH_FREQUENCIES:
-            DICT_WITH_SCORES = calculate_word_scores(DICT_WITH_DEGREES, DICT_WITH_FREQUENCIES)
-        if CANDIDATES and DICT_WITH_SCORES:
-            DICT_WITH_CUM = calculate_cumulative_score_for_candidates(CANDIDATES, DICT_WITH_SCORES)
-        if DICT_WITH_CUM:
-            RESULT = get_top_n(DICT_WITH_CUM, 5, 2)
-            print('for', key, 'text, key phrases are', RESULT)
+    keyword_phrases = None
+    content_words = None
+    word_degrees = None
+    word_scores = None
+    cumulative_scores = None
+
+    for text in corpus:
+        extracted_phrases = extract_phrases(corpus[text])
+        if extracted_phrases:
+            keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+        if keyword_phrases:
+            content_words = calculate_frequencies_for_content_words(keyword_phrases)
+        if keyword_phrases and content_words:
+            word_degrees = calculate_word_degrees(keyword_phrases, list(content_words.keys()))
+        if word_degrees:
+            word_scores = calculate_word_scores(word_degrees, content_words)
+        if word_scores:
+            cumulative_scores = calculate_cumulative_score_for_candidates(keyword_phrases, word_scores)
+        if cumulative_scores:
+            print(get_top_n(cumulative_scores, 5, 5))
+
+    RESULT = 'done'
 
     assert RESULT, 'Keywords are not extracted'
 
