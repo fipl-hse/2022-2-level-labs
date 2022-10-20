@@ -101,6 +101,6 @@ if __name__ == "__main__":
         print('unknown')
         operations(read_target_text(ASSETS_PATH / 'unknown.txt'), generated_stop_words)
 
-        # RESULT = None
-        #
-        # assert RESULT, 'Keywords are not extracted'
+        RESULT = None
+
+        assert RESULT, 'Keywords are not extracted'
