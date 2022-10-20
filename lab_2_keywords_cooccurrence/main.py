@@ -53,7 +53,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     list_of_phrases = re.split(r"[^\w ]+", text)
     for phrase in list_of_phrases:
         list_of_phrases[list_of_phrases.index(phrase)] = phrase.strip()
-    list_of_phrases_copy = [phrase for phrase in list_of_phrases if phrase != '']
+    list_of_phrases_copy = [phrase for phrase in list_of_phrases if phrase]
     return list_of_phrases_copy
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -236,10 +236,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             except IndexError:
                 break
             pair_of_phrases = re.findall(fr'{left_phrase} \w+ {right_phrase}', ' '.join(phrases_lower))
-            key_phrases = [tuple(key_phrase.split()) for key_phrase
-                                    in pair_of_phrases if
-                                    len(set(pair_of_phrases)) == 1 and len(pair_of_phrases) >= 2]
-            key_phrases_with_stop_words.extend(key_phrases)
+            for pair in pair_of_phrases:
+                pair_counter = pair_of_phrases.count(pair)
+                t_pair = tuple(pair.split())
+                if pair_counter >= 2 and t_pair not in key_phrases_with_stop_words:
+                    key_phrases_with_stop_words.append(t_pair)
         key_phrases_with_stop_words_set = set(key_phrases_with_stop_words)
         return list(key_phrases_with_stop_words_set)
     return None
