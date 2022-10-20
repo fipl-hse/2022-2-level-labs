@@ -3,8 +3,8 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
 from string import punctuation
+from typing import Optional, Sequence, Mapping
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -21,8 +21,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         return None
     for i in punctuation:
         text = text.replace(i, ',')
-        list_split = text.split(',')
-        list_of_phrases = []
+    list_split = text.split(',')
+    list_of_phrases = []
     for token in list_split:
         token = token.strip()
         if token:
