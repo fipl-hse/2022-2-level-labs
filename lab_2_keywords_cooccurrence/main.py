@@ -140,7 +140,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word in word_scores:
                 cumulative_score += word_scores.get(word, 0)
-            else:
+            if word not in word_scores:
                 return None
         cumulative_score_dict[phrase] = cumulative_score
     return cumulative_score_dict
