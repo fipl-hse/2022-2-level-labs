@@ -278,7 +278,7 @@ def check_types(candidate_keyword_phrases: KeyPhrases, phrases: Sequence[str]) -
     return True
 
 
-def get_unique_twice_pair(candidate_keyword_phrases) -> tuple:
+def get_unique_twice_pair(candidate_keyword_phrases: KeyPhrases) -> tuple:
     """
     get_unique_twice_pair for extract_candidate_keyword_phrases_with_adjoining
     """
