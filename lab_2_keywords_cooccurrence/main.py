@@ -27,6 +27,21 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     return not_empty_phrases_list
 
 
+def check_type_for_extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]):
+    """
+    check type for_extract_candidate_keyword_phrases()
+    """
+    if not isinstance(phrases, list) or not isinstance(stop_words, list) or not stop_words or not phrases:
+        return False
+    for item in phrases:
+        if not isinstance(item, str):
+            return False
+    for item1 in stop_words:
+        if not isinstance(item1, str):
+            return False
+    return True
+
+
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
     """
     Creates a list of candidate keyword phrases by splitting the given phrases by the stop words
@@ -36,16 +51,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    #что делать с Sequence
-    if not isinstance(phrases, list) or not isinstance(stop_words, list) or not stop_words or not phrases:
+    if not check_type_for_extract_candidate_keyword_phrases(phrases, stop_words):
         return None
-    for item in phrases:
-        if not isinstance(item, str):
-            return None
-    for item1 in stop_words:
-        if not isinstance(item1, str):
-            return None
-
     key_phrases = []
     for phrase in phrases:
         phrase = phrase.lower()
@@ -346,6 +353,25 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     return new_candidates
 
 
+def check_type_for_calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
+                                                              word_scores: Mapping[str, float],
+                                                              stop_words: Sequence[str]):
+    """
+    check_type_for_calculate_cumulative_score_for_candidates_with_stop_words
+    """
+    is_true_words = not candidate_keyword_phrases or not word_scores or not stop_words
+    if (not isinstance(candidate_keyword_phrases, list)
+            or not isinstance(word_scores, dict) or not isinstance(stop_words, list) or is_true_words):
+        return False
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return False
+        for word in item:
+            if not isinstance(word, str):
+                return False
+    return True
+
+
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
                                                               stop_words: Sequence[str]) \
@@ -361,16 +387,10 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    is_true_words = not candidate_keyword_phrases or not word_scores or not stop_words
-    if (not isinstance(candidate_keyword_phrases, list)
-            or not isinstance(word_scores, dict) or not isinstance(stop_words, list) or is_true_words):
+    if not check_type_for_calculate_cumulative_score_for_candidates_with_stop_words(
+            candidate_keyword_phrases, word_scores, stop_words):
         return None
-    for item in candidate_keyword_phrases:
-        if not isinstance(item, tuple):
-            return None
-        for word in item:
-            if not isinstance(word, str):
-                return None
+
     for key, value in word_scores.items():
         if not (isinstance(key, str) and isinstance(value, (int, float))):
             return None
