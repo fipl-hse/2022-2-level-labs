@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, Tuple
 from string import punctuation
 import json
 
@@ -17,8 +17,9 @@ def correct_type(variable: Any, expected_type: type) -> bool:
     """
     if not isinstance(variable, expected_type) or not variable:
         return False
-    if isinstance(variable, int) and variable < 0:
-        return False
+    if isinstance(variable, int):
+        if variable < 0:
+            return False
     return True
 
 
@@ -158,8 +159,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not correct_type(keyword_phrases_with_scores, dict) \
             or not correct_type(top_n, int) or not correct_type(max_length, int):
         return None
-    sorted_keys = sorted(list(key for key in keyword_phrases_with_scores.keys() if len(key) <= max_length),
-                         reverse=True, key=lambda phrase: keyword_phrases_with_scores[phrase])[:top_n]
+    keys = [key for key in keyword_phrases_with_scores if len(key) <= max_length]
+    sorted_keys = sorted(keys, reverse=True, key=lambda phrase: keyword_phrases_with_scores[phrase])[:top_n]
     return [" ".join(item) for item in sorted_keys]
 
 
