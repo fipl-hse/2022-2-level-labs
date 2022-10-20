@@ -5,7 +5,8 @@ Co-occurrence-driven keyword extraction starter
 from pathlib import Path
 from main import (extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words,
                   calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates,
-                  get_top_n, extract_candidate_keyword_phrases_with_adjoining)
+                  get_top_n, extract_candidate_keyword_phrases_with_adjoining,
+                  calculate_cumulative_score_for_candidates_with_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -54,9 +55,18 @@ if __name__ == "__main__":
     top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
     candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
         candidate_keyword_phrases, extracted_phrases)
+    cumulative_score_for_candidates_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
+        candidate_keyword_phrases_with_adjoining, word_scores, stop_words)
 
-    print( extracted_phrases, '\n', candidate_keyword_phrases, '\n', frequencies_for_content_words, '\n', word_degrees, '\n', word_scores,
-          '\n', cumulative_score_for_candidates, '\n', top_n_phrases, '\n', candidate_keyword_phrases_with_adjoining)
+    print('extracted_phrases = ', extracted_phrases, '\n',
+          'candidate_keyword_phrases = ',  candidate_keyword_phrases, '\n',
+          'frequencies_for_content_words = ', frequencies_for_content_words, '\n',
+          'word_degrees = ',  word_degrees, '\n',
+          'word_scores = ',  word_scores, '\n',
+          'cumulative_score_for_candidates = ',  cumulative_score_for_candidates, '\n',
+          'top_n_phrases = ', top_n_phrases, '\n',
+          'candidate_keyword_phrases_with_adjoining = ', candidate_keyword_phrases_with_adjoining, '\n',
+          'cumulative_score_for_candidates_with_stop_words = ', cumulative_score_for_candidates_with_stop_words)
 
     RESULT = top_n_phrases
 

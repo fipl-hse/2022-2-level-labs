@@ -204,11 +204,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(word_scores, dict):
-        return None
     if not isinstance(candidate_keyword_phrases, list):
         return None
     if not candidate_keyword_phrases:
+        return None
+    if not isinstance(word_scores, dict):
         return None
     if not word_scores:
         return None
@@ -337,6 +337,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for item in new_phrases:
         if item:
             new_candidates.append(item)
+    new_candidates = list(set(new_candidates))
     return new_candidates
 
 
@@ -355,6 +356,44 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(candidate_keyword_phrases, list):
+        return None
+    if not candidate_keyword_phrases:
+        return None
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return None
+        for word in item:
+            if not isinstance(word, str):
+                return None
+    if not isinstance(word_scores, dict):
+        return None
+    if not word_scores:
+        return None
+    for key, value in word_scores.items():
+        if not (isinstance(key, str) and isinstance(value, float)):
+            return None
+    if not isinstance(stop_words, list):
+        return None
+    if not stop_words:
+        return None
+    for item1 in stop_words:
+        if not isinstance(item1, str):
+            return None
+
+    cumulative_score_for_candidates_dict = {}
+    cumulative_score = 0
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            if word in word_scores.keys():
+                cumulative_score += int(word_scores[word])
+            elif word in stop_words:
+                cumulative_score += 0
+            else:
+                return None
+        cumulative_score_for_candidates_dict[phrase] = cumulative_score
+        cumulative_score = 0
+    return cumulative_score_for_candidates_dict
     pass
 
 
