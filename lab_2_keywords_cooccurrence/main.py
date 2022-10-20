@@ -222,7 +222,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             phrase = fr'(\b\w*\b)(?<={candidate[0][-1]} )(?= {candidate[1][0]})'
             stops = findall(phrase, i)
             for stop in stops:
-                phrases_with_ajoin += (candidate[0] + stop + candidate[1])
+                phrases_with_ajoin += candidate[0] + tuple(stop) + candidate[1]
     return phrases_with_ajoin
 
 
