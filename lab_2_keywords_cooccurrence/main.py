@@ -170,7 +170,9 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(keyword_phrases_with_scores, dict) or not isinstance(top_n, int)\
-        or not isinstance(max_length, int) or not keyword_phrases_with_scores or max_length<=0:
+        or not isinstance(max_length, int) or not keyword_phrases_with_scores:
+        return None
+    if max_length < 0 or top_n < 0:
         return None
     new_phrases = []
     sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True, key=lambda i: keyword_phrases_with_scores[i])
