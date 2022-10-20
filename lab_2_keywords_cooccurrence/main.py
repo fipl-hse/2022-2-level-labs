@@ -42,8 +42,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for i in punctuation + "¡¿…⋯‹›«»“”⟨⟩–—":
         text = text.replace(i, ",")
     phrases = [phrase.strip() for phrase in text.split(",")]
-    phrases = [phrase for phrase in phrases if phrase]
-    return phrases
+    return [phrase for phrase in phrases if phrase]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
