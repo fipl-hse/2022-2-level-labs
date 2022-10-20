@@ -221,7 +221,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for i in split_phrases:
         for candidate in possible_candidates:
             phrase = fr'(\b\w*\b)(?<= {candidate[0][-1]})(?= {candidate[-1][0]})'
-            stops = re.findall(phrase, i)
+            stops = findall(phrase, i)
             for stop in stops:
                 phrases_with_ajoin += (*candidate[0], stop, *candidate[1])
     return phrases_with_ajoin
@@ -243,8 +243,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     In case of corrupt input arguments, None is returned
     """
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(word_scores, dict)\
-        or not isinstance(stop_words, list) or not candidate_keyword_phrases or not word_scores\
-        or not stop_words:
+        or not isinstance(stop_words, list):
+        return None
+    if not candidate_keyword_phrases or not word_scores or not stop_words:
         return None
     advanced_cum_score = {}
     for candidate in candidate_keyword_phrases:

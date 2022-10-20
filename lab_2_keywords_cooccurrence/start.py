@@ -79,7 +79,7 @@ if __name__ == "__main__":
     if CUM_SCORE:
         TOP_LIST = get_top_n(CUM_SCORE, 10, 3)
 
-    if cCANDIDATE_KEYWORD_PHRASES and PHRASES:
+    if CANDIDATE_KEYWORD_PHRASES and PHRASES:
         AJOIN_PHRASES = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
 
     if AJOIN_PHRASES and WORD_SCORES:
