@@ -67,13 +67,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     if not check_list(candidate_keyword_phrases, tuple, False):
         return None
     tokens = []
+    content_words = {}
     for phrase in candidate_keyword_phrases:
         for word in phrase:
             tokens.append(word)
-    frequencies = {}
     for word in tokens:
-        frequencies[word] = tokens.count(word)
-    return frequencies
+        content_words[word] = tokens.count(word)
+    return content_words
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -94,8 +94,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     for word in content_words:
         word_degrees[word] = 0
         for phrase in candidate_keyword_phrases:
-            if word in phrase:
-                word_degrees[word] += len(phrase)
+            if word not in phrase:
+                continue
+            word_degrees[word] += len(phrase)
     return word_degrees
 
 
