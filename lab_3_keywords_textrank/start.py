@@ -3,18 +3,6 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from string import punctuation
-import sys
-from time import time
-
-from lab_3_keywords_textrank.main import (
-    TextPreprocessor,
-    TextEncoder,
-    VanillaTextRank,
-    PositionBiasedTextRank,
-    AdjacencyMatrixGraph,
-    EdgeListGraph
-)
 
 # finding paths to the necessary utils
 PROJECT_ROOT = Path(__file__).parent
