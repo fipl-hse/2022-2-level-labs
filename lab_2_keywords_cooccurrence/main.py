@@ -19,7 +19,7 @@ def check_sequence(obj: Any, element_type: type, can_be_empty: bool) -> bool:
     :return: bool - True if the object is list containing elements of the given type, False otherwise
     """
     if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
-        if isinstance(obj, list) or isinstance(obj, tuple):
+        if isinstance(obj, (list, tuple)):
             for element in obj:
                 if isinstance(element, element_type):
                     return True
