@@ -295,6 +295,23 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+    if not isinstance(candidate_keyword_phrases, list):
+        return None
+    if not candidate_keyword_phrases:
+        return None
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return None
+        for word in item:
+            if not isinstance(word, str):
+                return None
+    if not isinstance(phrases, list):
+        return None
+    for item in phrases:
+        if not isinstance(item, str):
+            return None
+    if not phrases:
+        return None
     new_list = []
     twice_pair = []
     new_phrases = []
@@ -305,7 +322,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if new_list.count(pair) > 1:
             twice_pair.append(pair)
     unique_twice_pair = tuple(set(twice_pair))
-    for t_pair in twice_pair:
+    for t_pair in unique_twice_pair:
         str1 = t_pair[0]
         str2 = t_pair[1]
         for phrase in phrases:
@@ -316,7 +333,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 new_str = phrase[begin_index:end_index]
                 new_str = tuple(new_str.split())
                 new_phrases.append(new_str)
-    return new_phrases
+    new_candidates = []
+    for item in new_phrases:
+        if item:
+            new_candidates.append(item)
+    return new_candidates
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
