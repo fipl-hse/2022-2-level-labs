@@ -51,10 +51,10 @@ if __name__ == "__main__":
         cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
         print(get_top_n(cumulative_scores, 5, 2))
         key_phrases_with_sw = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
-        cumulative_scores_with_sw = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
+        CUMULATIVE_SCORES_WITH_SW = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
                                     word_scores, stop_words)
-        print(get_top_n(cumulative_scores_with_sw, 5, 4), '\n')
+        print(get_top_n(CUMULATIVE_SCORES_WITH_SW, 5, 4), '\n')
 
-    cumulative_scores_with_sw = None
+    CUMULATIVE_SCORES_WITH_SW = None
 
-    assert cumulative_scores_with_sw, 'Keywords are not extracted'
+    assert CUMULATIVE_SCORES_WITH_SW, 'Keywords are not extracted'
