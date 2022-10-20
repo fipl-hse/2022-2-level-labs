@@ -48,6 +48,9 @@ if __name__ == "__main__":
 
 
     def operations(text, stop_word):
+        """
+        Functions from main.py altogether
+        """
         candidate_phrases, word_degree, word_score, freq_dict, cumulative_score, candidate_phrases_with_adjoining, \
             cumulative_score_for_candidates_with_stop_words, top_list = [None for i in range(8)]
         phrases = extract_phrases(text)
@@ -59,15 +62,12 @@ if __name__ == "__main__":
 
         if candidate_phrases and freq_dict:
             word_degree = calculate_word_degrees(candidate_phrases, list(freq_dict.keys()))
-            # print(word_degree)
 
         if word_degree and freq_dict:
             word_score = calculate_word_scores(word_degree, freq_dict)
-            # print(word_score)
 
         if candidate_phrases and word_score:
             cumulative_score = calculate_cumulative_score_for_candidates(candidate_phrases, word_score)
-            # print(cumulative_score)
 
         if cumulative_score:
             top_list = get_top_n(cumulative_score, 10, 5)
@@ -84,7 +84,6 @@ if __name__ == "__main__":
         if cumulative_score_for_candidates_with_stop_words:
             top_with_stop_words = get_top_n(cumulative_score_for_candidates_with_stop_words, 10, 5)
             print(top_with_stop_words)
-            # print(get_top_n({**cumulative_score_for_candidates_with_stop_words, **cumulative_score}, 10, 5))
 
     for name, texts in corpus.items():
         print(str(name))

@@ -162,7 +162,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores.keys():
                 return None
-            value += int(word_scores[word])
+            value += word_scores[word]
         cumulative_score[phrase] = value
     return cumulative_score
 
@@ -288,12 +288,10 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         for word in freq_dict:
             if freq_dict[word] == value:
                 sorted_dict[word] = freq_dict[word]
-    # sorted_dict = {word: value for word, value in sorted(freq_dict.items(), key=lambda pair: pair[1])}
     list_of_words = []
     for word in sorted_dict:
         if len(word) <= max_length:
             list_of_words.append(word)
-    # list_of_words = [word for word in sorted_dict][int(len(list(sorted_dict)) * 0.8) - 1:]
     return list_of_words[int(len(list(sorted_dict)) * 0.8) - 1:][::-1]
 
 
