@@ -173,6 +173,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
     Returns:
     Dict: A dictionary with tokens and its corresponding TF-IDF values
+
     In case of corrupt input arguments, None is returned
     """
     if not (check_dict(term_freq, str, float, False) and check_dict(idf, str, float, True)):
