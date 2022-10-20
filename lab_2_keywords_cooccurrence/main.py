@@ -58,7 +58,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     if not all(isinstance(element, str) for element in phrases):
         return None
-    if phrases == [] or stop_words == []:
+    if not phrases or not stop_words:
         return None
     result = []
     sentences = copy.deepcopy(phrases)
@@ -75,7 +75,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         back_to_string = tokens.split('.')
         dividing = []
         for element in back_to_string:
-            if element != '' and element != ' ':
+            if element and element != ' ':
                 dividing.append(element.strip())
         list_of_tuples = []
         for element in dividing:
@@ -124,8 +124,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     for word in content_words:
         length = 0
         for phrase in candidate_keyword_phrases:
-            if word in phrase:
-                length += len(phrase)
+            if word not in phrase:
+                continue
+            length += len(phrase)
         degree_dict[word] = length
     return degree_dict
 
@@ -165,7 +166,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     In case of corrupt input arguments, None is returned
     """
     if (not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []
-            or not isinstance(word_scores, dict) or word_scores == {}):
+            or not isinstance(word_scores, dict) or not word_scores):
         return None
     cum_dict = {}
     for phrase in candidate_keyword_phrases:
