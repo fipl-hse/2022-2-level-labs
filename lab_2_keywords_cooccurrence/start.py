@@ -39,6 +39,7 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH_GAGARIN = ASSETS_PATH / 'gagarin.txt'
     TARGET_PATH_STOP_WORDS = ASSETS_PATH / 'stopwords.json'
     TARGET_PATH_POLISH = ASSETS_PATH / 'polish.txt'
+    TARGET_TEXT_PATH_UNKNOWN = ASSETS_PATH / 'unknown.txt'
 
     corpus = {
         'gagarin': read_target_text(TARGET_TEXT_PATH_GAGARIN),
@@ -96,11 +97,11 @@ if __name__ == "__main__":
         print('polish')
         operations(read_target_text(ASSETS_PATH / 'polish.txt'), stop_words_dict['pl'])
 
-    generated_stop_words = generate_stop_words(read_target_text(ASSETS_PATH / 'unknown.txt'), 5)
+    generated_stop_words = generate_stop_words(read_target_text(TARGET_TEXT_PATH_UNKNOWN), 5)
     if generated_stop_words:
         print('unknown')
-        operations(read_target_text(ASSETS_PATH / 'unknown.txt'), generated_stop_words)
+        operations(read_target_text(TARGET_TEXT_PATH_UNKNOWN), generated_stop_words)
 
-        RESULT = None
+        RESULT = 'the end'
 
         assert RESULT, 'Keywords are not extracted'

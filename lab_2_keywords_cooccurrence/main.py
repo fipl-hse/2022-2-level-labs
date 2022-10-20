@@ -3,11 +3,11 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 import json
+from lab_1_keywords_tfidf.main import check_list
 from pathlib import Path
 import re
 from string import punctuation
 from typing import Optional, Sequence, Mapping, Any
-from lab_1_keywords_tfidf.main import check_list
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -73,8 +73,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         if candidate_phrase:
             candidate_phrases.append(tuple(candidate_phrase))
     return candidate_phrases
-    # candidate_phrases = [tuple(candidate) for candidate in no_stop_words_list if candidate]
-    # return candidate_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -288,11 +286,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         for word in freq_dict:
             if freq_dict[word] == value:
                 sorted_dict[word] = freq_dict[word]
-    list_of_words = []
-    for word in sorted_dict:
-        if len(word) <= max_length:
-            list_of_words.append(word)
-    return list_of_words[int(len(list(sorted_dict)) * 0.8) - 1:][::-1]
+    list_with_stop_words = list(sorted_dict.keys())[int(len(sorted_dict) * 0.8) - 1:]
+    return [word for word in list_with_stop_words if len(word) <= max_length][::-1]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
