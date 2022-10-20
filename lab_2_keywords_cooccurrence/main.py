@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, Type
 import re
 from itertools import repeat, pairwise, chain
 from json import load as json_load
@@ -12,7 +12,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def type_check(data: Any, expected: Any) -> bool:
+def type_check(data: Any, expected: Type) -> bool:
     """
     Checks any type used in the program. And object's falsiness.
     :param data: An object which type is checked
@@ -32,7 +32,10 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str):
         return None
-    expression = re.compile(r"(?<=^)[^\s\w]+|(?<=\s)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)")
+    expression = re.compile(r"(?<=^)[^\s\w]+"  # punctuation after the line beginning
+                            r"|(?<=\s)[^\s\w]+"  # punctuation after the whitespace symbol
+                            r"|[^\s\w]+(?=\s)"  # punctuation before the whitespace symbol
+                            r"|[^\s\w]+(?=$)")  # punctuation before the end of line
     return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
@@ -82,8 +85,15 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(content_words, list):
         return None
-    return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
-            for token in content_words}
+    # beautiful code
+    # return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
+    #         for token in content_words}
+
+    # not beautiful code
+    word_degrees = {}
+    for token in content_words:
+        word_degrees[token] = sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -137,8 +147,14 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not type_check(keyword_phrases_with_scores, dict) \
             or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
-    return sorted([' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length],
-                  key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())], reverse=True)[:top_n]
+    # beautiful code
+    # return sorted([' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length],
+    #               key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())], reverse=True)[:top_n]
+
+    # not beautiful code
+    filtered = [item for item in keyword_phrases_with_scores if len(item) <= max_length]
+    filtered_and_sorted = sorted(filtered, key=lambda phrase: keyword_phrases_with_scores[phrase], reverse=True)
+    return [' '.join(item) for item in filtered_and_sorted][:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -165,11 +181,20 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     pairs = list(pairwise(candidate_keyword_phrases))
     possible_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
-    possible_phrases = [phrase[start:end+1]
-                        for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]
-                        for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
-                        for start, stop_word, end in [(i, i+len1, i+len1+len2) for i in range(len(phrase)-len1-len2)]
-                        if pair == (phrase[start:stop_word], phrase[stop_word+1:end+1])]
+    # beautiful code
+    # possible_phrases = [phrase[start:end+1]
+    #                     for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]
+    #                     for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
+    #                     for start, stop_word, end in [(i, i+len1, i+len1+len2) for i in range(len(phrase)-len1-len2)]
+    #                     if pair == (phrase[start:stop_word], phrase[stop_word+1:end+1])]
+
+    # find 10 differences
+    possible_phrases = []
+    for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]:
+        for phrase in [tuple(phrase.lower().split()) for phrase in phrases]:
+            for start, stop_word, end in [(i, i+len1, i+len1+len2) for i in range(len(phrase)-len1-len2)]:
+                if pair == (phrase[start:stop_word], phrase[stop_word+1:end+1]):
+                    possible_phrases.append(phrase[start:end+1])
     return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
@@ -191,8 +216,15 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     if not type_check(candidate_keyword_phrases, list) or \
             not type_check(word_scores, dict) or not type_check(stop_words, list):
         return None
-    return {phrase: sum(word_scores[token] for token in phrase if token not in stop_words)
-            for phrase in candidate_keyword_phrases}
+    # beautiful code
+    # return {phrase: sum(word_scores[token] for token in phrase if token not in stop_words)
+    #         for phrase in candidate_keyword_phrases}
+
+    # not beautiful code
+    cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_score[phrase] = sum(word_scores[token] for token in phrase if token not in stop_words)
+    return cumulative_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -205,7 +237,11 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
-    tokens = re.sub(r"(?<=^)[^\s\w]+|(?<=\s)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)", '', text).lower().split()
+    expression = re.compile(r"(?<=^)[^\s\w]+"  # punctuation after the line beginning
+                            r"|(?<=\s)[^\s\w]+"  # punctuation after the whitespace symbol
+                            r"|[^\s\w]+(?=\s)"  # punctuation before the whitespace symbol
+                            r"|[^\s\w]+(?=$)")  # punctuation before the end of line
+    tokens = re.sub(expression, '', text).lower().split()
     frequencies = {token: tokens.count(token) for token in set(tokens)}
     percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
     return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
