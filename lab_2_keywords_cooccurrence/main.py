@@ -212,7 +212,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for i in new_candidates:
         if i not in no_duplicates:
             possible_candidates.append(i)
-    possible_candidates = list(dict.fromkeys(possible_candidates))
     phrases_with_ajoin = []
     for i in phrases:
         for candidate in possible_candidates:
