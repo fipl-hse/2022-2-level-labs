@@ -272,10 +272,20 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    # if not (isinstance(text, str) and text and max_length and isinstance(max_length, int)
-    #         and not isinstance(max_length, bool) and max_length > 0):
-    #     return None
-    pass
+    if not (isinstance(text, str) and text and max_length and isinstance(max_length, int)
+            and max_length > 0):
+        return None
+    more_punctuation = punctuation + '–—];:¡¿⟨⟩&]«»…⋯‹›“”' + '\n'
+    for i in more_punctuation:
+        text = text.replace(i, '')
+    without_punctuation_list = text.lower().split()
+    freq_dict = {}
+    for word in without_punctuation_list:
+        freq_dict[word] = freq_dict.get(word, 0) + 1
+    sorted_dict = {word: value for word, value in sorted(freq_dict.items(), key=lambda pair: pair[1])}
+    list_of_words = [word for word in sorted_dict]
+    list_80_percentile = list_of_words[int(len(list(sorted_dict)) * 0.8) - 1:]
+    return [word for word in list_80_percentile if len(word) <= max_length][::-1]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
