@@ -3,11 +3,11 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 import json
-from lab_1_keywords_tfidf.main import check_list
 from pathlib import Path
 import re
 from string import punctuation
 from typing import Optional, Sequence, Mapping, Any
+from lab_1_keywords_tfidf.main import check_list
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
