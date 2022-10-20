@@ -24,8 +24,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for punc in punctuation:
         text = text.replace(punc, ',')
     phrase_list = text.split(',')
-    phrase_list = [phrase.strip() for phrase in phrase_list if phrase.strip()]
-    return phrase_list
+    return [new_phrase for phrase in phrase_list if (new_phrase := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -207,7 +206,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
