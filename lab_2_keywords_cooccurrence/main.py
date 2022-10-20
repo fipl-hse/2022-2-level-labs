@@ -217,7 +217,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     phrases_with_ajoin = []
     for i in split_phrases:
         for candidate in possible_candidates:
-            phrase = fr'(\b\w*\b)(?<= {candidate[0][-1]})(?= {candidate[-1][0]})'
+            phrase = r'(\b\w*\b)(?<= ' + candidate[0][-1] + ')(?= ' + candidate[-1][0] + ')'
             stops = re.findall(phrase, i)
             for i in stops:
                 phrases_with_ajoin += (*candidate[0], i, *candidate[1])
