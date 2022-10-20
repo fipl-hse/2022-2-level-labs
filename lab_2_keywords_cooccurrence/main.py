@@ -205,7 +205,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     new_candidates = []
     possible_candidates = []
-    new_candidates.append(pairwise(candidate_keyword_phrases))
+    new_candidates = pairwise(candidate_keyword_phrases)
     no_duplicates = list(dict.fromkeys(new_candidates))
     for i in new_candidates:
         if i not in no_duplicates:
