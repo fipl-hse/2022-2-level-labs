@@ -283,9 +283,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     for word in without_punctuation_list:
         freq_dict[word] = freq_dict.get(word, 0) + 1
     sorted_dict = {word: value for word, value in sorted(freq_dict.items(), key=lambda pair: pair[1])}
-    list_of_words = [word for word in sorted_dict]
-    list_80_percentile = list_of_words[int(len(list(sorted_dict)) * 0.8) - 1:]
-    return [word for word in list_80_percentile if len(word) <= max_length][::-1]
+    list_of_words = [word for word in sorted_dict][int(len(list(sorted_dict)) * 0.8) - 1:]
+    return [word for word in list_of_words if len(word) <= max_length][::-1]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
