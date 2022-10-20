@@ -24,12 +24,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         if i in '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—':
             text = text.replace(i, ',')
     list_split = text.split(',')
-    list_of_phrases = []
-    for token in list_split:
-        token = token.strip()
-        if token:
-            list_of_phrases.append(token)
-    return list_of_phrases
+    return [token.strip() for token in list_split if token.strip()]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -78,7 +73,10 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases):
+        return None
+
+
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
