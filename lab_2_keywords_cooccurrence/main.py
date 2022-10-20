@@ -157,7 +157,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
            and word_degrees.keys() == word_frequencies.keys()):
         return None
 
-    return {word1: (degree / word_frequencies.get(word1)) for word1, degree in word_degrees.items()}
+    return {word1: (degree / word_frequencies.get(word1, 1)) for word1, degree in word_degrees.items()}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
