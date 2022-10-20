@@ -218,7 +218,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if frequencies[key_word] > 1:
             for phrase in phrases:
                 if (key_word[0] and key_word[1]) in phrase:
-                    stop_words_list.extend(re.findall(f'{key_word[0]}.*{key_word[1]}', phrase))
+                    stop_words_list.extend(re.findall(f'{key_word[0]}\s[а-я]+\s{key_word[1]}', phrase))
     new_keywords_phrases = []
     for keywords_with_stop_words in dict.fromkeys(stop_words_list):
         if stop_words_list.count(keywords_with_stop_words) > 1:
