@@ -213,11 +213,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if i not in no_duplicates:
             possible_candidates.append(i)
     possible_candidates = list(dict.fromkeys(possible_candidates))
-    split_phrases = []
-    for i in phrases:
-        split_phrases.append(i.split())
     phrases_with_ajoin = []
-    for i in split_phrases:
+    for i in phrases:
         for candidate in possible_candidates:
             phrase = fr'(\b\w*\b)(?<={candidate[0][-1]} )(?= {candidate[1][0]})'
             stops = findall(phrase, i)
