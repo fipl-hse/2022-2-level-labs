@@ -17,7 +17,7 @@ def check_input(user_input: Any, required_type: type) -> bool:
     Checks if the input is as required, and it is not empty (for int, float and str)
     """
     if user_input and isinstance(user_input, required_type):
-        return True
+        return user_input and isinstance(user_input, required_type)
     return False
 
 
@@ -94,7 +94,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     phrases_by_re = re.split(r'[*]+', sep_phrases)
     new_sep = phrases_by_re[:]
     for j in phrases_by_re:
-        if re.fullmatch(r'\s+', j) or len(j) == 0:
+        if re.fullmatch(r'\s+', j) or not j:
             new_sep.remove(j)
     result = []
     for i in new_sep:
@@ -142,8 +142,9 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
         return None
     freq_dict = {}
     for phrases in candidate_keyword_phrases:
-        for words in phrases:
-            freq_dict[words] = freq_dict.get(words, 0) + 1
+        uniques = set(phrases)
+        for words in uniques:
+            freq_dict[words] = freq_dict.get(words, 0) + phrases.count(words)
     return freq_dict
 
 
@@ -186,10 +187,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
         return None
     word_score_dict = {}
     for i in word_degrees:
-        if i in word_frequencies:
-            word_score_dict[i] = word_degrees[i] / word_frequencies[i]
-        else:
+        if i not in word_frequencies:
             return None
+        word_score_dict[i] = word_degrees[i] / word_frequencies[i]
     return word_score_dict
 
 
@@ -211,7 +211,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for one_phrase in candidate_keyword_phrases:
         metric = 0.0
         for words in one_phrase:
-            if word_scores.get(words, 0) == 0:
+            if words not in word_scores:
                 return None
             metric += word_scores[words]
         cumul_score_dict[one_phrase] = metric
@@ -240,7 +240,6 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for key, val in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
             correct_len[key] = val
-    # sorted_dictionary = sorted(correct_len.keys(), key=correct_len.get, reverse=True)[:top_n]
     sorted_dictionary = [key for (key, value) in sorted(correct_len.items(), key=lambda x: x[1], reverse=True)][:top_n]
     top_phr = []
     for i in sorted_dictionary:
