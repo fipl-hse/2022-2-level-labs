@@ -302,7 +302,22 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if new_list.count(pair) > 1:
             twice_pair.append(pair)
     unique_twice_pair = tuple(set(twice_pair))
-    for t_pair in unique_twice_pair:
+    new_dict = {}
+    for item in unique_twice_pair:
+        str1 = item[0]
+        str2 = item[1]
+        count = 0
+        for phrase in phrases:
+            phrase = phrase.lower()
+            if str1 in phrase and str2 in phrase:
+                count += 1
+        new_dict[item] = count
+    new_new_dict = {}
+    for key, value in new_dict.items():
+        if value > 1:
+            new_new_dict[key] = value
+    phrase_twice_pairs = tuple(new_new_dict.keys())
+    for t_pair in phrase_twice_pairs:
         str1 = t_pair[0]
         str2 = t_pair[1]
         for phrase in phrases:
