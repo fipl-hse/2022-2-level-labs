@@ -195,7 +195,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for phrase in phrases:
         for pair in neighbours:
             part1, part2 = ' '.join(pair[0]), ' '.join(pair[1])
-            keyword_phrases_with_stop_words.extend(re.findall(fr'\b{part1}\b.*?\b{part2}\b', phrase))
+            keyword_phrases_with_stop_words.extend(re.findall(fr'\b{part1}\s\w+\s{part2}\b', phrase))
 
     return [tuple(phrase.split()) for phrase in set(keyword_phrases_with_stop_words)
             if keyword_phrases_with_stop_words.count(phrase) > 1]
