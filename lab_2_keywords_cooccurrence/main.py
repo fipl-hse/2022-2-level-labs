@@ -199,8 +199,25 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
-
+    if not isinstance(keyword_phrases_with_scores, dict) or not keyword_phrases_with_scores:
+        return None
+    if not isinstance(top_n, int) or not top_n:
+        return None
+    if not isinstance(max_length, int) or not max_length:
+        return None
+    if len(keyword_phrases_with_scores) == 0 or top_n <= 0 or max_length <= 0:
+        return None
+    top_n_dict = {}
+    top_n_list = []
+    top_n_strings_list = []
+    for key, value in keyword_phrases_with_scores.items():
+        if len(key) <= max_length:
+            top_n_dict[key] = value
+    top_n_list = [key for (key, value) in sorted(top_n_dict.items(), key=lambda x: x[1], reverse=True)][:top_n]
+    for keywords_tuple in top_n_list:
+        keywords_tuple = list(keywords_tuple)
+        top_n_strings_list.append(' '.join(keywords_tuple))
+    return top_n_strings_list
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
                                                      phrases: Sequence[str]) -> Optional[KeyPhrases]:
