@@ -49,45 +49,45 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    phrases = extract_phrases(corpus['gagarin'])
+    PHRASES = extract_phrases(corpus['gagarin'])
 
-    candidate_keyword_phrases = None
-    word_frequencies = None
-    word_degrees = None
-    word_scores = None
-    cum_score = None
-    top_list = None
-    ajoin_phrases = None
-    phrases_and_stops = None
-    top_new = None
+    CANDIDATE_KEYWORD_PHRASES = None
+    WORD_FREQUENCIES = None
+    WORD_DEGREES = None
+    WORD_SCORES = None
+    CUM_SCORE = None
+    TOP_LIST = None
+    AJOIN_PHRASES = None
+    PHRASES_AND_STOPS = None
+    TOP_NEW = None
 
-    if phrases:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    if PHRASES:
+        CANDIDATE_KEYWORD_PHRASES = extract_candidate_keyword_phrases(PHRASES, stop_words)
 
-    if candidate_keyword_phrases:
-        word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+    if CANDIDATE_KEYWORD_PHRASES:
+        WORD_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_KEYWORD_PHRASES)
 
-    if word_frequencies and candidate_keyword_phrases:
-        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
+    if WORD_FREQUENCIES and CANDIDATE_KEYWORD_PHRASES:
+        WORD_DEGREES = calculate_word_degrees(CANDIDATE_KEYWORD_PHRASES, list(WORD_FREQUENCIES.keys()))
 
-    if word_degrees and word_frequencies:
-        word_scores = calculate_word_scores(word_degrees, word_frequencies)
+    if WORD_DEGREES and WORD_FREQUENCIES:
+        WORD_SCORES = calculate_word_scores(WORD_DEGREES, WORD_FREQUENCIES)
 
-    if word_scores and candidate_keyword_phrases:
-        cum_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+    if WORD_SCORES and CANDIDATE_KEYWORD_PHRASES:
+        CUM_SCORE = calculate_cumulative_score_for_candidates(CANDIDATE_KEYWORD_PHRASES, WORD_SCORES)
 
-    if cum_score:
-        top_list = get_top_n(cum_score, 10, 3)
+    if CUM_SCORE:
+        TOP_LIST = get_top_n(CUM_SCORE, 10, 3)
 
-    if candidate_keyword_phrases and phrases:
-        ajoin_phrases = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
+    if cCANDIDATE_KEYWORD_PHRASES and PHRASES:
+        AJOIN_PHRASES = extract_candidate_keyword_phrases_with_adjoining(CANDIDATE_KEYWORD_PHRASES, PHRASES)
 
-    if ajoin_phrases and word_scores:
-        phrases_and_stops = calculate_cumulative_score_for_candidates_with_stop_words(ajoin_phrases, word_scores,
+    if AJOIN_PHRASES and WORD_SCORES:
+        PHRASES_AND_STOPS = calculate_cumulative_score_for_candidates_with_stop_words(AJOIN_PHRASES, WORD_SCORES,
                                                                                       stop_words)
-    if phrases_and_stops:
-        top_new = get_top_n(phrases_and_stops, 5, 3)
+    if PHRASES_AND_STOPS:
+        TOP_NEW = get_top_n(PHRASES_AND_STOPS, 5, 3)
 
-    RESULT = top_new
+    RESULT = TOP_NEW
 
     assert RESULT, 'Keywords are not extracted'

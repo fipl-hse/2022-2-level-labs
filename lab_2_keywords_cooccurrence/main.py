@@ -175,7 +175,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not max_length or not top_n or max_length < 0 or top_n < 0:
         return None
     new_phrases = []
-    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True, key=lambda i: keyword_phrases_with_scores[i])
+    sorted_phrases = sorted(keyword_phrases_with_scores.keys(), reverse=True,
+                            key=lambda i: keyword_phrases_with_scores[i])
     for i in sorted_phrases:
         if len(i) <= max_length:
             new_phrases.append(' '.join(i))
@@ -221,8 +222,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         for candidate in possible_candidates:
             phrase = fr'(\b\w*\b)(?<= {candidate[0][-1]})(?= {candidate[-1][0]})'
             stops = re.findall(phrase, i)
-            for i in stops:
-                phrases_with_ajoin += (*candidate[0], i, *candidate[1])
+            for stop in stops:
+                phrases_with_ajoin += (*candidate[0], stop, *candidate[1])
     return phrases_with_ajoin
 
 
