@@ -234,7 +234,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 continue
             for index in range(len(phrase_list) - 2):
                 if phrase_list[index] == pair_beg[-1] and phrase_list[index + 2] == pair_end[0]:
-                    adjoined_phrase = phrase_list[index:index + 4]
+                    adjoined_phrase = (' '.join(pair_beg) + ' ' + phrase_list[index + 1]
+                                       + ' ' + ' '.join(pair_end)).split()
                     if ' '.join(adjoined_phrase) in ' '.join(phrase_list):
                         adjoined_phrases.append(tuple(adjoined_phrase))
     valid_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
