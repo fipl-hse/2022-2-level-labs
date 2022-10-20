@@ -211,12 +211,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if i not in no_duplicates:
             possible_candidates.append(i)
     possible_candidates = list(dict.fromkeys(possible_candidates))
+    split_phrases = []
     for i in phrases:
-        i = i.split()
+        split_phrases.append(i.split())
     phrases_with_ajoin = []
-    for i in phrases:
+    for i in split_phrases:
         for candidate in possible_candidates:
-            phrase = r'(\b\w*\b)(?<= ' + candidate[0][-1] + ')(?= ' + candidate[-1][0] + ')'
+            phrase = f"r'(\b\w*\b)(?<= ' {candidate[0][-1]} ')(?= ' {candidate[-1][0]} ')'"
             stops = re.findall(phrase, i)
             for i in stops:
                 phrases_with_ajoin += (*candidate[0], i, *candidate[1])
@@ -248,7 +249,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         for i in candidate:
             if i not in stop_words:
                 score += word_scores[i]
-            advanced_cum_score[i] = score
+        advanced_cum_score[candidate] = score
     return advanced_cum_score
 
 
