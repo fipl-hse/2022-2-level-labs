@@ -48,12 +48,24 @@ if __name__ == "__main__":
 
     def lab_2(text, top_n, max_length):
         extracted_phrases = extract_phrases(text)
+        if not extracted_phrases:
+            return None
         candidate_keyword_phrases = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+        if not candidate_keyword_phrases:
+            return None
         frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+        if not frequencies_for_content_words:
+            return None
         word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words.keys()))
+        if not word_degrees:
+            return None
         word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+        if not word_scores:
+            return None
         cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
                                                                                     word_scores)
+        if not cumulative_score_for_candidates:
+            return None
         top_n_phrases = get_top_n(cumulative_score_for_candidates, top_n, max_length)
         candidate_keyword_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
             candidate_keyword_phrases, extracted_phrases)
