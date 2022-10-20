@@ -6,7 +6,7 @@ from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (
     extract_phrases, extract_candidate_keyword_phrases,
     calculate_frequencies_for_content_words, calculate_word_degrees,
-    calculate_word_scores)
+    calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -60,4 +60,12 @@ if __name__ == "__main__":
     if word_degrees and word_frequencies:
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
 
-    # assert RESULT, 'Keywords are not extracted'
+    if candidate_keyword_phrases and word_scores:
+        cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_frequencies)
+
+    if keyword_phrases_with_scores:
+        top_phrases = get_top_n(keyword_phrases_with_scores, 7, 5)
+        print(top)
+
+    RESULT = 'Done'
+    assert RESULT, 'Keywords are not extracted'

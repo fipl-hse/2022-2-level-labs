@@ -25,7 +25,6 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         text = text.replace(punc, ',')
     phrase_list = text.split(',')
     phrase_list = [phrase.strip() for phrase in phrase_list if phrase.strip()]
-
     return phrase_list
 
 
@@ -126,8 +125,8 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not (isinstance(word_frequencies, dict) and word_frequencies):
         return None
     word_scores = {}
-    for word in word_degrees.keys():
-        if word not in word_frequencies.keys():
+    for word in word_degrees:
+        if word not in word_frequencies:
             return None
         word_scores[word] = word_degrees[word] / word_frequencies[word]
     return word_scores
@@ -145,7 +144,19 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases):
+        return None
+    if not (isinstance(word_scores, dict) and word_scores):
+        return None
+    cumulative_score_for_candidates = {}
+    for phrase in candidate_keyword_phrases:
+        phrase_score = float(0)
+        for word in phrase:
+            if word not in word_scores:
+                return None
+            phrase_score += word_scores[word]
+        cumulative_score_for_candidates[phrase] = phrase_score
+    return cumulative_score_for_candidates
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -161,7 +172,19 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(keyword_phrases_with_scores, dict) and keyword_phrases_with_scores):
+        return None
+    if not (isinstance(top_n, int) and top_n > 0):
+        return None
+    if not (isinstance(max_length, int) and max_length > 0):
+        return None
+
+    top = sorted(keyword_phrases_with_scores.keys(), key=lambda key: keyword_phrases_with_scores[key], reverse=True)
+    top_phrases = []
+    for phrase in top:
+        if len(phrase) <= max_length:
+            top_phrases.append(' '.join(phrase))
+    return top_phrases[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
