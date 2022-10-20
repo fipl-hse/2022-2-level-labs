@@ -31,9 +31,9 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not check_type_and_not_empty(text, str):
         return None
     pattern = re.compile(r'''
-                        [^\w\s](?!\w)   # first pattern matches punctuation that is not followed by alphanumeric characters
+                        [^\w\s]+(?!\w)   # first pattern matches punctuation that is not followed by alphanumeric characters
                         |
-                         (?<!\w)[^\w\s]  # second pattern matches punctuation that is not preceeded by alphanumeric characters
+                         (?<!\w)[^\w\s]+  # second pattern matches punctuation that is not preceeded by alphanumeric characters
                          ''', re.VERBOSE)
     return [clean_phrase for phrase in re.split(pattern, text) if (clean_phrase := phrase.strip())]
 
@@ -68,6 +68,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
         return None
     words = list(chain(*candidate_keyword_phrases))
     return calculate_frequencies(words)
+
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
                            content_words: Sequence[str]) -> Optional[Mapping[str, int]]:
@@ -127,11 +128,14 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     if (not check_type_and_not_empty(candidate_keyword_phrases, list)
             or not check_type_and_not_empty(word_scores, dict)):
         return None
-    try:
-        return {phrase: sum(word_scores[word] for word in phrase)
-                for phrase in candidate_keyword_phrases}
-    except KeyError:
-        return None
+    cumulative_scores = {}
+    for phrase in candidate_keyword_phrases:
+        try:
+            score = sum(word_scores[word] for word in phrase)
+        except KeyError:
+            return None
+        cumulative_scores[phrase] = score
+    return cumulative_scores
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -154,7 +158,9 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
             or top_n < 0):
         return None
     normal_length_phrases = [phrase for phrase in keyword_phrases_with_scores if len(phrase) <= max_length]
-    sorted_phrases = sorted(normal_length_phrases, key=lambda x: keyword_phrases_with_scores[x], reverse=True)
+    sorted_phrases = sorted(normal_length_phrases,
+                            key=lambda x: keyword_phrases_with_scores[x],
+                            reverse=True)
     return [' '.join(words) for words in sorted_phrases[:top_n]]
 
 
@@ -250,7 +256,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
     if not check_type_and_not_empty(path, Path):
         return None
-    with open(path, encoding='utf-8') as file_with_stopwords:
+    with path.open(encoding='utf-8') as file_with_stopwords:
         stop_words = json.load(file_with_stopwords)
     if isinstance(stop_words, dict):
         return stop_words
