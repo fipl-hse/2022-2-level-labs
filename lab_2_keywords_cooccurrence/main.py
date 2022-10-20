@@ -3,7 +3,7 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, Union
 import re
 import json
 from math import floor
@@ -12,7 +12,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_input(user_input: Any, required_type: type) -> object | bool:
+def check_input(user_input: Any, required_type: type) -> Union[object, bool]:
     """
     Checks if the input is as required, and it is not empty (for int, float and str)
     """
