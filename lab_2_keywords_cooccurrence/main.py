@@ -344,9 +344,9 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
+    is_true_words = not candidate_keyword_phrases or not word_scores or not stop_words
     if (not isinstance(candidate_keyword_phrases, list)
-            or not isinstance(word_scores, dict) or not isinstance(stop_words, list) or
-            not candidate_keyword_phrases or not word_scores or not stop_words):
+            or not isinstance(word_scores, dict) or not isinstance(stop_words, list) or is_true_words):
         return None
     for item in candidate_keyword_phrases:
         if not isinstance(item, tuple):
