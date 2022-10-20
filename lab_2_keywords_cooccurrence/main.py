@@ -21,7 +21,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or not text:
         return None
     for i in text:
-        if i in '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—':
+        if i in punctuation + '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—':
             text = text.replace(i, ',')
     list_split = text.split(',')
     return [token.strip() for token in list_split if token.strip()]
