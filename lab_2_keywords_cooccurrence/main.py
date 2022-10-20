@@ -371,7 +371,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     if not word_scores:
         return None
     for key, value in word_scores.items():
-        if not (isinstance(key, str) and isinstance(value, float)):
+        if not (isinstance(key, str) and isinstance(value, (int, float))):
             return None
     if not isinstance(stop_words, list):
         return None
@@ -389,8 +389,6 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
                 cumulative_score += int(word_scores[word])
             elif word in stop_words:
                 cumulative_score += 0
-            else:
-                return None
         cumulative_score_for_candidates_dict[phrase] = cumulative_score
         cumulative_score = 0
     return cumulative_score_for_candidates_dict
