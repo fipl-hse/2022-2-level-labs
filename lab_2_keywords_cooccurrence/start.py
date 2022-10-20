@@ -48,7 +48,7 @@ if __name__ == "__main__":
     NUM_FOR_TOP = 0
     for key, values in corpus.items():
         (EXTRACTED_PHRASES, CANDIDATE_KEY_PHR, FREQ_CONT, WORD_DEGREE, WORD_SCORE,
-         CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN) = [None for notdef in range(8)]
+         CUMULATIVE_SCORE, KEY_PHR_ADJOIN, CUMULATIVE_SCORE_ADJOIN, CONTENT_WORDS, TOP_N_ADJOIN, TOP_N) = [None for notdef in range(11)]
         FILE_NAME = key
         FILE_READ = values
         NUM_FOR_TOP += 2
@@ -171,5 +171,5 @@ if __name__ == "__main__":
         TOP_N_ADJOIN_UNKNOWN = get_top_n(CUMULATIVE_SCORE_ADJOIN_UNKNOWN, 3, 5)
         print('Top key phrases with adjoining: ', TOP_N_ADJOIN_UNKNOWN)
 
-    RESULT = KEY_PHR_ADJOIN_POLISH
+    RESULT = TOP_N_ADJOIN_UNKNOWN
     assert RESULT, 'Keywords are not extracted'
