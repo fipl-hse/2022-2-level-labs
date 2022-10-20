@@ -251,6 +251,42 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     return res
 
 
+def check_types(candidate_keyword_phrases: KeyPhrases, phrases: Sequence[str]):
+    """
+    chek types for extract_candidate_keyword_phrases_with_adjoining
+    """
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+        return False
+    for item in candidate_keyword_phrases:
+        if not isinstance(item, tuple):
+            return False
+        for word in item:
+            if not isinstance(word, str):
+                return False
+    if not isinstance(phrases, list) or not phrases:
+        return False
+    for item in phrases:
+        if not isinstance(item, str):
+            return False
+    return True
+
+
+def get_unique_twice_pair(candidate_keyword_phrases):
+    """
+    get_unique_twice_pair for extract_candidate_keyword_phrases_with_adjoining
+    """
+    new_list = []
+    twice_pair = []
+    for i in range(len(candidate_keyword_phrases)-1):
+        pair_tuple = (' '.join(candidate_keyword_phrases[i]), ' '.join(candidate_keyword_phrases[i+1]))
+        new_list.append(pair_tuple)
+    for pair in new_list:
+        if new_list.count(pair) > 1:
+            twice_pair.append(pair)
+    unique_twice_pair = tuple(set(twice_pair))
+    return unique_twice_pair
+
+
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
                                                      phrases: Sequence[str]) -> Optional[KeyPhrases]:
     """
@@ -271,30 +307,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
+    if not check_types(candidate_keyword_phrases, phrases):
         return None
-    for item in candidate_keyword_phrases:
-        if not isinstance(item, tuple):
-            return None
-        for word in item:
-            if not isinstance(word, str):
-                return None
-    if not isinstance(phrases, list) or not phrases:
-        return None
-    for item in phrases:
-        if not isinstance(item, str):
-            return None
 
-    new_list = []
-    twice_pair = []
     new_phrases = []
-    for i in range(len(candidate_keyword_phrases)-1):
-        pair_tuple = (' '.join(candidate_keyword_phrases[i]), ' '.join(candidate_keyword_phrases[i+1]))
-        new_list.append(pair_tuple)
-    for pair in new_list:
-        if new_list.count(pair) > 1:
-            twice_pair.append(pair)
-    unique_twice_pair = tuple(set(twice_pair))
+    unique_twice_pair = get_unique_twice_pair(candidate_keyword_phrases)
     new_dict = {}
     for item in unique_twice_pair:
         str1 = item[0]
