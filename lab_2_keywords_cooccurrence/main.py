@@ -227,25 +227,19 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     In case of corrupt input arguments, None is returned
     """
     if check_key_phrase(candidate_keyword_phrases) and check_list(phrases, str, False):
-        list_of_phrases = [phrase.split() for phrase in phrases]
         phrases_lower = [phrase.lower() for phrase in phrases]
         key_phrases_with_stop_words = []
-        for index1, phrase1 in enumerate(list_of_phrases):
-            for phrase in candidate_keyword_phrases:
-                if phrase[-1] in list_of_phrases[index1]:
-                    phrase_index1 = list_of_phrases[index1].index(phrase[-1])
-                    words_lst = []
-                    for word in phrase1[phrase_index1 + 2:]:
-                        words_lst.append(word)
-                        twords_lst = tuple(words_lst)
-                        if twords_lst in candidate_keyword_phrases:
-                            left_phrase = ' '.join(list(phrase))
-                            right_phrase = ' '.join(words_lst)
-                            pair_of_phrases = re.findall(left_phrase+r" \w+ "+right_phrase, ' '.join(phrases_lower))
-                            key_phrases = [tuple(key_phrase.split()) for key_phrase
+        for index, phrase in enumerate(candidate_keyword_phrases):
+            left_phrase = ' '.join(list(phrase))
+            try:
+                right_phrase = ' '.join(list(candidate_keyword_phrases[index+1]))
+            except IndexError:
+                break
+            pair_of_phrases = re.findall(fr'{left_phrase} \w+ {right_phrase}', ' '.join(phrases_lower))
+            key_phrases = [tuple(key_phrase.split()) for key_phrase
                                     in pair_of_phrases if
                                     len(set(pair_of_phrases)) == 1 and len(pair_of_phrases) >= 2]
-                            key_phrases_with_stop_words.extend(key_phrases)
+            key_phrases_with_stop_words.extend(key_phrases)
         key_phrases_with_stop_words_set = set(key_phrases_with_stop_words)
         return list(key_phrases_with_stop_words_set)
     return None
