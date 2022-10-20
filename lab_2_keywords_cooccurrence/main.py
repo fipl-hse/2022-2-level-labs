@@ -19,7 +19,7 @@ def check_sequence(obj: Any, element_type: type, can_be_empty: bool) -> bool:
     :return: bool - True if the object is list containing elements of the given type, False otherwise
     """
     if (can_be_empty is False and obj) or (can_be_empty is True and not obj):
-        if isinstance(obj, list or tuple):
+        if isinstance(obj, list) or isinstance(obj, tuple):
             for element in obj:
                 if isinstance(element, element_type):
                     return True
@@ -84,8 +84,11 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 if idx == 0 and keyword_phrase:
                     candidate_keyword_phrases.append(tuple(keyword_phrase))
                     keyword_phrase = []
+
                 keyword_phrase.append(word)
-                if idx == (len(splt_phrase) - 1) and splt_phrases.index(splt_phrase) == len(splt_phrases) - 1:
+
+                if splt_phrase[-1] == word and splt_phrases[-1] == splt_phrase:
+                #if idx == (len(splt_phrase) - 1) and splt_phrases.index(splt_phrase) == len(splt_phrases) - 1:
                     candidate_keyword_phrases.append(tuple(keyword_phrase))
 
             elif word in stop_words and keyword_phrase:
@@ -108,7 +111,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     keyword_freq = {}
     for phrase in candidate_keyword_phrases:
         for word in phrase:
-            keyword_freq.update({word: (1 if word not in keyword_freq else keyword_freq.get(word, 0) + 1)})
+            keyword_freq[word] = keyword_freq.get(word, 0) + 1
     return keyword_freq
 
 
@@ -130,6 +133,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     degree_dict = {}
     for word in content_words:
         for phrase in candidate_keyword_phrases:
+
             if word in phrase:
                 degree_dict[word] = degree_dict.get(word, 0) + len(phrase)
             elif word not in degree_dict:
@@ -152,8 +156,8 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not(check_mapping(word_degrees, str, int, False) and check_mapping(word_frequencies, str, int, False)
            and word_degrees.keys() == word_frequencies.keys()):
         return None
-    return {word1: (degree / frequency) for word1, degree in word_degrees.items()
-            for word2, frequency in word_frequencies.items() if word1 == word2}
+
+    return {word1: (degree / word_frequencies.get(word1)) for word1, degree in word_degrees.items()}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -174,10 +178,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     cmltv_score_dict = {}
 
-    for phrase in set(candidate_keyword_phrases):
-        for word, score in word_scores.items():
+    for word, score in word_scores.items():
+        for phrase in set(candidate_keyword_phrases):
+
             if word in phrase:
-                cmltv_score_dict.update({phrase: cmltv_score_dict.get(phrase, 0.0) + score})
+                cmltv_score_dict[phrase] = cmltv_score_dict.get(phrase, 0.0) + score
 
     return cmltv_score_dict
 
@@ -267,10 +272,11 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     cmltv_score_dict_wtih_stops = {}
 
-    for phrase in set(candidate_keyword_phrases):
-        for word, score in word_scores.items():
+    for word, score in word_scores.items():
+        for phrase in set(candidate_keyword_phrases):
+
             if word in phrase and word not in stop_words:
-                cmltv_score_dict_wtih_stops.update({phrase: cmltv_score_dict_wtih_stops.get(phrase, 0.0) + score})
+                cmltv_score_dict_wtih_stops[phrase] = cmltv_score_dict_wtih_stops.get(phrase, 0.0) + score
 
     return cmltv_score_dict_wtih_stops
 
