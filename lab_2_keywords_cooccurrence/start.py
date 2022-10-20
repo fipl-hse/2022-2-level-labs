@@ -42,19 +42,30 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-    text = corpus['gagarin']
-    phrases = extract_phrases(text)
-    key_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
-    word_frequencies = calculate_frequencies_for_content_words(key_phrases)
-    word_degrees = calculate_word_degrees(key_phrases, list(word_frequencies.keys()))
-    word_scores = calculate_word_scores(word_degrees, word_frequencies)
-    cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
-    print(get_top_n(cumulative_scores, 5, 2))
-    key_phrases_with_sw = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
-    CUMULATIVE_SCORES_WITH_SW = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
-                                    word_scores, stop_words)
-    print(get_top_n(CUMULATIVE_SCORES_WITH_SW, 5, 4), '\n')
+    for text in corpus.values():
+        if text:
+            phrases = extract_phrases(text)
+        if phrases and stop_words:
+            key_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+        if key_phrases:
+            word_frequencies = calculate_frequencies_for_content_words(key_phrases)
+        if word_frequencies:
+            word_degrees = calculate_word_degrees(key_phrases, list(word_frequencies.keys()))
+        if word_degrees and word_frequencies:
+            word_scores = calculate_word_scores(word_degrees, word_frequencies)
+        if word_scores and key_phrases:
+            cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
+        if cumulative_scores:
+            print(get_top_n(cumulative_scores, 5, 2))
+        if key_phrases and phrases:
+            key_phrases_with_sw = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
+        if key_phrases_with_sw and word_scores and stop_words:
+            cumulative_scores_with_sw = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
+                                                                                              word_scores, stop_words)
+        if cumulative_scores_with_sw:
+            print(get_top_n(cumulative_scores_with_sw, 5, 4), '\n')
 
-    CUMULATIVE_SCORES_WITH_SW = None
 
-    assert CUMULATIVE_SCORES_WITH_SW, 'Keywords are not extracted'
+    RESULT = cumulative_scores_with_sw
+
+    assert RESULT, 'Keywords are not extracted'
