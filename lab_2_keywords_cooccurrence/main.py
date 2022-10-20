@@ -214,7 +214,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for item in list_of_pairs:
         frequencies[item] = frequencies.get(item, 0) + 1
     stop_words_list = []
-    for key_word in frequencies.keys():
+    for key_word in frequencies:
         if frequencies[key_word] > 1:
             for phrase in phrases:
                 if (key_word[0] and key_word[1]) in phrase:
