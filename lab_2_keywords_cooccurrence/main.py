@@ -247,7 +247,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 stop_word = spltd_phrase[next_phrase_start_idx - 1]
                 word_idx = next_phrase.index(word)
                 keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
-                
+
     return keyword_phrases_with_adj
 
 
