@@ -13,7 +13,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_type_and_not_empty(some_object: Any, some_type: type) -> bool:
+def check_type_and_not_empty(some_object: Any, some_type: Type) -> bool:
     """
     Checks object type and whether it contains something
     """
@@ -193,8 +193,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     phrases = [phrase.lower() for phrase in phrases]
     keyword_phrases_with_stop_words = []
     for phrase in phrases:
-        for pair in neighbours:
-            part1, part2 = ' '.join(pair[0]), ' '.join(pair[1])
+        for part1, part2 in neighbours:
+            part1, part2 = ' '.join(part1),  ' '.join(part2)
             keyword_phrases_with_stop_words.extend(re.findall(fr'\b{part1}\s\w+\s{part2}\b', phrase))
 
     return [tuple(phrase.split()) for phrase in set(keyword_phrases_with_stop_words)
