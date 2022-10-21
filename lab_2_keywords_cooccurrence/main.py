@@ -337,7 +337,8 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not isinstance(path, Path):
         return None
 
-    with open(path, encoding='utf-8') as file_with_stopwords:
+    # with open(path, encoding='utf-8') as file_with_stopwords:
+    with path.open(encoding='utf-8') as file_with_stopwords:
         dict_of_stop_words = json.load(file_with_stopwords)
     if not isinstance(dict_of_stop_words, dict):
         return None

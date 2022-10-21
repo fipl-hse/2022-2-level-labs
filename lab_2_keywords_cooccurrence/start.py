@@ -28,7 +28,7 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text: str, stops: Sequence[str]) -> None:
+def analysis(text: str, stops: Sequence[str]) -> Optional[Sequence[str]]:
     phrases = extract_phrases(text)
 
     if phrases:
@@ -64,6 +64,8 @@ def analysis(text: str, stops: Sequence[str]) -> None:
             new_top: Optional[Sequence[str]] = get_top_n(merged_cum, 8, 2)
             if new_top:
                 print(new_top)
+                return new_top
+    return None
 
 
 if __name__ == "__main__":
@@ -103,8 +105,8 @@ if __name__ == "__main__":
     print(stops_for_esperanto)
 
     if esperanto_text and stops_for_esperanto:
-        analysis(esperanto_text, stops_for_esperanto)
+        answer = analysis(esperanto_text, stops_for_esperanto)
 
-    RESULT = 'Done'
+    RESULT = answer
 
     assert RESULT, 'Keywords are not extracted'
