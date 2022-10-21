@@ -228,16 +228,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for phrase in phrases:
         phrase_list = phrase.lower().split()
         for keyword_pair in valid_keyword_pairs:
-            pair_beg = keyword_pair[0]
-            pair_end = keyword_pair[1]
-            if ' '.join(pair_beg) not in phrase or ' '.join(pair_end) not in ' '.join(phrase_list):
-                continue
-            for index in range(len(phrase_list) - 2):
-                if phrase_list[index] == pair_beg[-1] and phrase_list[index + 2] == pair_end[0]:
-                    adjoined_phrase = (' '.join(pair_beg) + ' ' + phrase_list[index + 1]
-                                       + ' ' + ' '.join(pair_end)).split()
-                    if ' '.join(adjoined_phrase) in ' '.join(phrase_list):
-                        adjoined_phrases.append(tuple(adjoined_phrase))
+            for pair_beg, pair_end in pairwise(keyword_pair):
+                if ' '.join(pair_beg) not in phrase or ' '.join(pair_end) not in ' '.join(phrase_list):
+                    continue
+                for index in range(len(phrase_list) - 2):
+                    if phrase_list[index] == pair_beg[-1] and phrase_list[index + 2] == pair_end[0]:
+                        adjoined_phrase = f"{' '.join(pair_beg)} {phrase_list[index + 1]} {' '.join(pair_end)}".split()
+                        if ' '.join(adjoined_phrase) in ' '.join(phrase_list):
+                            adjoined_phrases.append(tuple(adjoined_phrase))
     valid_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
                               if adjoined_phrases.count(adjoined_phrase) >= 2]
     return valid_adjoined_phrases
