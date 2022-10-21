@@ -270,7 +270,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not check_types(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        return dict(json.load(file))
+        return json.load(file)
 
 
 def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = None,
