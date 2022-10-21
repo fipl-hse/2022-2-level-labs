@@ -245,12 +245,12 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             if (' '.join(possible_new1) in phrase and ' '.join(possible_new2) in phrase and
                     phrase_freq > 1 and next_phrase_freq > 1):
                 try:
-                    phrase = phrase.split()
-                    p1_end_idx = phrase.index(possible_new1[-1])
-                    p2_begin_idx = phrase.index(possible_new2[0])
+                    splt_phrase = phrase.split()
+                    p1_end_idx = splt_phrase.index(possible_new1[-1])
+                    p2_begin_idx = splt_phrase.index(possible_new2[0])
 
                     if p2_begin_idx - p1_end_idx == 2:
-                        stop_word = phrase[p1_end_idx + 1]
+                        stop_word = splt_phrase[p1_end_idx + 1]
                         all_words = [word for phrase in phrases for word in phrase.split()]
                         stop_word_freq = all_words.count(stop_word)
 
