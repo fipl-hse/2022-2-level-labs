@@ -85,11 +85,6 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(content_words, list):
         return None
-    # beautiful code
-    # return {token: sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
-    #         for token in content_words}
-
-    # not beautiful code
     word_degrees = {}
     for token in content_words:
         word_degrees[token] = sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
@@ -147,11 +142,6 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not type_check(keyword_phrases_with_scores, dict) \
             or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
-    # beautiful code
-    # return sorted([' '.join(item) for item in keyword_phrases_with_scores if len(item) <= max_length],
-    #               key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())], reverse=True)[:top_n]
-
-    # not beautiful code
     filtered = [item for item in keyword_phrases_with_scores if len(item) <= max_length]
     filtered_and_sorted = sorted(filtered, key=lambda phrase: keyword_phrases_with_scores[phrase], reverse=True)
     return [' '.join(item) for item in filtered_and_sorted][:top_n]
@@ -181,14 +171,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     pairs = list(pairwise(candidate_keyword_phrases))
     possible_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
-    # beautiful code
-    # possible_phrases = [phrase[start:end+1]
-    #                     for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]
-    #                     for phrase in [tuple(phrase.lower().split()) for phrase in phrases]
-    #                     for start, stop_word, end in [(i, i+len1, i+len1+len2) for i in range(len(phrase)-len1-len2)]
-    #                     if pair == (phrase[start:stop_word], phrase[stop_word+1:end+1])]
-
-    # find 10 differences
     possible_phrases = []
     for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]:
         for phrase in [tuple(phrase.lower().split()) for phrase in phrases]:
@@ -216,11 +198,6 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     if not type_check(candidate_keyword_phrases, list) or \
             not type_check(word_scores, dict) or not type_check(stop_words, list):
         return None
-    # beautiful code
-    # return {phrase: sum(word_scores[token] for token in phrase if token not in stop_words)
-    #         for phrase in candidate_keyword_phrases}
-
-    # not beautiful code
     cumulative_score = {}
     for phrase in candidate_keyword_phrases:
         cumulative_score[phrase] = sum(word_scores[token] for token in phrase if token not in stop_words)
