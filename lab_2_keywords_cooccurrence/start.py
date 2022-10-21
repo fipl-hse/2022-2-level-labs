@@ -84,6 +84,7 @@ if __name__ == "__main__":
         if candidate_keyword_phrases and phrases:
             candidate_keyword_phrases_with_adj = extract_candidate_keyword_phrases_with_adjoining(
                 candidate_keyword_phrases, phrases)
+            print(f'keyphrases with adj: {candidate_keyword_phrases_with_adj}')
 
         if candidate_keyword_phrases and word_scores and stop_words:
             keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(

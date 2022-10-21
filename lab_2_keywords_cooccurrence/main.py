@@ -2,6 +2,7 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
+from itertools import pairwise
 from pathlib import Path
 from typing import Any, Optional, Sequence, Mapping
 
@@ -230,25 +231,38 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not(check_sequence(candidate_keyword_phrases, tuple, False) and check_sequence(phrases, str, False)):
         return None
+    pairs = list(pairwise(candidate_keyword_phrases))
+    phrases = [phrase.lower() for phrase in phrases]
+    new_phrases = []
 
-    keyword_phrases_with_adj = []
+    for pair in pairs:
+        possible_new1 = list(pair[0])
+        possible_new2 = list(pair[1])
+        phrase_freq = candidate_keyword_phrases.count(pair[0])
+        next_phrase_freq = candidate_keyword_phrases.count(pair[1])
 
-    # look at phrase and a keyword phrase it consists of
-    for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
-        spltd_phrase = phrase.split()
-        keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)  # freq of a phrase
-        next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1]  # the next phrase
-        next_phrase_freq = candidate_keyword_phrases.count(next_phrase)  # freq of the next phrase
+        for phrase in phrases:
+            if (' '.join(possible_new1) in phrase and ' '.join(possible_new2) in phrase and
+                    phrase_freq > 1 and next_phrase_freq > 1):
+                try:
+                    phrase = phrase.split()
+                    p1_end_idx = phrase.index(possible_new1[-1])
+                    p2_begin_idx = phrase.index(possible_new2[0])
 
-        for keyword, word in zip(keyword_phrase, next_phrase):  # for words in each of those two phrases
-            # if both of them were in the same phrase originally and their freq is > 1
-            if keyword in spltd_phrase and word in spltd_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
-                next_phrase_start_idx = spltd_phrase.index(next_phrase[0])
-                stop_word = spltd_phrase[next_phrase_start_idx - 1]
-                word_idx = next_phrase.index(word)
-                keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
+                    if p2_begin_idx - p1_end_idx == 2:
+                        stop_word = phrase[p1_end_idx + 1]
+                        all_words = [word for phrase in phrases for word in phrase.split()]
+                        stop_word_freq = all_words.count(stop_word)
 
-    return keyword_phrases_with_adj
+                        possible_phrase = possible_new1 + [stop_word] + possible_new2
+
+                        if possible_phrase not in new_phrases and (stop_word_freq >= phrase_freq or stop_word_freq >= next_phrase_freq):
+                            new_phrases.append(tuple(possible_phrase))
+
+                except ValueError:
+                    pass
+
+    return list(set(new_phrases))
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
