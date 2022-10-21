@@ -208,7 +208,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if frequencies[kw_phrase] > 1:
             for phrase in phrases:
                 if kw_phrase[0] in phrase and kw_phrase[1] in phrase:
-                    kw_phrases_with_stop_word.extend(re.findall(f'{kw_phrase[0]}.*{kw_phrase[1]}', phrase))
+                    kw_phrases_with_stop_word.extend(re.findall(f'{kw_phrase[0]}.+{kw_phrase[1]}', phrase))
     true_kw_phrases_with_stop_word = []
     for kw_phrase_with_stop_word in dict.fromkeys(kw_phrases_with_stop_word):
         if kw_phrases_with_stop_word.count(kw_phrase_with_stop_word) > 1:
@@ -270,7 +270,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not check_types(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        return json.load(file)
+        return dict(json.load(file))
 
 
 def extract_keyword_phrases(target_text: str, stop_words: Optional[Sequence] = None,
