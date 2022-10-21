@@ -46,13 +46,11 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         for word in ready_phrase:
             if word in stop_words:
                 if candidate1:
-                    candidate2 = tuple(candidate1)
-                    candidates_list.append(candidate2)
+                    candidates_list.append(tuple(candidate1))
                     candidate1.clear()
             elif word == ready_phrase[len(ready_phrase) - 1]:
                 candidate1.append(word)
-                candidate2 = tuple(candidate1)
-                candidates_list.append(candidate2)
+                candidates_list.append(tuple(candidate1))
                 candidate1.clear()
             else:
                 candidate1.append(word)
@@ -191,7 +189,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for value1, value2 in pairwise(candidate_keyword_phrases):
         help_tuple = tuple([' '.join(value1), ' '.join(value2)])
         list_with_all_pairs.append(help_tuple)
-    duplicates1 = [x for i, x in enumerate(list_with_all_pairs) if x in list_with_all_pairs[:i]]
+    duplicates1 = set([value for index, value in enumerate(list_with_all_pairs) if value in
+                       list_with_all_pairs[:index]])
     key_phrases = []
     for item1 in phrases:
         for elem in duplicates1:
@@ -199,14 +198,11 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             if first_tuple not in item1:
                 continue
             first_place, second_place = item1.find(first_tuple), item1.rfind(second_tuple[len(second_tuple) - 1])
-            len_second_word = second_place + (len(second_tuple[len(second_tuple) - 1]) - 1)
-            key_phrases.append(item1[first_place:len_second_word + 1])
+            key_phrases.append(item1[first_place:second_place + 1])
     if not key_phrases:
         return []
-    previous = key_phrases[0][0:1]
-    duplicates2 = [x for i, x in enumerate(key_phrases) if x in key_phrases[:i]]
-    list_result = {tuple(item2.split()) for item2 in duplicates2 if previous == duplicates2[0][0:1]}
-    return list(list_result)
+    duplicates2 = [value for index, value in enumerate(key_phrases) if value in key_phrases[:index]]
+    return [tuple(item2.split()) for item2 in duplicates2]
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -254,7 +250,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
         return None
     punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
     clean_text = ''
-    clean_text_1 = [clean_text + mark for mark in text.lower().replace(',', '').split() if mark not in punctuation]
+    clean_text_1 = [clean_text + word for word in text.lower().replace(',', '').split() if word not in punctuation]
     frequencies = {token: clean_text_1.count(token) for token in clean_text_1}
     freq_list = sorted(frequencies.values())
     percentile = int((80 / 100) * len(freq_list))
