@@ -25,7 +25,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for mark in punctuation_marks:
         text = text.replace(mark, ',')
     split_text = text.split(',')
-    return [phrase.strip() for phrase in split_text if phrase.strip() != '']
+    return [phrase1 for phrase in split_text if (phrase1 := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
