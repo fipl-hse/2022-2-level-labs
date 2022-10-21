@@ -95,6 +95,6 @@ if __name__ == "__main__":
 
         print()
 
-    #RESULT = None
+    RESULT = candidate_keyword_phrases
 
-    #assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'

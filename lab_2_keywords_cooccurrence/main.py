@@ -77,18 +77,17 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     candidate_keyword_phrases = []
     keyword_phrase = []
 
-    for splt_phrase in splt_phrases:
-        for idx, word in enumerate(splt_phrase):
+    for phrase_idx, splt_phrase in enumerate(splt_phrases):
+        for word_idx, word in enumerate(splt_phrase):
 
             if word not in stop_words:
-                if idx == 0 and keyword_phrase:
+                if word_idx == 0 and keyword_phrase:
                     candidate_keyword_phrases.append(tuple(keyword_phrase))
                     keyword_phrase = []
 
                 keyword_phrase.append(word)
 
-                if splt_phrase[-1] == word and splt_phrases[-1] == splt_phrase:
-                #if idx == (len(splt_phrase) - 1) and splt_phrases.index(splt_phrase) == len(splt_phrases) - 1:
+                if word_idx == len(splt_phrase) - 1 and phrase_idx == len(splt_phrases) - 1:
                     candidate_keyword_phrases.append(tuple(keyword_phrase))
 
             elif word in stop_words and keyword_phrase:
@@ -234,6 +233,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     keyword_phrases_with_adj = []
 
+
+
+
     # look at phrase and a keyword phrase it consists of
     for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
         spltd_phrase = phrase.split()
@@ -248,6 +250,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 stop_word = spltd_phrase[next_phrase_start_idx - 1]
                 word_idx = next_phrase.index(word)
                 keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
+                
     return keyword_phrases_with_adj
 
 
