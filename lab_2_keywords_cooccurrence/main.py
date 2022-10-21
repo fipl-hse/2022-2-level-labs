@@ -4,7 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 import json
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any
+from typing import Optional, Sequence, Mapping, Any, Type
 import re
 from itertools import chain, pairwise
 from lab_1_keywords_tfidf.main import clean_and_tokenize, calculate_frequencies
