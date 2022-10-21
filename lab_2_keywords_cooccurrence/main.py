@@ -130,14 +130,11 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     if not(check_sequence(candidate_keyword_phrases, tuple, False) and check_sequence(content_words, str, False)):
         return None
 
-    degree_dict = {}
+    degree_dict = dict.fromkeys(content_words, 0)
     for word in content_words:
         for phrase in candidate_keyword_phrases:
-
             if word in phrase:
                 degree_dict[word] = degree_dict.get(word, 0) + len(phrase)
-            elif word not in degree_dict:
-                degree_dict[word] = 0
 
     return degree_dict
 
