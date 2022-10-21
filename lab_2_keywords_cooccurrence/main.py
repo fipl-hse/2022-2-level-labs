@@ -11,19 +11,19 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_type(user_var: Any, expected_type: Any, can_be_empty: bool = False) -> bool:
+def check_type(users_input: Any, expected_type: Any, can_be_empty: bool = False) -> bool:
     """
     Checks type of variable and compares it with expected type.
     For dict and list checks whether their elements are empty (regulated with can_be_empty)
     """
-    if not (isinstance(user_var, expected_type) and user_var):
+    if not (isinstance(users_input, expected_type) and users_input):
         return False
     if expected_type == list:
-        for element in user_var:
+        for element in users_input:
             if not element and can_be_empty is False:
                 return False
     elif expected_type == dict:
-        for key, value in user_var.items():
+        for key, value in users_input.items():
             if not (key and value):
                 return False
     return True
