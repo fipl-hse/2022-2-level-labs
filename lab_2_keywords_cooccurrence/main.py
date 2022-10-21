@@ -5,8 +5,23 @@ Extract keywords based on co-occurrence frequency
 from itertools import pairwise
 from pathlib import Path
 import re
-from typing import Optional, Sequence, Mapping, Union
+from typing import Optional, Sequence, Mapping, Union, Any
 from lab_1_keywords_tfidf.main import check_list, check_dict
+
+def check_dict(user_input: Any, key_type: type, value_type: Any, can_be_empty: bool) -> bool:
+
+    """
+    Checks weather object is dictionary
+    hat has keys and values of certain type
+    """
+    if not isinstance(user_input, dict):
+        return False
+    if not user_input and can_be_empty is False:
+        return False
+    for key, value in user_input.items():
+        if not (isinstance(key, key_type) and isinstance(value, value_type)):
+            return False
+    return True
 
 
 
@@ -142,7 +157,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, tuple, False) or not  check_dict(word_scores, str, float, False):
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_dict(word_scores, str, float, False):
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
@@ -220,9 +235,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 if (key_word[0] and key_word[1]) in phrase:
                     stop_words_list.extend(re.findall(r'{}\s\w+\s{}'.format(key_word[0], key_word[1]), phrase))
     new_keywords_phrases = []
-    for keywords_with_stop_words in dict.fromkeys(stop_words_list):
-        if stop_words_list.count(keywords_with_stop_words) > 1:
-            new_keywords_phrases.append(tuple(keywords_with_stop_words.lower().split()))
+    for phrase in stop_words_list:
+        if stop_words_list.count(phrase) > 1:
+            if tuple(phrase.split()) not in new_keywords_phrases:
+                new_keywords_phrases.append(tuple(phrase.split()))
     return new_keywords_phrases
 
 
