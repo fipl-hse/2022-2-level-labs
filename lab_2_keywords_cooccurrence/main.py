@@ -106,15 +106,11 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     if not (check_types(candidate_keyword_phrases, list) and check_types(content_words, list)):
         return None
     word_degrees_dict = {}
-    for phrase in candidate_keyword_phrases:
-        for word in phrase:
-            if word in word_degrees_dict and word in content_words:
+    for word in content_words:
+        word_degrees_dict[word] = 0
+        for phrase in candidate_keyword_phrases:
+            if word in phrase:
                 word_degrees_dict[word] += len(phrase)
-            elif word in content_words:
-                word_degrees_dict[word] = len(phrase)
-    for content_word in content_words:
-        if content_word not in word_degrees_dict.keys():
-            word_degrees_dict[content_word] = 0
     return word_degrees_dict
 
 
@@ -151,11 +147,12 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     cumulative_score_dict = {}
     for phrase in candidate_keyword_phrases:
-        cumulative_score_dict[phrase] = 0
+        cumulative_score_dict[phrase] = 0.0
         for word in phrase:
             if word not in word_scores:
                 return None
-            cumulative_score_dict[phrase] += int(word_scores[word])
+            cumulative_score_dict[phrase] += word_scores[word]
+            cumulative_score_dict[phrase] += word_scores[word]
     return cumulative_score_dict
 
 
@@ -241,10 +238,10 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         return None
     cumulative_score_with_stop_words_dict = {}
     for phrase in candidate_keyword_phrases:
-        cumulative_score_with_stop_words_dict[phrase] = 0
+        cumulative_score_with_stop_words_dict[phrase] = 0.0
         for word in phrase:
             if word not in stop_words:
-                cumulative_score_with_stop_words_dict[phrase] += int(word_scores.get(word, 0))
+                cumulative_score_with_stop_words_dict[phrase] += word_scores.get(word, 0)
     return cumulative_score_with_stop_words_dict
 
 
