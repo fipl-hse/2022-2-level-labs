@@ -239,7 +239,66 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
+        return None
+    if not (check_list(phrases, str, False)) or not phrases:
+        return None
+    if len(candidate_keyword_phrases) == 0 or len(phrases) == 0:
+        return None
+    all_pairs = {}
+    for i in range(len(candidate_keyword_phrases) - 1): #потому что дальше работа с индексами, а они с 0, а не с 1
+        pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
+        if pair not in all_pairs:
+            all_pairs[pair] = all_pairs.get(pair, 1)
+        else:
+            all_pairs[pair] += 1
+    pairs_frequent = []
+    for pair in all_pairs:
+        if all_pairs[pair] > 1:
+            for word in pair:
+                listok = [' '.join(word)]
+                pairs_frequent.append(listok)
+    frequent_pair_with_stop_words = {}
+    for pair in pairs_frequent:
+        first_part = pair[0].split()
+        last_word_of_fisrt_part = first_part[-1]
+        for phrase in phrases:
+            phrase = phrase.lower().split()
+            if last_word_of_fisrt_part in phrase:
+                occurrence = phrase.count(last_word_of_fisrt_part)
+                if occurrence == 1:
+                    index = phrase.index(last_word_of_fisrt_part)
+                    stop_word_to_include = phrase[index + 1]
+                    full_phrase = pair[0] + " " + stop_word_to_include + " " + pair[-1]
+                    if full_phrase in frequent_pair_with_stop_words:
+                        frequent_pair_with_stop_words[full_phrase] += 1
+                    else:
+                        frequent_pair_with_stop_words[full_phrase] = 1
+                elif occurrence > 1:
+                    while occurrence > 0:
+                        index = phrase.index(last_word_of_fisrt_part)
+                        stop_word_to_include = phrase[index + 1]
+                        index_of_stop_word = phrase.index(stop_word_to_include)
+                        full_phrase = pair[0] + " " + stop_word_to_include + " " + pair[-1]
+                        if full_phrase in frequent_pair_with_stop_words:
+                            frequent_pair_with_stop_words[full_phrase] += 1
+                        else:
+                            frequent_pair_with_stop_words[full_phrase] = 1
+                        occurrence = occurrence - 1
+                        phrase = phrase[index_of_stop_word:]
+                if occurrence == 0:
+                    break
+    for key in frequent_pair_with_stop_words.keys():
+        for phrase in phrases:
+            if key in phrase:
+                frequent_pair_with_stop_words[full_phrase] = 0
+                frequent_pair_with_stop_words[full_phrase] += 1
+    final = []
+    for key in frequent_pair_with_stop_words.keys():
+        if frequent_pair_with_stop_words[key] >= 2:
+            key_tuple = (key,)
+            final.append(key_tuple)
+    return final
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -257,7 +316,29 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
+        return None
+    if not isinstance(word_scores, dict) or not word_scores:
+        return None
+    for word, score in word_scores.items():
+        if not (isinstance(word, str) or isinstance(score, (float, int))):
+            return None
+    if not isinstance(stop_words, list) or not stop_words:
+        return None
+    for word in stop_words:
+        if not isinstance(word, str):
+            return None
+    if len(candidate_keyword_phrases) == 0 or len(word_scores) == 0 or len(stop_words) == 0:
+        return None
+    cumulative_score_for_candidates = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_score_for_candidates[phrase] = 0
+        for word in phrase:
+            if word in stop_words:
+                cumulative_score_for_candidates[phrase] += 0
+            else:
+                cumulative_score_for_candidates[phrase] += int(word_scores[word])
+    return cumulative_score_for_candidates
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
