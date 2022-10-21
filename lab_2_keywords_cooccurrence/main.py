@@ -2,11 +2,12 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
-import itertools
+
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from string import punctuation
 from re import findall
+from more_itertools import pairwise
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -206,9 +207,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not isinstance(candidate_keyword_phrases, list) or not isinstance(phrases, list)\
         or not candidate_keyword_phrases or not phrases:
         return None
-    new_candidates = itertools.pairwise(candidate_keyword_phrases)
+    new_candidates = list(pairwise(candidate_keyword_phrases))
     possible_candidates = []
-    no_duplicates = list(dict.fromkeys(new_candidates))
+    no_duplicates = set(new_candidates)
     for i in new_candidates:
         if i not in no_duplicates:
             possible_candidates.append(i)
