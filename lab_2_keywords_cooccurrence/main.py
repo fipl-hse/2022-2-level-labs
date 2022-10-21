@@ -6,7 +6,7 @@ from itertools import pairwise
 from pathlib import Path
 import re
 from typing import Optional, Sequence, Mapping, Union, Any
-from lab_1_keywords_tfidf.main import check_list, check_dict
+from lab_1_keywords_tfidf.main import check_list
 
 def check_dict(user_input: Any, key_type: type, value_type: Any, can_be_empty: bool) -> bool:
 
