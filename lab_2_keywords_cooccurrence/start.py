@@ -44,9 +44,13 @@ if __name__ == "__main__":
     phrases2 = extract_phrases(corpus["albatross"])
     phrases3 = extract_phrases(corpus["genome_engineering"])
     phrases4 = extract_phrases(corpus["pain_detection"])
-
+    print(phrases1)
+    print(phrases2)
+    print(phrases3)
+    print(phrases4)
     if phrases1:
         key_phrases1 = extract_candidate_keyword_phrases(phrases1, stop_words)
+        print(key_phrases1)
 
     if phrases2:
         key_phrases2 = extract_candidate_keyword_phrases(phrases2, stop_words)
@@ -56,7 +60,7 @@ if __name__ == "__main__":
 
     if phrases4:
         key_phrases4 = extract_candidate_keyword_phrases(phrases4, stop_words)
-        
+
     RESULT = True
 
     assert RESULT, 'Keywords are not extracted'

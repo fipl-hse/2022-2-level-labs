@@ -105,10 +105,9 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not my_isinstance(text, str):
         return None
-    punct = r"!\"#$%&'()*+,-./:;<=>?@[\]^_`{|}~–—«»“”"
-    pattern = re.compile(rf"[{punct}]+(?=[$\s])|(?!=\w)[{punct}]+")
-    #  ?= -- positive lookahead
-    #  ?!= -- negative lookahead
+    pattern = re.compile(r"[\s\W]+(?=\s)|[\s\W]+(?=$)|(?<=^)[\s\W]+|(?=\s)[\s\W]+")
+    #  ?= -- positive lookahead     ?<= -- positive lookbehind
+    #  ?! -- negative lookahead     ?!= -- negative lookbehind
     return [phrase.strip() for phrase in re.split(pattern, text) if phrase]
 
 
