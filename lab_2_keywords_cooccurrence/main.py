@@ -256,8 +256,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
                         possible_phrase = possible_new1 + [stop_word] + possible_new2
 
-                        if possible_phrase not in new_phrases and (stop_word_freq >= phrase_freq or stop_word_freq >= next_phrase_freq):
-                            new_phrases.append(tuple(possible_phrase))
+                        if (possible_phrase not in new_phrases and
+                                (stop_word_freq >= phrase_freq or stop_word_freq >= next_phrase_freq)):
+                        new_phrases.append(tuple(possible_phrase))
 
                 except ValueError:
                     pass
