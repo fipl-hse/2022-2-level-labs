@@ -226,15 +226,17 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                            if keyword_pairs.count(keyword_pair) >= 2]
     adjoined_phrases = []
     for phrase in phrases:
-        phrase_list = phrase.lower().split()
+        phrase = phrase.lower()
+        phrase_list = phrase.split()
         for keyword_pair in valid_keyword_pairs:
             for pair_beg, pair_end in pairwise(keyword_pair):
-                if ' '.join(pair_beg) not in phrase or ' '.join(pair_end) not in ' '.join(phrase_list):
+                pair_beg_str, pair_end_str = ' '.join(pair_beg), ' '.join(pair_end)
+                if pair_beg_str not in phrase or pair_end_str not in phrase:
                     continue
                 for index in range(len(phrase_list) - 2):
                     if phrase_list[index] == pair_beg[-1] and phrase_list[index + 2] == pair_end[0]:
-                        adjoined_phrase = f"{' '.join(pair_beg)} {phrase_list[index + 1]} {' '.join(pair_end)}".split()
-                        if ' '.join(adjoined_phrase) in ' '.join(phrase_list):
+                        adjoined_phrase = f"{pair_beg_str} {phrase_list[index + 1]} {pair_end_str}".split()
+                        if ' '.join(adjoined_phrase) in phrase:
                             adjoined_phrases.append(tuple(adjoined_phrase))
     valid_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
                               if adjoined_phrases.count(adjoined_phrase) >= 2]
