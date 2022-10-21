@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from lab_2_keywords_cooccurrence.main import (extract_phrases)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -38,6 +39,10 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
+    text = corpus['gagarin']
+    if text:
+        phrases_list = extract_phrases(text)
+    RESULT = extract_phrases(text)
+    print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'

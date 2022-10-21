@@ -24,6 +24,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
         if symbol in punctuation:
              text = text.replace(symbol,'.')
     phrases_list = text.split('.')
+    return phrases_list
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
