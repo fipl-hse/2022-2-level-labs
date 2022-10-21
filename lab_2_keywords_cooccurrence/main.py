@@ -190,6 +190,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         help_tuple = tuple([' '.join(value1), ' '.join(value2)])
         list_with_all_pairs.append(help_tuple)
     duplicates1 = [value for index, value in enumerate(list_with_all_pairs) if value in list_with_all_pairs[:index]]
+    duplicates1 = set(duplicates1)
     key_phrases = []
     for item1 in phrases:
         for elem in duplicates1:
