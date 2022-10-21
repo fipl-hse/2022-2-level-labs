@@ -20,6 +20,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str) or not text:
         return None
+
     for i in text:
         if i in punctuation + '.;:¡!¿?…⋯‹›«»\\"“”[]()⟨⟩}{&|-–~—':
             text = text.replace(i, ',')
@@ -75,6 +76,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     """
     if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases != []):
         return None
+
     freq_dict = {}
     for phrase in candidate_keyword_phrases:
         for word in phrase:
@@ -101,6 +103,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         return None
     if not isinstance(content_words, list) or content_words == []:
         return None
+
     word_degrees = {}
     for word in content_words:
         word_degrees[word] = 0
@@ -128,6 +131,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
         return None
     if not isinstance(word_frequencies, dict) or word_frequencies == {}:
         return None
+
     word_scores = {}
     for el in word_degrees.keys():
         if el not in word_frequencies.keys():
@@ -156,6 +160,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
     if not isinstance(word_scores, dict) or word_scores == {}:
         return None
+
     phrase_score = {}
     for el in candidate_keyword_phrases:
         phrase_score[el] = 0
