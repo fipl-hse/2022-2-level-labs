@@ -17,10 +17,7 @@ def correct_type(variable: Any, expected_type: type) -> bool:
     """
     if not isinstance(variable, expected_type) or not variable:
         return False
-    if isinstance(variable, int):
-        if variable < 0:
-            return False
-    return True
+    return not (isinstance(variable, int) and variable < 0)
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
