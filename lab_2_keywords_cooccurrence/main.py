@@ -87,12 +87,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not check_input(text, str):
         return None
-    punctuat = """!\"#$%&'()*+,-./:;<=>?@[]^_`{|}~¿—–⟨⟩«»…⋯‹›\\¡“”"""
-    sep_phrases = text[:]
-    for i in sep_phrases:
-        if i in punctuat:
-            sep_phrases = sep_phrases.replace(i, '*')
-    phrases_by_re = re.split(r'[*]+', sep_phrases)
+    phrases_by_re = re.split(r'[^\w\s]', text)
     new_sep = phrases_by_re[:]
     for j in phrases_by_re:
         if re.fullmatch(r'\s+', j) or not j:
