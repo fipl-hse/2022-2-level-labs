@@ -233,9 +233,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     keyword_phrases_with_adj = []
 
-
-
-
     # look at phrase and a keyword phrase it consists of
     for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
         spltd_phrase = phrase.split()
