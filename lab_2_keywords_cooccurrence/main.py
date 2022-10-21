@@ -217,6 +217,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     phrases_with_ajoin = []
     for i in phrases:
         for candidate in possible_candidates:
+
             phrase = fr'(\b\w*\b)(?<={candidate[0][-1]} )(?= {candidate[-1][0]})'
             stops = findall(phrase, i)
             for stop in stops:
