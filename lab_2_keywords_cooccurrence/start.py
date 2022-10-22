@@ -13,8 +13,8 @@ from lab_2_keywords_cooccurrence.main import (
     get_top_n,
     extract_candidate_keyword_phrases_with_adjoining,
     calculate_cumulative_score_for_candidates_with_stop_words,
-    # generate_stop_words,
-    # load_stop_words
+    generate_stop_words,
+    load_stop_words
 )
 
 def read_target_text(file_path: Path) -> str:
@@ -89,12 +89,25 @@ if __name__ == "__main__":
         if candidate_keyword_phrases and word_scores and stop_words:
             keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(
                 candidate_keyword_phrases, word_scores, stop_words)
+            print(f'phrases with stops scores: {keyword_phrases_with_scores_with_stops}')
 
         if keyword_phrases_with_scores_with_stops:
             top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 6)
             print(f'top n lst with stop words: {top_lst_with_stops}')
 
-        print()
+
+    diff_lang_stop_words = load_stop_words(Path(
+        r'C:\Users\SASHA ELIDEDOVA\Downloads\2022-2-level-labs\lab_2_keywords_cooccurrence\assets\stopwords.json'))
+
+    with open(r'C:\Users\SASHA ELIDEDOVA\Downloads\2022-2-level-labs\lab_2_keywords_cooccurrence\assets\polish.txt',
+              encoding='utf-8') as f:
+        polish_text = f.read()
+        polish_phrases = extract_phrases(polish_text)
+        polish_keyword_phrases = extract_candidate_keyword_phrases(polish_phrases, diff_lang_stop_words['pl'])
+        print(polish_keyword_phrases)
+
+        print(generate_stop_words(polish_text, 10))
+        print(diff_lang_stop_words['pl'])
 
     RESULT = candidate_keyword_phrases
 

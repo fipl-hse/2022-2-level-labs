@@ -3,6 +3,8 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from itertools import pairwise
+import json
+from math import ceil
 from pathlib import Path
 from typing import Any, Optional, Sequence, Mapping
 
@@ -230,37 +232,36 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     pairs = list(pairwise(candidate_keyword_phrases))
     phrases = [phrase.lower() for phrase in phrases]
+    possible_phrases = []
     new_phrases = []
 
     for pair in pairs:
-        possible_new1 = list(pair[0])
-        possible_new2 = list(pair[1])
-        phrase_freq = candidate_keyword_phrases.count(pair[0])
-        next_phrase_freq = candidate_keyword_phrases.count(pair[1])
+        new_phrase_p1 = list(pair[0])
+        new_phrase_p2 = list(pair[1])
+        new_phrase_p1_freq = candidate_keyword_phrases.count(pair[0])
+        new_phrase_p2_freq = candidate_keyword_phrases.count(pair[1])
 
         for phrase in phrases:
-            if (' '.join(possible_new1) in phrase and ' '.join(possible_new2) in phrase and
-                    phrase_freq > 1 and next_phrase_freq > 1):
+            if (' '.join(new_phrase_p1) in phrase and ' '.join(new_phrase_p2) in phrase and
+                    new_phrase_p1_freq > 1 and new_phrase_p2_freq > 1):
+
                 try:
                     splt_phrase = phrase.split()
-                    p1_end_idx = splt_phrase.index(possible_new1[-1])
-                    p2_begin_idx = splt_phrase.index(possible_new2[0])
+                    p1_end_indices = [idx for idx, word in enumerate(splt_phrase) if word == new_phrase_p1[-1]]
+                    p2_begin_indices = [idx for idx, word in enumerate(splt_phrase) if word == new_phrase_p2[0]]
 
-                    if p2_begin_idx - p1_end_idx == 2:
-                        stop_word = splt_phrase[p1_end_idx + 1]
-                        all_words = [word for phrase in phrases for word in phrase.split()]
-                        stop_word_freq = all_words.count(stop_word)
-
-                        possible_phrase = possible_new1 + [stop_word] + possible_new2
-
-                        if (possible_phrase not in new_phrases and
-                                (stop_word_freq >= phrase_freq or stop_word_freq >= next_phrase_freq)):
-                            new_phrases.append(tuple(possible_phrase))
+                    for idx1, idx2 in zip(p1_end_indices, p2_begin_indices):
+                        if idx2 - idx1 == 2:
+                            stop_word = splt_phrase[idx2 - 1]
+                            possible_phrase = new_phrase_p1 + [stop_word] + new_phrase_p2
+                            possible_phrases.append(possible_phrase)
+                            new_phrases = {tuple(phrase) for phrase in possible_phrases
+                                           if possible_phrases.count(phrase) > 2}
 
                 except ValueError:
                     pass
 
-    return list(set(new_phrases))
+    return list(new_phrases)
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -301,7 +302,24 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not(isinstance(text, str) and text and isinstance(max_length, int) and max_length > 0):
+        return None
+    punctuation = r"""..,,¡!¿?"“”…⋯#$%&'()*+-/:;<=>‹›⟨⟩@[\]^_`{|}-–~—«»"""
+    for punc in punctuation:
+        text = text.replace(punc, '')
+
+    freq_dict = {}
+    for word in text.lower().split():
+        freq_dict[word] = freq_dict.get(word, 0) + 1
+    freq_dict_sorted = sorted(freq_dict.keys(), key=lambda key: freq_dict[key])
+
+    idx = ceil(len(freq_dict) * 0.8)
+    stop_words = []
+    for stop_word in freq_dict_sorted[idx - 1:]:
+        if not len(stop_word) > max_length:
+            stop_words.append(stop_word)
+
+    return sorted(stop_words)
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -310,4 +328,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not(isinstance(path, Path) and path):
+        return None
+    with open(path, encoding='utf-8') as f:
+        return json.load(f)
