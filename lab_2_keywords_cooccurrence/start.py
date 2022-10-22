@@ -57,11 +57,11 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    def functions(text: str, stop_words: Sequence[str]) -> None:
+    def functions(text: str, stop_words_seq: Sequence[str]) -> None:
         phrases = extract_phrases(text)
 
-        if phrases and stop_words:
-            candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+        if phrases and stop_words_seq:
+            candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words_seq)
 
         if candidate_keyword_phrases:
             word_frequency = calculate_frequencies_for_content_words(candidate_keyword_phrases)
@@ -85,9 +85,9 @@ if __name__ == "__main__":
                 candidate_keyword_phrases, phrases)
             print(f'keyword phrases with stop words: {candidate_keyword_phrases_with_adj}')
 
-        if candidate_keyword_phrases and word_scores and stop_words:
+        if candidate_keyword_phrases and word_scores and stop_words_seq:
             keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(
-                candidate_keyword_phrases, word_scores, stop_words)
+                candidate_keyword_phrases, word_scores, stop_words_seq)
 
         if keyword_phrases_with_scores_with_stops:
             top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 6)
@@ -109,7 +109,6 @@ if __name__ == "__main__":
     unknown_stop_words = generate_stop_words(unknown_text, 10)
     if unknown_text and unknown_stop_words:
         functions(unknown_text, unknown_stop_words)
-
 
     RESULT = 'finished'
 
