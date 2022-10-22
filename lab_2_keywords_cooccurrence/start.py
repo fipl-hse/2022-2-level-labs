@@ -83,6 +83,7 @@ if __name__ == "__main__":
         if candidate_keyword_phrases and phrases:
             candidate_keyword_phrases_with_adj = extract_candidate_keyword_phrases_with_adjoining(
                 candidate_keyword_phrases, phrases)
+            print(f'keyword phrases with stop words: {candidate_keyword_phrases_with_adj}')
 
         if candidate_keyword_phrases and word_scores and stop_words:
             keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(
@@ -95,19 +96,19 @@ if __name__ == "__main__":
         print()
 
 
-    for title, text in corpus.items():
+    for title, story in corpus.items():
         print(f'info about the text called {title}')
-        functions(text, stop_words)
+        functions(story, stop_words)
 
     polish_text = read_target_text(TARGET_PATH_POLISH)
     diff_lang_stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')
     if polish_text and diff_lang_stop_words:
-        processed_polish_text = functions(polish_text, diff_lang_stop_words['pl'])
+        functions(polish_text, diff_lang_stop_words['pl'])
 
     unknown_text = read_target_text(TARGET_TEXT_PATH_UNKNOWN)
     unknown_stop_words = generate_stop_words(unknown_text, 10)
     if unknown_text and unknown_stop_words:
-        processed_unknown_text = functions(unknown_text, unknown_stop_words)
+        functions(unknown_text, unknown_stop_words)
 
 
     RESULT = 'finished'
