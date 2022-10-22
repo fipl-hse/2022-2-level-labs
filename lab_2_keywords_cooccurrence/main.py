@@ -254,8 +254,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                             stop_word = splt_phrase[idx2 - 1]
                             possible_phrase = new_phrase_p1 + [stop_word] + new_phrase_p2
                             possible_phrases.append(possible_phrase)
-                            new_phrases = {tuple(phrase) for phrase in possible_phrases
-                                           if possible_phrases.count(phrase) > 2}
+                            new_phrases = set(tuple(phrase) for phrase in possible_phrases
+                                           if possible_phrases.count(phrase) > 2)
 
                 except ValueError:
                     pass

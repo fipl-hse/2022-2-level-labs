@@ -3,6 +3,8 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from typing import Sequence
+
 from lab_2_keywords_cooccurrence.main import (
     extract_phrases,
     extract_candidate_keyword_phrases,
@@ -16,6 +18,7 @@ from lab_2_keywords_cooccurrence.main import (
     generate_stop_words,
     load_stop_words
 )
+
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -43,6 +46,10 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH_PAIN_DETECTION = ASSETS_PATH / 'pain_detection.txt'
     TARGET_TEXT_PATH_GAGARIN = ASSETS_PATH / 'gagarin.txt'
 
+    TARGET_PATH_STOP_WORDS = ASSETS_PATH / 'stopwords.json'
+    TARGET_PATH_POLISH = ASSETS_PATH / 'polish.txt'
+    TARGET_TEXT_PATH_UNKNOWN = ASSETS_PATH / 'unknown.txt'
+
     corpus = {
         'gagarin': read_target_text(TARGET_TEXT_PATH_GAGARIN),
         'albatross': read_target_text(TARGET_TEXT_PATH_ALBATROSS),
@@ -50,15 +57,11 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    for title, text in corpus.items():
-        print(f'info about the text called {title}')
-
+    def functions(text: str, stop_words: Sequence[str]) -> None:
         phrases = extract_phrases(text)
-        print(f'phrases: {phrases}')
 
-        if phrases:
+        if phrases and stop_words:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
-            print(f'candidate keyword phrases: {candidate_keyword_phrases}')
 
         if candidate_keyword_phrases:
             word_frequency = calculate_frequencies_for_content_words(candidate_keyword_phrases)
@@ -75,17 +78,15 @@ if __name__ == "__main__":
 
         if keyword_phrases_with_scores:
             top_lst = get_top_n(keyword_phrases_with_scores, 10, 6)
-            print(f'top n lst {top_lst}')
+            print(f'top n lst: {top_lst}')
 
         if candidate_keyword_phrases and phrases:
             candidate_keyword_phrases_with_adj = extract_candidate_keyword_phrases_with_adjoining(
                 candidate_keyword_phrases, phrases)
-            print(f'keyphrases with adj: {candidate_keyword_phrases_with_adj}')
 
         if candidate_keyword_phrases and word_scores and stop_words:
             keyword_phrases_with_scores_with_stops = calculate_cumulative_score_for_candidates_with_stop_words(
                 candidate_keyword_phrases, word_scores, stop_words)
-            print(f'phrases with stops scores: {keyword_phrases_with_scores_with_stops}')
 
         if keyword_phrases_with_scores_with_stops:
             top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 6)
@@ -93,26 +94,22 @@ if __name__ == "__main__":
 
         print()
 
-    diff_lang_stop_words = load_stop_words(Path(r'./assets/stopwords.json'))
 
-    with open(r'./assets/polish.txt', encoding='utf-8') as f:
-        polish_text = f.read()
-        polish_phrases = extract_phrases(polish_text)
-        if polish_phrases and diff_lang_stop_words:
-            polish_keyword_phrases = extract_candidate_keyword_phrases(polish_phrases, diff_lang_stop_words['pl'])
-            print(f'keyword phrases extracted from a polish text: {polish_keyword_phrases}')
-            print(f'stop words generated from a polish text: {generate_stop_words(polish_text, 10)}')
-            print()
+    for title, text in corpus.items():
+        print(f'info about the text called {title}')
+        functions(text, stop_words)
 
-    with open(r'./assets/unknown.txt') as f:
-        unknown_text = f.read()
-        unknown_stop_words = generate_stop_words(unknown_text, 10)
-        unknown_phrases = extract_phrases(unknown_text)
-        if unknown_phrases and unknown_stop_words:
-            unknown_stop_words = generate_stop_words(unknown_text, 10)
-            unknown_keyword_phrases = extract_candidate_keyword_phrases(unknown_phrases, unknown_stop_words)
-            print(f'keyword phrases from a text in esperanto: {unknown_keyword_phrases}')
+    polish_text = read_target_text(TARGET_PATH_POLISH)
+    diff_lang_stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    if polish_text and diff_lang_stop_words:
+        processed_polish_text = functions(polish_text, diff_lang_stop_words['pl'])
 
-    RESULT = candidate_keyword_phrases
+    unknown_text = read_target_text(TARGET_TEXT_PATH_UNKNOWN)
+    unknown_stop_words = generate_stop_words(unknown_text, 10)
+    if unknown_text and unknown_stop_words:
+        processed_unknown_text = functions(unknown_text, unknown_stop_words)
+
+
+    RESULT = 'finished'
 
     assert RESULT, 'Keywords are not extracted'
