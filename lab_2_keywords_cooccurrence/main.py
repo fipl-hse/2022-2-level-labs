@@ -233,7 +233,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     pairs = list(pairwise(candidate_keyword_phrases))
     phrases = [phrase.lower() for phrase in phrases]
     possible_phrases = []
-    new_phrases = {}
+    new_phrases = set()
     for pair in pairs:
         new_phrase_p1 = list(pair[0])
         new_phrase_p2 = list(pair[1])
@@ -254,8 +254,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                             stop_word = splt_phrase[idx2 - 1]
                             possible_phrase = new_phrase_p1 + [stop_word] + new_phrase_p2
                             possible_phrases.append(possible_phrase)
-                            new_phrases = set(tuple(phrase) for phrase in possible_phrases
-                                           if possible_phrases.count(phrase) > 2)
+                            new_phrases = {tuple(phrase) for phrase in possible_phrases
+                                           if possible_phrases.count(phrase) > 2}
 
                 except ValueError:
                     pass
@@ -310,11 +310,12 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     freq_dict = {}
     for word in text.lower().split():
         freq_dict[word] = freq_dict.get(word, 0) + 1
-    freq_dict_sorted = sorted(freq_dict.keys(), key=lambda key: freq_dict[key])
+    # freq_dict_sorted = sorted(freq_dict.keys(), key=lambda key: freq_dict[1])
+    sorted_stop_words = [key[0] for key in sorted(freq_dict.items(), key=lambda x: x[1])]
 
     idx = ceil(len(freq_dict) * 0.8)
     stop_words = []
-    for stop_word in freq_dict_sorted[idx - 1:]:
+    for stop_word in sorted_stop_words[idx - 1:]:
         if not len(stop_word) > max_length:
             stop_words.append(stop_word)
 
@@ -330,4 +331,4 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not(isinstance(path, Path) and path):
         return None
     with open(path, encoding='utf-8') as f:
-        return json.load(f)
+        return dict(json.load(f))
