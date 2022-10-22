@@ -98,17 +98,20 @@ if __name__ == "__main__":
     with open(r'./assets/polish.txt', encoding='utf-8') as f:
         polish_text = f.read()
         polish_phrases = extract_phrases(polish_text)
-        polish_keyword_phrases = extract_candidate_keyword_phrases(polish_phrases, diff_lang_stop_words['pl'])
-        print(f'keyword phrases extracted from a polish text: {polish_keyword_phrases}')
-        print(f'stop words generated from a polish text: {generate_stop_words(polish_text, 10)}')
-        print()
+        if polish_phrases and diff_lang_stop_words:
+            polish_keyword_phrases = extract_candidate_keyword_phrases(polish_phrases, diff_lang_stop_words['pl'])
+            print(f'keyword phrases extracted from a polish text: {polish_keyword_phrases}')
+            print(f'stop words generated from a polish text: {generate_stop_words(polish_text, 10)}')
+            print()
 
     with open(r'./assets/unknown.txt') as f:
         unknown_text = f.read()
-        unknown_phrases = extract_phrases(unknown_text)
         unknown_stop_words = generate_stop_words(unknown_text, 10)
-        unknown_keyword_phrases = extract_candidate_keyword_phrases(unknown_phrases, unknown_stop_words)
-        print(f'keyword phrases from a text in esperanto: {unknown_keyword_phrases}')
+        unknown_phrases = extract_phrases(unknown_text)
+        if unknown_phrases and unknown_stop_words:
+            unknown_stop_words = generate_stop_words(unknown_text, 10)
+            unknown_keyword_phrases = extract_candidate_keyword_phrases(unknown_phrases, unknown_stop_words)
+            print(f'keyword phrases from a text in esperanto: {unknown_keyword_phrases}')
 
     RESULT = candidate_keyword_phrases
 

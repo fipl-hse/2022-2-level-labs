@@ -233,8 +233,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     pairs = list(pairwise(candidate_keyword_phrases))
     phrases = [phrase.lower() for phrase in phrases]
     possible_phrases = []
-    new_phrases = []
-
+    new_phrases = {}
     for pair in pairs:
         new_phrase_p1 = list(pair[0])
         new_phrase_p2 = list(pair[1])
