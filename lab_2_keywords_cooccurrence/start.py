@@ -62,20 +62,16 @@ if __name__ == "__main__":
 
         if candidate_keyword_phrases:
             word_frequency = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-            print(f'word freq: {word_frequency}')
 
         if candidate_keyword_phrases and word_frequency:
             word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequency.keys()))
-            print(f'word degrees: {word_degrees}')
 
         if word_degrees and word_frequency:
             word_scores = calculate_word_scores(word_degrees, word_frequency)
-            print(f'word scores: {word_scores}')
 
         if candidate_keyword_phrases and word_scores:
             keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
                                                                                     word_scores)
-            print(f'keyword phrases with scores: {keyword_phrases_with_scores}')
 
         if keyword_phrases_with_scores:
             top_lst = get_top_n(keyword_phrases_with_scores, 10, 6)
@@ -95,19 +91,24 @@ if __name__ == "__main__":
             top_lst_with_stops = get_top_n(keyword_phrases_with_scores_with_stops, 10, 6)
             print(f'top n lst with stop words: {top_lst_with_stops}')
 
+        print()
 
-    diff_lang_stop_words = load_stop_words(Path(
-        r'C:\Users\SASHA ELIDEDOVA\Downloads\2022-2-level-labs\lab_2_keywords_cooccurrence\assets\stopwords.json'))
+    diff_lang_stop_words = load_stop_words(Path(r'./assets/stopwords.json'))
 
-    with open(r'C:\Users\SASHA ELIDEDOVA\Downloads\2022-2-level-labs\lab_2_keywords_cooccurrence\assets\polish.txt',
-              encoding='utf-8') as f:
+    with open(r'./assets/polish.txt', encoding='utf-8') as f:
         polish_text = f.read()
         polish_phrases = extract_phrases(polish_text)
         polish_keyword_phrases = extract_candidate_keyword_phrases(polish_phrases, diff_lang_stop_words['pl'])
-        print(polish_keyword_phrases)
+        print(f'keyword phrases extracted from a polish text: {polish_keyword_phrases}')
+        print(f'stop words generated from a polish text: {generate_stop_words(polish_text, 10)}')
+        print()
 
-        print(generate_stop_words(polish_text, 10))
-        print(diff_lang_stop_words['pl'])
+    with open(r'./assets/unknown.txt') as f:
+        unknown_text = f.read()
+        unknown_phrases = extract_phrases(unknown_text)
+        unknown_stop_words = generate_stop_words(unknown_text, 10)
+        unknown_keyword_phrases = extract_candidate_keyword_phrases(unknown_phrases, unknown_stop_words)
+        print(f'keyword phrases from a text in esperanto: {unknown_keyword_phrases}')
 
     RESULT = candidate_keyword_phrases
 
