@@ -318,8 +318,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     # for stop_word in sorted_stop_words[idx - 1:]:
     #     if not len(stop_word) > max_length:
     #         stop_words.append(stop_word)
-
-    return sorted([stop_word for stop_word in sorted_stop_words[idx - 1:] if len(stop_word) <= max_length])
+    return [stop_word for stop_word in sorted_stop_words[idx - 1:] if len(stop_word) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
