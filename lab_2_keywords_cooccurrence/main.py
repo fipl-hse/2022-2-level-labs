@@ -309,7 +309,10 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
 
     freq_dict = {}
     for word in text.lower().split():
-        freq_dict[word] = freq_dict.get(word, 0) + 1
+        if word in freq_dict:
+            freq_dict[word] += 1
+        else:
+            freq_dict[word] = 1
 
     sorted_stop_words = sorted(freq_dict.keys(), key=lambda key: freq_dict[key])
     idx = ceil(len(freq_dict) * 0.8)
