@@ -774,17 +774,17 @@ class TFIDFAdapter:
             scores = calculate_tfidf(tf_dict, self._idf)
         if not scores:
             return -1
-        else:
-            self._scores = scores
-            return 0
+        self._scores = scores
+        return 0
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         No docstring yet
         """
-        top = get_top_n(self._scores, n_keywords)
-        if top:
-            return tuple(top)
+        top = ()
+        if get_top := get_top_n(self._scores, n_keywords):
+            top = get_top
+        return tuple(top)
 
     def get_scores(self) -> dict[str, float]:
         """
@@ -804,7 +804,7 @@ class RAKEAdapter:
         """
         No docstring yet
         """
-        candidate_keyword_phrases, word_frequencies, word_degrees, scores = repeat(None, 3)
+        candidate_keyword_phrases, word_frequencies, word_degrees, scores = repeat(None, 4)
         phrases = extract_phrases(self._text)
         if phrases and self._stop_words:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
@@ -816,17 +816,17 @@ class RAKEAdapter:
             scores = calculate_word_scores(word_degrees, word_frequencies)
         if not scores:
             return -1
-        else:
-            self._scores = scores
-            return 0
+        self._scores = scores
+        return 0
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         No docstring yet
         """
-        top = get_top_n(self._scores, n_keywords)
-        if top:
-            return tuple(top)
+        top = ()
+        if get_top := get_top_n(self._scores, n_keywords):
+            top = get_top
+        return tuple(top)
 
     def get_scores(self) -> dict[str, float]:
         """
@@ -857,53 +857,50 @@ class KeywordExtractionBenchmark:
         """
         No docstring yet
         """
-        try:
-            for name in 'TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank':
-                self.report[name] = {}
-            preprocessor = TextPreprocessor(self.stop_words, self.punctuation)
-            encoder = TextEncoder()
-            project_root = Path(__file__).parent
-            assets = project_root / 'assets'
-            benchmark_materials = assets / 'benchmark_materials'
-            for theme in range(len(self.themes)):
-                target_text_path = benchmark_materials / (str(theme) + '_text.txt')
-                file = open(target_text_path, 'r', encoding='utf-8')
-                text = file.read()
-                file.close()
-                target_keyword_path = benchmark_materials / (str(theme) + '_keywords.txt')
-                file = open(target_keyword_path, 'r', encoding='utf-8')
-                keywords = tuple(file.read().split())
-                file.close()
+        for name in 'TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank':
+            self.report[name] = {}
+        preprocessor = TextPreprocessor(self.stop_words, self.punctuation)
+        encoder = TextEncoder()
+        project_root = Path(__file__).parent
+        assets = project_root / 'assets'
+        benchmark_materials = assets / 'benchmark_materials'
+        for theme in range(len(self.themes)):
+            target_text_path = benchmark_materials / (str(theme) + '_text.txt')
+            file = open(target_text_path, 'r', encoding='utf-8')
+            text = file.read()
+            file.close()
+            target_keyword_path = benchmark_materials / (str(theme) + '_keywords.txt')
+            file = open(target_keyword_path, 'r', encoding='utf-8')
+            keywords = tuple(file.read().split())
+            file.close()
 
-                tokens = preprocessor.preprocess_text(text)
-                tokens_encoded = encoder.encode(tokens)
-                graph = EdgeListGraph()
-                if tokens_encoded:
-                    graph.fill_from_tokens(tokens_encoded, 3)
-                    graph.fill_positions(tokens_encoded)
-                graph.calculate_position_weights()
+            tokens = preprocessor.preprocess_text(text)
+            tokens_encoded = encoder.encode(tokens)
+            graph = EdgeListGraph()
+            if tokens_encoded:
+                graph.fill_from_tokens(tokens_encoded, 3)
+                graph.fill_positions(tokens_encoded)
+            graph.calculate_position_weights()
 
-                tfidf = TFIDFAdapter(tokens, self.idf)
-                rake = RAKEAdapter(text, self.stop_words)
-                vanilla_text_rank = VanillaTextRank(graph)
-                position_biased = PositionBiasedTextRank(graph)
+            tfidf = TFIDFAdapter(tokens, self.idf)
+            rake = RAKEAdapter(text, self.stop_words)
+            vanilla_text_rank = VanillaTextRank(graph)
+            position_biased = PositionBiasedTextRank(graph)
 
-                for algorithm in tfidf, rake, vanilla_text_rank, position_biased:
-                    algorithm.train()
+            for algorithm in tfidf, rake, vanilla_text_rank, position_biased:
+                algorithm.train()
 
-                predict_tfidf = tfidf.get_top_keywords(50)
-                self.report['TF-IDF'][self.themes[theme]] = self.calculate_recall(predict_tfidf, keywords)
-                predict_rake = rake.get_top_keywords(50)
-                self.report['RAKE'][self.themes[theme]] = self.calculate_recall(predict_rake, keywords)
-                predict_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
-                if predict_vanilla:
-                    self.report['VanillaTextRank'][self.themes[theme]] = self.calculate_recall(predict_vanilla, keywords)
-                predict_biased = encoder.decode(position_biased.get_top_keywords(50))
-                if predict_biased:
-                    self.report['PositionBiasedTextRank'][self.themes[theme]] = \
-                        self.calculate_recall(predict_biased, keywords)
-        except TypeError:
-            return None
+            predict_tfidf = tfidf.get_top_keywords(50)
+            self.report['TF-IDF'][self.themes[theme]] = self.calculate_recall(predict_tfidf, keywords)
+            predict_rake = rake.get_top_keywords(50)
+            self.report['RAKE'][self.themes[theme]] = self.calculate_recall(predict_rake, keywords)
+            predict_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
+            predict_biased = encoder.decode(position_biased.get_top_keywords(50))
+            if not predict_vanilla or not predict_biased:
+                return None
+            self.report['VanillaTextRank'][self.themes[theme]] = self.calculate_recall(predict_vanilla, keywords)
+            self.report['PositionBiasedTextRank'][self.themes[theme]] = \
+                self.calculate_recall(predict_biased, keywords)
         return self.report
 
     def save_to_csv(self, path: Path) -> None:

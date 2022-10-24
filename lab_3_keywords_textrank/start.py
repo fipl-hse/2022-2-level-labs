@@ -36,12 +36,12 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     tokens = encoder.encode(preprocessor.preprocess_text(text))
 
-    pairs = None
+    PAIRS = None
 
     # step 3 demonstration
     if tokens:
-        pairs = extract_pairs(tokens, 3)
-    print(pairs)
+        PAIRS = extract_pairs(tokens, 3)
+    print(PAIRS)
 
     # step 6
     adj_graph = AdjacencyMatrixGraph()
