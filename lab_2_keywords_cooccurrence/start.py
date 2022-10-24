@@ -20,46 +20,6 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def analysis(text: str, stops: Sequence[str]) -> Optional[Sequence[str]]:
-    phrases = extract_phrases(text)
-
-    if phrases:
-        candidates = extract_candidate_keyword_phrases(phrases, stops)
-
-    if candidates:
-        frequencies_for_content_words = calculate_frequencies_for_content_words(candidates)
-
-    if candidates and frequencies_for_content_words:
-        word_degrees = calculate_word_degrees(candidates, list(frequencies_for_content_words.keys()))
-
-    if word_degrees and frequencies_for_content_words:
-        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
-
-    if candidates and word_scores:
-        cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidates, word_scores)
-
-    if cumulative_score_for_candidates:
-        top = get_top_n(cumulative_score_for_candidates, 10, 3)
-        print(top)
-    print()
-
-    if candidates and phrases:
-        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidates, phrases)
-
-    if stop_words and candidates_with_adjoining and word_scores:
-        cumulative_score_for_candidates_wsw = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidates_with_adjoining, word_scores, stops)
-
-    if cumulative_score_for_candidates_wsw and cumulative_score_for_candidates:
-        merged_cum = {**cumulative_score_for_candidates, **cumulative_score_for_candidates_wsw}
-        if merged_cum:
-            new_top: Optional[Sequence[str]] = get_top_n(merged_cum, 8, 2)
-            if new_top:
-                print(new_top)
-                return new_top
-    return None
-
-
 if __name__ == "__main__":
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
