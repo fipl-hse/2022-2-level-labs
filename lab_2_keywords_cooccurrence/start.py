@@ -35,9 +35,6 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH_ALBATROSS = ASSETS_PATH / 'albatross.txt'
     TARGET_TEXT_PATH_PAIN_DETECTION = ASSETS_PATH / 'pain_detection.txt'
     TARGET_TEXT_PATH_GAGARIN = ASSETS_PATH / 'gagarin.txt'
-    TARGET_PATH_STOP_WORDS = ASSETS_PATH / 'stopwords.json'
-    TARGET_PATH_POLISH = ASSETS_PATH / 'polish.txt'
-    TARGET_TEXT_PATH_UNKNOWN = ASSETS_PATH / 'unknown.txt'
 
     corpus = {
         'gagarin': read_target_text(TARGET_TEXT_PATH_GAGARIN),
@@ -73,59 +70,4 @@ if __name__ == "__main__":
 
     RESULT = UNKNOWN_PROCESSED
 
-    def operations(text: str, stop_word: Sequence[str]) -> None:
-        """
-        Functions from main.py altogether
-        """
-        candidate_phrases, word_degree, word_score, freq_dict, cumulative_score, candidate_phrases_with_adjoining, \
-            cumulative_score_for_candidates_with_stop_words, top_list = [None for i in range(8)]
-        phrases = extract_phrases(text)
-        if phrases and stop_word:
-            candidate_phrases = extract_candidate_keyword_phrases(phrases, stop_word)
-
-        if candidate_phrases:
-            freq_dict = calculate_frequencies_for_content_words(candidate_phrases)
-
-        if candidate_phrases and freq_dict:
-            word_degree = calculate_word_degrees(candidate_phrases, list(freq_dict.keys()))
-
-        if word_degree and freq_dict:
-            word_score = calculate_word_scores(word_degree, freq_dict)
-
-        if candidate_phrases and word_score:
-            cumulative_score = calculate_cumulative_score_for_candidates(candidate_phrases, word_score)
-
-        if cumulative_score:
-            top_list = get_top_n(cumulative_score, 10, 5)
-            print(top_list)
-
-        if candidate_phrases and phrases:
-            candidate_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_phrases,
-                                                                                                phrases)
-        if candidate_phrases_with_adjoining and word_score and stop_word:
-            cumulative_score_for_candidates_with_stop_words = \
-                calculate_cumulative_score_for_candidates_with_stop_words(candidate_phrases_with_adjoining,
-                                                                          word_score, stop_word)
-
-        if cumulative_score_for_candidates_with_stop_words:
-            top_with_stop_words = get_top_n(cumulative_score_for_candidates_with_stop_words, 10, 5)
-            print(top_with_stop_words)
-
-    for name, texts in corpus.items():
-        print(str(name))
-        operations(texts, stop_words)
-
-    stop_words_dict = load_stop_words(TARGET_PATH_STOP_WORDS)
-
-    if stop_words_dict:
-        print('polish')
-        operations(read_target_text(ASSETS_PATH / 'polish.txt'), stop_words_dict['pl'])
-
-    generated_stop_words = generate_stop_words(read_target_text(TARGET_TEXT_PATH_UNKNOWN), 5)
-    if generated_stop_words:
-        print('unknown')
-        operations(read_target_text(TARGET_TEXT_PATH_UNKNOWN), generated_stop_words)
-
-        RESULT = 'the end'
-
-        assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
