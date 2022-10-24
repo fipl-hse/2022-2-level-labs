@@ -74,8 +74,8 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         if self._punctuation:
-            self.expression = re.compile('[' + ''.join(list(self._punctuation)) + ']')
-            return tuple(re.sub(self.expression, '', text).lower().split())
+            expression = re.compile('[' + ''.join(list(self._punctuation)) + ']')
+            return tuple(re.sub(expression, '', text).lower().split())
         return tuple(text.lower().split())
 
     # Step 1.3
@@ -653,7 +653,7 @@ class VanillaTextRank:
         for vertex in vertices:
             self._scores[vertex] = 1.0
 
-        for iteration in range(0, self._max_iter):
+        for _ in range(0, self._max_iter):
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
                 incidental_vertices = [vertex for vertex in vertices
@@ -837,9 +837,9 @@ class KeywordExtractionBenchmark:
         """
         No docstring yet
         """
-        tp = len(tuple(filterfalse(lambda token: token in predicted, target)))
-        fn = len(target) - tp
-        return tp / (tp + fn)
+        true_positive = len(tuple(filterfalse(lambda token: token in predicted, target)))
+        false_negative = len(target) - true_positive
+        return true_positive / (true_positive + false_negative)
 
     def run(self) -> Optional[dict[str, dict[str, float]]]:
         """
@@ -901,4 +901,3 @@ class KeywordExtractionBenchmark:
             for algorithm in self.report:
                 report_writer.writerow([algorithm] +
                                        [self.report[algorithm][theme] for theme in self.report[algorithm]])
-
