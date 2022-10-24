@@ -3,11 +3,11 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
-                                              calculate_frequencies_for_content_words,
-                                              calculate_word_degrees,
-                                              calculate_word_scores,
-                                              calculate_cumulative_score_for_candidates, get_top_n)
+from lab_2_keywords_cooccurrence.main import (
+    process_text,
+    get_top_n,
+    load_stop_words
+)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -43,28 +43,31 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    PHRASES = None
-    RESULT = None
-    CANDIDATES = None
-    DICT_WITH_FREQUENCIES = None
-    DICT_WITH_DEGREES = None
-    DICT_WITH_SCORES = None
-    DICT_WITH_CUM = None
-    for key in corpus:
-        if corpus[key]:
-            PHRASES = extract_phrases(corpus[key])
-        if PHRASES and stop_words:
-            CANDIDATES = extract_candidate_keyword_phrases(PHRASES, stop_words)
-        if CANDIDATES:
-            DICT_WITH_FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATES)
-        if CANDIDATES and DICT_WITH_FREQUENCIES:
-            DICT_WITH_DEGREES = calculate_word_degrees(CANDIDATES, list(DICT_WITH_FREQUENCIES.keys()))
-        if DICT_WITH_DEGREES and DICT_WITH_FREQUENCIES:
-            DICT_WITH_SCORES = calculate_word_scores(DICT_WITH_DEGREES, DICT_WITH_FREQUENCIES)
-        if CANDIDATES and DICT_WITH_SCORES:
-            DICT_WITH_CUM = calculate_cumulative_score_for_candidates(CANDIDATES, DICT_WITH_SCORES)
-        if DICT_WITH_CUM:
-            RESULT = get_top_n(DICT_WITH_CUM, 5, 2)
-            print('for', key, 'text, key phrases are', RESULT)
+    GAGARIN_PROCESSED = process_text(corpus['gagarin'], stop_words)
+    if GAGARIN_PROCESSED:
+        print(get_top_n(GAGARIN_PROCESSED, 10, 5))
+    ALBATROSS_PROCESSED = process_text(corpus['albatross'], stop_words)
+    if ALBATROSS_PROCESSED:
+        print(get_top_n(ALBATROSS_PROCESSED, 10, 5))
+    GENOME_PROCESSED = process_text(corpus['genome_engineering'], stop_words)
+    if GENOME_PROCESSED:
+        print(get_top_n(GENOME_PROCESSED, 10, 5))
+    PAIN_PROCESSED = process_text(corpus['pain_detection'], stop_words)
+    if PAIN_PROCESSED:
+        print(get_top_n(PAIN_PROCESSED, 10, 5))
+
+    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
+
+    POLISH_PROCESSED = None
+    if STOP_WORDS:
+        POLISH_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'polish.txt'), STOP_WORDS['pl'])
+    if POLISH_PROCESSED:
+        print(get_top_n(POLISH_PROCESSED, 10, 5))
+
+    UNKNOWN_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'unknown.txt'), max_length=8)
+    if UNKNOWN_PROCESSED:
+        print(get_top_n(UNKNOWN_PROCESSED, 10, 5))  # эсперанто
+
+    RESULT = UNKNOWN_PROCESSED
 
     assert RESULT, 'Keywords are not extracted'
