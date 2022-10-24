@@ -180,9 +180,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
-
-
-
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
                                                               stop_words: Sequence[str]) \

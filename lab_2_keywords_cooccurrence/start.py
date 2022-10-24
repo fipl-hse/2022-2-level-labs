@@ -20,8 +20,6 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-
-
 if __name__ == "__main__":
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
@@ -73,4 +71,3 @@ if __name__ == "__main__":
     RESULT = UNKNOWN_PROCESSED
 
     assert RESULT, 'Keywords are not extracted'
-
