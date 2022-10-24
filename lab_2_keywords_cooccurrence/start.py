@@ -42,7 +42,6 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-    text = corpus['gagarin']
 
     GAGARIN_PROCESSED = process_text(corpus['gagarin'], stop_words)
     if GAGARIN_PROCESSED:

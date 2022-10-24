@@ -11,17 +11,6 @@ from json import load as json_load
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_dict(user_input: Any, key_type: type, value_type: type) -> bool:
-    """
-    Checks if the dict is not empty and
-    if the keys and values are of a certain type
-    """
-    if not (user_input and isinstance(user_input, dict)):
-        return False
-    for key, value in user_input.items():
-        if not (isinstance(key, key_type) and isinstance(value, value_type)):
-            return False
-    return True
 
 def type_check(data: Any, expected: Type) -> bool:
     """
