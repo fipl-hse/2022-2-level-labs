@@ -9,13 +9,6 @@ from lab_2_keywords_cooccurrence.main import (
     load_stop_words
 )
 
-from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
-                                              calculate_frequencies_for_content_words,
-                                              calculate_word_degrees,
-                                              calculate_word_scores,
-                                              calculate_cumulative_score_for_candidates,
-                                              get_top_n)
-
 
 def read_target_text(file_path: Path) -> str:
     """

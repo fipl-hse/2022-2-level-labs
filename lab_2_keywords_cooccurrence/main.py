@@ -29,7 +29,6 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     :return: a list of phrases
 
     In case of corrupt input arguments, None is returned
-    @rtype: object
     """
     if not type_check(text, str):
         return None
