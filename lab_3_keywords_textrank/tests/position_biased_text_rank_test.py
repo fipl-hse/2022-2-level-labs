@@ -28,7 +28,7 @@ class VanillaTextRankTest(unittest.TestCase):
 
         text_rank = PositionBiasedTextRank(graph)
 
-        text_rank.score_vertices()
+        text_rank.train()
         for token_id, score in text_rank.get_scores().items():
             self.assertIsInstance(token_id, int)
             self.assertIsInstance(score, float)
