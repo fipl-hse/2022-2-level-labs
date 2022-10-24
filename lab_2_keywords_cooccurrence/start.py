@@ -70,23 +70,4 @@ if __name__ == "__main__":
 
     RESULT = UNKNOWN_PROCESSED
 
-    if EXTRACTION:
-        CANDIDATE_PHRASES = extract_candidate_keyword_phrases(EXTRACTION, stop_words)
-
-    if CANDIDATE_PHRASES:
-        FREQUENCIES = calculate_frequencies_for_content_words(CANDIDATE_PHRASES)
-
-    if FREQUENCIES:
-        DEGREES = calculate_word_degrees(CANDIDATE_PHRASES, list(FREQUENCIES.keys()))
-
-    if DEGREES:
-        SCORES = calculate_word_scores(DEGREES, FREQUENCIES)
-
-    if SCORES:
-        CUMULATIVE_SCORE_FOR_CANDIDATES = calculate_cumulative_score_for_candidates(CANDIDATE_PHRASES, SCORES)
-
-    if CUMULATIVE_SCORE_FOR_CANDIDATES:
-        print(f'Top candidates by cumulative score: {get_top_n(CUMULATIVE_SCORE_FOR_CANDIDATES, 5, 2)}')
-
-    RESULT = CUMULATIVE_SCORE_FOR_CANDIDATES
     assert RESULT, 'Keywords are not extracted'
