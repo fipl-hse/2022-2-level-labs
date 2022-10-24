@@ -1,4 +1,5 @@
 {
     "lab_1_keywords_tfidf": 20,
-    "lab_2_keywords_cooccurrence": 10
+    "lab_2_keywords_cooccurrence": 10,
+    "lab_3_keywords_textrank": 5
 }
