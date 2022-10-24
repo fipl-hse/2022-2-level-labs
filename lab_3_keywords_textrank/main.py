@@ -757,9 +757,15 @@ class PositionBiasedTextRank(VanillaTextRank):
 
 class TFIDFAdapter:
     def __init__(self, tokens: tuple[str, ...], idf: dict[str, float]) -> None:
+        """
+        No docstring yet
+        """
         self._tokens, self._idf, self._scores = tokens, idf, {}
 
     def train(self) -> int:
+        """
+        No docstring yet
+        """
         frequencies = calculate_frequencies(list(self._tokens))
         tf_dict = None
         if frequencies:
@@ -769,17 +775,29 @@ class TFIDFAdapter:
         return 0 if self._scores else -1
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
+        """
+        No docstring yet
+        """
         return tuple(get_top_n(self._scores, n_keywords))
 
     def get_scores(self) -> dict[str, float]:
+        """
+        No docstring yet (this thing's purpose is passing tests)
+        """
         return self._scores
 
 
 class RAKEAdapter:
     def __init__(self, text: str, stop_words: tuple[str, ...]) -> None:
+        """
+        No docstring yet
+        """
         self._text, self._stop_words, self._scores = text, stop_words, {}
 
     def train(self) -> int:
+        """
+        No docstring yet
+        """
         candidate_keyword_phrases, word_frequencies, word_degrees = repeat(None, 3)
         phrases = extract_phrases(self._text)
         if phrases and self._stop_words:
@@ -793,25 +811,40 @@ class RAKEAdapter:
         return 0 if self._scores else -1
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
+        """
+        No docstring yet
+        """
         return tuple(get_top_n(self._scores, n_keywords))
 
     def get_scores(self) -> dict[str, float]:
+        """
+        No docstring yet (this thing's purpose is passing tests)
+        """
         return self._scores
 
 
 class KeywordExtractionBenchmark:
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...], idf: dict[str, float],
                  materials_path: Path) -> None:
+        """
+        No docstring yet
+        """
         self.stop_words, self.punctuation, self.idf, self.materials_path = stop_words, punctuation, idf, materials_path
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self.report = {}
 
     def calculate_recall(self, predicted: tuple[str, ...], target: tuple[str, ...]) -> float:
+        """
+        No docstring yet
+        """
         tp = len(tuple(filterfalse(lambda token: token in predicted, target)))
         fn = len(target) - tp
         return tp / (tp + fn)
 
     def run(self) -> Optional[dict[str, dict[str, float]]]:
+        """
+        No docstring yet
+        """
         try:
             for name in 'TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank':
                 self.report[name] = {}
@@ -859,6 +892,9 @@ class KeywordExtractionBenchmark:
         return self.report
 
     def save_to_csv(self, path: Path) -> None:
+        """
+        No docstring yet
+        """
         with open(path, 'w', newline='') as csv_file:
             report_writer = csv.writer(csv_file)
             report_writer.writerow(['name'] + list(self.themes))
