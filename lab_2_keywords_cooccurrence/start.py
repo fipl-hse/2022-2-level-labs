@@ -36,10 +36,6 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH_PAIN_DETECTION = ASSETS_PATH / 'pain_detection.txt'
     TARGET_TEXT_PATH_GAGARIN = ASSETS_PATH / 'gagarin.txt'
 
-    TARGET_PATH_STOP_WORDS = ASSETS_PATH / 'stopwords.json'
-    TARGET_PATH_POLISH = ASSETS_PATH / 'polish.txt'
-    TARGET_TEXT_PATH_UNKNOWN = ASSETS_PATH / 'unknown.txt'
-
     corpus = {
         'gagarin': read_target_text(TARGET_TEXT_PATH_GAGARIN),
         'albatross': read_target_text(TARGET_TEXT_PATH_ALBATROSS),

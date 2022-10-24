@@ -2,9 +2,6 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
-from itertools import pairwise
-import json
-from math import ceil
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any, Type
 import re
