@@ -70,20 +70,4 @@ if __name__ == "__main__":
 
     RESULT = UNKNOWN_PROCESSED
 
-    for text in corpus:
-        cumulative_score = calculate_cumulative_score(corpus[text], stop_words)
-        if cumulative_score:
-            print(get_top_n(cumulative_score, 5, 5))
-
-    if all_stop_words:
-        print(extract_keyword_phrases(read_target_text(POLISH_TEXT_PATH), all_stop_words['pl']))
-
-    unknown_text = read_target_text(UNKNOWN_TEXT_PATH)
-    if unknown_text:
-        unknown_text_cumulative_score = calculate_cumulative_score(unknown_text)
-        if unknown_text_cumulative_score:
-            print(extract_keyword_phrases(unknown_text))
-            print(unknown_text_cumulative_score)
-
-    RESULT = 'Esperanto'
     assert RESULT, 'Keywords are not extracted'
