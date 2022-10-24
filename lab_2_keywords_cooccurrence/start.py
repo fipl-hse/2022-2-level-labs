@@ -20,48 +20,6 @@ def read_target_text(file_path: Path) -> str:
         return target_text_file.read()
 
 
-def extract_and_show_keyword_phrases(title: str, text: str, stopwords: Sequence[str]) -> None:
-    """
-    Given a text, prints keyword phrases obtained by different algorithms
-    """
-    (key_phrases, frequencies, word_degrees, word_scores,
-     with_adjoining, cumulative_scores,
-     candidates_with_stop_words, stop_word_key_phrases) = (None for _ in range(8))
-
-    print(title)
-
-    phrases = extract_phrases(text)
-    if phrases:
-        key_phrases = extract_candidate_keyword_phrases(phrases, stopwords)
-
-    print(key_phrases)
-
-    if key_phrases:
-        frequencies = calculate_frequencies_for_content_words(key_phrases)
-    if key_phrases and frequencies:
-        word_degrees = calculate_word_degrees(key_phrases, list(frequencies.keys()))
-    if word_degrees and frequencies:
-        word_scores = calculate_word_scores(word_degrees, frequencies)
-    if key_phrases and word_scores:
-        cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
-
-    if cumulative_scores:
-        print(get_top_n(cumulative_scores, 5, 3))
-
-    if key_phrases and phrases:
-        stop_word_key_phrases = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
-    if key_phrases and stop_word_key_phrases is not None:
-        with_adjoining = [*key_phrases, *stop_word_key_phrases]
-    if with_adjoining and word_scores:
-        candidates_with_stop_words \
-            = calculate_cumulative_score_for_candidates_with_stop_words(with_adjoining, word_scores, stopwords)
-
-    if candidates_with_stop_words:
-        print(get_top_n(candidates_with_stop_words, 5, 3))
-
-    print()
-
-
 if __name__ == "__main__":
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent

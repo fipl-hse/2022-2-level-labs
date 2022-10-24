@@ -2,7 +2,6 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
-import json
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any, Type
 import re
