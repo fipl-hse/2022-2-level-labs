@@ -3,78 +3,23 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Any, Union
+from typing import Optional, Sequence, Mapping, Any, Type
 import re
-import json
-from math import floor
+from itertools import repeat, pairwise, chain
+from json import load as json_load
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def check_input(user_input: Any, required_type: type) -> Union[object, bool]:
+def type_check(data: Any, expected: Type) -> bool:
     """
-    Checks if the input is as required, and it is not empty (for int, float and str)
+    Checks any type used in the program. And object's falsiness.
+    :param data: An object which type is checked
+    :param expected: A type we expect data to be
+    :return: True if data has the expected type and not falsy, False otherwise
     """
-    # if user_input and isinstance(user_input, required_type):
-    #     return user_input and isinstance(user_input, required_type)
-    # return False
-    return user_input and isinstance(user_input, required_type)
-
-
-def check_list(user_input: Any, elements_required_type: type) -> bool:
-    """
-    Checks if the input is not empty, is a sequence and the elements are of the required type
-    :param user_input: An input, which is checked
-    :param elements_required_type: The type of input's elements
-    :return: True if the input is correct and it's elements are of a required type
-    """
-    if not user_input or not isinstance(user_input, list):
-        return False
-    for element in user_input:
-        if not isinstance(element, elements_required_type):
-            return False
-    return True
-
-
-def check_dict(user_input: Any, keys_type: type, values_type: type, values_sec_type: type = dict) -> bool:
-    """
-    Checks if the input is a non-empty dictionary with required keys and values
-    :param user_input: An input, which is checked
-    :param keys_type: The type of dictionary's keys
-    :param values_type: The type of dictionary's values
-    :param values_sec_type: by default=dict (because it won't be used). Optional parameter,
-    takes a second value type if it's required
-    :return: True if the input is correct and keys and values are as required
-    """
-    if not user_input or not isinstance(user_input, dict):
-        return False
-    if values_sec_type:
-        for key, value in user_input.items():
-            if not isinstance(key, keys_type) or not isinstance(value, (values_type, values_sec_type)):
-                return False
-    else:
-        for key, value in user_input.items():
-            if not isinstance(key, keys_type) or not isinstance(value, values_type):
-                return False
-    return True
-
-
-def check_keyphrases(user_input: Any) -> bool:
-    """
-    Checks whether the input is a non-empty keyphrase
-    :param user_input: An input, which is checked
-    :return: True if the input is correct
-    """
-    if not user_input or not isinstance(user_input, list):
-        return False
-    for i in user_input:
-        if not isinstance(i, tuple):
-            return False
-        for j in i:
-            if not isinstance(j, str):
-                return False
-    return True
+    return isinstance(data, expected) and not (expected == int and isinstance(data, bool)) and data
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -85,17 +30,13 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_input(text, str):
+    if not type_check(text, str):
         return None
-    phrases_by_re = re.split(r'[^\w\s]', text)
-    new_sep = phrases_by_re[:]
-    for j in phrases_by_re:
-        if re.fullmatch(r'\s+', j) or not j:
-            new_sep.remove(j)
-    result = []
-    for i in new_sep:
-        result.append(i.strip())
-    return result
+    expression = re.compile(r"(?<=^)[^\s\w]+"  # punctuation after the line beginning
+                            r"|(?<=\s)[^\s\w]+"  # punctuation after the whitespace symbol
+                            r"|[^\s\w]+(?=\s)"  # punctuation before the whitespace symbol
+                            r"|[^\s\w]+(?=$)")  # punctuation before the end of line
+    return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -107,23 +48,13 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(phrases, str) or not check_list(stop_words, str):
+    if not type_check(phrases, list) or not type_check(stop_words, list):
         return None
-    lowed_phrases = []
-    for phrs in phrases:
-        lowed_phrases.append(phrs.lower().split())
-    key_candidates = []
-    for one_phrase in lowed_phrases:
-        future_tuple = []
-        for words in one_phrase:
-            if words not in stop_words:
-                future_tuple.append(words)
-            elif future_tuple:
-                key_candidates.append(tuple(future_tuple))
-                future_tuple = []
-        if future_tuple:
-            key_candidates.append(tuple(future_tuple))
-    return key_candidates
+    candidates = []
+    for phrase in [phrase.lower().split() for phrase in phrases]:
+        splits = [-1] + [index for index, word in enumerate(phrase) if word in stop_words] + [len(phrase)]
+        candidates.extend(tuple(candidate) for start, end in pairwise(splits) if (candidate := phrase[start+1:end]))
+    return candidates
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -134,14 +65,10 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases):
+    if not type_check(candidate_keyword_phrases, list):
         return None
-    freq_dict = {}
-    for phrases in candidate_keyword_phrases:
-        uniques = set(phrases)
-        for words in uniques:
-            freq_dict[words] = freq_dict.get(words, 0) + phrases.count(words)
-    return freq_dict
+    candidates_chained = list(chain.from_iterable(candidate_keyword_phrases))
+    return {token: candidates_chained.count(token) for token in set(candidates_chained)}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -156,16 +83,12 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases) or not check_list(content_words, str):
+    if not type_check(candidate_keyword_phrases, list) or not type_check(content_words, list):
         return None
-    word_degree_dict = {}
-    for one_phrase in candidate_keyword_phrases:
-        for words in one_phrase:
-            if words in content_words:
-                word_degree_dict[words] = word_degree_dict.get(words, 0) + len(one_phrase)
-    for i in content_words:
-        word_degree_dict[i] = word_degree_dict.get(i, 0)
-    return word_degree_dict
+    word_degrees = {}
+    for token in content_words:
+        word_degrees[token] = sum(len(phrase) for phrase in candidate_keyword_phrases if token in phrase)
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -179,14 +102,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_dict(word_degrees, str, int) or not check_dict(word_frequencies, str, int):
+    if not type_check(word_degrees, dict) or not type_check(word_frequencies, dict) \
+            or not all(word_frequencies.get(token, False) for token in word_degrees):
         return None
-    word_score_dict = {}
-    for i in word_degrees:
-        if i not in word_frequencies:
-            return None
-        word_score_dict[i] = word_degrees[i] / word_frequencies[i]
-    return word_score_dict
+    return {token: word_degrees[token] / word_frequencies[token] for token in word_degrees}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -201,17 +120,10 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases) or not check_dict(word_scores, str, float):
+    if not type_check(candidate_keyword_phrases, list) or not type_check(word_scores, dict) or \
+            not all(token in word_scores for token in list(chain.from_iterable(candidate_keyword_phrases))):
         return None
-    cumul_score_dict = {}
-    for one_phrase in candidate_keyword_phrases:
-        metric = 0.0
-        for words in one_phrase:
-            if words not in word_scores:
-                return None
-            metric += word_scores[words]
-        cumul_score_dict[one_phrase] = metric
-    return cumul_score_dict
+    return {phrase: sum(word_scores[token] for token in phrase) for phrase in candidate_keyword_phrases}
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -227,20 +139,12 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if (not check_dict(keyword_phrases_with_scores, tuple, float)
-            or not check_input(top_n, int) or not check_input(max_length, int) or max_length < 0):
+    if not type_check(keyword_phrases_with_scores, dict) \
+            or not type_check(top_n, int) or top_n <= 0 or not type_check(max_length, int) or max_length <= 0:
         return None
-    if top_n < 1 or max_length < 1:
-        return None
-    correct_len = {}
-    for key, val in keyword_phrases_with_scores.items():
-        if len(key) <= max_length:
-            correct_len[key] = val
-    sorted_dictionary = [key for (key, value) in sorted(correct_len.items(), key=lambda x: x[1], reverse=True)][:top_n]
-    top_phr = []
-    for i in sorted_dictionary:
-        top_phr.append(' '.join(i))
-    return top_phr
+    filtered = [item for item in keyword_phrases_with_scores if len(item) <= max_length]
+    filtered_and_sorted = sorted(filtered, key=lambda phrase: keyword_phrases_with_scores[phrase], reverse=True)
+    return [' '.join(item) for item in filtered_and_sorted][:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -263,34 +167,17 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    if not check_keyphrases(candidate_keyword_phrases) or not check_list(phrases, str):  # checking types
+    if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
-    possible_phr = {}  # a dictionary for possible phrases, values = frequency of the phrase
-    for one_phrase in range(len(candidate_keyword_phrases)-1):
-        key_phr = tuple([candidate_keyword_phrases[one_phrase], candidate_keyword_phrases[one_phrase+1]])
-        possible_phr[key_phr] = possible_phr.get(key_phr, 0) + 1
-    neighbours = []
-    for key, val in possible_phr.items():
-        if val > 1:
-            neighbours.append(list(key))
-    all_words = []
-    for each_phrase in phrases:
-        all_words.append(each_phrase.lower())
-    result_list = []
-    for each_one in neighbours:
-        for sentences in all_words:
-            for idx in range(1):
-                first_phr = ' '.join(each_one[idx])
-                second_phr = ' '.join(each_one[idx+1])
-                if first_phr in sentences and second_phr in sentences:
-                    result_list.extend(re.findall(r'{}\s\w+\s{}'.format(first_phr, second_phr), sentences))
-    freq_dict = {}
-    words_list = []
-    for one_phrase in result_list:
-        words_list.append(tuple(one_phrase.split()))
-    for phr_tuple in words_list:
-        freq_dict[phr_tuple] = freq_dict.get(phr_tuple, 0) + 1
-    return [key for key, value in freq_dict.items() if value > 1]
+    pairs = list(pairwise(candidate_keyword_phrases))
+    possible_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
+    possible_phrases = []
+    for pair, len1, len2 in [(pair, len(pair[0]), len(pair[1])) for pair in possible_pairs]:
+        for phrase in [tuple(phrase.lower().split()) for phrase in phrases]:
+            for start, stop_word, end in [(i, i+len1, i+len1+len2) for i in range(len(phrase)-len1-len2)]:
+                if pair == (phrase[start:stop_word], phrase[stop_word+1:end+1]):
+                    possible_phrases.append(phrase[start:end+1])
+    return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -308,21 +195,13 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    if (not check_keyphrases(candidate_keyword_phrases) or not check_dict(word_scores, str, float, int)
-            or not check_list(stop_words, str)):
+    if not type_check(candidate_keyword_phrases, list) or \
+            not type_check(word_scores, dict) or not type_check(stop_words, list):
         return None
-    cumul_score_dict = {}
-    for one_phrase in candidate_keyword_phrases:
-        metric = 0.0
-        for words in one_phrase:
-            if words in stop_words:
-                metric += 0.0
-            elif word_scores.get(words, 0.0):
-                metric += word_scores[words]
-            else:
-                return None
-        cumul_score_dict[one_phrase] = metric
-    return cumul_score_dict
+    cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        cumulative_score[phrase] = sum(word_scores[token] for token in phrase if token not in stop_words)
+    return cumulative_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -333,33 +212,16 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    if not check_input(text, str) or not check_input(max_length, int) or max_length < 1:
+    if not type_check(text, str) or not type_check(max_length, int) or max_length <= 0:
         return None
-    extracted_phr = extract_phrases(text)
-    if extracted_phr:
-        extracted_words = []
-        for phrase in extracted_phr:
-            split_phrase = phrase.split()
-            for words in split_phrase:
-                extracted_words.append(words.lower())
-        freq_dict: dict[str, int] = {}
-        for i in extracted_words:
-            freq_dict[i] = freq_dict.get(i, 0) + 1
-        correct_length_dict: dict[str, int] = {}
-        for keys, values in freq_dict.items():
-            if len(keys) <= max_length:
-                correct_length_dict[keys] = values
-        sort_frequency = sorted(correct_length_dict, key=lambda x: correct_length_dict[x], reverse=True)
-        sorted_dict = {}
-        for i in sort_frequency:
-            sorted_dict[i] = correct_length_dict[i]
-        if len(sorted_dict) % 10 == 0:
-            percent_word = (len(sorted_dict) // 10) * 2 + 1
-        else:
-            percent_word = floor((len(sorted_dict)/10)*2)
-        new_dict = [key for key, value in sorted_dict.items()]
-        return new_dict[:percent_word]
-    return None
+    expression = re.compile(r"(?<=^)[^\s\w]+"  # punctuation after the line beginning
+                            r"|(?<=\s)[^\s\w]+"  # punctuation after the whitespace symbol
+                            r"|[^\s\w]+(?=\s)"  # punctuation before the whitespace symbol
+                            r"|[^\s\w]+(?=$)")  # punctuation before the end of line
+    tokens = re.sub(expression, '', text).lower().split()
+    frequencies = {token: tokens.count(token) for token in set(tokens)}
+    percent_80 = sorted(frequencies.values(), reverse=True)[int(len(frequencies) * 0.2)]
+    return [token for token in sorted(frequencies) if frequencies[token] >= percent_80 and len(token) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -368,7 +230,43 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    if not isinstance(path, Path) or not path:
+    if not type_check(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as file:
-        return dict(json.load(file))
+        return dict(json_load(file))
+
+
+def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
+        -> Optional[Mapping[KeyPhrase, float]]:
+    """
+    Uses previous functions to process a text and extract key phrases.
+    Accepts raw text and stop words list (or maximum length of a stop word if they have to be generated
+    from the text).
+    Returns extracted key phrases or None if something goes wrong.
+    """
+    candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
+        candidates_adjoined, cumulative_score_with_stop_words = repeat(None, 7)
+    phrases = extract_phrases(text)
+    if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
+        stop_words = stop_words_generated
+    if phrases and stop_words:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    if candidate_keyword_phrases:
+        word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+    if candidate_keyword_phrases and word_frequencies:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
+    if word_degrees and word_frequencies:
+        word_scores = calculate_word_scores(word_degrees, word_frequencies)
+    if candidate_keyword_phrases and word_scores:
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+    if candidate_keyword_phrases and phrases:
+        candidates_adjoined = \
+            extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
+    if candidates_adjoined and word_scores and stop_words:
+        cumulative_score_with_stop_words = \
+            calculate_cumulative_score_for_candidates_with_stop_words(candidates_adjoined, word_scores, stop_words)
+    else:
+        cumulative_score_with_stop_words = {}
+    if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
+        return {**keyword_phrases_with_scores, **cumulative_score_with_stop_words}
+    return None
