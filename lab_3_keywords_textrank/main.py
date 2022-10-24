@@ -781,7 +781,7 @@ class TFIDFAdapter:
         """
         No docstring yet
         """
-        top = ()
+        top = []
         if get_top := get_top_n(self._scores, n_keywords):
             top = get_top
         return tuple(top)
@@ -816,14 +816,14 @@ class RAKEAdapter:
             scores = calculate_word_scores(word_degrees, word_frequencies)
         if not scores:
             return -1
-        self._scores = scores
+        self._scores = dict(scores)
         return 0
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         No docstring yet
         """
-        top = ()
+        top = []
         if get_top := get_top_n(self._scores, n_keywords):
             top = get_top
         return tuple(top)
