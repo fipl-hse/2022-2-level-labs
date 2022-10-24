@@ -767,18 +767,24 @@ class TFIDFAdapter:
         No docstring yet
         """
         frequencies = calculate_frequencies(list(self._tokens))
-        tf_dict = None
+        tf_dict, scores = repeat(None, 2)
         if frequencies:
             tf_dict = calculate_tf(frequencies)
         if tf_dict:
-            self._scores = calculate_tfidf(tf_dict, self._idf)
-        return 0 if self._scores else -1
+            scores = calculate_tfidf(tf_dict, self._idf)
+        if not scores:
+            return -1
+        else:
+            self._scores = scores
+            return 0
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         No docstring yet
         """
-        return tuple(get_top_n(self._scores, n_keywords))
+        top = get_top_n(self._scores, n_keywords)
+        if top:
+            return tuple(top)
 
     def get_scores(self) -> dict[str, float]:
         """
@@ -798,7 +804,7 @@ class RAKEAdapter:
         """
         No docstring yet
         """
-        candidate_keyword_phrases, word_frequencies, word_degrees = repeat(None, 3)
+        candidate_keyword_phrases, word_frequencies, word_degrees, scores = repeat(None, 3)
         phrases = extract_phrases(self._text)
         if phrases and self._stop_words:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
@@ -807,14 +813,20 @@ class RAKEAdapter:
         if candidate_keyword_phrases and word_frequencies:
             word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
         if word_degrees and word_frequencies:
-            self._scores = calculate_word_scores(word_degrees, word_frequencies)
-        return 0 if self._scores else -1
+            scores = calculate_word_scores(word_degrees, word_frequencies)
+        if not scores:
+            return -1
+        else:
+            self._scores = scores
+            return 0
 
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         No docstring yet
         """
-        return tuple(get_top_n(self._scores, n_keywords))
+        top = get_top_n(self._scores, n_keywords)
+        if top:
+            return tuple(top)
 
     def get_scores(self) -> dict[str, float]:
         """
@@ -866,8 +878,9 @@ class KeywordExtractionBenchmark:
                 tokens = preprocessor.preprocess_text(text)
                 tokens_encoded = encoder.encode(tokens)
                 graph = EdgeListGraph()
-                graph.fill_from_tokens(tokens_encoded, 3)
-                graph.fill_positions(tokens_encoded)
+                if tokens_encoded:
+                    graph.fill_from_tokens(tokens_encoded, 3)
+                    graph.fill_positions(tokens_encoded)
                 graph.calculate_position_weights()
 
                 tfidf = TFIDFAdapter(tokens, self.idf)
@@ -883,10 +896,12 @@ class KeywordExtractionBenchmark:
                 predict_rake = rake.get_top_keywords(50)
                 self.report['RAKE'][self.themes[theme]] = self.calculate_recall(predict_rake, keywords)
                 predict_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
-                self.report['VanillaTextRank'][self.themes[theme]] = self.calculate_recall(predict_vanilla, keywords)
+                if predict_vanilla:
+                    self.report['VanillaTextRank'][self.themes[theme]] = self.calculate_recall(predict_vanilla, keywords)
                 predict_biased = encoder.decode(position_biased.get_top_keywords(50))
-                self.report['PositionBiasedTextRank'][self.themes[theme]] = \
-                    self.calculate_recall(predict_biased, keywords)
+                if predict_biased:
+                    self.report['PositionBiasedTextRank'][self.themes[theme]] = \
+                        self.calculate_recall(predict_biased, keywords)
         except TypeError:
             return None
         return self.report

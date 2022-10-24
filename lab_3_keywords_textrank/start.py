@@ -36,13 +36,17 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     tokens = encoder.encode(preprocessor.preprocess_text(text))
 
+    pairs = None
+
     # step 3 demonstration
-    pairs = extract_pairs(tokens, 3)
+    if tokens:
+        pairs = extract_pairs(tokens, 3)
     print(pairs)
 
     # step 6
     adj_graph = AdjacencyMatrixGraph()
-    adj_graph.fill_from_tokens(tokens, 3)
+    if tokens:
+        adj_graph.fill_from_tokens(tokens, 3)
     vanilla_text_rank1 = VanillaTextRank(adj_graph)
     vanilla_text_rank1.train()
     top_decoded1 = encoder.decode(vanilla_text_rank1.get_top_keywords(10))
@@ -50,21 +54,24 @@ if __name__ == "__main__":
 
     # step 7.3
     edg_graph = EdgeListGraph()
-    edg_graph.fill_from_tokens(tokens, 3)
+    if tokens:
+        edg_graph.fill_from_tokens(tokens, 3)
     vanilla_text_rank2 = VanillaTextRank(edg_graph)
     vanilla_text_rank2.train()
     top_decoded2 = encoder.decode(vanilla_text_rank2.get_top_keywords(10))
     print(top_decoded2)
 
     # step 9.3
-    adj_graph.fill_positions(tokens)
+    if tokens:
+        adj_graph.fill_positions(tokens)
     adj_graph.calculate_position_weights()
     position_biased1 = PositionBiasedTextRank(adj_graph)
     position_biased1.train()
     top_decoded3 = encoder.decode(position_biased1.get_top_keywords(10))
     print(top_decoded3)
 
-    edg_graph.fill_positions(tokens)
+    if tokens:
+        edg_graph.fill_positions(tokens)
     edg_graph.calculate_position_weights()
     position_biased1 = PositionBiasedTextRank(edg_graph)
     position_biased1.train()
