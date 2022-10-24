@@ -3,11 +3,11 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from typing import Optional
-from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
-    calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores, \
-    calculate_cumulative_score_for_candidates, get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
-    calculate_cumulative_score_for_candidates_with_stop_words, load_stop_words, generate_stop_words
+from lab_2_keywords_cooccurrence.main import (
+    process_text,
+    get_top_n,
+    load_stop_words
+)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -43,54 +43,31 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    def keyphrases(text: str, stopwords: list) -> Optional[dict]:
-        phrases = extract_phrases(text)
+    GAGARIN_PROCESSED = process_text(corpus['gagarin'], stop_words)
+    if GAGARIN_PROCESSED:
+        print(get_top_n(GAGARIN_PROCESSED, 10, 5))
+    ALBATROSS_PROCESSED = process_text(corpus['albatross'], stop_words)
+    if ALBATROSS_PROCESSED:
+        print(get_top_n(ALBATROSS_PROCESSED, 10, 5))
+    GENOME_PROCESSED = process_text(corpus['genome_engineering'], stop_words)
+    if GENOME_PROCESSED:
+        print(get_top_n(GENOME_PROCESSED, 10, 5))
+    PAIN_PROCESSED = process_text(corpus['pain_detection'], stop_words)
+    if PAIN_PROCESSED:
+        print(get_top_n(PAIN_PROCESSED, 10, 5))
 
-        if phrases and stopwords:
-            candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stopwords)
+    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-        if candidate_keyword_phrases:
-            content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+    POLISH_PROCESSED = None
+    if STOP_WORDS:
+        POLISH_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'polish.txt'), STOP_WORDS['pl'])
+    if POLISH_PROCESSED:
+        print(get_top_n(POLISH_PROCESSED, 10, 5))
 
-        if content_words and candidate_keyword_phrases:
-            word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(content_words.keys()))
+    UNKNOWN_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'unknown.txt'), max_length=8)
+    if UNKNOWN_PROCESSED:
+        print(get_top_n(UNKNOWN_PROCESSED, 10, 5))  # эсперанто
 
-        if word_degrees and content_words:
-            word_scores = calculate_word_scores(word_degrees, content_words)
-
-        if word_scores and candidate_keyword_phrases:
-            keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
-                                                                                    word_scores)
-
-        if keyword_phrases_with_scores:
-            print(get_top_n(keyword_phrases_with_scores, 10, 5))
-
-        if candidate_keyword_phrases and phrases:
-            candidate_keyphrases_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
-                                                                                              phrases)
-
-        if candidate_keyphrases_adjoining and word_scores and stopwords:
-            cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
-                candidate_keyphrases_adjoining, word_scores, stopwords)
-
-            if cumulative_score_with_stopwords:
-                return dict(cumulative_score_with_stopwords)
-        return None
-
-    keyphrases(corpus['gagarin'], stop_words)
-    keyphrases(corpus['genome_engineering'], stop_words)
-    keyphrases(corpus['albatross'], stop_words)
-    keyphrases(corpus['pain_detection'], stop_words)
-
-    polish_stopwords = load_stop_words(ASSETS_PATH/'stopwords.json')
-    if polish_stopwords:
-        print(keyphrases(read_target_text(ASSETS_PATH/'polish.txt'), list(polish_stopwords['pl'])))
-
-    unknown_stopwords = generate_stop_words(read_target_text(ASSETS_PATH/'unknown.txt'), 5)
-    if unknown_stopwords:
-        unknown_keyphrases = keyphrases(read_target_text(ASSETS_PATH/'unknown.txt'), list(unknown_stopwords))
-        print(unknown_keyphrases)
-
-    RESULT = unknown_keyphrases
+    RESULT = UNKNOWN_PROCESSED
 
     assert RESULT, 'Keywords are not extracted'
