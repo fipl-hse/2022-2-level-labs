@@ -1,6 +1,7 @@
 """
 Co-occurrence-driven keyword extraction starter
 """
+
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (
     process_text,
@@ -17,52 +18,6 @@ def read_target_text(file_path: Path) -> str:
     """
     with open(file_path, 'r', encoding='utf-8') as target_text_file:
         return target_text_file.read()
-
-
-def key_phrases(text: str, stop_w: list) -> Optional[dict]:
-    """
-    checks functions
-    """
-    candidate_keyword_phrases = None
-    freq = None
-    word_degree = None
-    word_score = None
-    score_for_candidates = None
-    candidate_phrases_with_adjoining = None
-    significant_phrases = None
-
-    extract_phrase = extract_phrases(text)
-
-    if extract_phrase:
-        print(candidate_keyword_phrases := extract_candidate_keyword_phrases(extract_phrase, stop_w))
-
-    if candidate_keyword_phrases:
-        freq = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-
-    if freq and candidate_keyword_phrases:
-        word_degree = calculate_word_degrees(candidate_keyword_phrases, list(freq.keys()))
-
-    if word_degree and freq:
-        word_score = calculate_word_scores(word_degree, freq)
-
-    if word_score and candidate_keyword_phrases:
-        score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_score)
-
-    if score_for_candidates:
-        print(get_top_n(score_for_candidates, 10, 20))
-
-    if candidate_keyword_phrases and extract_phrase:
-        candidate_phrases_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(
-            candidate_keyword_phrases, extract_phrase)
-
-    if candidate_phrases_with_adjoining and word_score:
-        print(significant_phrases :=
-              calculate_cumulative_score_for_candidates_with_stop_words(candidate_phrases_with_adjoining, word_score,
-                                                                        stop_w))
-
-    if significant_phrases:
-        return dict(significant_phrases)
-    return None
 
 
 if __name__ == "__main__":
@@ -115,16 +70,4 @@ if __name__ == "__main__":
 
     RESULT = UNKNOWN_PROCESSED
 
-    # polish
-    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
-    if STOP_WORDS:
-        key_phrases(read_target_text(ASSETS_PATH / 'polish.txt'), list(STOP_WORDS["pl"]))
-
-    # unknown (Esperanto)
-    TEXT_UNKNOWN = read_target_text(ASSETS_PATH / 'unknown.txt')
-    STOP_UNKNOWN = generate_stop_words(TEXT_UNKNOWN, 20)
-    if STOP_UNKNOWN:
-        esperanto = key_phrases(TEXT_UNKNOWN, list(STOP_UNKNOWN))
-
-        RESULT = esperanto
-        assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
