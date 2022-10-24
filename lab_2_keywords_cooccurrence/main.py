@@ -8,41 +8,9 @@ import re
 from itertools import repeat, pairwise, chain
 from json import load as json_load
 
-from typing import Any
-import re
-from lab_1_keywords_tfidf.main import check_list
-
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_dict(user_input: Any, key_type: type, value_type: type, can_be_empty: bool) -> bool:
-    """
-    Checks weather object is dictionary
-    hat has keys and values of certain type
-    """
-    if not isinstance(user_input, dict):
-        return False
-    if not user_input and can_be_empty is False:
-        return False
-    for key, value in user_input.items():
-        if not (isinstance(key, key_type) and isinstance(value, value_type)):
-            return False
-    return True
-
-
-def check_key_phrase(arg_to_check: Any) -> bool:
-    """
-    Check weather object has a KeyPhrase type (list of tuples of strings)
-    """
-    if not (arg_to_check and isinstance(arg_to_check, list)):
-        return False
-    for element in arg_to_check:
-        if not isinstance(element, tuple):
-            return False
-        for word in element:
-            if not isinstance(word, str):
-                return False
-    return True
 
 def type_check(data: Any, expected: Type) -> bool:
     """
@@ -218,10 +186,10 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         -> Optional[Mapping[KeyPhrase, float]]:
     """
     Calculate cumulative score for each candidate keyword phrase. Cumulative score for a keyword phrase equals to
-    the sum of the phrase scores of each keyword phrase's constituent except for the stop words
+    the sum of the word scores of each keyword phrase's constituent except for the stop words
 
     :param candidate_keyword_phrases: a list of candidate keyword phrases
-    :param word_scores: phrase scores
+    :param word_scores: word scores
     :param stop_words: a list of stop words
     :return: a dictionary containing the mapping between the candidate keyword phrases and respective cumulative scores
 
