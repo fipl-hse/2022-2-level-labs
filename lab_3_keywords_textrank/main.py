@@ -763,12 +763,6 @@ class TFIDFAdapter:
             top = get_top
         return tuple(top)
 
-    def get_scores(self) -> dict[str, float]:
-        """
-        No docstring yet (this thing's purpose is passing tests)
-        """
-        return self._scores
-
 
 class RAKEAdapter:
     """
@@ -848,12 +842,6 @@ class RAKEAdapter:
             top = get_top
         return tuple(top)
 
-    def get_scores(self) -> dict[str, float]:
-        """
-        No docstring yet (this thing's purpose is passing tests)
-        """
-        return self._scores
-
 
 # Step 12.1
 def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> float:
@@ -870,7 +858,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    true_positive = len(tuple(filterfalse(lambda token: token in predicted, target)))
+    false_negative = len(target) - true_positive
+    return true_positive / (true_positive + false_negative)
 
 
 class KeywordExtractionBenchmark:
@@ -919,14 +909,6 @@ class KeywordExtractionBenchmark:
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self.report = {}
 
-    def calculate_recall(self, predicted: tuple[str, ...], target: tuple[str, ...]) -> float:
-        """
-        No docstring yet
-        """
-        true_positive = len(tuple(filterfalse(lambda token: token in predicted, target)))
-        false_negative = len(target) - true_positive
-        return true_positive / (true_positive + false_negative)
-
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
         """
@@ -971,16 +953,16 @@ class KeywordExtractionBenchmark:
                 algorithm.train()
 
             predict_tfidf = tfidf.get_top_keywords(50)
-            self.report['TF-IDF'][self.themes[theme]] = self.calculate_recall(predict_tfidf, keywords)
+            self.report['TF-IDF'][self.themes[theme]] = calculate_recall(predict_tfidf, keywords)
             predict_rake = rake.get_top_keywords(50)
-            self.report['RAKE'][self.themes[theme]] = self.calculate_recall(predict_rake, keywords)
+            self.report['RAKE'][self.themes[theme]] = calculate_recall(predict_rake, keywords)
             predict_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
             predict_biased = encoder.decode(position_biased.get_top_keywords(50))
             if not predict_vanilla or not predict_biased:
                 return None
-            self.report['VanillaTextRank'][self.themes[theme]] = self.calculate_recall(predict_vanilla, keywords)
+            self.report['VanillaTextRank'][self.themes[theme]] = calculate_recall(predict_vanilla, keywords)
             self.report['PositionBiasedTextRank'][self.themes[theme]] = \
-                self.calculate_recall(predict_biased, keywords)
+                calculate_recall(predict_biased, keywords)
         return self.report
 
     # Step 12.4
