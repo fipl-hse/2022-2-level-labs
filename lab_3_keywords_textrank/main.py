@@ -6,7 +6,6 @@ from pathlib import Path
 from typing import Optional, Union
 from itertools import combinations, repeat, filterfalse
 import re
-from pathlib import Path
 import csv
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
