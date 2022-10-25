@@ -43,6 +43,24 @@ class VanillaTextRankTest(unittest.TestCase):
     @pytest.mark.mark6
     @pytest.mark.mark8
     @pytest.mark.mark10
+    def test_sorting_order(self):
+        graph = AdjacencyMatrixGraph()
+
+        graph.fill_from_tokens((1, 2, 3, 4, 3), 3)
+
+        text_rank = VanillaTextRank(graph)
+
+        text_rank.train()
+        for token_id, score in text_rank.get_scores().items():
+            self.assertIsInstance(token_id, int)
+            self.assertIsInstance(score, float)
+        top = text_rank.get_top_keywords(4)
+        self.assertEqual(top, (2, 3, 1, 4))
+
+    @pytest.mark.lab_3_keywords_textrank
+    @pytest.mark.mark6
+    @pytest.mark.mark8
+    @pytest.mark.mark10
     def test_score_vertices_empty_graph(self):
         graph = AdjacencyMatrixGraph()
 
