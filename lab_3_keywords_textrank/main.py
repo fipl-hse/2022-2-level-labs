@@ -4,7 +4,6 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-from itertools import combinations, repeat, filterfalse
 import re
 import csv
 from lab_1_keywords_tfidf.main import (
@@ -202,7 +201,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         return None
     pairs = []
     for index in range(len(tokens[:-window_length])):
-        for pair in combinations(tokens[index:index + window_length], 2):
+        for pair in [(i, j) for i in tokens[index:index + window_length] for j in tokens[i:index + window_length]]:
             if not pair[0] == pair[1] and pair not in pairs and (pair[1], pair[0]) not in pairs:
                 pairs.append(pair)
     return tuple(pairs)
@@ -269,7 +268,7 @@ class AdjacencyMatrixGraph:
             return -1
         for vertex in vertex1, vertex2:
             if vertex not in self._matrix[0]:
-                self._matrix.append([vertex] + list(repeat(0, len(self._matrix[0]))))
+                self._matrix.append([vertex] + [0 for _ in self._matrix[0]])
                 self._matrix[0].append(vertex)
                 for i in self._matrix[1:]:
                     i.append(0)
@@ -735,7 +734,7 @@ class TFIDFAdapter:
                 0 if importance scores were calculated successfully, otherwise -1
         """
         frequencies = calculate_frequencies(list(self._tokens))
-        tf_dict, scores = repeat(None, 2)
+        tf_dict, scores = None, None
         if frequencies:
             tf_dict = calculate_tf(frequencies)
         if tf_dict:
@@ -809,7 +808,7 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        candidate_keyword_phrases, word_frequencies, word_degrees, scores = repeat(None, 4)
+        candidate_keyword_phrases, word_frequencies, word_degrees, scores = None, None, None, None
         phrases = extract_phrases(self._text)
         if phrases and self._stop_words:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
@@ -858,7 +857,7 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_positive = len(tuple(filterfalse(lambda token: token in predicted, target)))
+    true_positive = len([token for token in target if token in predicted])
     false_negative = len(target) - true_positive
     return true_positive / (true_positive + false_negative)
 
@@ -958,7 +957,7 @@ class KeywordExtractionBenchmark:
             self.report['RAKE'][self.themes[theme]] = calculate_recall(predict_rake, keywords)
             predict_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
             predict_biased = encoder.decode(position_biased.get_top_keywords(50))
-            if not predict_vanilla or not predict_biased:
+            if predict_vanilla is None or predict_biased is None:
                 return None
             self.report['VanillaTextRank'][self.themes[theme]] = calculate_recall(predict_vanilla, keywords)
             self.report['PositionBiasedTextRank'][self.themes[theme]] = \
