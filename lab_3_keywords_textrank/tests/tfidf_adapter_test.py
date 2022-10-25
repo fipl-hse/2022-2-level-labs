@@ -27,12 +27,9 @@ class TFIDFAdapterTest(unittest.TestCase):
         }
 
         tfidf = TFIDFAdapter(tokens, idf)
-
         tfidf.train()
-        for token, score in tfidf.get_scores().items():
-            self.assertIsInstance(token, str)
-            self.assertIsInstance(score, float)
         top = tfidf.get_top_keywords(1)
+        self.assertIsInstance(top[0], str)
         self.assertEqual(top, ('weather',))
 
     @pytest.mark.lab_3_keywords_textrank
