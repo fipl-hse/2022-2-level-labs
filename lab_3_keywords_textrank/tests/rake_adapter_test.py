@@ -25,13 +25,10 @@ class RAKEAdapterTest(unittest.TestCase):
         stop_words = ('во', 'было', 'из', 'и', 'в')
 
         rake = RAKEAdapter(text, stop_words)
-
         rake.train()
-        for token, score in rake.get_scores().items():
-            self.assertIsInstance(token, str)
-            self.assertIsInstance(score, float)
         top = rake.get_top_keywords(1)
         self.assertIsInstance(top[0], str)
+        self.assertEqual(top[0], 'произошло')
 
     @pytest.mark.lab_3_keywords_textrank
     @pytest.mark.mark10
