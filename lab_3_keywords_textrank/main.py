@@ -201,7 +201,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         return None
     pairs = []
     for index in range(len(tokens[:-window_length])):
-        for pair in [(i, j) for i in tokens[index:index + window_length] for j in tokens[i:index + window_length]]:
+        for pair in [(tokens[i], j) for i in range(index, index+window_length) for j in tokens[i:index+window_length]]:
             if not pair[0] == pair[1] and pair not in pairs and (pair[1], pair[0]) not in pairs:
                 pairs.append(pair)
     return tuple(pairs)
@@ -937,10 +937,11 @@ class KeywordExtractionBenchmark:
 
             tokens = preprocessor.preprocess_text(text)
             tokens_encoded = encoder.encode(tokens)
+            if not tokens_encoded:
+                return None
             graph = EdgeListGraph()
-            if tokens_encoded:
-                graph.fill_from_tokens(tokens_encoded, 3)
-                graph.fill_positions(tokens_encoded)
+            graph.fill_from_tokens(tokens_encoded, 3)
+            graph.fill_positions(tokens_encoded)
             graph.calculate_position_weights()
 
             tfidf = TFIDFAdapter(tokens, self.idf)
