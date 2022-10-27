@@ -6,14 +6,14 @@ import re
 import itertools
 import json
 from pathlib import Path
-from typing import Optional, Sequence, Mapping, Union, Any, Type
+from typing import Optional, Sequence, Mapping, Any, Type
 
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def for_i_empty_checker(collection: Union[set, dict, list, tuple]) -> bool:
+def for_i_empty_checker(collection: Sequence[Any]) -> bool:
     """
     Check if collection's items are False
 
