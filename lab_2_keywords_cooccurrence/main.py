@@ -174,7 +174,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     In case of corrupt input arguments, None is returned
     """
 
-    if not (my_isinstance(candidate_keyword_phrases, list) or my_isinstance(content_words, list)):
+    if not (my_isinstance(candidate_keyword_phrases, list) and my_isinstance(content_words, list)):
         return None
 
     word_degree = {word: sum(len(phrase) for phrase in candidate_keyword_phrases
@@ -194,10 +194,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     In case of corrupt input arguments, None is returned
     """
 
-
-    if not (is_dic_correct(word_degrees, False, str, int) and
-            is_dic_correct(word_frequencies, False, str, int) and
-            all(word_degrees.get(word) for word in word_degrees)):
+    if not (is_dic_correct(word_degrees, False, str, int)
+            and is_dic_correct(word_frequencies, False, str, int)
+            and all(word_degrees.get(word) for word in word_degrees)):
         return None
 
     word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_degrees}
@@ -366,7 +365,7 @@ def text_processing(text: str, stop_words: Optional[Sequence[str]] = None, max_l
     Arguments: text, stop words list / stop word's maximum length if they need to be generated.
     Returns extracted key phrases in case of correct arguments or None otherwise.
     """
-    candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
+    candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, key_phrases_with_scores, \
         candidates_adjoined, cumulative_score_with_stop_words = [None for _ in range(7)]
 
     phrases = extract_phrases(text)
@@ -381,7 +380,7 @@ def text_processing(text: str, stop_words: Optional[Sequence[str]] = None, max_l
     if word_degrees and word_frequencies:
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
     if key_phrases and word_scores:
-        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
+        key_phrases_with_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
     if key_phrases and phrases:
         phrases_with_adjoining = (
             extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases))
@@ -390,6 +389,6 @@ def text_processing(text: str, stop_words: Optional[Sequence[str]] = None, max_l
             calculate_cumulative_score_for_candidates_with_stop_words(phrases_with_adjoining, word_scores, stop_words))
     else:
         cumulative_score_with_stop_words = {}
-    if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
-        return {**keyword_phrases_with_scores, **cumulative_score_with_stop_words}
+    if key_phrases_with_scores and cumulative_score_with_stop_words is not None:
+        return {**key_phrases_with_scores, **cumulative_score_with_stop_words}
     return None

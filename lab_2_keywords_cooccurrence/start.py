@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import get_top_n, load_stop_words, text_processing
+from lab_2_keywords_cooccurrence.main import get_top_n, load_stop_words, text_processing
 
 
 def read_target_text(file_path: Path) -> str:
@@ -38,7 +38,6 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-
 
     if GAGARIN_TEXT_PROCESSED := text_processing(corpus["gagarin"], stop_words):
         print("Гагарин: ", get_top_n(GAGARIN_TEXT_PROCESSED, 10, 3), sep="\n\t")
