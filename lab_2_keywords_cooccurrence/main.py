@@ -204,7 +204,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     return word_scores
 
 
-def calculate_cumulative_score_for_(candidate_keyword_phrases: KeyPhrases,
+def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
                                               word_scores: Mapping[str, float]) -> Optional[Mapping[KeyPhrase, float]]:
     """
     Calculate cumulative score for each candidate keyword phrase. Cumulative score for a keyword phrase equals to
@@ -391,5 +391,5 @@ def text_processing(text: str, stop_words: Optional[Sequence[str]] = None, max_l
     else:
         cumulative_score_with_stop_words = {}
     if key_phrases_with_scores and cumulative_score_with_stop_words is not None:
-        return {**keyword_phrases_with_scores, **cumulative_score_with_stop_words}
+        return {**key_phrases_with_scores, **cumulative_score_with_stop_words}
     return None
