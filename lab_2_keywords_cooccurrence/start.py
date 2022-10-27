@@ -4,12 +4,12 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import extract_phrases, \
-    extract_candidate_keyword_phrases, calculate_frequencies_for_content_words
+    extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
     extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
     calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates, \
     get_top_n, extract_candidate_keyword_phrases_with_adjoining, \
     calculate_cumulative_score_for_candidates_with_stop_words, generate_stop_words, \
-    load_stop_words, find_keyword_phrases
+    load_stop_words
 
 
 def read_target_text(file_path: Path) -> str:
@@ -44,7 +44,30 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
-    # some changes
-    RESULT = None
+    for text in corpus.values():
+        if text:
+            phrases = extract_phrases(text)
+        if phrases and stop_words:
+            key_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+        if key_phrases:
+            word_frequencies = calculate_frequencies_for_content_words(key_phrases)
+        if word_frequencies:
+            word_degrees = calculate_word_degrees(key_phrases, list(word_frequencies.keys()))
+        if word_degrees and word_frequencies:
+            word_scores = calculate_word_scores(word_degrees, word_frequencies)
+        if word_scores and key_phrases:
+            cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
+        if cumulative_scores:
+            print(get_top_n(cumulative_scores, 5, 2))
+        if key_phrases and phrases:
+            key_phrases_with_sw = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
+        if key_phrases_with_sw and word_scores and stop_words:
+            cumulative_scores_with_sw = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
+                                                                                                  word_scores,
+                                                                                                  stop_words)
+        if cumulative_scores_with_sw:
+            print(get_top_n(cumulative_scores_with_sw, 5, 4), '\n')
+
+    RESULT = cumulative_scores_with_sw
 
     assert RESULT, 'Keywords are not extracted'
