@@ -201,7 +201,6 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
         return None
 
     word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_frequencies}
-    print(word_scores)
     return word_scores
 
 
@@ -224,7 +223,6 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
 
     cum_score = {phrase: sum(word_scores[word] for word in phrase) for phrase in candidate_keyword_phrases}
-    print(cum_score)
     return cum_score
 #None != {('важнейших', 'задач'): 4,
  #('времена', 'советского', 'союза', 'исследование', 'космоса'): 23,
