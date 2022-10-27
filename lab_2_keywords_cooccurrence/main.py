@@ -95,6 +95,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     for phrase in candidate_keyword_phrases:
         for word in phrase:
             tokens.append(word)
+    my_dict ={}
     if tokens:
         my_dict = {token: tokens.count(token) for token in tokens}
     return my_dict
@@ -245,6 +246,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     if len(candidate_keyword_phrases) == 0 or len(phrases) == 0:
         return None
+    '''
     all_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1): #потому что дальше работа с индексами, а они с 0, а не с 1
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
@@ -268,18 +270,88 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 occurrence = phrase.count(last_word_of_fisrt_part)
                 if occurrence == 1:
                     index = phrase.index(last_word_of_fisrt_part)
-                    stop_word_to_include = phrase[index + 1]
-                    full_phrase = pair[0] + " " + stop_word_to_include + " " + pair[-1]
-                    if full_phrase in frequent_pair_with_stop_words:
-                        frequent_pair_with_stop_words[full_phrase] += 1
-                    else:
-                        frequent_pair_with_stop_words[full_phrase] = 1
+                    if last_word_of_fisrt_part != phrase[-1]:
+                        stop_word_to_include = phrase[index + 1]
+                        full_phrase = pair[0] + " " + stop_word_to_include + " " + pair[-1]
+                        if full_phrase in frequent_pair_with_stop_words:
+                            frequent_pair_with_stop_words[full_phrase] += 1
+                        else:
+                            frequent_pair_with_stop_words[full_phrase] = 1
+                    elif occurrence > 1:
+                        while occurrence > 0:
+                            index = phrase.index(last_word_of_fisrt_part)
+                            stop_word_to_include = phrase[index + 1]
+                            index_of_stop_word = phrase.index(stop_word_to_include)
+                            full_phrase = pair[0] + " " + stop_word_to_include + " " + pair[-1]
+                            if full_phrase in frequent_pair_with_stop_words:
+                                frequent_pair_with_stop_words[full_phrase] += 1
+                            else:
+                                frequent_pair_with_stop_words[full_phrase] = 1
+                            occurrence = occurrence - 1
+                            phrase = phrase[index_of_stop_word:]
+                    if occurrence == 0:
+                        break
+    for key in frequent_pair_with_stop_words.keys():
+        for phrase in phrases:
+            if key in phrase:
+                frequent_pair_with_stop_words[full_phrase] = 0
+                frequent_pair_with_stop_words[full_phrase] += 1
+    final = []
+    for key in frequent_pair_with_stop_words.keys():
+        if frequent_pair_with_stop_words[key] >= 2:
+            key_tuple = (key,)
+            final.append(key_tuple)
+    return final
+    '''
+    all_pairs = {}
+    for i in range(len(candidate_keyword_phrases) - 1):  # потому что дальше работа с индексами, а они с 0, а не с 1
+        pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
+        if pair not in all_pairs:
+            all_pairs[pair] = all_pairs.get(pair, 1)
+        else:
+            all_pairs[pair] += 1
+
+    pairs_frequent = []
+    for pair in all_pairs:
+        pairs = []
+        if all_pairs[pair] > 1:
+            list_of_phrase_and_phrase = []
+            for phrase in pair:
+                list_of_a_phrase = []
+                for word in phrase:
+                    list_of_a_phrase.append(word)
+                pairs.append(list_of_a_phrase)
+        pairs_frequent.append(pairs)
+
+    pairs_frequent_stripped = []
+    for pair in pairs_frequent:
+        if len(pair) != 0:
+            pairs_frequent_stripped.append(pair)
+
+    frequent_pair_with_stop_words = {}
+    for pair in pairs_frequent_stripped:
+        first_part = pair[0][0].split()
+        last_word_of_fisrt_part = first_part[-1]
+        for phrase in phrases:
+            phrase = phrase.lower().split()
+            if last_word_of_fisrt_part in phrase:
+                occurrence = phrase.count(last_word_of_fisrt_part)
+                if occurrence == 1:
+                    index = phrase.index(last_word_of_fisrt_part)
+                    if last_word_of_fisrt_part != phrase[-1]:
+                        stop_word_to_include = phrase[index + 1]
+                        index_of_stop_word = phrase.index(stop_word_to_include)
+                        full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
+                        if full_phrase in frequent_pair_with_stop_words:
+                            frequent_pair_with_stop_words[full_phrase] += 1
+                        else:
+                            frequent_pair_with_stop_words[full_phrase] = 1
                 elif occurrence > 1:
                     while occurrence > 0:
                         index = phrase.index(last_word_of_fisrt_part)
                         stop_word_to_include = phrase[index + 1]
                         index_of_stop_word = phrase.index(stop_word_to_include)
-                        full_phrase = pair[0] + " " + stop_word_to_include + " " + pair[-1]
+                        full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
                         if full_phrase in frequent_pair_with_stop_words:
                             frequent_pair_with_stop_words[full_phrase] += 1
                         else:
@@ -293,13 +365,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             if key in phrase:
                 frequent_pair_with_stop_words[full_phrase] = 0
                 frequent_pair_with_stop_words[full_phrase] += 1
-    final = []
+    final_list_of_str = []
     for key in frequent_pair_with_stop_words.keys():
         if frequent_pair_with_stop_words[key] >= 2:
-            key_tuple = (key,)
-            final.append(key_tuple)
-    return final
-
+            final_list_of_str.append(key)
+    final_list_of_tuples = []
+    for key in final_list_of_str:
+        final_list_of_tuples.append(tuple(key.split()))
+    return final_list_of_tuples
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
