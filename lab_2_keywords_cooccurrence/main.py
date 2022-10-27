@@ -199,7 +199,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             and all(word_degrees.get(word) for word in word_degrees)):
         return None
 
-    word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_degrees}
+    word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_frequencies}
     return word_scores
 
 
@@ -222,6 +222,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         return None
 
     cum_score = {phrase: sum(word_scores[word] for word in phrase) for phrase in candidate_keyword_phrases}
+    print(cum_score)
     return cum_score
 
 
