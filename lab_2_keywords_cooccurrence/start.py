@@ -3,8 +3,8 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import (extract_phrases, extract_candidate_keyword_phrases,
-                  calculate_frequencies_for_content_words)
+from main import get_top_n, load_stop_words, text_processing
+
 
 def read_target_text(file_path: Path) -> str:
     """
@@ -39,27 +39,28 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    if GAGARIN_TEXT_PROCESSED := text_processing(corpus["gagarin"], stop_words):
+        print("Гагарин: ", get_top_n(GAGARIN_TEXT_PROCESSED, 10, 3), sep="\n\t")
 
-    phrases1 = extract_phrases(corpus["gagarin"])
-    phrases2 = extract_phrases(corpus["albatross"])
-    phrases3 = extract_phrases(corpus["genome_engineering"])
-    phrases4 = extract_phrases(corpus["pain_detection"])
-    print(phrases1)
-    print(phrases2)
-    print(phrases3)
-    print(phrases4)
-    if phrases1:
-        key_phrases1 = extract_candidate_keyword_phrases(phrases1, stop_words)
-        print(key_phrases1)
+    if ALBATROSS_TEXT_PROCESSED := text_processing(corpus["albatross"], stop_words):
+        print("Альбатрос: ", get_top_n(ALBATROSS_TEXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if phrases2:
-        key_phrases2 = extract_candidate_keyword_phrases(phrases2, stop_words)
+    if GENOME_TEXT_PROCESSED := text_processing(corpus["genome_engineering"], stop_words):
+        print("Геном: ", get_top_n(GENOME_TEXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if phrases3:
-        key_phrases3 = extract_candidate_keyword_phrases(phrases3, stop_words)
+    if PAIN_TEXT_PROCESSED := text_processing(corpus["pain_detection"], stop_words):
+        print("Боль: ", get_top_n(PAIN_TEXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if phrases4:
-        key_phrases4 = extract_candidate_keyword_phrases(phrases4, stop_words)
+    STOP_WORDS = load_stop_words(ASSETS_PATH / "stopwords.json")
+
+    POLISH_TEXT_PROCESSED = None
+
+    if STOP_WORDS:
+        if POLISH_TEXT_PROCESSED := text_processing(read_target_text(ASSETS_PATH / "polish.txt"), STOP_WORDS["pl"]):
+            print("Польское: ", get_top_n(POLISH_TEXT_PROCESSED, 10, 3), sep="\n\t")
+
+    if UNKNOWN_TEXT_PROCESSED := text_processing(read_target_text(ASSETS_PATH / "unknown.txt"), max_length=8):
+        print("Эсперантовское: ", get_top_n(UNKNOWN_TEXT_PROCESSED, 10, 3), sep="\n\t")
 
     RESULT = True
 
