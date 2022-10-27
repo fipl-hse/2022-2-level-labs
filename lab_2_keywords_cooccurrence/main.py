@@ -26,7 +26,7 @@ def for_i_empty_checker(collection: Sequence[Any]) -> bool:
     return bool(collection and all(collection))
 
 
-def my_isinstance(instance: Any, type_of_instance: Type[Any]) -> bool:
+def my_isinstance(instance: Any, type_of_instance: Type) -> bool:
     """
     Distincts int and bool compared to built-in isinstance() function.
 
