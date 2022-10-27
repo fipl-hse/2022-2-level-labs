@@ -43,7 +43,7 @@ def my_isinstance(instance: Any, type_of_instance: Type[Any]) -> bool:
     return bool(not isinstance(instance, bool) and isinstance(instance, int) and instance)
 
 
-def for_i_type_checker(collection: Union[set, list, tuple],
+def for_i_type_checker(collection: Sequence[Any],
                        type_of_collection: Type[Any],
                        type_of_instance: Type[Any]) -> bool:
     """
@@ -64,7 +64,7 @@ def for_i_type_checker(collection: Union[set, list, tuple],
             and all(map(lambda x: my_isinstance(x, type_of_instance), collection)))
 
 
-def is_dic_correct(dic: dict,
+def is_dic_correct(dic: Mapping[Any, Any],
                    allow_false_items: bool,
                    key_type: Type[Any],
                    value_type: Any) -> bool:
@@ -99,7 +99,7 @@ def is_dic_correct(dic: dict,
 
 
 # CAN I GET AN EXTRA TASK TO HIGHER MY GRADE
-# AND COMPENSATE THE FACT OFF MISSING DEADLINE?
+# AND COMPENSATE THE FACT OF MISSING DEADLINE?
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -180,7 +180,8 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     word_degree = {word: sum(len(phrase) for phrase in candidate_keyword_phrases
                              if word in phrase) for word in content_words}
     return word_degree
-
+ #  ERRORS: test_calculate_word_scores_mismatching_keys_in_dictionaries, calculate_word_scores_test,
+#  calculate_word_scores_test.py::CalculateWordScoresTest::test_calculate_word_scores_mismatching_keys_in_dictionaries
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:
