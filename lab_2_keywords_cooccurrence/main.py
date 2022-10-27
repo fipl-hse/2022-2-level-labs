@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Union, Any, Type
 
+
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -107,6 +108,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
+
     if not my_isinstance(text, str):
         return None
     pattern = re.compile(r"(?<=^)[^\s\w]+|(?<=\s)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)")
@@ -129,6 +131,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (my_isinstance(phrases, list) and my_isinstance(stop_words, list)):
         return None
 
@@ -147,6 +150,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
+
     if not my_isinstance(candidate_keyword_phrases, list):
         return None
 
@@ -169,6 +173,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (my_isinstance(candidate_keyword_phrases, list) or my_isinstance(content_words, list)):
         return None
 
@@ -188,6 +193,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
+
 
     if not (is_dic_correct(word_degrees, False, str, int) and
             is_dic_correct(word_frequencies, False, str, int) and
@@ -210,6 +216,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (my_isinstance(candidate_keyword_phrases, list)
             and for_i_empty_checker(candidate_keyword_phrases) and is_dic_correct(word_scores, False, str, float) and
             all(word in word_scores for word in list(itertools.chain.from_iterable(candidate_keyword_phrases)))):
@@ -232,6 +239,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (is_dic_correct(keyword_phrases_with_scores, False, tuple, float)
             and my_isinstance(top_n, int) and my_isinstance(max_length, int)
             and top_n >= 1 and max_length >= 1):
@@ -262,6 +270,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (my_isinstance(candidate_keyword_phrases, list) and my_isinstance(phrases, list)):
         return None
 
@@ -297,6 +306,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (my_isinstance(candidate_keyword_phrases, list) and
             is_dic_correct(word_scores, False, str, float) and
             my_isinstance(stop_words, list)):
@@ -316,6 +326,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
+
     if not (my_isinstance(text, str) and my_isinstance(max_length, int) and max_length >= 2):
         return None
 
@@ -339,6 +350,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
+
     if not my_isinstance(path, Path):
         return None
 
