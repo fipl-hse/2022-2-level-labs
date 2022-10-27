@@ -157,7 +157,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     # chain.from_iterable() -- gets chained inputs from a
     # single iterable argument that is evaluated lazily.
 
-    all_words = list(itertools.chain.from_iterable(candidate_keyword_phrases))
+    all_words = tuple(itertools.chain.from_iterable(candidate_keyword_phrases))
     return {word: all_words.count(word) for word in frozenset(all_words)}
 
 
@@ -194,12 +194,14 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     In case of corrupt input arguments, None is returned
     """
 
-    if not (is_dic_correct(word_degrees, False, str, int)
+    if not (my_isinstance(word_degrees, dict) and my_isinstance(word_frequencies, dict)
+            and is_dic_correct(word_degrees, False, str, int)
             and is_dic_correct(word_frequencies, False, str, int)
-            and all(word_degrees.get(word) for word in word_degrees)):
+            and all(word_degrees.get(word, False) for word in word_degrees)):
         return None
 
     word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_frequencies}
+    print(word_scores)
     return word_scores
 
 
@@ -224,7 +226,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     cum_score = {phrase: sum(word_scores[word] for word in phrase) for phrase in candidate_keyword_phrases}
     print(cum_score)
     return cum_score
-
+#None != {('важнейших', 'задач'): 4,
+ #('времена', 'советского', 'союза', 'исследование', 'космоса'): 23,
+ #('времена', 'союза', 'прошли'): 11,
+ #('одной',): 1,
+ #('одной', 'из', 'важнейших', 'задач'): 5}
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
               top_n: int,
@@ -308,7 +314,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     """
 
     if not (my_isinstance(candidate_keyword_phrases, list) and
-            is_dic_correct(word_scores, False, str, float) and
+            my_isinstance(word_scores, dict) and
             my_isinstance(stop_words, list)):
         return None
 
