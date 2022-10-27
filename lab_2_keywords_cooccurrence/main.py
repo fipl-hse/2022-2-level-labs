@@ -206,7 +206,24 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+    if not (candidate_keyword_phrases and isinstance(candidate_keyword_phrases, list)
+            and phrases and isinstance(phrases, list)):
+        return None
+    keyword_phrases_with_adj = []
 
+    for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
+        splited_phrase = phrase.split()
+        keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)
+        next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1]
+        next_phrase_freq = candidate_keyword_phrases.count(next_phrase)
+
+        for keyword, word in zip(keyword_phrase, next_phrase):
+            if keyword in splited_phrase and word in splited_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
+                next_phrase_start_idx = splited_phrase.index(next_phrase[0])
+                stop_word = splited_phrase[next_phrase_start_idx - 1]
+                word_idx = next_phrase.index(word)
+                keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
+    return keyword_phrases_with_adj
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -224,7 +241,20 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not(isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases and isinstance(word_scores, dict)
+           and word_scores and isinstance(stop_words, list) and stop_words):
+        return None
+    cumulative_scores = {}
+    for phrase in candidate_keyword_phrases:
+        phrase_score = 0.0
+        for word in phrase:
+            if word not in stop_words:
+                if word not in word_scores.keys():
+                    return None
+                phrase_score += word_scores[word]
+                cumulative_scores[phrase] = phrase_score
+
+    return cumulative_scores
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
