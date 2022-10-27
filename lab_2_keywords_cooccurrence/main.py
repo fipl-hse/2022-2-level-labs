@@ -44,8 +44,8 @@ def my_isinstance(instance: Any, type_of_instance: Type) -> bool:
 
 
 def for_i_type_checker(collection: Sequence[Any],
-                       type_of_collection: Type[Any],
-                       type_of_instance: Type[Any]) -> bool:
+                       type_of_collection: Any,
+                       type_of_instance: Any) -> bool:
     """
     Acts like my_isinstance for every collection's item
 
@@ -66,7 +66,7 @@ def for_i_type_checker(collection: Sequence[Any],
 
 def is_dic_correct(dic: Mapping[Any, Any],
                    allow_false_items: bool,
-                   key_type: Type[Any],
+                   key_type: Any,
                    value_type: Any) -> bool:
     """
     Checks dictionary on being empty, having False items in keys and values,
