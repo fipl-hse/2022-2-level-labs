@@ -17,14 +17,15 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    if not (text or isinstance(text,str)):
+    if not (text and isinstance(text,str)):
         return None
-    punctuation = '''.?!…,;:—()'",<>./'''
+    punctuation = '''.,;:¡!¿?…⋯‹›«»"“”\/[]()⟨⟩}{&]|[-–~—]'''
     for symbol in text:
         if symbol in punctuation:
-             text = text.replace(symbol,'.')
+            text = text.replace(symbol, '.')
     phrases_list = text.split('.')
-    return phrases_list
+    new_phrases = [new_phrase for phrase in phrases_list if (new_phrase := phrase.strip())]
+    return new_phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
