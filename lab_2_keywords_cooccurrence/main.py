@@ -41,7 +41,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     if not isinstance(stop_words, list):
         return None
-    if stop_words == [] or phrases == []:
+    if not stop_words or not phrases:
         return None
     for element in phrases:
         if not isinstance(element, str):
@@ -74,7 +74,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases != []):
+    if not (isinstance(candidate_keyword_phrases, list) and candidate_keyword_phrases):
         return None
 
     freq_dict = {}
@@ -99,9 +99,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []:
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
         return None
-    if not isinstance(content_words, list) or content_words == []:
+    if not isinstance(content_words, list) or not content_words:
         return None
 
     word_degrees = {}
@@ -127,9 +127,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(word_degrees, dict) or word_degrees == {}:
+    if not isinstance(word_degrees, dict) or not word_degrees:
         return None
-    if not isinstance(word_frequencies, dict) or word_frequencies == {}:
+    if not isinstance(word_frequencies, dict) or not word_frequencies:
         return None
 
     word_scores = {}
@@ -156,9 +156,9 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []:
+    if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
         return None
-    if not isinstance(word_scores, dict) or word_scores == {}:
+    if not isinstance(word_scores, dict) or not word_scores:
         return None
 
     phrase_score = {}
