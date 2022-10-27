@@ -365,8 +365,13 @@ def text_processing(text: str, stop_words: Optional[Sequence[str]] = None, max_l
     Arguments: text, stop words list / stop word's maximum length if they need to be generated.
     Returns extracted key phrases in case of correct arguments or None otherwise.
     """
+<<<<<<< HEAD
     candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, key_phrases_with_scores, \
         candidates_adjoined, cumulative_score_with_stop_words = [None for _ in range(7)]
+=======
+    key_phrases, word_frequencies, word_degrees, word_scores, key_phrases_with_scores, \
+        phrases_with_adjoining, cumulative_score_with_stop_words = [None for _ in range(7)]
+>>>>>>> 47ff43b91ec165e5f0288176dfb9ef5d499f1585
 
     phrases = extract_phrases(text)
     if not stop_words and max_length:
