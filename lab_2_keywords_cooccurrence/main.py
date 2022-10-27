@@ -11,6 +11,16 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
+def type_check(data: Any, expected: Type) -> bool:
+    """
+    Checks any type used in the program. And object's falsiness.
+    :param data: An object which type is checked
+    :param expected: A type we expect data to be
+    :return: True if data has the expected type and not falsy, False otherwise
+    """
+    return isinstance(data, expected) and not (expected == int and isinstance(data, bool)) and data
+
+
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -19,6 +29,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
+
     if not isinstance(text, str) or len(text) == 0:
         return None
 
@@ -51,6 +62,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
+    
     if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     final_list = []
@@ -82,6 +94,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     return final_list_tuples
 
+
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
     Extracts the content words from the candidate keyword phrases list and computes their frequencies
@@ -90,6 +103,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
+
     if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
         return None
     tokens = []
@@ -114,6 +128,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
+
     if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(content_words, str, False):
         return None
     if len(candidate_keyword_phrases) == 0 or len(content_words) == 0:
@@ -137,6 +152,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             word_degrees_content[word] = count
     return word_degrees_content
 
+
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:
     """
@@ -148,6 +164,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, True)):
         return None
     if len(word_degrees) == 0 or len(word_frequencies) == 0:
@@ -158,6 +175,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             return None
         word_scores[word] = word_degrees[word] / word_frequencies[word]
     return word_scores
+
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
                                               word_scores: Mapping[str, float]) -> Optional[Mapping[KeyPhrase, float]]:
@@ -171,6 +189,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
+
     if not isinstance(candidate_keyword_phrases, list) or not candidate_keyword_phrases:
         return None
     if not isinstance(word_scores, dict) or not word_scores:
@@ -188,6 +207,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             cumulative_score_for_candidates[phrase] += word_scores[word]
     return cumulative_score_for_candidates
 
+
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
               top_n: int,
               max_length: int) -> Optional[Sequence[str]]:
@@ -201,6 +221,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
+
     if not isinstance(keyword_phrases_with_scores, dict) or not keyword_phrases_with_scores:
         return None
     if not isinstance(top_n, int) or not top_n:
@@ -220,6 +241,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         keywords_tuple = list(keywords_tuple)
         top_n_strings_list.append(' '.join(keywords_tuple))
     return top_n_strings_list
+
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
                                                      phrases: Sequence[str]) -> Optional[KeyPhrases]:
@@ -241,6 +263,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
     if not (check_list(phrases, str, False)) or not phrases:
@@ -317,6 +340,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         final_list_of_tuples.append(tuple(key.split()))
     return final_list_of_tuples
 
+
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
                                                               stop_words: Sequence[str]) \
@@ -333,6 +357,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
     if not isinstance(word_scores, dict) or not word_scores:
@@ -358,6 +383,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
     return cumulative_score_for_candidates
 
 
+
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     """
     Generates the list of stop words from the given text
@@ -366,6 +392,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
+
     if not text or not isinstance(text, str) or not isinstance(max_length, int) or not max_length > 0:
         return None
     tokenized = clean_and_tokenize(text)
@@ -381,14 +408,17 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     return stop_words
 
 
+
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
     Loads stop word lists from the file
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
+
     if not path or not isinstance(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as f:
         stop_words = dict(json.load(f))
     return stop_words
+
