@@ -3,7 +3,9 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-import main
+from lab_2_keywords_cooccurrence.main import (text_processing,
+                                              get_top_n,
+                                              load_stop_words)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -39,28 +41,28 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    if GAGARIN_TXT_PROCESSED := main.text_processing(corpus["gagarin"], stop_words):
-        print("Гагарин: ", main.get_top_n(GAGARIN_TXT_PROCESSED, 10, 3), sep="\n\t")
+    if GAGARIN_TXT_PROCESSED := text_processing(corpus["gagarin"], stop_words):
+        print("Гагарин: ", get_top_n(GAGARIN_TXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if ALBATROSS_TXT_PROCESSED := main.text_processing(corpus["albatross"], stop_words):
-        print("Альбатрос: ", main.get_top_n(ALBATROSS_TXT_PROCESSED, 10, 3), sep="\n\t")
+    if ALBATROSS_TXT_PROCESSED := text_processing(corpus["albatross"], stop_words):
+        print("Альбатрос: ", get_top_n(ALBATROSS_TXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if GENOME_TXT_PROCESSED := main.text_processing(corpus["genome_engineering"], stop_words):
-        print("Геном: ", main.get_top_n(GENOME_TXT_PROCESSED, 10, 3), sep="\n\t")
+    if GENOME_TXT_PROCESSED := text_processing(corpus["genome_engineering"], stop_words):
+        print("Геном: ", get_top_n(GENOME_TXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if PAIN_TXT_PROCESSED := main.text_processing(corpus["pain_detection"], stop_words):
-        print("Боль: ", main.get_top_n(PAIN_TXT_PROCESSED, 10, 3), sep="\n\t")
+    if PAIN_TXT_PROCESSED := text_processing(corpus["pain_detection"], stop_words):
+        print("Боль: ", get_top_n(PAIN_TXT_PROCESSED, 10, 3), sep="\n\t")
 
-    STOP_WORDS = main.load_stop_words(ASSETS_PATH / "stopwords.json")
+    STOP_WORDS = load_stop_words(ASSETS_PATH / "stopwords.json")
 
     POLISH_TXT_PROCESSED = None
 
     if STOP_WORDS:
-        if POLISH_TXT_PROCESSED := main.text_processing(read_target_text(ASSETS_PATH / "polish.txt"), STOP_WORDS["pl"]):
-            print("Польское: ", main.get_top_n(POLISH_TXT_PROCESSED, 10, 3), sep="\n\t")
+        if POLISH_TXT_PROCESSED := text_processing(read_target_text(ASSETS_PATH / "polish.txt"), STOP_WORDS["pl"]):
+            print("Польское: ", get_top_n(POLISH_TXT_PROCESSED, 10, 3), sep="\n\t")
 
-    if UNKNOWN_TXT_PROCESSED := main.text_processing(read_target_text(ASSETS_PATH / "unknown.txt"), max_length=8):
-        print("Эсперантовское: ", main.get_top_n(UNKNOWN_TXT_PROCESSED, 10, 3), sep="\n\t")
+    if UNKNOWN_TXT_PROCESSED := text_processing(read_target_text(ASSETS_PATH / "unknown.txt"), max_length=8):
+        print("Эсперантовское: ", get_top_n(UNKNOWN_TXT_PROCESSED, 10, 3), sep="\n\t")
 
     RESULT = True
 

@@ -198,10 +198,10 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not (my_isinstance(word_degrees, dict) and my_isinstance(word_frequencies, dict)
             and is_dic_correct(word_degrees, False, str, int)
             and is_dic_correct(word_frequencies, False, str, int)
-            and all(word_degrees.get(word, False) for word in word_degrees)):
+            and all(word_frequencies.get(word, False) for word in word_degrees.keys())):
         return None
 
-    word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_frequencies}
+    word_scores = {word: (word_degrees[word] / word_frequencies[word]) for word in word_degrees.keys()}
     return word_scores
 
 
