@@ -22,7 +22,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or len(text) == 0:
         return None
 
-    punct = '''.,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'''
+    punct = '''.,;:¡!¿?…⋯‹›«»"“”()⟨⟩}{&]|[-–~—]'''
     for symbol in punct:
         text = text.replace(symbol, ',')
         # проходится по всем знакам пункуации и заменяет все на запятые
@@ -82,6 +82,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     return final_list_tuples
 
+
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
     Extracts the content words from the candidate keyword phrases list and computes their frequencies
@@ -96,7 +97,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     for phrase in candidate_keyword_phrases:
         for word in phrase:
             tokens.append(word)
-    my_dict ={}
+    my_dict = {}
     if tokens:
         my_dict = {token: tokens.count(token) for token in tokens}
     return my_dict
@@ -137,6 +138,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             word_degrees_content[word] = count
     return word_degrees_content
 
+
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:
     """
@@ -158,6 +160,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             return None
         word_scores[word] = word_degrees[word] / word_frequencies[word]
     return word_scores
+
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
                                               word_scores: Mapping[str, float]) -> Optional[Mapping[KeyPhrase, float]]:
@@ -188,6 +191,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             cumulative_score_for_candidates[phrase] += word_scores[word]
     return cumulative_score_for_candidates
 
+
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
               top_n: int,
               max_length: int) -> Optional[Sequence[str]]:
@@ -210,7 +214,6 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if len(keyword_phrases_with_scores) == 0 or top_n <= 0 or max_length <= 0:
         return None
     top_n_dict = {}
-    top_n_list = []
     top_n_strings_list = []
     for key, value in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
@@ -220,6 +223,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         keywords_tuple = list(keywords_tuple)
         top_n_strings_list.append(' '.join(keywords_tuple))
     return top_n_strings_list
+
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
                                                      phrases: Sequence[str]) -> Optional[KeyPhrases]:
@@ -258,7 +262,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for pair in all_pairs:
         pairs = []
         if all_pairs[pair] > 1:
-            list_of_phrase_and_phrase = []
             for phrase in pair:
                 list_of_a_phrase = []
                 for word in phrase:
@@ -283,7 +286,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     index = phrase.index(last_word_of_fisrt_part)
                     if last_word_of_fisrt_part != phrase[-1]:
                         stop_word_to_include = phrase[index + 1]
-                        index_of_stop_word = phrase.index(stop_word_to_include)
                         full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
                         if full_phrase in frequent_pair_with_stop_words:
                             frequent_pair_with_stop_words[full_phrase] += 1
@@ -316,6 +318,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     for key in final_list_of_str:
         final_list_of_tuples.append(tuple(key.split()))
     return final_list_of_tuples
+
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
@@ -392,3 +395,35 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     with open(path, 'r', encoding='utf-8') as f:
         stop_words = dict(json.load(f))
     return stop_words
+
+def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
+
+    candidate_keyword_phrases, frequencies, word_degrees, word_scores, \
+        cumulative_score, candidate_with_stop_words, cumulative_with_stop_words = [None for i in range(7)]
+
+    phrases = extract_phrases(text)
+
+    if phrases and stop_words:
+        key_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    if key_phrases:
+        word_frequencies = calculate_frequencies_for_content_words(key_phrases)
+    if word_frequencies and key_phrases:
+        word_degrees = calculate_word_degrees(key_phrases, list(word_frequencies.keys()))
+    if word_degrees and word_frequencies:
+        word_scores = calculate_word_scores(word_degrees, word_frequencies)
+    if word_scores and key_phrases:
+        cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
+    if cumulative_scores:
+        print(get_top_n(cumulative_scores, 5, 2))
+    if key_phrases and phrases:
+        key_phrases_with_sw = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
+    if key_phrases_with_sw and word_scores and stop_words:
+        cumulative_scores_with_sw = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
+                                                                                              word_scores,
+                                                                                              stop_words)
+    if cumulative_scores_with_sw:
+        print(get_top_n(cumulative_scores_with_sw, 5, 4), '\n')
+
+    RESULT = cumulative_scores_with_sw
+
+    return None
