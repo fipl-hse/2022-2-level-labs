@@ -37,9 +37,19 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (phrases or isinstance(phrases,list) or stop_words or isinstance(stop_words,list)):
+    if not (phrases and isinstance(phrases,list) and stop_words and isinstance(stop_words,list)):
         return None
+    for phrase in phrases:
+        if not isinstance(phrase,str):
+            return None
 
+    new_list = []
+    for phrase in phrases:
+        phrase = phrase.lower().split()
+        for word in phrase:
+            if word not in stop_words:
+                new_list.append(word)
+    return new_list
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
