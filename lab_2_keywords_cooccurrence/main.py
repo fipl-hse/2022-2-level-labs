@@ -180,8 +180,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     word_degree = {word: sum(len(phrase) for phrase in candidate_keyword_phrases
                              if word in phrase) for word in content_words}
     return word_degree
- #  ERRORS: test_calculate_word_scores_mismatching_keys_in_dictionaries, calculate_word_scores_test,
-#  calculate_word_scores_test.py::CalculateWordScoresTest::test_calculate_word_scores_mismatching_keys_in_dictionaries
+
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:
@@ -225,11 +224,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     cum_score = {phrase: sum(word_scores[word] for word in phrase) for phrase in candidate_keyword_phrases}
     return cum_score
-#None != {('важнейших', 'задач'): 4,
- #('времена', 'советского', 'союза', 'исследование', 'космоса'): 23,
- #('времена', 'союза', 'прошли'): 11,
- #('одной',): 1,
- #('одной', 'из', 'важнейших', 'задач'): 5}
+
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
               top_n: int,
