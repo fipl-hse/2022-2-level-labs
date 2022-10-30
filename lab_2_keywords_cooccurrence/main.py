@@ -80,8 +80,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     low_phrases = []
     for i in phrases:
         low_phrases.append(i.lower().split())
-    for i in range(len(low_phrases)):
-        low_phrases[i] = low_phrases[i]
     candidate_keyword_phrases = []
     for one_phrase in low_phrases:
         new_tuple = []
@@ -163,7 +161,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     for word in word_degrees:
         if word not in word_frequencies:
             return None
-    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees if word in word_frequencies}
+    return {word: word_degrees[word] / word_frequencies[word] for word in word_degrees}
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -209,10 +207,10 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     """
     if (not isinstance(keyword_phrases_with_scores, dict)
             or keyword_phrases_with_scores == {}
-            or not isinstance(top_n, int)
+            or not isinstance(top_n, int) or isinstance (top_n, bool)
             or top_n <= 0
-            or not isinstance(max_length, int)
-            or max_length <= 0):
+            or not isinstance(max_length
+                              or max_length <= 0)):
         return None
     small_phrases = {}
     for phrase, score in keyword_phrases_with_scores.items():
