@@ -207,10 +207,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     possible_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
-        if pair not in possible_pairs:
-            possible_pairs[pair] = possible_pairs.get(pair, 1)
-        else:
-            possible_pairs[pair] += 1
+        possible_pairs[pair] = possible_pairs.get(pair, 0) + 1 #поправить здесь
     appropriate_pairs = []
     for pair in possible_pairs:
         if possible_pairs[pair] > 1:
@@ -223,7 +220,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 counter += 1
                 if extract_phrases(phrase) == [phrase]:
                     phrases_with_stopwords.extend(re.findall(rf'{element[0]}\s[а-я]+\s{element[1]}', phrase))
-        if counter == 0:
+        if counter == 0:        #если хотя бы для одной возможной пары нет  фразы
             return []
     new_phrases_with_sw = [phrase.split() for phrase in set(phrases_with_stopwords)]
     final_phrases = [tuple(phrase) for phrase in new_phrases_with_sw]
