@@ -4,7 +4,6 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-import re
 import csv
 from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
@@ -66,10 +65,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        if self._punctuation:
-            expression = re.compile('[' + ''.join(list(self._punctuation)) + ']')
-            return tuple(re.sub(expression, '', text).lower().split())
-        return tuple(text.lower().split())
+        return tuple(''.join(symbol for symbol in text if symbol not in self._punctuation).lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -139,7 +135,7 @@ class TextEncoder:
                 sequence of string tokens
         """
         for count, token in enumerate(tokens):
-            self._word2id[token] = 1000 + count
+            self._word2id[token] = 1000 if len(self._word2id.values()) == 0 else max(self._word2id.values()) + 1
             self._id2word[self._word2id[token]] = token
 
     # Step 2.3
@@ -200,8 +196,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or (not isinstance(window_length, int) or isinstance(window_length, bool)) or window_length < 2:
         return None
     pairs = []
-    for index in range(len(tokens[:-window_length])):
-        for pair in [(tokens[i], j) for i in range(index, index+window_length) for j in tokens[i:index+window_length]]:
+    for index in range(len(tokens) - window_length):
+        for pair in [(tokens[index+i], tokens[index+j]) for i in range(window_length) for j in range(i, window_length)]:
             if not pair[0] == pair[1] and pair not in pairs and (pair[1], pair[0]) not in pairs:
                 pairs.append(pair)
     return tuple(pairs)
@@ -268,12 +264,12 @@ class AdjacencyMatrixGraph:
             return -1
         for vertex in vertex1, vertex2:
             if vertex not in self._matrix[0]:
-                self._matrix.append([vertex] + [0 for _ in self._matrix[0]])
                 self._matrix[0].append(vertex)
                 for i in self._matrix[1:]:
                     i.append(0)
-        index1, index2 = self._matrix[0].index(vertex1) + 1, self._matrix[0].index(vertex2) + 1
-        self._matrix[index1][index2] = self._matrix[index2][index1] = 1
+                self._matrix.append([0 for _ in self._matrix[0]])
+        index1, index2 = self._matrix[0].index(vertex1), self._matrix[0].index(vertex2)
+        self._matrix[index1 + 1][index2] = self._matrix[index2 + 1][index1] = 1
         return 0
 
     # Step 4.3
@@ -294,7 +290,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
             return -1
-        return self._matrix[self._matrix[0].index(vertex1) + 1][self._matrix[0].index(vertex2) + 1]
+        return self._matrix[self._matrix[0].index(vertex1) + 1][self._matrix[0].index(vertex2)]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -321,7 +317,7 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        return -1 if vertex not in self._matrix[0] else sum(self._matrix[self._matrix[0].index(vertex) + 1][1:])
+        return -1 if vertex not in self._matrix[0] else sum(self._matrix[self._matrix[0].index(vertex) + 1])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -733,12 +729,9 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        frequencies = calculate_frequencies(list(self._tokens))
-        tf_dict, scores = None, None
-        if frequencies:
-            tf_dict = calculate_tf(frequencies)
-        if tf_dict:
-            scores = calculate_tfidf(tf_dict, self._idf)
+        frequencies, tf_dict, scores = calculate_frequencies(list(self._tokens)), None, None
+        tf_dict = calculate_tf(frequencies) if frequencies else None
+        scores = calculate_tfidf(tf_dict, self._idf) if tf_dict else None
         if not scores:
             return -1
         self._scores = scores
@@ -757,10 +750,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        top = []
         if get_top := get_top_n(self._scores, n_keywords):
-            top = get_top
-        return tuple(top)
+            return tuple(get_top)
 
 
 class RAKEAdapter:
@@ -836,10 +827,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        top = []
         if get_top := get_top_n(self._scores, n_keywords):
-            top = get_top
-        return tuple(top)
+            return tuple(get_top)
 
 
 # Step 12.1
@@ -857,9 +846,7 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_positive = len([token for token in target if token in predicted])
-    false_negative = len(target) - true_positive
-    return true_positive / (true_positive + false_negative)
+    return len([token for token in target if token in predicted]) / len(target)
 
 
 class KeywordExtractionBenchmark:
@@ -918,7 +905,8 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        for name in 'TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank':
+        names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
+        for name in names:
             self.report[name] = {}
         preprocessor = TextPreprocessor(self.stop_words, self.punctuation)
         encoder = TextEncoder()
@@ -929,11 +917,9 @@ class KeywordExtractionBenchmark:
             target_text_path = benchmark_materials / (str(theme) + '_text.txt')
             file = open(target_text_path, 'r', encoding='utf-8')
             text = file.read()
-            file.close()
             target_keyword_path = benchmark_materials / (str(theme) + '_keywords.txt')
             file = open(target_keyword_path, 'r', encoding='utf-8')
             keywords = tuple(file.read().split())
-            file.close()
 
             tokens = preprocessor.preprocess_text(text)
             tokens_encoded = encoder.encode(tokens)
@@ -953,16 +939,13 @@ class KeywordExtractionBenchmark:
                 algorithm.train()
 
             predict_tfidf = tfidf.get_top_keywords(50)
-            self.report['TF-IDF'][self.themes[theme]] = calculate_recall(predict_tfidf, keywords)
             predict_rake = rake.get_top_keywords(50)
-            self.report['RAKE'][self.themes[theme]] = calculate_recall(predict_rake, keywords)
             predict_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
             predict_biased = encoder.decode(position_biased.get_top_keywords(50))
             if predict_vanilla is None or predict_biased is None:
                 return None
-            self.report['VanillaTextRank'][self.themes[theme]] = calculate_recall(predict_vanilla, keywords)
-            self.report['PositionBiasedTextRank'][self.themes[theme]] = \
-                calculate_recall(predict_biased, keywords)
+            for name, predict in zip(names, [predict_tfidf, predict_rake, predict_vanilla, predict_biased]):
+                self.report[name][self.themes[theme]] = calculate_recall(predict, keywords)
         return self.report
 
     # Step 12.4
