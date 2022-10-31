@@ -33,11 +33,8 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     preprocessor = TextPreprocessor(stop_words, r'\W+')
-    tokens = preprocessor._clean_and_tokenize(text)
-    print(tokens)
-    clean_tokens = preprocessor._remove_stop_words(tokens)
+    clean_tokens = preprocessor.preprocess_text(text)
     print(clean_tokens)
-
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
