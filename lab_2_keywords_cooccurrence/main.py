@@ -40,7 +40,7 @@ def my_isinstance(instance: Any, type_of_instance: Type) -> bool:
 
     if type_of_instance is not int:
         return bool(isinstance(instance, type_of_instance) and instance)
-    return bool(not isinstance(instance, bool) and isinstance(instance, int) and instance)
+    return bool(not isinstance(instance, bool) and  isinstance(instance, int) and instance)
 
 
 def for_i_type_checker(collection: Sequence[Any],
