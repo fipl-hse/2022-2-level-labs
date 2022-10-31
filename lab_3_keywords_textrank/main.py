@@ -53,8 +53,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        tokens = re.split(self._punctuation, text.lower())
-        return tuple(filter(None, tokens))
+        if self._punctuation:
+            for char in text:
+                if char in self._punctuation:
+                    text = text.replace(char, ' ')
+        return tuple(text.lower().split())
 
 
     # Step 1.3
@@ -160,7 +163,9 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        if not (self._id2word and encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
+            return None
+        return tuple(self._id2word.get(encoded_token for encoded_token in encoded_tokens))
 
 
 # Step 3
