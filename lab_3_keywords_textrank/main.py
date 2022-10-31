@@ -134,7 +134,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for count, token in enumerate(tokens):
+        for token in tokens:
             self._word2id[token] = 1000 if len(self._word2id.values()) == 0 else max(self._word2id.values()) + 1
             self._id2word[self._word2id[token]] = token
 
@@ -752,6 +752,7 @@ class TFIDFAdapter:
         """
         if get_top := get_top_n(self._scores, n_keywords):
             return tuple(get_top)
+        return ()
 
 
 class RAKEAdapter:
@@ -829,6 +830,7 @@ class RAKEAdapter:
         """
         if get_top := get_top_n(self._scores, n_keywords):
             return tuple(get_top)
+        return ()
 
 
 # Step 12.1
@@ -911,14 +913,13 @@ class KeywordExtractionBenchmark:
         preprocessor = TextPreprocessor(self.stop_words, self.punctuation)
         encoder = TextEncoder()
         project_root = Path(__file__).parent
-        assets = project_root / 'assets'
-        benchmark_materials = assets / 'benchmark_materials'
+        benchmark_materials = project_root / 'assets' / 'benchmark_materials'
         for theme in range(len(self.themes)):
-            target_text_path = benchmark_materials / (str(theme) + '_text.txt')
-            file = open(target_text_path, 'r', encoding='utf-8')
+            target_path = benchmark_materials / (str(theme) + '_text.txt')
+            file = open(target_path, 'r', encoding='utf-8')
             text = file.read()
-            target_keyword_path = benchmark_materials / (str(theme) + '_keywords.txt')
-            file = open(target_keyword_path, 'r', encoding='utf-8')
+            target_path = benchmark_materials / (str(theme) + '_keywords.txt')
+            file = open(target_path, 'r', encoding='utf-8')
             keywords = tuple(file.read().split())
 
             tokens = preprocessor.preprocess_text(text)
