@@ -5,7 +5,6 @@ Extract keywords based on TextRank algorithm
 from pathlib import Path
 from typing import Optional, Union
 import re
-from lab_1_keywords_tfidf.main import remove_stop_words
 
 
 class TextPreprocessor:
@@ -55,7 +54,7 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         tokens = re.split(self._punctuation, text.lower())
-        return list(filter(None, tokens))
+        return tuple(filter(None, tokens))
 
 
     # Step 1.3
@@ -71,7 +70,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return remove_stop_words(tokens, self._stop_words)
+        return tuple(token for token in tokens if token not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
