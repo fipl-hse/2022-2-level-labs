@@ -54,8 +54,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        text = re.split(self._punctuation, text.lower())
-        return text
+        tokens = re.split(self._punctuation, text.lower())
+        return list(filter(None, tokens))
 
 
     # Step 1.3

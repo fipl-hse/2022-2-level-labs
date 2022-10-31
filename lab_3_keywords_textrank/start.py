@@ -32,8 +32,11 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    processor = TextPreprocessor(stop_words, r'\W+')
-    print(processor._clean_and_tokenize(text))
+    preprocessor = TextPreprocessor(stop_words, r'\W+')
+    tokens = preprocessor._clean_and_tokenize(text)
+    print(tokens)
+    clean_tokens = preprocessor._remove_stop_words(tokens)
+    print(clean_tokens)
 
 
     RESULT = None
