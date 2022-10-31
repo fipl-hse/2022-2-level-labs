@@ -5,7 +5,7 @@ TextRank keyword extraction starter
 from pathlib import Path
 from lab_3_keywords_textrank.main import(
     TextPreprocessor,
-    # TextEncoder,
+    TextEncoder,
     # extract_pairs,
     # AdjacencyMatrixGraph,
     # VanillaTextRank,
@@ -35,6 +35,9 @@ if __name__ == "__main__":
     preprocessor = TextPreprocessor(stop_words, r'\W+')
     clean_tokens = preprocessor.preprocess_text(text)
     print(clean_tokens)
+    dcts = TextEncoder()
+    print(dcts._learn_indices(clean_tokens))
+    print(dcts.encode(clean_tokens))
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
