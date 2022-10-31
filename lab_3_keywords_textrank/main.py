@@ -128,9 +128,12 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for token, i in zip(tokens, range(1000, 1000 + len(tokens))):
-            self._word2id[token] = i
-        print(self._word2id)
+        for token, id in zip(tokens, range(1000, 1000 + len(tokens))):
+            self._word2id[token] = id
+
+        for token, id in self._word2id.items():
+            self._id2word[id] = token
+
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -146,9 +149,12 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        for token, id in self._word2id.items():
-            self._id2word[id] = token
-        print(self._id2word)
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        return tuple(self._word2id.get(token) for token in tokens)
+
+
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
         """
@@ -163,9 +169,9 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        if not (self._id2word and encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
+        if not (encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
             return None
-        return tuple(self._id2word.get(encoded_token for encoded_token in encoded_tokens))
+        return tuple(self._id2word.get(encoded_token) for encoded_token in encoded_tokens)
 
 
 # Step 3
