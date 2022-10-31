@@ -1,6 +1,6 @@
 """
 Lab 2
-Extract keywords based on co-occurrence frequency
+Extract keywords based on co-occurrence frequency.
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any, Type
