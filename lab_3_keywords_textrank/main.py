@@ -36,7 +36,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -51,7 +52,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+        no_stop_words = ''
+        for punc in text.lower():
+            if punc not in self._punctuation:
+                no_stop_words += punc
+        return tuple(no_stop_words.split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -66,7 +71,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        no_stop_words = []
+        for word in tokens:
+            if word not in self._stop_words:
+                no_stop_words.append(word)
+        return tuple(no_stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -81,7 +90,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        return self._remove_stop_words(self._clean_and_tokenize(text))
 
 
 class TextEncoder:
