@@ -3,6 +3,17 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from lab_3_keywords_textrank.main import(
+    TextPreprocessor,
+    # TextEncoder,
+    # extract_pairs,
+    # AdjacencyMatrixGraph,
+    # VanillaTextRank,
+    # EdgeListGraph,
+    # PositionBiasedTextRank,
+    # KeywordExtractionBenchmark
+)
+
 
 
 if __name__ == "__main__":
@@ -20,6 +31,10 @@ if __name__ == "__main__":
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
+
+    processor = TextPreprocessor(stop_words, r'\W+')
+    print(processor._clean_and_tokenize(text))
+
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
