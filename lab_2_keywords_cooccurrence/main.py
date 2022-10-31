@@ -218,7 +218,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         next_phrase_freq = candidate_keyword_phrases.count(next_phrase)
 
         for keyword, word in zip(keyword_phrase, next_phrase):
-            if keyword in splited_phrase and word in splited_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
+            if keyword in splited_phrase \
+                    and word in splited_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
                 next_phrase_start_idx = splited_phrase.index(next_phrase[0])
                 stop_word = splited_phrase[next_phrase_start_idx - 1]
                 word_idx = next_phrase.index(word)
