@@ -245,6 +245,8 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = []
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -371,14 +373,26 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for ind, elem in enumerate(tokens):
+            if elem in self._positions:
+                self._positions[elem].append(ind + 1)
+            else:
+                self._positions[elem] = [ind + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        pi = {}
+        for key in self._positions:
+            for elem in self._positions[key]:
+                if key in pi:
+                    pi[key] += 1 / elem
+                else:
+                    pi[key] = 1 / elem
+        for key in self._positions:
+            self._position_weights[key] = pi[key] / sum(pi.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -389,7 +403,7 @@ class AdjacencyMatrixGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class EdgeListGraph:
@@ -426,6 +440,8 @@ class EdgeListGraph:
         Constructs all the necessary attributes for the edge list graph object
         """
         self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -533,14 +549,26 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for ind, elem in enumerate(tokens):
+            if elem in self._positions:
+                self._positions[elem].append(ind + 1)
+            else:
+                self._positions[elem] = [ind + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        pi = {}
+        for key in self._positions:
+            for elem in self._positions[key]:
+                if key in pi:
+                    pi[key] += 1 / elem
+                else:
+                    pi[key] = 1 / elem
+        for key in self._positions:
+            self._position_weights[key] = pi[key] / sum(pi.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -551,7 +579,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class VanillaTextRank:
