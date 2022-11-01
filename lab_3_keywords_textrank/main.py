@@ -2,6 +2,7 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+import random
 from typing import Optional, Union
 
 
@@ -39,7 +40,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -56,7 +58,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+        for sign in self._punctuation:
+            text = text.replace(sign, '')
+        return tuple(text.lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -73,7 +77,12 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        cleaned_text = []
+        for word in tokens:
+            if word in self._stop_words:
+                continue
+            cleaned_text.append(word)
+        return tuple(cleaned_text)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -90,7 +99,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        return self._remove_stop_words(self._clean_and_tokenize(text))
 
 
 class TextEncoder:
@@ -121,7 +130,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -133,7 +143,10 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        id_lst = [integer for integer in range(1000, len(tokens) + 1001)]
+        self._word2id = {token: id_n for (token, id_n) in zip(tokens, id_lst)}
+        self._id2word = {id_n: token for (id_n, token) in zip(id_lst, tokens)}
+
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -152,7 +165,12 @@ class TextEncoder:
 
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+
+        self._learn_indices(tokens)
+        int_words = tuple((self._word2id[word] for word in tokens))
+        return int_words
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -171,7 +189,12 @@ class TextEncoder:
 
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        for word in encoded_tokens:
+            if word not in self._id2word.keys():
+                return None
+
+        str_words = tuple((self._id2word[id_n] for id_n in encoded_tokens))
+        return str_words
 
 
 # Step 3
@@ -195,7 +218,20 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not (tokens, isinstance(window_length, int), window_length >= 2):
+        return None
+    width_tokens = tokens[:window_length]
+    tmp_lst = []
+    o = 0
+    for i in range(len(tokens)):
+        if i == o:
+            continue
+        tpl = tuple(sorted((width_tokens[i], width_tokens[o])))
+        if tpl in tmp_lst:
+            continue
+        tmp_lst.append(tpl)
+        o += 1
+    return tuple(tmp_lst)
 
 
 class AdjacencyMatrixGraph:
