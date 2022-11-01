@@ -300,9 +300,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix or vertex2 not in self._matrix:
+        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
             return -1
-        elif self._matrix[vertex1][vertex2] == 1:
+        ind_1 = self._matrix[0].index(vertex1)
+        ind_2 = self._matrix[0].index(vertex2)
+        if self._matrix[ind_1][ind_2] == 1:
             return 1
         else:
             return 0
@@ -316,7 +318,10 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0][1:])
+        try:
+            return tuple(self._matrix[0][1:])
+        except IndexError:
+            return ()
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -334,11 +339,13 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._matrix[0]:
             return -1
-        number = 0
+        number = []
         for elem in self._matrix:
             if elem[0] == vertex:
-                number += sum(element for element in elem)
-        return number
+                for element in elem[1:]:
+                    if element == 1:
+                        number.append(element)
+        return len(number)
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -418,7 +425,7 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -429,7 +436,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._edges.keys())
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -447,7 +454,18 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+        else:
+            if vertex1 not in self._edges:
+                self._edges[vertex1] = [vertex2]
+            else:
+                self._edges[vertex1].append(vertex2)
+            if vertex2 not in self._edges:
+                self._edges[vertex2] = [vertex1]
+            else:
+                self._edges[vertex2].append(vertex1)
+            return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -465,7 +483,12 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        if vertex1 not in self._edges or vertex2 not in self._edges:
+            return -1
+        elif vertex1 in self._edges[vertex2] or vertex2 in self._edges[vertex1]:
+            return 1
+        else:
+            return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -481,7 +504,10 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._edges:
+            return -1
+        number = len(self._edges[vertex])
+        return number
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -495,7 +521,9 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        edges = extract_pairs(tokens, window_length)
+        for elem in edges:
+            self.add_edge(elem[0], elem[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -634,8 +662,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_dict = sorted(self._scores.items())
-        return tuple(sorted(dict(sorted_dict), reverse=True, key=lambda key: dict(sorted_dict)[key])[:n_keywords])
+        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
