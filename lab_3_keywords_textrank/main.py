@@ -53,9 +53,11 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         no_stop_words = ''
-        for punc in text.lower():
-            if punc not in self._punctuation:
-                no_stop_words += punc
+        for sym in text.lower():
+            if sym not in self._punctuation:
+                no_stop_words += sym
+            else:
+                no_stop_words += ' '
         return tuple(no_stop_words.split())
 
     # Step 1.3
@@ -118,7 +120,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -129,7 +132,12 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        for idx, word in enumerate(tokens, 1001):
+            # if i not in self._word2id.values():
+            self._word2id[word] = idx
+        # print(self._word2id)
+        self._id2word = {id: word for word, id in self._word2id.items()}
+        # print(self._id2word)
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -145,7 +153,10 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -161,7 +172,12 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        if not all(id in self._id2word for id in encoded_tokens):
+            return None
+        # for token in encoded_tokens:
+        #     if token not in self._id2word:
+        #         return None
+        return tuple(self._id2word.get(token) for token in encoded_tokens)
 
 
 # Step 3

@@ -3,6 +3,7 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder)
 
 
 if __name__ == "__main__":
@@ -21,6 +22,14 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    RESULT = None
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    prep = TextPreprocessor(stop_words, ('!', ',', '(', ')', ':', '/', '-', '.'))
+    tokens = prep.preprocess_text(text)
+    print(tokens)
+
+    encoder = TextEncoder()
+    print(encoder.encode(tokens))
+    print(encoder.decode(encoder.encode(tokens)))
+
+    # RESULT = None
+    # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    # assert RESULT, 'Keywords are not extracted'
