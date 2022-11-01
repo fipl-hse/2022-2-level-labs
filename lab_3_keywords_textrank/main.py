@@ -267,25 +267,24 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        else:
-            if not self._matrix:
-                self._matrix.append([0])
+        if not self._matrix:
+            self._matrix.append([0])
 
-            for vert in vertex1, vertex2:
-                if vert not in self._matrix[0]:
-                    self._matrix[0].append(vert)
-                    self._matrix.append([0 for _ in self._matrix[0]])
+        for vert in vertex1, vertex2:
+            if vert not in self._matrix[0]:
+                self._matrix[0].append(vert)
+                self._matrix.append([0 for _ in self._matrix[0]])
 
-            for ind, elem in enumerate(self._matrix[0]):
-                self._matrix[ind][0] = elem
-            maxi = max(self._matrix, key=len)
-            for elem in self._matrix[1:]:
-                if len(elem) < len(maxi):
-                    elem.extend([0 for _ in range(len(maxi) - len(elem))])
+        for ind, elem in enumerate(self._matrix[0]):
+            self._matrix[ind][0] = elem
+        maxi = max(self._matrix, key=len)
+        for elem in self._matrix[1:]:
+            if len(elem) < len(maxi):
+                elem.extend([0 for _ in range(len(maxi) - len(elem))])
 
-            self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
-            self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
-            return 0
+        self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
+        self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
+        return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -309,8 +308,7 @@ class AdjacencyMatrixGraph:
         ind_2 = self._matrix[0].index(vertex2)
         if self._matrix[ind_1][ind_2] == 1:
             return 1
-        else:
-            return 0
+        return 0
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -385,15 +383,15 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        pi = {}
+        positions = {}
         for key in self._positions:
             for elem in self._positions[key]:
-                if key in pi:
-                    pi[key] += 1 / elem
+                if key in positions:
+                    positions[key] += 1 / elem
                 else:
-                    pi[key] = 1 / elem
+                    positions[key] = 1 / elem
         for key in self._positions:
-            self._position_weights[key] = pi[key] / sum(pi.values())
+            self._position_weights[key] = positions[key] / sum(positions.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -473,16 +471,15 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
+        if vertex1 not in self._edges:
+            self._edges[vertex1] = [vertex2]
         else:
-            if vertex1 not in self._edges:
-                self._edges[vertex1] = [vertex2]
-            else:
-                self._edges[vertex1].append(vertex2)
-            if vertex2 not in self._edges:
-                self._edges[vertex2] = [vertex1]
-            else:
-                self._edges[vertex2].append(vertex1)
-            return 0
+            self._edges[vertex1].append(vertex2)
+        if vertex2 not in self._edges:
+            self._edges[vertex2] = [vertex1]
+        else:
+            self._edges[vertex2].append(vertex1)
+        return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -504,8 +501,7 @@ class EdgeListGraph:
             return -1
         elif vertex1 in self._edges[vertex2] or vertex2 in self._edges[vertex1]:
             return 1
-        else:
-            return 0
+        return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -561,15 +557,15 @@ class EdgeListGraph:
         """
         Computes position weights for all tokens in text
         """
-        pi = {}
+        positions = {}
         for key in self._positions:
             for elem in self._positions[key]:
-                if key in pi:
-                    pi[key] += 1 / elem
+                if key in positions:
+                    positions[key] += 1 / elem
                 else:
-                    pi[key] = 1 / elem
+                    positions[key] = 1 / elem
         for key in self._positions:
-            self._position_weights[key] = pi[key] / sum(pi.values())
+            self._position_weights[key] = positions[key] / sum(positions.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
