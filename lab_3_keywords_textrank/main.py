@@ -25,6 +25,7 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
+
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -734,7 +735,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -749,7 +751,12 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summa = 0
+        for elem in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(elem)
+            summa += 1 / abs(inout_score) * inout_score
+        self._scores[vertex] = (summa * self._damping_factor) + \
+                               (1 - self._damping_factor) * self._position_weights[vertex]
 
 
 class TFIDFAdapter:
