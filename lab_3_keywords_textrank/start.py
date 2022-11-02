@@ -3,6 +3,8 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from string import punctuation
+from lab_3_keywords_textrank.main import extract_pairs, TextEncoder, TextPreprocessor
 
 
 if __name__ == "__main__":
@@ -21,6 +23,10 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    RESULT = None
+    processor = TextPreprocessor(punctuation, stop_words)
+    encoder = TextEncoder()
+    tokens =  encoder.encode(processor.preprocess_text(text))
+    print(extract_pairs(tokens, 3))
+    RESULT = 'None'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
