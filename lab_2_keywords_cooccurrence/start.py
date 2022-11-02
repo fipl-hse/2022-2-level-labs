@@ -70,7 +70,7 @@ if __name__ == "__main__":
         top_phrases = get_top_n(cumulative_score_for_candidates, 7, 5)
 
     if cumulative_score_for_candidates and phrases:
-        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
+        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(cumulative_score_for_candidates, phrases)
 
     if stop_words and candidates_with_adjoining and word_scores:
         cumulative_score_for_candidates_stopw = calculate_cumulative_score_for_candidates_with_stop_words(
