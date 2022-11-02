@@ -3,7 +3,6 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from main import TextPreprocessor
 
 
 if __name__ == "__main__":
