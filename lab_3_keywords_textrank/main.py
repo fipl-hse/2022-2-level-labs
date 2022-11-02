@@ -503,7 +503,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        elif vertex1 in self._edges[vertex2] or vertex2 in self._edges[vertex1]:
+        if vertex1 in self._edges[vertex2] or vertex2 in self._edges[vertex1]:
             return 1
         return 0
 
