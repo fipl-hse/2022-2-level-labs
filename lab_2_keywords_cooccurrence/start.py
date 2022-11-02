@@ -64,7 +64,7 @@ if __name__ == "__main__":
 
     if candidate_keyword_phrases and word_scores:
         cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
-                                                                                    frequencies)
+                                                                                    word_scores)
 
     if cumulative_score_for_candidates:
         top_phrases = get_top_n(cumulative_score_for_candidates, 7, 5)
