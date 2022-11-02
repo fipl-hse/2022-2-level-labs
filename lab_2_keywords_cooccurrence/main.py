@@ -97,10 +97,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     only_lists = []
     for element in candidate_keyword_phrases:
         only_lists.extend(list(element))
-    freq_dict = {}
-    for element in only_lists:
-        freq_dict[element] = only_lists.count(element)
-    return freq_dict
+    return {element: only_lists.count(element) for element in only_lists}
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -174,8 +171,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
         for word in phrase:
             if word not in word_scores:
                 return None
-            else:
-                phrase_score += word_scores[word]
+            phrase_score += word_scores[word]
         cum_dict[phrase] = phrase_score
     return cum_dict
 
