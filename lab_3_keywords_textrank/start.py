@@ -25,16 +25,15 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    processor = TextPreprocessor(punctuation, stop_words)
+    processor = TextPreprocessor(stop_words, punctuation)
     encoder = TextEncoder()
     tokens =  encoder.encode(processor.preprocess_text(text))
+    # print(processor.preprocess_text(text))
+    print(extract_pairs(tokens, 3))
     graph = AdjacencyMatrixGraph()
     graph.fill_from_tokens(tokens, 5)
-    print(graph._matrix)
-
     ranking = VanillaTextRank(graph)
     ranking.train()
-    print(extract_pairs(tokens, 3))
     print(encoder.decode(ranking.get_top_keywords(10)))
     RESULT = 'None'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
