@@ -56,7 +56,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -133,6 +133,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
+        pass
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
