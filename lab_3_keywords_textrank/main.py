@@ -2,7 +2,6 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
-import random
 from typing import Optional, Union
 
 
