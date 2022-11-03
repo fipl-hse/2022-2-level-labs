@@ -950,6 +950,7 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
             false_negative += 1
     if true_positive + false_negative:
         return true_positive / (true_positive + false_negative)
+    return 0
 
 
 class KeywordExtractionBenchmark:
@@ -1018,15 +1019,15 @@ class KeywordExtractionBenchmark:
             text_path = str(ind) + '_text.txt'
             keywords_path = str(ind) + '_keywords.txt'
 
-            with open(self._materials_path / text_path, 'r', encoding='utf-8') as target_text:
-                text = target_text.read()
+            with open(self._materials_path / text_path, 'r', encoding='utf-8') as file:
+                text = file.read()
 
-            with open(self._materials_path / keywords_path, 'r', encoding='utf-8') as t_text:
-                keywords = tuple(t_text.read().split())
+            with open(self._materials_path / keywords_path, 'r', encoding='utf-8') as file:
+                keywords = tuple(file.read().split())
 
             tuple_words = text_preprocessor.preprocess_text(text)
             text_encoded = TextEncoder()
-            encoded_words = text_encoded.encode(tuple_words)
+            encoded_words = TextEncoder().encode(tuple_words)
             graph = EdgeListGraph()
             graph.fill_from_tokens(encoded_words, 3)
             graph.fill_positions(encoded_words)
