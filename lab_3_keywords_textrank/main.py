@@ -954,26 +954,71 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        # keywords_path = self._materials_path / '0_keywords.txt'
-        # with open(keywords_path, encoding='utf-8') as file:
-        #     keywords = file.read()
+        models = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
+        models_scores = dict.fromkeys(models, {})
+        models_scores = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
 
-        text_path = self._materials_path / '0_text.txt'
-        with open(text_path, encoding='utf-8') as file:
-            text = file.read()
+        topics = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
 
-        processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
-        encoder = TextEncoder()
-        tokens = encoder.encode(processor.preprocess_text(text))
+        for number, topic in enumerate(topics):
+            keywords_path = self._materials_path / f'{number}_keywords.txt'
+            with open(keywords_path, encoding='utf-8') as file:
+                target_keywords = tuple(file.read().split())
 
-        # rake = RAKEAdapter(text, self._stop_words) +
-        # tfidf = TFIDFAdapter(processor.preprocess_text(text), self._idf) +
+            text_path = self._materials_path / f'{number}_text.txt'
+            with open(text_path, encoding='utf-8') as file:
+                text = file.read()
 
-        vanila_text_rank = VanillaTextRank(graph)
+            processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
+            tfidf = TFIDFAdapter(processor.preprocess_text(text), self._idf)
+            tfidf.train()
+            # models_scores['TF-IDF'][topic] = tfidf.get_top_keywords(2)
+            models_scores['TF-IDF'][topic] = calculate_recall(tfidf.get_top_keywords(50), target_keywords)
+
+            encoder = TextEncoder()
+            tokens = encoder.encode(processor.preprocess_text(text))
+            rake = RAKEAdapter(text, self._stop_words)
+            rake.train()
+            models_scores['RAKE'][topic] = calculate_recall(rake.get_top_keywords(50), target_keywords)
+
+            graph = EdgeListGraph()
+            if tokens:
+                graph.fill_from_tokens(tokens, 5)
+            vanila_text_rank = VanillaTextRank(graph)
+            vanila_text_rank.train()
+            models_scores['VanillaTextRank'][topic] = calculate_recall(encoder.decode(vanila_text_rank.get_top_keywords(50)), target_keywords)
+
+            graph.fill_positions(tokens)
+            graph.calculate_position_weights()
+            positianal_rank = PositionBiasedTextRank(graph)
+            positianal_rank.train()
+            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(encoder.decode(positianal_rank.get_top_keywords(50)), target_keywords)
+
+        self.report = models_scores
+        return models_scores
+
+            # encoder = TextEncoder()
+            # tokens = encoder.encode(processor.preprocess_text(text))
+        # rake = RAKEAdapter(text, self._stop_words)
+
+
+        # processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
+        # encoder = TextEncoder()
+        # tokens = encoder.encode(processor.preprocess_text(text))
+
+        # graph = EdgeListGraph()
+        # if tokens:
+        #     graph.fill_from_tokens(tokens, 5)
+        #
+        # vanila_text_rank = VanillaTextRank(graph)
+        #
+        # graph.fill_positions(tokens)
+        # graph.calculate_position_weights()
         # positianal_rank = PositionBiasedTextRank(graph)
-
-        vanila_text_rank.train()
-        return vanila_text_rank._scores
+        #
+        #
+        # positianal_rank.train()
+        # return positianal_rank._scores
         # return rake.get_top_keywords(50)
 
     # Step 12.4
@@ -985,4 +1030,24 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        columns = 'name,' + ','.join(tuple(self.report.values())[0])
+        with open(path, 'w') as file:
+                file.write(columns)
+                file.write('\n')
+                for i in self.report:
+                        file.write(','.join([i, *map(str, self.report[i].values())]))
+                        file.write('\n')
+
+
+
+
+#
+# self.report = {'TF-IDF': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}, 'RAKE': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}, 'VanillaTextRank': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}, 'PositionBiasedTextRank': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}}
+# index = ','.join(self.report.keys())
+# columns = 'name,' + ','.join(tuple(self.report.values())[0])
+# with open('report.csv', 'w') as file:
+#         file.write(columns)
+#         file.write('\n')
+#         for i in self.report:
+#                 file.write(','.join([i, *map(str, self.report[i].values())]))
+#                 file.write('\n')
