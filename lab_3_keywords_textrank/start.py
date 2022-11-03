@@ -29,7 +29,7 @@ if __name__ == "__main__":
     # text preprocessing and pairs extraction
     processor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
-    tokens =  encoder.encode(processor.preprocess_text(text))
+    tokens = encoder.encode(processor.preprocess_text(text))
     if tokens:
         print(extract_pairs(tokens, 5))
 
