@@ -997,30 +997,6 @@ class KeywordExtractionBenchmark:
         self.report = models_scores
         return models_scores
 
-            # encoder = TextEncoder()
-            # tokens = encoder.encode(processor.preprocess_text(text))
-        # rake = RAKEAdapter(text, self._stop_words)
-
-
-        # processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
-        # encoder = TextEncoder()
-        # tokens = encoder.encode(processor.preprocess_text(text))
-
-        # graph = EdgeListGraph()
-        # if tokens:
-        #     graph.fill_from_tokens(tokens, 5)
-        #
-        # vanila_text_rank = VanillaTextRank(graph)
-        #
-        # graph.fill_positions(tokens)
-        # graph.calculate_position_weights()
-        # positianal_rank = PositionBiasedTextRank(graph)
-        #
-        #
-        # positianal_rank.train()
-        # return positianal_rank._scores
-        # return rake.get_top_keywords(50)
-
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
         """
@@ -1038,16 +1014,3 @@ class KeywordExtractionBenchmark:
                         file.write(','.join([i, *map(str, self.report[i].values())]))
                         file.write('\n')
 
-
-
-
-#
-# self.report = {'TF-IDF': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}, 'RAKE': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}, 'VanillaTextRank': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}, 'PositionBiasedTextRank': {'culture': 0.3333333333333333, 'business': 0.2, 'crime': 0.34782608695652173, 'fashion': 0.24324324324324326, 'health': 0.2972972972972973, 'politics': 0.375, 'science': 0.29411764705882354, 'sports': 0.5142857142857142, 'tech': 0.5}}
-# index = ','.join(self.report.keys())
-# columns = 'name,' + ','.join(tuple(self.report.values())[0])
-# with open('report.csv', 'w') as file:
-#         file.write(columns)
-#         file.write('\n')
-#         for i in self.report:
-#                 file.write(','.join([i, *map(str, self.report[i].values())]))
-#                 file.write('\n')
