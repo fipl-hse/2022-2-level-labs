@@ -202,16 +202,18 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
     extracted = []
-    for idx in range(len(tokens) - window_length):
+    for idx in range(len(tokens) - window_length + 1):
         new_sequence = tokens[idx:idx + window_length]
-        for first in range(1):
+        for first in range(window_length-1):
             for second in range(1, window_length):
-                if new_sequence[first] != new_sequence[second]:
-                    to_append = [new_sequence[first], new_sequence[second]]
-                    extracted.append(tuple(to_append))
-    return extracted
+                to_append = tuple([new_sequence[first], new_sequence[second]])
+                if new_sequence[first] != new_sequence[second] and to_append not in extracted:
+                    extracted.append(to_append)
+    return tuple(extracted)
 
-
+actual = extract_pairs((1, 2, 3, 4, 3), 3)
+print(actual)
+print(((1, 2), (1, 3), (2, 3), (3, 4), (2, 4)))
 class AdjacencyMatrixGraph:
     """
     A class to represent graph as matrix of adjacency
