@@ -5,7 +5,6 @@ Extract keywords based on TextRank algorithm
 from pathlib import Path
 from typing import Optional, Union
 import csv
-
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words, calculate_word_degrees,
@@ -285,8 +284,8 @@ class AdjacencyMatrixGraph:
             self._matrix[ind][0] = elem
         maxi = max(self._matrix, key=len)
         for elem in self._matrix[1:]:
-            if len(elem) < len(maxi):
-                elem.extend([0 for _ in range(len(maxi) - len(elem))])
+            if len(self._matrix[1:]) < len(maxi):
+                elem.extend([0 for _ in range(len(maxi) - len(self._matrix[1:]))])
 
         self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
         self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
@@ -646,7 +645,7 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = 0
+        summa = 0.0
         for elem in incidental_vertices:
             inout_score = self._graph.calculate_inout_score(elem)
             summa += 1 / abs(inout_score) * inout_score
@@ -755,7 +754,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = 0
+        summa = 0.0
         for elem in incidental_vertices:
             inout_score = self._graph.calculate_inout_score(elem)
             summa += 1 / abs(inout_score) * inout_score
@@ -889,7 +888,7 @@ class RAKEAdapter:
                 0 if importance scores were calculated successfully, otherwise -1
         """
         phrases = extract_phrases(self._text)
-        if phrases and self._stop_words:
+        if phrases:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
         else:
             return -1
@@ -907,6 +906,8 @@ class RAKEAdapter:
             return -1
         if word_scores:
             self._scores |= word_scores
+        else:
+            return -1
         return 0
 
         # Step 11.3
@@ -1027,7 +1028,7 @@ class KeywordExtractionBenchmark:
 
             tuple_words = text_preprocessor.preprocess_text(text)
             text_encoded = TextEncoder()
-            encoded_words = TextEncoder().encode(tuple_words)
+            encoded_words = text_encoded.encode(tuple_words)
             graph = EdgeListGraph()
             graph.fill_from_tokens(encoded_words, 3)
             graph.fill_positions(encoded_words)
@@ -1057,10 +1058,10 @@ class KeywordExtractionBenchmark:
                 return None
             biased[elem] = calculate_recall(decode_text_biased, keywords)
 
-        self.report['TF-IDF'] = tf_dtf
-        self.report['RAKE'] = rake
         self.report['VanillaTextRank'] = vanilla
         self.report['PositionBiasedTextRank'] = biased
+        self.report['TF-IDF'] = tf_dtf
+        self.report['RAKE'] = rake
         return self.report
 
     # Step 12.4
