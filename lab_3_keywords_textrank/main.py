@@ -4,8 +4,8 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-from lab_2_keywords_cooccurrence.main import type_check
 import re
+from lab_2_keywords_cooccurrence.main import type_check
 
 
 class TextPreprocessor:
