@@ -4,9 +4,10 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
+import time
 from lab_3_keywords_textrank.main import extract_pairs, TextEncoder, \
-    TextPreprocessor, VanillaTextRank, AdjacencyMatrixGraph
-    #, get_top_keywords
+    TextPreprocessor, VanillaTextRank, AdjacencyMatrixGraph, \
+    PositionBiasedTextRank, EdgeListGraph
 
 
 if __name__ == "__main__":
@@ -25,16 +26,56 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
+    # text preprocessing and pairs extraction
     processor = TextPreprocessor(stop_words, punctuation)
     encoder = TextEncoder()
     tokens =  encoder.encode(processor.preprocess_text(text))
-    # print(processor.preprocess_text(text))
-    print(extract_pairs(tokens, 3))
-    graph = AdjacencyMatrixGraph()
-    graph.fill_from_tokens(tokens, 5)
-    ranking = VanillaTextRank(graph)
-    ranking.train()
-    print(encoder.decode(ranking.get_top_keywords(10)))
+    print(extract_pairs(tokens, 5))
+
+    # extract key phrases with adjacency matrix graph
+    start_time = time.time()
+    adjacency_graph = AdjacencyMatrixGraph()
+    adjacency_graph.fill_from_tokens(tokens, 5)
+    adjacency_unbiased_ranking = VanillaTextRank(adjacency_graph)
+    adjacency_unbiased_ranking.train()
+    print(encoder.decode(adjacency_unbiased_ranking.get_top_keywords(10)))
+    finish_time = time.time()
+    print(f'completed in {finish_time - start_time:.2f} seconds')
+    print()
+
+    # extract key phrases with list of edges graph
+    start_time = time.time()
+    edge_graph = EdgeListGraph()
+    edge_graph.fill_from_tokens(tokens, 5)
+    edge_unbiased_ranking = VanillaTextRank(edge_graph)
+    edge_unbiased_ranking.train()
+    finish_time = time.time()
+    print(encoder.decode(edge_unbiased_ranking.get_top_keywords(10)))
+    print(f'completed in {finish_time - start_time:.2f} seconds')
+    print()
+
+    #  extract positionally biased key phrases with adjacency matrix graph
+    start_time = time.time()
+    adjacency_graph.fill_positions(tokens)
+    adjacency_graph.calculate_position_weights()
+    adjacency_positional_ranking = PositionBiasedTextRank(adjacency_graph)
+    adjacency_positional_ranking.train()
+    print(encoder.decode(adjacency_positional_ranking.get_top_keywords(10)))
+    finish_time = time.time()
+    print(f'completed in {finish_time - start_time:.2f} seconds')
+    print()
+
+    # extract positionally biased key phrases with list of edges graph
+    start_time = time.time()
+    edge_graph.fill_positions(tokens)
+    edge_graph.calculate_position_weights()
+    edge_positional_ranking = PositionBiasedTextRank(edge_graph)
+    edge_positional_ranking.train()
+    print(encoder.decode(edge_positional_ranking.get_top_keywords(10)))
+    finish_time = time.time()
+    print(f'completed in {finish_time - start_time:.2f} seconds')
+    print()
+
     RESULT = 'None'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
