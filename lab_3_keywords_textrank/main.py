@@ -8,6 +8,7 @@ from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calc
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words, calculate_word_degrees,
                                               calculate_word_scores)
+import csv
 
 
 class TextPreprocessor:
@@ -1006,7 +1007,52 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        tf_dtf, rake, vanilla, biased = {}, {}, {}, {}
+
+        text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        for ind, elem in enumerate(self._themes):
+            text_path = str(ind) + '_text.txt'
+            keywords_path = str(ind) + '_keywords.txt'
+
+            with open(self._materials_path / text_path, 'r', encoding='utf-8') as target_text:
+                text = target_text.read()
+
+            with open(self._materials_path / keywords_path, 'r', encoding='utf-8') as t_text:
+                keywords = tuple(t_text.read().split())
+
+            tuple_words = text_preprocessor.preprocess_text(text)
+            text_encoded = TextEncoder()
+            encoded_words = text_encoded.encode(tuple_words)
+            graph = EdgeListGraph()
+            graph.fill_from_tokens(encoded_words, 3)
+            graph.fill_positions(encoded_words)
+            graph.calculate_position_weights()
+
+            tfidf_adapter = TFIDFAdapter(tuple_words, self._idf)
+            tfidf_adapter.train()
+            tfidf_adapter_top = tfidf_adapter.get_top_keywords(50)
+            tf_dtf[elem] = calculate_recall(tfidf_adapter_top, keywords)
+
+            rake_adapter = RAKEAdapter(text, self._stop_words)
+            rake_adapter.train()
+            rake_adapter_top = rake_adapter.get_top_keywords(50)
+            rake[elem] = calculate_recall(rake_adapter_top, keywords)
+
+            vanilla_text_rank = VanillaTextRank(graph)
+            vanilla_text_rank.train()
+            decode_text_vanilla = text_encoded.decode(vanilla_text_rank.get_top_keywords(50))
+            vanilla[elem] = calculate_recall(decode_text_vanilla, keywords)
+
+            position_biased_text_rank = PositionBiasedTextRank(graph)
+            position_biased_text_rank.train()
+            decode_text_biased = text_encoded.decode(position_biased_text_rank.get_top_keywords(50))
+            biased[elem] = calculate_recall(decode_text_biased, keywords)
+
+        self._report['TF-IDF'] = tf_dtf
+        self._report['RAKE'] = rake
+        self._report['VanillaTextRank'] = vanilla
+        self._report['PositionBiasedTextRank'] = biased
+        return self._report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1017,4 +1063,11 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        with open(path, mode="w", encoding='utf-8') as w_file:
+            file_writer = csv.writer(w_file, delimiter=",", lineterminator="\r")
+            file_writer.writerow(["name"] + list(self._themes))
+            for elem in self._report:
+                file_writer.writerow([elem, self._report[elem].values()])
+
+
+
