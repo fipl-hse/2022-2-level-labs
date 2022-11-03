@@ -4,11 +4,12 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+import csv
+
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words, calculate_word_degrees,
                                               calculate_word_scores)
-import csv
 
 
 class TextPreprocessor:
@@ -540,8 +541,9 @@ class EdgeListGraph:
                 if they appear in the same window of this length
         """
         edges = extract_pairs(tokens, window_length)
-        for elem in edges:
-            self.add_edge(elem[0], elem[1])
+        if edges:
+            for elem in edges:
+                self.add_edge(elem[0], elem[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -551,11 +553,12 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for ind, elem in enumerate(tokens):
-            if elem in self._positions:
-                self._positions[elem].append(ind + 1)
-            else:
-                self._positions[elem] = [ind + 1]
+        if tokens:
+            for ind, elem in enumerate(tokens):
+                if elem in self._positions:
+                    self._positions[elem].append(ind + 1)
+                else:
+                    self._positions[elem] = [ind + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -945,7 +948,8 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
             true_positive += 1
         else:
             false_negative += 1
-    return true_positive / (true_positive + false_negative)
+    if true_positive + false_negative:
+        return true_positive / (true_positive + false_negative)
 
 
 class KeywordExtractionBenchmark:
@@ -994,8 +998,8 @@ class KeywordExtractionBenchmark:
         self._punctuation = punctuation
         self._idf = idf
         self._materials_path = materials_path
-        self._themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
-        self._report = {}
+        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -1010,7 +1014,7 @@ class KeywordExtractionBenchmark:
         tf_dtf, rake, vanilla, biased = {}, {}, {}, {}
 
         text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
-        for ind, elem in enumerate(self._themes):
+        for ind, elem in enumerate(self.themes):
             text_path = str(ind) + '_text.txt'
             keywords_path = str(ind) + '_keywords.txt'
 
@@ -1041,18 +1045,22 @@ class KeywordExtractionBenchmark:
             vanilla_text_rank = VanillaTextRank(graph)
             vanilla_text_rank.train()
             decode_text_vanilla = text_encoded.decode(vanilla_text_rank.get_top_keywords(50))
+            if not decode_text_vanilla:
+                return None
             vanilla[elem] = calculate_recall(decode_text_vanilla, keywords)
 
             position_biased_text_rank = PositionBiasedTextRank(graph)
             position_biased_text_rank.train()
             decode_text_biased = text_encoded.decode(position_biased_text_rank.get_top_keywords(50))
+            if not decode_text_biased:
+                return None
             biased[elem] = calculate_recall(decode_text_biased, keywords)
 
-        self._report['TF-IDF'] = tf_dtf
-        self._report['RAKE'] = rake
-        self._report['VanillaTextRank'] = vanilla
-        self._report['PositionBiasedTextRank'] = biased
-        return self._report
+        self.report['TF-IDF'] = tf_dtf
+        self.report['RAKE'] = rake
+        self.report['VanillaTextRank'] = vanilla
+        self.report['PositionBiasedTextRank'] = biased
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1065,9 +1073,6 @@ class KeywordExtractionBenchmark:
         """
         with open(path, mode="w", encoding='utf-8') as w_file:
             file_writer = csv.writer(w_file, delimiter=",", lineterminator="\r")
-            file_writer.writerow(["name"] + list(self._themes))
-            for elem in self._report:
-                file_writer.writerow([elem, self._report[elem].values()])
-
-
-
+            file_writer.writerow(["name"] + list(self.themes))
+            for elem in self.report:
+                file_writer.writerow([elem] + [self.report[elem][theme] for theme in self.themes])
