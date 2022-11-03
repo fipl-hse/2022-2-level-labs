@@ -27,8 +27,6 @@ class TextPreprocessor:
     """
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
-        self.stop_words = stop_words
-        self.punctuation = punctuation
         """
         Constructs all the necessary attributes for the text preprocessor object
         Parameters
@@ -38,6 +36,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
+        self.stop_words = stop_words
+        self.punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
