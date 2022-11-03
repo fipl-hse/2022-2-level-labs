@@ -997,6 +997,8 @@ class KeywordExtractionBenchmark:
             vanilla_text_rank.train()
             if not vanilla_text_rank.get_top_keywords(50):
                 return None
+            if not encoder.decode(vanilla_text_rank.get_top_keywords(50)):
+                return None
             models_scores['VanillaTextRank'][topic] = calculate_recall(
                 encoder.decode(vanilla_text_rank.get_top_keywords(50)), target_keywords)
 
@@ -1004,6 +1006,8 @@ class KeywordExtractionBenchmark:
             graph.calculate_position_weights()
             positional_rank = PositionBiasedTextRank(graph)
             positional_rank.train()
+            if not encoder.decode(positional_rank.get_top_keywords(50)):
+                return None
             models_scores['PositionBiasedTextRank'][topic] = calculate_recall(
                 encoder.decode(positional_rank.get_top_keywords(50)), target_keywords)
 
