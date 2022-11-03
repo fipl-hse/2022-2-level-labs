@@ -1000,8 +1000,7 @@ class KeywordExtractionBenchmark:
             top = encoder.decode(vanilla_text_rank.get_top_keywords(50))
             if not top:
                 return None
-            models_scores['VanillaTextRank'][topic] = calculate_recall(
-                encoder.decode(vanilla_text_rank.get_top_keywords(50)), target_keywords)
+            models_scores['VanillaTextRank'][topic] = calculate_recall(top, target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
