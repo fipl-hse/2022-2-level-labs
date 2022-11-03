@@ -7,7 +7,7 @@ from typing import Optional, Union
 import re
 from lab_1_keywords_tfidf.main import calculate_frequencies, \
     calculate_tf, calculate_tfidf, get_top_n
-from lab_2_keywords_cooccurrence.main import type_check, extract_phrases,\
+from lab_2_keywords_cooccurrence.main import type_check, extract_phrases, \
     extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
@@ -768,10 +768,10 @@ class TFIDFAdapter:
         freq = calculate_frequencies(list(self._tokens))
         if not freq:
             return -1
-        tf = calculate_tf(freq)
-        if not tf:
+        term_frequency = calculate_tf(freq)
+        if not term_frequency:
             return - 1
-        tfidf = calculate_tfidf(tf, self._idf)
+        tfidf = calculate_tfidf(term_frequency, self._idf)
         if not tfidf:
             return -1
         self._scores = tfidf
@@ -830,7 +830,8 @@ class RAKEAdapter:
         self._text = text
         self._stop_words = stop_words
         self._scores = {}
-# в который будут сохраняться word scores
+
+    # в который будут сохраняться word scores
 
     # Step 11.2
     def train(self) -> int:
@@ -954,7 +955,7 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        #models = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
+        # models = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
         models_scores = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
         topics = self.themes
 
@@ -970,7 +971,7 @@ class KeywordExtractionBenchmark:
             processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
             tfidf = TFIDFAdapter(processor.preprocess_text(text), self._idf)
             tfidf.train()
-            models_scores['TF-IDF'][topic] =calculate_recall(tfidf.get_top_keywords(50), target_keywords)
+            models_scores['TF-IDF'][topic] = calculate_recall(tfidf.get_top_keywords(50), target_keywords)
 
             encoder = TextEncoder()
             tokens = encoder.encode(processor.preprocess_text(text))
@@ -979,18 +980,20 @@ class KeywordExtractionBenchmark:
             models_scores['RAKE'][topic] = calculate_recall(rake.get_top_keywords(50), target_keywords)
 
             graph = EdgeListGraph()
-            if not  tokens:
+            if not tokens:
                 return None
             graph.fill_from_tokens(tokens, 5)
-            vanila_text_rank = VanillaTextRank(graph)
-            vanila_text_rank.train()
-            models_scores['VanillaTextRank'][topic] = calculate_recall(encoder.decode(vanila_text_rank.get_top_keywords(50)), target_keywords)
+            vanilla_text_rank = VanillaTextRank(graph)
+            vanilla_text_rank.train()
+            models_scores['VanillaTextRank'][topic] = calculate_recall(
+                encoder.decode(vanilla_text_rank.get_top_keywords(50)), target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
-            positianal_rank = PositionBiasedTextRank(graph)
-            positianal_rank.train()
-            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(encoder.decode(positianal_rank.get_top_keywords(50)), target_keywords)
+            positional_rank = PositionBiasedTextRank(graph)
+            positional_rank.train()
+            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(
+                encoder.decode(positional_rank.get_top_keywords(50)), target_keywords)
 
         self.report = models_scores
         return models_scores
@@ -1006,8 +1009,8 @@ class KeywordExtractionBenchmark:
         """
         columns = 'name,' + ','.join(tuple(self.report.values())[0])
         with open(path, 'w') as file:
-                file.write(columns)
+            file.write(columns)
+            file.write('\n')
+            for i in self.report:
+                file.write(','.join([i, *map(str, self.report[i].values())]))
                 file.write('\n')
-                for i in self.report:
-                        file.write(','.join([i, *map(str, self.report[i].values())]))
-                        file.write('\n')

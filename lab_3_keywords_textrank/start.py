@@ -10,7 +10,6 @@ from lab_3_keywords_textrank.main import extract_pairs, TextEncoder, \
     TextPreprocessor, VanillaTextRank, AdjacencyMatrixGraph, \
     PositionBiasedTextRank, EdgeListGraph, KeywordExtractionBenchmark
 
-
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
@@ -82,7 +81,6 @@ if __name__ == "__main__":
     print(f'completed in {finish_time - start_time:.2f} seconds')
     print()
 
-
     ENGLISH_STOP_WORDS_PATH = ASSETS_PATH / 'benchmark_materials' / 'eng_stop_words.txt'
     with open(ENGLISH_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         english_stop_words = tuple(file.read().split('\n'))
@@ -95,7 +93,7 @@ if __name__ == "__main__":
     bench = KeywordExtractionBenchmark(english_stop_words, tuple(punctuation), idf, MATERIALS_PATH)
     bench.run()
 
-    bench.save_to_csv(PROJECT_ROOT/ 'report.csv')
+    bench.save_to_csv(PROJECT_ROOT / 'report.csv')
     RESULT = bench.report
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
