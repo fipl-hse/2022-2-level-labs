@@ -27,15 +27,17 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     # text preprocessing and pairs extraction
-    processor = TextPreprocessor(stop_words, punctuation)
+    processor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
     tokens =  encoder.encode(processor.preprocess_text(text))
-    print(extract_pairs(tokens, 5))
+    if tokens:
+        print(extract_pairs(tokens, 5))
 
     # extract key phrases with adjacency matrix graph
     start_time = time.time()
     adjacency_graph = AdjacencyMatrixGraph()
-    adjacency_graph.fill_from_tokens(tokens, 5)
+    if tokens:
+        adjacency_graph.fill_from_tokens(tokens, 5)
     adjacency_unbiased_ranking = VanillaTextRank(adjacency_graph)
     adjacency_unbiased_ranking.train()
     print(encoder.decode(adjacency_unbiased_ranking.get_top_keywords(10)))
@@ -46,7 +48,8 @@ if __name__ == "__main__":
     # extract key phrases with list of edges graph
     start_time = time.time()
     edge_graph = EdgeListGraph()
-    edge_graph.fill_from_tokens(tokens, 5)
+    if tokens:
+        edge_graph.fill_from_tokens(tokens, 5)
     edge_unbiased_ranking = VanillaTextRank(edge_graph)
     edge_unbiased_ranking.train()
     finish_time = time.time()
@@ -56,7 +59,8 @@ if __name__ == "__main__":
 
     #  extract positionally biased key phrases with adjacency matrix graph
     start_time = time.time()
-    adjacency_graph.fill_positions(tokens)
+    if tokens:
+        adjacency_graph.fill_positions(tokens)
     adjacency_graph.calculate_position_weights()
     adjacency_positional_ranking = PositionBiasedTextRank(adjacency_graph)
     adjacency_positional_ranking.train()
@@ -67,7 +71,8 @@ if __name__ == "__main__":
 
     # extract positionally biased key phrases with list of edges graph
     start_time = time.time()
-    edge_graph.fill_positions(tokens)
+    if tokens:
+        edge_graph.fill_positions(tokens)
     edge_graph.calculate_position_weights()
     edge_positional_ranking = PositionBiasedTextRank(edge_graph)
     edge_positional_ranking.train()
