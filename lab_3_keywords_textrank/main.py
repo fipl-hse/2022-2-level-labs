@@ -954,11 +954,8 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        models = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
-        models_scores = dict.fromkeys(models, {})
+        #models = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
         models_scores = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
-
-        topics = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         topics = self.themes
 
         for number, topic in enumerate(topics):
@@ -973,18 +970,12 @@ class KeywordExtractionBenchmark:
             processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
             tfidf = TFIDFAdapter(processor.preprocess_text(text), self._idf)
             tfidf.train()
-            # score = calculate_recall(tfidf.get_top_keywords(50), target_keywords)
-            # if score is None:
-            #     return None
             models_scores['TF-IDF'][topic] =calculate_recall(tfidf.get_top_keywords(50), target_keywords)
 
             encoder = TextEncoder()
             tokens = encoder.encode(processor.preprocess_text(text))
             rake = RAKEAdapter(text, self._stop_words)
             rake.train()
-            # score = calculate_recall(rake.get_top_keywords(50), target_keywords)
-            # if score is None:
-            #     return None
             models_scores['RAKE'][topic] = calculate_recall(rake.get_top_keywords(50), target_keywords)
 
             graph = EdgeListGraph()
@@ -993,18 +984,12 @@ class KeywordExtractionBenchmark:
             graph.fill_from_tokens(tokens, 5)
             vanila_text_rank = VanillaTextRank(graph)
             vanila_text_rank.train()
-            # score = calculate_recall(encoder.decode(vanila_text_rank.get_top_keywords(50)), target_keywords)
-            # if score is None:
-            #     return None
             models_scores['VanillaTextRank'][topic] = calculate_recall(encoder.decode(vanila_text_rank.get_top_keywords(50)), target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
             positianal_rank = PositionBiasedTextRank(graph)
             positianal_rank.train()
-            # score = calculate_recall(encoder.decode(positianal_rank.get_top_keywords(50)), target_keywords)
-            # if score is None:
-            #     return None
             models_scores['PositionBiasedTextRank'][topic] = calculate_recall(encoder.decode(positianal_rank.get_top_keywords(50)), target_keywords)
 
         self.report = models_scores
@@ -1026,4 +1011,3 @@ class KeywordExtractionBenchmark:
                 for i in self.report:
                         file.write(','.join([i, *map(str, self.report[i].values())]))
                         file.write('\n')
-
