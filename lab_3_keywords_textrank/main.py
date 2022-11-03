@@ -790,7 +790,10 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords))
+        top = get_top_n(self._scores, n_keywords)
+        if not top:
+            return ()
+        return tuple(top)
 
 
 class RAKEAdapter:
@@ -843,6 +846,8 @@ class RAKEAdapter:
                 0 if importance scores were calculated successfully, otherwise -1
         """
         phrases = extract_phrases(self._text)
+        if not phrases:
+            return -1
         candidate_keywords = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
         if not candidate_keywords:
             return -1
@@ -872,7 +877,10 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords))
+        top = get_top_n(self._scores, n_keywords)
+        if not top:
+            return ()
+        return tuple(top)
 
 
 # Step 12.1
@@ -890,9 +898,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    target, predicted = set(target), set(predicted)
-    true_positive = len(target & predicted)
-    false_negative = len(target - predicted)
+    target_set, predicted_set = set(target), set(predicted)
+    true_positive = len(target_set & predicted_set)
+    false_negative = len(target_set - predicted_set)
     return true_positive / (true_positive + false_negative)
 
 
@@ -977,6 +985,8 @@ class KeywordExtractionBenchmark:
             tokens = encoder.encode(processor.preprocess_text(text))
             rake = RAKEAdapter(text, self._stop_words)
             rake.train()
+            if not rake.get_top_keywords(50):
+                return None
             models_scores['RAKE'][topic] = calculate_recall(rake.get_top_keywords(50), target_keywords)
 
             graph = EdgeListGraph()
@@ -985,6 +995,8 @@ class KeywordExtractionBenchmark:
             graph.fill_from_tokens(tokens, 5)
             vanilla_text_rank = VanillaTextRank(graph)
             vanilla_text_rank.train()
+            if not vanilla_text_rank.get_top_keywords(50):
+                return None
             models_scores['VanillaTextRank'][topic] = calculate_recall(
                 encoder.decode(vanilla_text_rank.get_top_keywords(50)), target_keywords)
 
