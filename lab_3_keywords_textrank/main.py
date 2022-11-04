@@ -979,33 +979,24 @@ class KeywordExtractionBenchmark:
             tokens = encoder.encode(processor.preprocess_text(text))
             rake = RAKEAdapter(text, self._stop_words)
             rake.train()
-            if not (keywords := rake.get_top_keywords(50)):
-                return None
+            keywords = rake.get_top_keywords(50)
             models_scores['RAKE'][topic] = calculate_recall(keywords, target_keywords)
 
             graph = EdgeListGraph()
             if not tokens:
                 return None
             graph.fill_from_tokens(tokens, 5)
-            if not graph:
-                return None
             vanilla_text_rank = VanillaTextRank(graph)
             vanilla_text_rank.train()
-            if not (encoded_keywords := vanilla_text_rank.get_top_keywords(50)):
-                return None
-            if not (decoded_keywords := encoder.decode(encoded_keywords)):
+            if not (decoded_keywords := encoder.decode(vanilla_text_rank.get_top_keywords(50))):
                 return None
             models_scores['VanillaTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
-            if not graph:
-                return None
             positional_rank = PositionBiasedTextRank(graph)
             positional_rank.train()
-            if not (encoded_keywords := positional_rank.get_top_keywords(50)):
-                return None
-            if not (decoded_keywords := encoder.decode(encoded_keywords)):
+            if not (decoded_keywords := encoder.decode(positional_rank.get_top_keywords(50))):
                 return None
             models_scores['PositionBiasedTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
