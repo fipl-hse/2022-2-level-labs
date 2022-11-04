@@ -50,7 +50,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self._stop_words, self._punctuation = stop_words, punctuation
+        self._stop_words,\
+        self._punctuation = stop_words, punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -65,7 +66,26 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        return tuple(''.join(symbol for symbol in text if symbol not in self._punctuation).lower().split())
+
+        filtered = []
+
+        for symbol in text:
+
+            if symbol not in self._punctuation:
+
+                filtered.append(symbol)
+
+        joined = ''.join(filtered)
+
+        lowered = joined.lower()
+
+        splitted = lowered.split()
+
+        tupled = tuple(splitted)
+
+        return tupled
+
+        # return tuple(''.join(symbol for symbol in text if symbol not in self._punctuation).lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -95,7 +115,14 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        return self._remove_stop_words(self._clean_and_tokenize(text))
+
+        cleaned_and_tokenized_text = self._clean_and_tokenize(text)
+
+        text_where_stop_words_are_now_removed = self._remove_stop_words(cleaned_and_tokenized_text)
+
+        return text_where_stop_words_are_now_removed
+
+        # return self._remove_stop_words(self._clean_and_tokenize(text))
 
 
 class TextEncoder:
@@ -123,7 +150,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        self._word2id, self._id2word = {}, {}
+        self._word2id,\
+        self._id2word = {}, {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -134,8 +162,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for token in tokens:
-            self._word2id[token] = 1000 if len(self._word2id.values()) == 0 else max(self._word2id.values()) + 1
+        start = 1000 if len(self._word2id.values()) == 0 else max(self._word2id.values()) + 1
+        for count, token in enumerate(tokens):
+            self._word2id[token] = start + count
             self._id2word[self._word2id[token]] = token
 
     # Step 2.3
@@ -152,8 +181,26 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
+
+        if not tokens:
+
+            return None
+
         self._learn_indices(tokens)
-        return None if not tokens else tuple(self._word2id[token] for token in tokens)
+
+        encoded = []
+
+        for token in tokens:
+
+            id = self._word2id[token]
+
+            encoded.append(id)
+
+        tupled = tuple(encoded)
+
+        return tupled
+
+        # return None if not tokens else tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
