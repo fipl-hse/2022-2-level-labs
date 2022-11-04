@@ -1019,3 +1019,4 @@ class KeywordExtractionBenchmark:
             for i in self.report:
                 file.write(','.join([i, *map(str, self.report[i].values())]))
                 file.write('\n')
+
