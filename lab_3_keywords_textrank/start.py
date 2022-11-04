@@ -92,8 +92,8 @@ if __name__ == "__main__":
     MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
     bench = KeywordExtractionBenchmark(english_stop_words, tuple(punctuation), idf, MATERIALS_PATH)
     bench.run()
-
     bench.save_to_csv(PROJECT_ROOT / 'report.csv')
+
     RESULT = bench.report
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

@@ -152,7 +152,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple(self._word2id[i] for i in tokens)
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -605,8 +605,8 @@ class VanillaTextRank:
                 scores of all vertices in the graph
         """
         new_score = ((1 - self._damping_factor) + self._damping_factor
-                     * sum([(1 / self._graph.calculate_inout_score(incidental)) * scores[incidental]
-                            for incidental in incidental_vertices]))
+                     * sum(((1 / self._graph.calculate_inout_score(incidental)) * scores[incidental]
+                            for incidental in incidental_vertices)))
         self._scores[vertex] = new_score
 
     # Step 5.3
@@ -652,7 +652,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(sorted(self._scores), key=lambda x: - self._scores[x])[:n_keywords])
+        sorted_by_keys = sorted(self._scores)
+        return tuple(sorted(sorted_by_keys, key=lambda x: - self._scores[x])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -765,14 +766,11 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        freq = calculate_frequencies(list(self._tokens))
-        if not freq:
+        if not (freq := calculate_frequencies(list(self._tokens))):
             return -1
-        term_frequency = calculate_tf(freq)
-        if not term_frequency:
+        if not (term_frequency := calculate_tf(freq)):
             return - 1
-        tfidf = calculate_tfidf(term_frequency, self._idf)
-        if not tfidf:
+        if not (tfidf := calculate_tfidf(term_frequency, self._idf)):
             return -1
         self._scores = tfidf
         return 0
@@ -790,10 +788,9 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        top = get_top_n(self._scores, n_keywords)
-        if not top:
+        if not (keywords := get_top_n(self._scores, n_keywords)):
             return ()
-        return tuple(top)
+        return tuple(keywords)
 
 
 class RAKEAdapter:
@@ -833,8 +830,6 @@ class RAKEAdapter:
         self._text = text
         self._stop_words = stop_words
         self._scores = {}
-
-    # в который будут сохраняться word scores
 
     # Step 11.2
     def train(self) -> int:
@@ -877,10 +872,9 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        top = get_top_n(self._scores, n_keywords)
-        if not top:
+        if not (keywords := get_top_n(self._scores, n_keywords)):
             return ()
-        return tuple(top)
+        return tuple(keywords)
 
 
 # Step 12.1
@@ -963,11 +957,9 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        # models = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
         models_scores = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
-        topics = self.themes
 
-        for number, topic in enumerate(topics):
+        for number, topic in enumerate(self.themes):
             keywords_path = self._materials_path / f'{number}_keywords.txt'
             with open(keywords_path, encoding='utf-8') as file:
                 target_keywords = tuple(file.read().split())
@@ -985,9 +977,9 @@ class KeywordExtractionBenchmark:
             tokens = encoder.encode(processor.preprocess_text(text))
             rake = RAKEAdapter(text, self._stop_words)
             rake.train()
-            if not rake.get_top_keywords(50):
+            if not (keywords := rake.get_top_keywords(50)):
                 return None
-            models_scores['RAKE'][topic] = calculate_recall(rake.get_top_keywords(50), target_keywords)
+            models_scores['RAKE'][topic] = calculate_recall(keywords, target_keywords)
 
             graph = EdgeListGraph()
             if not tokens:
@@ -995,21 +987,17 @@ class KeywordExtractionBenchmark:
             graph.fill_from_tokens(tokens, 5)
             vanilla_text_rank = VanillaTextRank(graph)
             vanilla_text_rank.train()
-            if not vanilla_text_rank.get_top_keywords(50):
+            if not (keywords := encoder.decode(vanilla_text_rank.get_top_keywords(50))):
                 return None
-            top = encoder.decode(vanilla_text_rank.get_top_keywords(50))
-            if not top:
-                return None
-            models_scores['VanillaTextRank'][topic] = calculate_recall(top, target_keywords)
+            models_scores['VanillaTextRank'][topic] = calculate_recall(keywords, target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
             positional_rank = PositionBiasedTextRank(graph)
             positional_rank.train()
-            top = encoder.decode(positional_rank.get_top_keywords(50))
-            if not top:
+            if not (keywords := encoder.decode(positional_rank.get_top_keywords(50))):
                 return None
-            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(top, target_keywords)
+            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(keywords, target_keywords)
 
         self.report = models_scores
         return models_scores
