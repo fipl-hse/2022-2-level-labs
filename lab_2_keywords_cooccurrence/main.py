@@ -3,7 +3,8 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
+from string import punctuation
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -17,7 +18,26 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str) or not text:
+        return None
+    full_punctuation = punctuation + "–—¡¿⟨⟩«»…⋯‹›“”"
+    for symbol in full_punctuation:
+        text = text.replace(symbol, '.')
+    phrases = text.split('.')
+    phrases_stripped = []
+    for string in phrases:
+        string = string.strip()
+        if string:
+            phrases_stripped.append(string)
+
+    return phrases_stripped
+
+
+def check_list_types(sequence: Sequence, expected_type: Any) -> bool:
+    for item in sequence:
+        if not isinstance(item, expected_type):
+            return False
+    return True
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,8 +49,33 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    check_exist = phrases and stop_words
+    check_types = isinstance(phrases, list) and isinstance(stop_words, list)
+    if not check_exist or not check_types:
+        return None
 
+    check_in_list_types = check_list_types(phrases, str) and check_list_types(stop_words, str)
+    if not check_in_list_types:
+        return None
+
+    tokens_list = []
+    candidate_keywords = []
+
+    for phrase in phrases:
+        tokens_list.append(phrase.lower().split())
+
+    for tokens in tokens_list:
+        new_candidate = []
+        for token in tokens:
+            if token not in stop_words:
+                new_candidate.append(token)
+            else:
+                if new_candidate:
+                    candidate_keywords.append(tuple(new_candidate))
+                    new_candidate.clear()
+        if new_candidate:
+            candidate_keywords.append(tuple(new_candidate))
+    return candidate_keywords
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
@@ -40,7 +85,25 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+
+    if not candidate_keyword_phrases:
+        return None
+    if not isinstance(candidate_keyword_phrases, list):
+        return None
+    if not check_list_types(candidate_keyword_phrases, tuple):
+        return None
+    for sequence in candidate_keyword_phrases:
+        if not check_list_types(sequence, str):
+            return None
+
+    frequency_dict = {}
+    for item in candidate_keyword_phrases:
+        for token in item:
+            if token in frequency_dict:
+                frequency_dict[token] += 1
+            else:
+                frequency_dict[token] = 1
+    return frequency_dict
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -55,8 +118,25 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not candidate_keyword_phrases or not content_words:
+        return None
+    if not isinstance(candidate_keyword_phrases, list) or not isinstance(content_words, list):
+        return None
+    if not check_list_types(candidate_keyword_phrases, tuple) or not check_list_types(content_words, str):
+        return None
+    for sequence in candidate_keyword_phrases:
+        if not check_list_types(sequence, str):
+            return None
 
+    word_degrees_dict = {}
+    for word in content_words:
+        word_degrees_dict[word] = 0
+
+    for item in candidate_keyword_phrases:
+        for token in item:
+            if token in content_words:
+                word_degrees_dict[token] += len(item)
+    return word_degrees_dict
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:

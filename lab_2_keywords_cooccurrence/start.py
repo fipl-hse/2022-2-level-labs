@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+from main import extract_phrases, extract_candidate_keyword_phrases
 
 
 def read_target_text(file_path: Path) -> str:
@@ -37,6 +38,10 @@ if __name__ == "__main__":
         'genome_engineering': read_target_text(TARGET_TEXT_PATH_GENOME),
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
+
+    for title, text in corpus.items():
+        extracted_phrases = extract_phrases(text)
+        candidate_keywords = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
 
     RESULT = None
 
