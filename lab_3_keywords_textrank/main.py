@@ -788,7 +788,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        if not [keywords := get_top_n(self._scores, n_keywords)]:
+        keywords = get_top_n(self._scores, n_keywords)
+        if not keywords:
             return ()
         return tuple(keywords)
 
@@ -872,7 +873,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        if not [keywords := get_top_n(self._scores, n_keywords)]:
+        keywords = get_top_n(self._scores, n_keywords)
+        if not keywords:
             return ()
         return tuple(keywords)
 
@@ -985,19 +987,27 @@ class KeywordExtractionBenchmark:
             if not tokens:
                 return None
             graph.fill_from_tokens(tokens, 5)
+            if not graph:
+                return None
             vanilla_text_rank = VanillaTextRank(graph)
             vanilla_text_rank.train()
-            if not (keywords := encoder.decode(vanilla_text_rank.get_top_keywords(50))):
+            if not (encoded_keywords := vanilla_text_rank.get_top_keywords(50)):
                 return None
-            models_scores['VanillaTextRank'][topic] = calculate_recall(keywords, target_keywords)
+            if not (decoded_keywords := encoder.decode(encoded_keywords)):
+                return None
+            models_scores['VanillaTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
+            if not graph:
+                return None
             positional_rank = PositionBiasedTextRank(graph)
             positional_rank.train()
-            if not (keywords := encoder.decode(positional_rank.get_top_keywords(50))):
+            if not (encoded_keywords := positional_rank.get_top_keywords(50)):
                 return None
-            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(keywords, target_keywords)
+            if not (decoded_keywords := encoder.decode(encoded_keywords)):
+                return None
+            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
         self.report = models_scores
         return models_scores
