@@ -36,7 +36,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (phrases and isinstance(phrases, list) and stop_words and isinstance(stop_words, list)):
+    if not isinstance(phrases, list) or not phrases:
+        return None
+    if not isinstance(stop_words, list) or not stop_words:
         return None
     for phrase in phrases:
         if not isinstance(phrase, str):
@@ -51,11 +53,11 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         for word in phrase:
             if word not in stop_words:
                 tuple_lst.append(word)
-            else:
-                phrase_tpl = tuple(tuple_lst)
-                if phrase_tpl:
-                    candidate_keyword_phrases.append(phrase_tpl)
-                tuple_lst.clear()
+                continue
+            phrase_tpl = tuple(tuple_lst)
+            if phrase_tpl:
+                candidate_keyword_phrases.append(phrase_tpl)
+            tuple_lst.clear()
         if tuple_lst:
             candidate_keyword_phrases.append(tuple(tuple_lst))
             tuple_lst.clear()
