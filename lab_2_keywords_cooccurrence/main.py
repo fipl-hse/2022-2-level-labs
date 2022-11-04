@@ -169,28 +169,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not type_check(candidate_keyword_phrases, list) or not type_check(phrases, list):
         return None
-#<<<<<<< HEAD
-    possible_pairs = {}
-    for i in range(len(candidate_keyword_phrases) - 1):
-        pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
-        possible_pairs[pair] = possible_pairs.get(pair, 0) + 1 #поправить здесь
-    appropriate_pairs = []
-    for pair in possible_pairs:
-        if possible_pairs[pair] > 1:
-            appropriate_pairs.append([' '.join(element) for element in pair])
-    phrases_with_stopwords = []
-    for element in appropriate_pairs:
-        counter = 0
-        for phrase in phrases:
-            if (element[0] and element[1]) in phrase:
-                counter += 1
-                if extract_phrases(phrase) == [phrase]:
-                    phrases_with_stopwords.extend(re.findall(rf'{element[0]}\s[а-я]+\s{element[1]}', phrase))
-        if counter == 0:        #если хотя бы для одной возможной пары нет  фразы
-            return []
-    new_phrases_with_sw = [phrase.split() for phrase in set(phrases_with_stopwords)]
-    final_phrases = [tuple(phrase) for phrase in new_phrases_with_sw]
-    return final_phrases
     pairs = list(pairwise(candidate_keyword_phrases))
     possible_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
     possible_phrases = []
@@ -201,7 +179,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     possible_phrases.append(phrase[start:end+1])
     return [phrase for phrase in set(possible_phrases) if possible_phrases.count(phrase) > 1]
 
-#>>>>>>> e898e4bf382fb249d48d1ba943aa270bc8b5fa4c
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
