@@ -130,7 +130,10 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        unique = set(tokens)
+        unique = []
+        for el in tokens:
+            if el not in unique:
+                unique.append(el)
         for idx, el in enumerate(unique, start=1000):
             self._word2id[el] = idx
             self._id2word[idx] = el
@@ -170,7 +173,10 @@ class TextEncoder:
         """
         if any(number not in self._id2word.keys() for number in encoded_tokens):
             return None
-        return tuple(self._id2word[num] for num in encoded_tokens)
+        words = []
+        for num in encoded_tokens:
+            words.append(self._id2word[num])
+        return tuple(words)
 
 
 # Step 3
