@@ -118,7 +118,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -129,7 +130,10 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        unique = set(tokens)
+        for idx, el in enumerate(unique, start=1000):
+            self._word2id[el] = idx
+            self._id2word[idx] = el
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -145,7 +149,10 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        return tuple(self._word2id.values())
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -161,7 +168,9 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        if any(number not in self._id2word.keys() for number in encoded_tokens):
+            return None
+        return tuple(self._id2word[num] for num in encoded_tokens)
 
 
 # Step 3
@@ -182,7 +191,20 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not tokens or not isinstance(window_length, int) or window_length < 2:
+        return None
+    pairs = []
+    for num in range(0, len(tokens) - window_length + 1):
+        big = tokens[num:window_length + num]
+        for el in big:
+            small = big[big.index(el) + 1:]
+            for subel in small:
+                pairs.append([el, subel])
+    unique = []
+    for el in pairs:
+        if el not in unique and el[::-1] not in unique and el[0] != el[1]:
+            unique.append(el)
+    return tuple(tuple(el) for el in unique)
 
 
 class AdjacencyMatrixGraph:
