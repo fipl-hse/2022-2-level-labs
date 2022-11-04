@@ -2,6 +2,7 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+
 from pathlib import Path
 from typing import Optional, Union
 
