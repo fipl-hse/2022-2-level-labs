@@ -3,7 +3,8 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder)
+from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, extract_pairs,
+                                          AdjacencyMatrixGraph)
 
 
 if __name__ == "__main__":
@@ -27,8 +28,13 @@ if __name__ == "__main__":
     print(tokens)
 
     encoder = TextEncoder()
-    print(encoder.encode(tokens))
-    print(encoder.decode(encoder.encode(tokens)))
+    encoded = encoder.encode(tokens)
+    print(encoded)
+    print(encoder.decode(encoded))
+    if encoded:
+        print(extract_pairs(encoded, 3))
+    graph = AdjacencyMatrixGraph()
+    print(graph.add_edge(1001, 1005))
 
     # RESULT = None
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

@@ -133,7 +133,6 @@ class TextEncoder:
                 sequence of string tokens
         """
         for idx, word in enumerate(tokens, 1001):
-            # if i not in self._word2id.values():
             self._word2id[word] = idx
         # print(self._word2id)
         self._id2word = {id: word for word, id in self._word2id.items()}
@@ -174,8 +173,8 @@ class TextEncoder:
         """
         if not all(id in self._id2word for id in encoded_tokens):
             return None
-        # for token in encoded_tokens:
-        #     if token not in self._id2word:
+        # for id in encoded_tokens:
+        #     if id not in self._id2word:
         #         return None
         return tuple(self._id2word.get(token) for token in encoded_tokens)
 
@@ -198,7 +197,22 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not (tokens and isinstance(window_length, int) and window_length >= 2):
+        return None
+    pairs = []
+    for idx, token in enumerate(tokens):
+        for i in range(1, window_length):
+            try:
+                pair = tokens[idx], tokens[idx + i]
+                if pair[0] != pair[1]:
+                    pairs.append(pair)
+            except IndexError:
+                pass
+    #       if idx <= len(tokens) - window_length:
+    #           pair = tokens[idx], tokens[idx + i]
+    #               if pair[0] != pair[1]:
+    #                   pairs.append(pair)
+    return tuple(pairs)
 
 
 class AdjacencyMatrixGraph:
@@ -240,7 +254,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        pass
+        self._matrix = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -258,7 +272,10 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        # if vertex1 == vertex2:
+        #     return -1
+        #
+        # return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
