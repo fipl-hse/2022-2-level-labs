@@ -941,7 +941,8 @@ class KeywordExtractionBenchmark:
             keywords = tuple(file.read().split())
 
             tokens = preprocessor.preprocess_text(text)
-            if not (tokens_encoded := encoder.encode(tokens)):
+            tokens_encoded = encoder.encode(tokens)
+            if not tokens_encoded:
                 return None
             graph = EdgeListGraph()
             graph.fill_from_tokens(tokens_encoded, 3)
