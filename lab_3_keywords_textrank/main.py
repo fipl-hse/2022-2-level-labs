@@ -788,7 +788,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        if not (keywords := get_top_n(self._scores, n_keywords)):
+        if not [keywords := get_top_n(self._scores, n_keywords)]:
             return ()
         return tuple(keywords)
 
