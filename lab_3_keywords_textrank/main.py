@@ -166,9 +166,9 @@ class TextEncoder:
         In case of out-of-dictionary input data, None is returned
         """
         for ind in encoded_tokens:
-            if ind not in self._word2id.values():
+            if ind not in self._id2word:
                 return None
-        return tuple(self._word2id[ind] for ind in encoded_tokens)
+        return tuple(self._id2word[ind] for ind in encoded_tokens)
 
 
 # Step 3
