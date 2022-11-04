@@ -284,9 +284,9 @@ class AdjacencyMatrixGraph:
             self._matrix[ind][0] = elem
         maxi = len(max(self._matrix, key=len))
 
-        for elem in self._matrix:
-            if len(elem) < maxi:
-                elem.extend([0 for _ in range(maxi - len(elem))])
+        for element in self._matrix:
+            if len(element) < maxi:
+                element.extend([0 for _ in range(maxi - len(element))])
 
         self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
         self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
