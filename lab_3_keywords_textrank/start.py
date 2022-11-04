@@ -36,47 +36,29 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     tokens = encoder.encode(preprocessor.preprocess_text(text))
 
-    PAIRS = None
-
     # step 3 demonstration
     if tokens:
-        PAIRS = extract_pairs(tokens, 3)
-    print(PAIRS)
+        print(extract_pairs(tokens, 3))
 
-    # step 6
+    # step 6, 7.3 and 9.3
     adj_graph = AdjacencyMatrixGraph()
-    if tokens:
-        adj_graph.fill_from_tokens(tokens, 3)
-    vanilla_text_rank1 = VanillaTextRank(adj_graph)
-    vanilla_text_rank1.train()
-    top_decoded1 = encoder.decode(vanilla_text_rank1.get_top_keywords(10))
-    print(top_decoded1)
-
-    # step 7.3
     edg_graph = EdgeListGraph()
     if tokens:
+        adj_graph.fill_from_tokens(tokens, 3)
         edg_graph.fill_from_tokens(tokens, 3)
-    vanilla_text_rank2 = VanillaTextRank(edg_graph)
-    vanilla_text_rank2.train()
-    top_decoded2 = encoder.decode(vanilla_text_rank2.get_top_keywords(10))
-    print(top_decoded2)
-
-    # step 9.3
-    if tokens:
         adj_graph.fill_positions(tokens)
-    adj_graph.calculate_position_weights()
-    position_biased1 = PositionBiasedTextRank(adj_graph)
-    position_biased1.train()
-    top_decoded3 = encoder.decode(position_biased1.get_top_keywords(10))
-    print(top_decoded3)
-
-    if tokens:
+        adj_graph.calculate_position_weights()
         edg_graph.fill_positions(tokens)
-    edg_graph.calculate_position_weights()
-    position_biased1 = PositionBiasedTextRank(edg_graph)
-    position_biased1.train()
-    top_decoded4 = encoder.decode(position_biased1.get_top_keywords(10))
-    print(top_decoded4)
+        edg_graph.calculate_position_weights()
+
+    vanilla_adj = VanillaTextRank(adj_graph)
+    vanilla_edg = VanillaTextRank(edg_graph)
+    biased_adj = PositionBiasedTextRank(adj_graph)
+    biased_edg = PositionBiasedTextRank(edg_graph)
+
+    for algorithm in vanilla_adj, vanilla_edg, biased_adj, biased_edg:
+        algorithm.train()
+        print(encoder.decode(algorithm.get_top_keywords(10)))
 
     # step 12
     benchmark_materials = ASSETS_PATH / 'benchmark_materials'
@@ -92,6 +74,6 @@ if __name__ == "__main__":
     benchmark.run()
     benchmark.save_to_csv(PROJECT_ROOT / 'report.csv')
 
-    RESULT = top_decoded1, top_decoded2, top_decoded3, top_decoded4
+    RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
