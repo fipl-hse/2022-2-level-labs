@@ -55,8 +55,8 @@ class TextPreprocessor:
         for mark in self._punctuation:
             text = text.replace(mark, '')
         split_text = text.lower().split()
-        cleaned_text = tuple([i.strip() for i in split_text if i and not i.isspace()])
-        return cleaned_text
+        cleaned_text = [i.strip() for i in split_text if i and not i.isspace()]
+        return tuple(cleaned_text)
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
         """
@@ -247,6 +247,8 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = [[]]
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -272,7 +274,8 @@ class AdjacencyMatrixGraph:
                 self._matrix[0].append(i)
                 self._matrix.append([i])
         for count in range(len(self._matrix[0])):
-            for i in range(len(self._matrix[0]) - len(self._matrix[count + 1]) + 1):    #вот тут как будто можно переделать
+            # вот тут как будто можно переделать
+            for i in range(len(self._matrix[0]) - len(self._matrix[count + 1]) + 1):
                 self._matrix[count + 1].append(0)
         for i in vertexes:
             for count, value in enumerate(self._matrix[0]):
@@ -332,8 +335,7 @@ class AdjacencyMatrixGraph:
         if vertex in self._matrix[0]:
             v_ind = self._matrix[0].index(vertex)+1
             return self._matrix[v_ind].count(1)
-        else:
-            return -1
+        return -1
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -361,6 +363,11 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
+        for count, value in enumerate(tokens, start=1):
+            if value not in self._positions:
+                self._positions[value] = [count]
+            else:
+                self._positions[value].append(count)
 
 
     # Step 8.3
@@ -368,7 +375,14 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        wrong_weights = {}
+        for key in self._positions:
+            wrong_p = 0
+            for elem in self._positions[key]:
+                wrong_p += 1/elem
+            wrong_weights[key] = wrong_p
+        for key in self._positions:
+            self._position_weights[key] = wrong_weights[key]/ sum(wrong_weights.values)
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -379,7 +393,7 @@ class AdjacencyMatrixGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class EdgeListGraph:
@@ -415,7 +429,9 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -426,7 +442,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        AdjacencyMatrixGraph.get_vertices(self)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -444,7 +460,7 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        AdjacencyMatrixGraph.add_edge(vertex1, vertex2)
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -462,7 +478,7 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        AdjacencyMatrixGraph.is_incidental(vertex1, vertex2)
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -478,7 +494,7 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        AdjacencyMatrixGraph.calculate_inout_score(vertex)
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -492,7 +508,7 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        AdjacencyMatrixGraph.fill_from_tokens(tokens, window_length)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -502,14 +518,14 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        AdjacencyMatrixGraph.fill_positions(tokens)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        AdjacencyMatrixGraph.calculate_position_weights()
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -520,7 +536,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        AdjacencyMatrixGraph.get_position_weights()
 
 
 class VanillaTextRank:
@@ -584,7 +600,11 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        sum_of_values = 0
+        for i in incidental_vertices:
+            sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i)
+        self._scores[vertex] = sum_of_values  * self._damping_factor + (1 - self._damping_factor)
+
 
     # Step 5.3
     def train(self) -> None:
@@ -618,7 +638,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -629,7 +649,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        return [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -673,7 +693,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -688,7 +709,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+
 
 
 class TFIDFAdapter:
