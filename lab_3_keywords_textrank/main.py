@@ -282,10 +282,11 @@ class AdjacencyMatrixGraph:
 
         for ind, elem in enumerate(self._matrix[0]):
             self._matrix[ind][0] = elem
-        maxi = max(self._matrix, key=len)
-        for elem in self._matrix[1:]:
-            if len(self._matrix[1:]) < len(maxi):
-                elem.extend([0 for _ in range(len(maxi) - len(self._matrix[1:]))])
+        maxi = len(max(self._matrix, key=len))
+
+        for elem in self._matrix:
+            if len(elem) < maxi:
+                elem.extend([0 for _ in range(maxi - len(elem))])
 
         self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
         self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
@@ -540,9 +541,8 @@ class EdgeListGraph:
                 if they appear in the same window of this length
         """
         edges = extract_pairs(tokens, window_length)
-        if edges:
-            for elem in edges:
-                self.add_edge(elem[0], elem[1])
+        for elem in edges:
+            self.add_edge(elem[0], elem[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -552,12 +552,11 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        if tokens:
-            for ind, elem in enumerate(tokens):
-                if elem in self._positions:
-                    self._positions[elem].append(ind + 1)
-                else:
-                    self._positions[elem] = [ind + 1]
+        for ind, elem in enumerate(tokens):
+            if elem in self._positions:
+                self._positions[elem].append(ind + 1)
+            else:
+                self._positions[elem] = [ind + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -1029,7 +1028,10 @@ class KeywordExtractionBenchmark:
             tuple_words = text_preprocessor.preprocess_text(text)
             text_encoded = TextEncoder()
             encoded_words = text_encoded.encode(tuple_words)
+
             graph = EdgeListGraph()
+            if not encoded_words:
+                return None
             graph.fill_from_tokens(encoded_words, 3)
             graph.fill_positions(encoded_words)
             graph.calculate_position_weights()
