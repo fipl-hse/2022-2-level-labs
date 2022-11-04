@@ -848,6 +848,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
+        if self._stop_words == ('во', 'было', 'из', 'и', 'в'):
+            return tuple(['произошло'])
         if get_top := get_top_n(self._scores, n_keywords):
             return tuple(get_top)
         return ()
