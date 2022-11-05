@@ -28,7 +28,8 @@ if __name__ == "__main__":
     tokens = preprocessor.preprocess_text(text)
     encoded_tokens = encoder.encode(tokens)
     adjacency_graph = AdjacencyMatrixGraph()
-    adjacency_graph.fill_from_tokens(encoded_tokens, 5)
+    if encoded_tokens:
+        adjacency_graph.fill_from_tokens(encoded_tokens, 5)
     text_rank = VanillaTextRank(adjacency_graph)
     text_rank.train()
     top_keywords = text_rank.get_top_keywords(10)

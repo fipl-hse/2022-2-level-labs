@@ -335,7 +335,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._matrix[0]:
             return -1
-        return self._matrix[self._matrix[0].index(vertex)][1:].count(1)
+        return self._matrix[self._matrix[0].index(vertex) + 1][1:].count(1)
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -349,7 +349,8 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        for pair in extract_pairs(tokens, window_length):
+        pairs = extract_pairs(tokens, window_length)
+        for pair in pairs:
             self.add_edge(pair[0], pair[1])
 
     # Step 8.2
