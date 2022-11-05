@@ -272,8 +272,8 @@ class AdjacencyMatrixGraph:
         len_all_vertex = len(self._matrix[0])
 
         for element in self._matrix[1:]:
-            if element[0] == vertex1 or element[0] == vertex2:
-                element.extend([0 for _ in range(len_all_vertex - (len(element) - 1))])
+            num_columns = (len(element) - 1)
+            element.extend([0 for _ in range(len_all_vertex - num_columns)])
 
         ind1 = self._matrix[0].index(vertex1)
         ind2 = self._matrix[0].index(vertex2)
