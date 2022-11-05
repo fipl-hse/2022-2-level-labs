@@ -3,7 +3,8 @@ TextRank keyword extraction starter
 """
 from pathlib import Path
 from string import punctuation
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder,\
+    VanillaTextRank, AdjacencyMatrixGraph
 
 
 if __name__ == "__main__":
@@ -25,8 +26,13 @@ if __name__ == "__main__":
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
     tokens = preprocessor.preprocess_text(text)
-    encoded = encoder.encode(tokens)
-
-    RESULT = extract_pairs(encoded, 3)
+    encoded_tokens = encoder.encode(tokens)
+    adjacency_graph = AdjacencyMatrixGraph()
+    adjacency_graph.fill_from_tokens(encoded_tokens, 5)
+    text_rank = VanillaTextRank(adjacency_graph)
+    text_rank.train()
+    top_keywords = text_rank.get_top_keywords(10)
+    RESULT = encoder.decode(top_keywords)
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
