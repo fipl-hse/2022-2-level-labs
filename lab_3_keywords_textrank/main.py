@@ -301,9 +301,7 @@ class AdjacencyMatrixGraph:
             return -1
         ind1 = self._matrix[0].index(vertex1)
         ind2 = self._matrix[0].index(vertex2)
-        if self._matrix[ind1 + 1][ind2 + 1] == 1:
-            return 1
-        return 0
+        return self._matrix[ind1 + 1][ind2 + 1]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -314,10 +312,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        try:
-            return tuple(self._matrix[0])
-        except IndexError:
-            return ()
+        return tuple(self._matrix[0])
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -585,7 +580,7 @@ class VanillaTextRank:
         new_score = (1 - self._damping_factor) + self._damping_factor * \
             sum(scores[incidental_vertex] / self._graph.calculate_inout_score(incidental_vertex)
                 for incidental_vertex in incidental_vertices)
-        scores[vertex] = new_score
+        self._scores[vertex] = new_score
 
     # Step 5.3
     def train(self) -> None:
