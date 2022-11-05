@@ -6,7 +6,7 @@ from pathlib import Path
 from lab_3_keywords_textrank.main import(
     TextPreprocessor,
     TextEncoder,
-    # extract_pairs,
+    extract_pairs,
     # AdjacencyMatrixGraph,
     # VanillaTextRank,
     # EdgeListGraph,
@@ -32,12 +32,18 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    preprocessor = TextPreprocessor(stop_words, r'\W+')
+    preprocessor = TextPreprocessor(stop_words, (',', '.', '!', '?', '-', ':'))
     clean_tokens = preprocessor.preprocess_text(text)
     print(clean_tokens)
+
     dcts = TextEncoder()
-    print(dcts._learn_indices(clean_tokens))
-    print(dcts.encode(clean_tokens))
+    encoded = dcts.encode(clean_tokens)
+    print(encoded)
+    decoded = dcts.decode(encoded)
+    print(decoded)
+
+    pairs = extract_pairs(encoded, 3)
+    print(pairs)
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
