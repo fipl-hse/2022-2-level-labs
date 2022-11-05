@@ -35,6 +35,6 @@ if __name__ == "__main__":
     decoded_text1 = encoded_text1.decode(top1)
     print(decoded_text1)
 
-    decoded_text1 = None
+    RESULT = decoded_text1
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert decoded_text1, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
