@@ -4,6 +4,7 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+from lab_1_keywords_tfidf.main import check_positive_int
 
 
 class TextPreprocessor:
@@ -189,7 +190,16 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not tokens or not check_positive_int(window_length) or window_length < 2:
+        return None
+    pairs = []
+    for token in range(len(tokens) - window_length + 1):
+        window = tokens[token: token + window_length]
+        pairs_disordered = [(first, second) for first in window for second in window]
+        for pair in pairs_disordered:
+            if pair[0] < pair[1]:
+                pairs.append(pair)
+    return tuple(pair for pair in set(pairs))
 
 
 class AdjacencyMatrixGraph:
