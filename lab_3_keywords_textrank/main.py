@@ -53,11 +53,10 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         no_punctuation = ''
-        if self._punctuation:
-            for element in text:
-                if element in self._punctuation:
-                    no_punctuation = text.replace(element, ' ')
-        return tuple(no_punctuation.lower().split())
+        for element in text.lower():
+            if element not in self._punctuation:
+                no_punctuation += element
+        return tuple(no_punctuation.split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -72,11 +71,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        no_stop_words = ''
-        for word in tokens:
-            if word not in self._stop_words:
-                no_stop_words += word + ' '
-        return tuple(no_stop_words)
+        return tuple(token for token in tokens if token not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -170,12 +165,14 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        if not encoded_tokens or not all(encoded_token in self._id2word for encoded_token in encoded_tokens):
-            return None
-        decoded_tokens = []
-        for encoded_token in encoded_tokens:
-            decoded_tokens = self._id2word.get(encoded_token)
-        return tuple(decoded_tokens)
+        tokens = []
+        for token in encoded_tokens:
+            if token not in self._id2word:
+                return None
+            for id in self._id2word:
+                if token == id:
+                    tokens.append(self._id2word[id])
+        return tuple(tokens)
 
 
 # Step 3
