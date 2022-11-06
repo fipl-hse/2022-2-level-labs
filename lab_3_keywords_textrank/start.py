@@ -3,8 +3,8 @@ TextRank keyword extraction starter
 """
 from pathlib import Path
 from string import punctuation
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder,\
-    VanillaTextRank, AdjacencyMatrixGraph
+from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder,\
+    VanillaTextRank, AdjacencyMatrixGraph, EdgeListGraph, PositionBiasedTextRank
 
 
 if __name__ == "__main__":
@@ -23,17 +23,49 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
+    # mark 4: extract pairs from text
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
     tokens = preprocessor.preprocess_text(text)
     encoded_tokens = encoder.encode(tokens)
+    print(extract_pairs(encoded_tokens, 5))
+
+    #   mark 6: extract keywords with AdjacencyMatrixGraph using TextRank
     adjacency_graph = AdjacencyMatrixGraph()
     if encoded_tokens:
         adjacency_graph.fill_from_tokens(encoded_tokens, 5)
-    text_rank = VanillaTextRank(adjacency_graph)
-    text_rank.train()
-    top_keywords = text_rank.get_top_keywords(10)
-    RESULT = encoder.decode(top_keywords)
-    print(RESULT)
+    text_rank_adj = VanillaTextRank(adjacency_graph)
+    text_rank_adj.train()
+    top_keywords_adj = text_rank_adj.get_top_keywords(10)
+    print(encoded_top_adj := encoder.decode(top_keywords_adj))
+
+    #   mark 8: extract keywords with EdgeListGraph using TextRank
+    edge_list = EdgeListGraph()
+    if encoded_tokens:
+        edge_list.fill_from_tokens(encoded_tokens, 5)
+    text_rank_edge = VanillaTextRank(edge_list)
+    text_rank_edge.train()
+    top_keywords_edge = text_rank_edge.get_top_keywords(10)
+    print(encoded_top_edge := encoder.decode(top_keywords_edge))
+
+    #   mark 8: extract keywords with AdjacencyMatrixGraph using PositionBiasedTextRank
+    if encoded_tokens:
+        adjacency_graph.fill_positions(encoded_tokens)
+    adjacency_graph.calculate_position_weights()
+    bias_text_rank_adj = PositionBiasedTextRank(adjacency_graph)
+    bias_text_rank_adj.train()
+    top_keywords_adj_bias = bias_text_rank_adj.get_top_keywords(10)
+    print(encoded_top_adj_pos_bias := encoder.decode(top_keywords_adj_bias))
+
+    #   mark 8: extract keywords with EdgeListGraph using PositionBiasedTextRank
+    if encoded_tokens:
+        edge_list.fill_positions(encoded_tokens)
+    edge_list.calculate_position_weights()
+    bias_text_rank_edge = PositionBiasedTextRank(edge_list)
+    bias_text_rank_edge.train()
+    top_keywords_edge_bias = bias_text_rank_edge.get_top_keywords(10)
+    print(encoded_top_edge_pos_bias := encoder.decode(top_keywords_edge_bias))
+
+    RESULT = 'hi'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
