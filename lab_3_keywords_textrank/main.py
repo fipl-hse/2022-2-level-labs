@@ -197,7 +197,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         window = tokens[i: i + window_length]
         for token1 in window:
             for token2 in window:
-                if not token1 == token2 and (token1, token2) not in pairs:
+                if token1 < token2 and (token1, token2) not in pairs:
                     pairs.append((token1, token2))
     return tuple(pairs)
 
@@ -500,7 +500,7 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._edges.keys():
+        if vertex not in self._edges:
             return -1
         return len(self._edges[vertex])
 
