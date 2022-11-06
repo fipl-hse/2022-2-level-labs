@@ -28,7 +28,8 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     tokens = preprocessor.preprocess_text(text)
     encoded_tokens = encoder.encode(tokens)
-    print(extract_pairs(encoded_tokens, 5))
+    if encoded_tokens:
+        print(extract_pairs(encoded_tokens, 5))
 
     #   mark 6: extract keywords with AdjacencyMatrixGraph using TextRank
     adjacency_graph = AdjacencyMatrixGraph()
