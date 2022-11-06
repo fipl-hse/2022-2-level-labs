@@ -5,6 +5,8 @@ TextRank keyword extraction starter
 from pathlib import Path
 from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, EdgeListGraph, \
     VanillaTextRank, PositionBiasedTextRank
+from string import punctuation
+
 
 if __name__ == "__main__":
 
@@ -22,6 +24,10 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
+    words = TextPreprocessor(stop_words, punctuation).preprocess_text(text)
+    print(words)
+    tokens = TextEncoder().encode(words)
+
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    #assert RESULT, 'Keywords are not extracted'

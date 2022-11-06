@@ -5,7 +5,6 @@ Extract keywords based on TextRank algorithm
 from pathlib import Path
 from typing import Optional, Union
 
-
 class TextPreprocessor:
     """
     A class to preprocess raw text
@@ -480,8 +479,7 @@ class EdgeListGraph:
         """
         if vertex1 in self._edges.get(vertex2, []) and vertex2 in self._edges.get(vertex1, []):
             return 1
-        else:
-            return 0
+        return 0
 
 
     # Step 7.2
@@ -516,8 +514,6 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        if not tokens or not isinstance(window_length, int) or window_length < 2:
-            return None
         pairs = extract_pairs(tokens, window_length)
         for pair in pairs:
             self.add_edge(pair[0], pair[1])
@@ -531,8 +527,6 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        if not tokens or not isinstance(tokens, tuple):
-            return None
         for count, value in enumerate(tokens, start=1):
             if value not in self._positions:
                 self._positions[value] = [count]
@@ -629,7 +623,7 @@ class VanillaTextRank:
         sum_of_values = 0
         for i in incidental_vertices:
             sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i)
-        self._scores[vertex] = sum_of_values  * self._damping_factor + (1 - self._damping_factor)
+        self._scores[vertex] = sum_of_values * self._damping_factor + (1 - self._damping_factor)
 
 
     # Step 5.3
@@ -675,7 +669,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)]
+        return [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
