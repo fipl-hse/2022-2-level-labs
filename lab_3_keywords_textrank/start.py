@@ -3,6 +3,7 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from lab_3_keywords_textrank.main import
 
 
 if __name__ == "__main__":
