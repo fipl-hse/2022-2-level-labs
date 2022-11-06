@@ -173,9 +173,6 @@ class TextEncoder:
         """
         if not all(id in self._id2word for id in encoded_tokens):
             return None
-        # for id in encoded_tokens:
-        #     if id not in self._id2word:
-        #         return None
         return tuple(self._id2word.get(token) for token in encoded_tokens)
 
 
