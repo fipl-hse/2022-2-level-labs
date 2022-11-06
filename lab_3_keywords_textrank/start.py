@@ -45,7 +45,7 @@ if __name__ == "__main__":
         adjacency_matrix_graph.fill_positions(tokens)
         adjacency_matrix_graph.calculate_position_weights()
     vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
-    vanilla_text_rank.score_vertices()
+    vanilla_text_rank.train()
     top_10_vanilla = vanilla_text_rank.get_top_keywords(10)
     DECODED_TOP_10_VANILLA = encoder.decode(top_10_vanilla)
     print(DECODED_TOP_10_VANILLA)
