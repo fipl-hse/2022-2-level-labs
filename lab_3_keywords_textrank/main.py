@@ -205,10 +205,10 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or window_length < 2 or not isinstance(window_length, int):
         return None
     pairs = []
-    for ind in range(len(tokens)):
+    for ind, elem in enumerate(tokens):
         for i in range(window_length):
             try:
-                pair = (tokens[ind], tokens[ind + i])
+                pair = (elem, tokens[ind + i])
                 if pair[0] != pair[1]:
                     pairs.append(pair)
             except IndexError:
@@ -330,8 +330,7 @@ class AdjacencyMatrixGraph:
         """
         if self._matrix:
             return tuple(self._matrix[0][1:])
-        else:
-            return ()
+        return ()
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -347,11 +346,11 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
-            return -1
-        for elem in self._matrix:
-            if elem[0] == vertex:
-                return sum(element for element in elem[1:])
+        if vertex in self._matrix[0]:
+            for elem in self._matrix:
+                if elem[0] == vertex:
+                    return sum(element for element in elem[1:])
+        return -1
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
