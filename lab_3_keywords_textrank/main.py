@@ -201,6 +201,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
+    if not tokens or not isinstance(window_length, int) or window_length < 2:
+        return None
     extracted = []
     for idx in range(len(tokens) - window_length + 1):
         new_sequence = tokens[idx:idx + window_length]
@@ -566,7 +568,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -581,7 +587,12 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        inout_weight_sum = 0
+        for vertices in incidental_vertices:
+            new_score = (1/self._graph.calculate_inout_score(vertices)) * scores[vertices]
+            inout_weight_sum += new_score
+        weight = (1 - self._damping_factor) + self._damping_factor * inout_weight_sum
+        scores[vertex] = weight
 
     # Step 5.3
     def train(self) -> None:
@@ -615,7 +626,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -626,8 +637,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
-
+        top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)]
+        return top_keywords
 
 class PositionBiasedTextRank(VanillaTextRank):
     """

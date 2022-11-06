@@ -3,7 +3,8 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-
+from string import punctuation
+from main import TextPreprocessor, TextEncoder
 
 if __name__ == "__main__":
 
@@ -21,6 +22,18 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
+    PUNCTUATION_MARKS_LIST = []
+    for punc in punctuation:
+        PUNCTUATION_MARKS_LIST.append(punc)
+    PUNCTUATION_MARKS = tuple(PUNCTUATION_MARKS_LIST)
+
+    PREPROCESSED_TEXT = TextPreprocessor(stop_words, PUNCTUATION_MARKS)
+    TOKENS = PREPROCESSED_TEXT.preprocess_text(text)
+    TEXT_TO_CODE = TextEncoder()
+    ENCODED_TXT = TEXT_TO_CODE.encode(TOKENS)
+
+
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
+
