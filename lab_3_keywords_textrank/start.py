@@ -4,7 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder)
+from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, extract_pairs)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -24,7 +24,11 @@ if __name__ == "__main__":
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
     tokens = preprocessor.preprocess_text(text)
+    print(tokens)
     encoded_tokens = encoder.encode(tokens)
+    print(encoded_tokens)
+    if encoded_tokens:
+        print(extract_pairs(encoded_tokens, 5))
 
     RESULT = encoded_tokens
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

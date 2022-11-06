@@ -196,7 +196,17 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not (tokens and isinstance(window_length, int) and window_length >= 2):
+        return None
+    extracted = []
+    length = len(tokens) - window_length + 1
+    for i in range(length):
+        window = tokens[i: i + window_length]
+        for token1 in window:
+            for token2 in window:
+                if token1 < token2 and (token1, token2) not in extracted:
+                    extracted.append((token1, token2))
+    return tuple(extracted)
 
 
 class AdjacencyMatrixGraph:
