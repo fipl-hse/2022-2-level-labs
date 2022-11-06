@@ -62,7 +62,7 @@ class TextPreprocessor:
         for elem in text.lower():
             if elem not in self._punctuation:
                 new_text += elem
-        return tuple(element for element in new_text.split())
+        return tuple(new_text.split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -132,9 +132,14 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
+        if not self._word2id:
+            first_number = 1001
+        else:
+            first_number = max(self._word2id.values()) + 1
+
         for ind, element in enumerate(tokens):
-            self._word2id |= {element: ind + 1001}
-            self._id2word |= {ind + 1001: element}
+            self._word2id |= {element: ind + first_number}
+            self._id2word |= {ind + first_number: element}
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -153,7 +158,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple(self._word2id.values())
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -170,12 +175,12 @@ class TextEncoder:
         In case of out-of-dictionary input data, None is returned
         """
         words = []
-        for key, value in self._id2word.items():
-            for token in encoded_tokens:
-                if token not in self._id2word:
-                    return None
+        for token in encoded_tokens:
+            if token not in self._id2word:
+                return None
+            for key in self._id2word:
                 if token == key:
-                    words.append(value)
+                    words.append(self._id2word[key])
         return tuple(words)
 
 
@@ -200,7 +205,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or window_length < 2 or not isinstance(window_length, int):
         return None
     pairs = []
-    for ind in range(len(tokens) - 1):
+    for ind in range(len(tokens)):
         for i in range(window_length):
             try:
                 pair = (tokens[ind], tokens[ind + i])
@@ -312,9 +317,7 @@ class AdjacencyMatrixGraph:
             return -1
         ind_1 = self._matrix[0].index(vertex1)
         ind_2 = self._matrix[0].index(vertex2)
-        if self._matrix[ind_1][ind_2] == 1:
-            return 1
-        return 0
+        return self._matrix[ind_1][ind_2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -325,9 +328,9 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        try:
+        if self._matrix:
             return tuple(self._matrix[0][1:])
-        except IndexError:
+        else:
             return ()
 
     # Step 4.5
@@ -346,13 +349,9 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._matrix[0]:
             return -1
-        number = []
         for elem in self._matrix:
             if elem[0] == vertex:
-                for element in elem[1:]:
-                    if element == 1:
-                        number.append(element)
-        return len(number)
+                return sum(element for element in elem[1:])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -505,7 +504,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        if vertex1 in self._edges[vertex2] or vertex2 in self._edges[vertex1]:
+        if vertex1 in self._edges[vertex2]:
             return 1
         return 0
 
@@ -525,8 +524,7 @@ class EdgeListGraph:
         """
         if vertex not in self._edges:
             return -1
-        number = len(self._edges[vertex])
-        return number
+        return len(self._edges[vertex])
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -647,7 +645,7 @@ class VanillaTextRank:
         summa = 0.0
         for elem in incidental_vertices:
             inout_score = self._graph.calculate_inout_score(elem)
-            summa += 1 / abs(inout_score) * inout_score
+            summa += 1 / abs(inout_score) * scores[elem]
         self._scores[vertex] = (summa * self._damping_factor) + (1 - self._damping_factor)
 
     # Step 5.3
@@ -941,16 +939,7 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_positive = 0
-    false_negative = 0
-    for elem in predicted:
-        if elem in target:
-            true_positive += 1
-        else:
-            false_negative += 1
-    if true_positive + false_negative:
-        return true_positive / (true_positive + false_negative)
-    return 0
+    return len([token for token in predicted if token in target]) / len(target)
 
 
 class KeywordExtractionBenchmark:
