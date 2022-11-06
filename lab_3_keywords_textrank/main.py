@@ -2,9 +2,9 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
-from lab_2_keywords_cooccurrence.main import type_check
 from pathlib import Path
 from typing import Optional, Union
+from lab_2_keywords_cooccurrence.main import type_check
 
 
 class TextPreprocessor:
