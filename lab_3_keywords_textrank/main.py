@@ -55,7 +55,7 @@ class TextPreprocessor:
         for mark in self._punctuation:
             text = text.replace(mark, '')
         split_text = text.lower().split()
-        cleaned_text = [i.strip() for i in split_text if i and not i.isspace()]
+        cleaned_text = [i.strip() for i in split_text if i]
         return tuple(cleaned_text)
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -279,7 +279,7 @@ class AdjacencyMatrixGraph:
                 self._matrix[count + 1].append(0)
         for i in vertexes:
             for count, value in enumerate(self._matrix[0]):
-                if i and value in vertexes and i != value:
+                if (i and value) in vertexes and i != value:
                     self._matrix[self._matrix[0].index(i) + 1][count + 1] = 1
         return 0
 
@@ -334,7 +334,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex in self._matrix[0]:
             v_ind = self._matrix[0].index(vertex)+1
-            return self._matrix[v_ind].count(1)
+            return self._matrix[v_ind][1:].count(1)
         return -1
 
     # Step 4.6
@@ -364,11 +364,7 @@ class AdjacencyMatrixGraph:
                 sequence of tokens
         """
         for count, value in enumerate(tokens, start=1):
-            if value not in self._positions:
-                self._positions[value] = [count]
-            else:
-                self._positions[value].append(count)
-
+            self._positions[value] = self._positions.get(value, []) + [count]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -382,7 +378,7 @@ class AdjacencyMatrixGraph:
                 wrong_p += 1/elem
             wrong_weights[key] = wrong_p
         for key in self._positions:
-            self._position_weights[key] = wrong_weights[key]/ sum(wrong_weights.values)
+            self._position_weights[key] = wrong_weights[key]/ sum(wrong_weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -442,7 +438,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        AdjacencyMatrixGraph.get_vertices(self)
+        return tuple(self._edges.keys())
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -460,7 +456,11 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        AdjacencyMatrixGraph.add_edge(vertex1, vertex2)
+        if vertex1 == vertex2:
+            return -1
+        self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
+        self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
+        return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -478,7 +478,11 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        AdjacencyMatrixGraph.is_incidental(vertex1, vertex2)
+        if vertex1 in self._edges.get(vertex2, []) and vertex2 in self._edges.get(vertex1, []):
+            return 1
+        else:
+            return 0
+
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -494,7 +498,11 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        AdjacencyMatrixGraph.calculate_inout_score(vertex)
+        if vertex not in self._edges or not isinstance(vertex, int):
+            return -1
+        return len(self._edges[vertex])
+
+
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -508,7 +516,12 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        AdjacencyMatrixGraph.fill_from_tokens(tokens, window_length)
+        if not tokens or not isinstance(window_length, int) or window_length < 2:
+            return None
+        pairs = extract_pairs(tokens, window_length)
+        for pair in pairs:
+            self.add_edge(pair[0], pair[1])
+
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -518,14 +531,27 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        AdjacencyMatrixGraph.fill_positions(tokens)
+        if not tokens or not isinstance(tokens, tuple):
+            return None
+        for count, value in enumerate(tokens, start=1):
+            if value not in self._positions:
+                self._positions[value] = [count]
+            else:
+                self._positions[value].append(count)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        AdjacencyMatrixGraph.calculate_position_weights()
+        wrong_weights = {}
+        for key in self._positions:
+            wrong_p = 0
+            for elem in self._positions[key]:
+                wrong_p += (1 / elem)
+            wrong_weights[key] = wrong_p
+        for key in self._positions:
+            self._position_weights[key] = wrong_weights[key] / sum(wrong_weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -536,7 +562,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        AdjacencyMatrixGraph.get_position_weights()
+        return self._position_weights
 
 
 class VanillaTextRank:
@@ -581,7 +607,7 @@ class VanillaTextRank:
         """
         self._graph = AdjacencyMatrixGraph()
         self._damping_factor = 0.85
-        self._convergence_treshold = 0.0001
+        self._convergence_threshold = 0.0001
         self._max_iter = 50
         self._scores = {}
 
