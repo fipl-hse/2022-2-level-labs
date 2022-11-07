@@ -26,9 +26,14 @@ class RAKEAdapterTest(unittest.TestCase):
 
         rake = RAKEAdapter(text, stop_words)
         rake.train()
-        top = rake.get_top_keywords(1)
-        self.assertIsInstance(top[0], str)
-        self.assertEqual(top[0], 'произошло')
+        top = rake.get_top_keywords(11)
+
+        self.assertTrue(all(isinstance(keyword, str) for keyword in top))
+
+        top_words = ('12', '1961', 'апреля', 'года', 'произошло', 'это',
+                     'времена', 'исследование', 'космоса', 'советского', 'союза')
+
+        self.assertEqual(top, top_words)
 
     @pytest.mark.lab_3_keywords_textrank
     @pytest.mark.mark10
