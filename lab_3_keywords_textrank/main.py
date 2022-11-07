@@ -126,7 +126,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        new_tokens = set(list(tokens))
+        new_tokens = set(tokens)
         for count, token in enumerate(new_tokens, start=1000):
             self._word2id[token] = count
             self._id2word[count] = token
