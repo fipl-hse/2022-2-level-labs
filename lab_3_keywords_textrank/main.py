@@ -341,7 +341,7 @@ class AdjacencyMatrixGraph:
                 if they appear in the same window of this length
         """
         for pair in extract_pairs(tokens, window_length):
-            self.add_edge(pair[0], pair[1])
+            self.add_edge(*pair)
             
 
     # Step 8.2
@@ -554,7 +554,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -569,6 +573,8 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
+        summa = sum((1 / AdjacencyMatrixGraph.calculate_inout_score(self._graph, vertex)) * 1 for vertex in incidental_vertices)
+        scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
         pass
 
     # Step 5.3
