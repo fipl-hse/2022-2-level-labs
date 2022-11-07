@@ -44,12 +44,10 @@ if __name__ == "__main__":
     adj_graph = AdjacencyMatrixGraph()
     edg_graph = EdgeListGraph()
     if tokens:
-        adj_graph.fill_from_tokens(tokens, 3)
-        edg_graph.fill_from_tokens(tokens, 3)
-        adj_graph.fill_positions(tokens)
-        adj_graph.calculate_position_weights()
-        edg_graph.fill_positions(tokens)
-        edg_graph.calculate_position_weights()
+        for graph in adj_graph, edg_graph:
+            graph.fill_from_tokens(tokens, 3)
+            graph.fill_positions(tokens)
+            graph.calculate_position_weights()
 
     vanilla_adj = VanillaTextRank(adj_graph)
     vanilla_edg = VanillaTextRank(edg_graph)
