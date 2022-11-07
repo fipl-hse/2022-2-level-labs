@@ -4,7 +4,7 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-import re
+
 
 class TextPreprocessor:
     """
@@ -53,8 +53,9 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         cleaned = text
-        cleaned = re.sub(r'{}'.format(self.punctuation), '', cleaned)
-        return tuple(cleaned.split())
+        for marks in self.punctuation:
+            cleaned = cleaned.replace(marks, '')
+        return tuple(cleaned.lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -303,13 +304,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if (vertex1 or vertex2) not in self._matrix[0]:
+        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
             return -1
         place_1 = self._matrix[0].index(vertex1)
         place_2 = self._matrix[0].index(vertex2)
-        if self._matrix[place_1 + 1][place_2] == 1:
-            return 1
-        return 0
+        return self._matrix[place_1+1][place_2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -336,6 +335,8 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
+        if vertex not in self._matrix[0]:
+            return -1
         place = self._matrix[0].index(vertex)
         number = 0
         for i in self._matrix[1:]:
@@ -637,7 +638,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)]
+        top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)][:n_keywords]
         return top_keywords
 
 class PositionBiasedTextRank(VanillaTextRank):
