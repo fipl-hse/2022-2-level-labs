@@ -848,8 +848,7 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        lex_sort = sorted(self._scores, key=lambda key: key)
-        if score_sort := sorted(lex_sort, key=lambda key: self._scores[key], reverse=True)[:n_keywords]:
+        if score_sort := sorted(sorted(self._scores), key=lambda key: self._scores[key], reverse=True)[:n_keywords]:
             return tuple(score_sort)
         return ()
 
@@ -977,4 +976,4 @@ class KeywordExtractionBenchmark:
             report_writer = csv.writer(csv_file)
             report_writer.writerow(['name'] + list(self.themes))
             for key in self.report:
-                report_writer.writerow([key] + [self.report[key][theme] for theme in self.report[key]])
+                report_writer.writerow([key] + [self.report[key][theme] for theme in self.themes])
