@@ -902,3 +902,4 @@ class KeywordExtractionBenchmark:
                 a path where to save the report file
         """
         pass
+
