@@ -628,8 +628,8 @@ class VanillaTextRank:
         """
         sorted_dict = []
         sorted_keys = sorted(self._scores, key=self._scores.get, reverse=True)
-        for w in sorted_keys:
-            sorted_dict = self._scores[int(w)]
+        for index in range(sorted_keys):
+            sorted_dict = self._scores[sorted_keys[index]]
         return tuple(sorted_dict)[:n_keywords]
 
 
