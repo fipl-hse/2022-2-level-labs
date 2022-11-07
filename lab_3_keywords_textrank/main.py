@@ -272,13 +272,7 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        # if vertex1 == vertex2:
-        #     return -1
-        # vertexes = (vertex1, vertex2)
-        # for ver in vertexes:
-        #     if vertex1 not in self._matrix[0]:
-        #         self._matrix[0].append(ver)
-        #         self._matrix.append([ver] + [0 for _ in range(len(self._matrix[0]))])
+
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
