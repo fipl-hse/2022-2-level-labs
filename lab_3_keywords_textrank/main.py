@@ -179,8 +179,8 @@ class TextEncoder:
             if i not in self._id2word:
                 return None
             tokens_list.append(self._id2word[i])
-        encoded_tokens_tup = tuple(tokens_list)
-        return encoded_tokens_tup
+        encoded_tokens_tuple = tuple(tokens_list)
+        return encoded_tokens_tuple
 
 
 # Step 3
