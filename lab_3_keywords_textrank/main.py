@@ -254,7 +254,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
+        pass
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -272,7 +272,7 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-
+        pass
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
