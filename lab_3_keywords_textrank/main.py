@@ -128,8 +128,6 @@ class TextEncoder:
         """
         for token, id in zip(tokens, range(1000, 1000 + len(tokens))):
             self._word2id[token] = id
-
-        for token, id in self._word2id.items():
             self._id2word[id] = token
 
     # Step 2.3
@@ -149,7 +147,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple(self._word2id.get(token) for token in tokens)
+        return tuple(self._word2id.values())
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -167,7 +165,7 @@ class TextEncoder:
         """
         if not (encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
             return None
-        return tuple(self._id2word.get(encoded_token) for encoded_token in encoded_tokens)
+        return tuple(self._id2word.values())
 
 
 # Step 3
@@ -573,8 +571,8 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = sum((1 / AdjacencyMatrixGraph.calculate_inout_score(self._graph, vertex)) * 1 for vertex in incidental_vertices)
-        scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex] for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
         pass
 
     # Step 5.3
@@ -609,7 +607,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -620,7 +618,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        return tuple(sorted(self._scores, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):

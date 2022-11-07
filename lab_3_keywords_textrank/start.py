@@ -8,7 +8,7 @@ from lab_3_keywords_textrank.main import(
     TextEncoder,
     extract_pairs,
     AdjacencyMatrixGraph,
-    # VanillaTextRank,
+    VanillaTextRank,
     # EdgeListGraph,
     # PositionBiasedTextRank,
     # KeywordExtractionBenchmark
@@ -34,27 +34,33 @@ if __name__ == "__main__":
 
     preprocessor = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
     clean_tokens = preprocessor.preprocess_text(text)
-    print(clean_tokens)
 
-    dcts = TextEncoder()
-    encoded_tokens = dcts.encode(clean_tokens)
-    print(encoded_tokens)
-    decoded_tokens = dcts.decode(encoded_tokens)
-    print(decoded_tokens)
+    text_encoder = TextEncoder()
+    encoded_tokens = text_encoder.encode(clean_tokens)
+    if encoded_tokens:
+        pairs = extract_pairs(encoded_tokens, 3)
+        print(pairs)
 
-    pairs = extract_pairs(encoded_tokens, 3)
-    print(pairs)
+    graph = AdjacencyMatrixGraph()
+    # for pair in pairs:
+    #     graph.add_edge(*pair)
+    #     graph.is_incidental(*pair)
+    #     graph.get_vertices()
+    #     print(graph.calculate_inout_score(pair[0]), graph.calculate_inout_score(pair[1]))
+    if encoded_tokens:
+        graph.fill_from_tokens(encoded_tokens, 3)
 
-    matrix = AdjacencyMatrixGraph()
-    for pair in pairs:
-        matrix.add_edge(*pair)
-        matrix.is_incidental(*pair)
-        matrix.get_vertices()
-        matrix.calculate_inout_score(pair[0])
-        matrix.calculate_inout_score(pair[1])
+    textrank = VanillaTextRank(graph)
+    textrank.train()
+    top_tokens_encoded = textrank.get_top_keywords(10)
+    top_tokens_decoded = text_encoder.decode(top_tokens_encoded)
+    print(top_tokens_decoded)
 
-    matrix.fill_from_tokens(encoded_tokens, 3)
-    print(matrix._matrix)
+
+
+    # print(textrank.get_scores())
+
+
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
