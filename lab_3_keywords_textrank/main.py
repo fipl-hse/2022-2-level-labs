@@ -305,7 +305,8 @@ class AdjacencyMatrixGraph:
         if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
             return -1
         vertex2_idx = self._matrix[0].index(vertex2)
-        return self._matrix[vertex2_idx][self._matrix[0].index(vertex1)]
+        vertex1_idx = self._matrix[0].index(vertex1)
+        return self._matrix[vertex2_idx][vertex1_idx]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -670,7 +671,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(sorted(self._scores), key=lambda x: self._scores[x], reverse=True))[:n_keywords]
+        sorted_tokens = sorted(self._scores.items(), key=lambda x: x[1], reverse=True)
+        return tuple(elem[0] for elem in sorted_tokens)[:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
