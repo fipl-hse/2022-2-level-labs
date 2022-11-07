@@ -45,6 +45,7 @@ if __name__ == "__main__":
 
     if tokenization:
         no_stop_words = remove_stop_words(tokenization, stop_words)
+        print(no_stop_words)
 
     if no_stop_words:
         freq_dict = calculate_frequencies(no_stop_words)

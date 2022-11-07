@@ -201,7 +201,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    if not tokens:
+    if not tokens or window_length <= 2 or not isinstance(window_length, int):
         return None
     pairs_of_nums = []
     length = len(tokens) + 1 - window_length
@@ -209,9 +209,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         window_step = tokens[i: i + window_length]
         for one_token in window_step:
             for two_token in window_step:
-                if window_length <= 2 or not isinstance(window_length, int):
-                    return None
-                elif one_token < two_token and (one_token, two_token) not in pairs_of_nums:
+                if one_token < two_token and (one_token, two_token) not in pairs_of_nums:
                     pairs_of_nums.append((one_token, two_token))
     pairs_words = tuple(pairs_of_nums)
     return pairs_words
@@ -256,7 +254,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        pass
+        self._matrix = [[]]
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -274,7 +272,13 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        # if vertex1 == vertex2:
+        #     return -1
+        # vertexes = (vertex1, vertex2)
+        # for ver in vertexes:
+        #     if vertex1 not in self._matrix[0]:
+        #         self._matrix[0].append(ver)
+        #         self._matrix.append([ver] + [0 for _ in range(len(self._matrix[0]))])
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
