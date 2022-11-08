@@ -27,7 +27,8 @@ if __name__ == "__main__":
     preprocessed_text = TextPreprocessor(stop_words, tuple(punctuation))
     encoded_text = TextEncoder()
     encoded_tokens = encoded_text.encode(preprocessed_text.preprocess_text(text))
-    print(extract_pairs(encoded_tokens, 3))
+    if encoded_tokens:
+        print(extract_pairs(encoded_tokens, 3))
 
     adjacency_matrix_graph = AdjacencyMatrixGraph()
     adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
