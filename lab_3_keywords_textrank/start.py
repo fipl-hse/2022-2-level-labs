@@ -27,7 +27,7 @@ if __name__ == "__main__":
     preprocessed_text = TextPreprocessor(stop_words, tuple(punctuation))
     tokens = preprocessed_text.preprocess_text(text)
     encoded_text = TextEncoder()
-    encoded_tokens = encoded_text.encode(tokens)
+    encoded_tokens = tuple(encoded_text.encode(tokens))
     pairs = extract_pairs(encoded_tokens, 3)
     print(pairs)
 
