@@ -92,7 +92,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        return self._remove_stop_words(self._clean_and_tokenize(text))
+        clean_text = self._clean_and_tokenize(text)
+        return self._remove_stop_words(clean_text)
 
 
 class TextEncoder:
@@ -1064,7 +1065,7 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        with open(path, mode="w", encoding='utf-8') as w_file:
+        with path.open("w", encoding='utf-8') as w_file:
             file_writer = csv.writer(w_file, delimiter=",", lineterminator="\r")
             file_writer.writerow(["name"] + list(self.themes))
             for elem in self.report:
