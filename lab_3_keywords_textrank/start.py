@@ -3,7 +3,8 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
+    extract_pairs, EdgeListGraph, PositionBiasedTextRank
 from string import punctuation
 
 if __name__ == "__main__":
@@ -26,12 +27,42 @@ if __name__ == "__main__":
     tokens = preprocessed_text.preprocess_text(text)
     encoded_text = TextEncoder()
     encoded_tokens = encoded_text.encode(tokens)
-    graph = AdjacencyMatrixGraph()
-    graph.fill_from_tokens(encoded_tokens, 3)
-    rank = VanillaTextRank(graph)
-    rank.train()
-    top = rank.get_top_keywords(10)
-    decoded_text = encoded_text.decode(top)
+    pairs = extract_pairs(encoded_tokens, 3)
+    print(pairs)
 
-    RESULT = decoded_text
+    adjacency_matrix_graph = AdjacencyMatrixGraph()
+    adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
+    adjacency_matrix_graph.fill_positions(encoded_tokens)
+    adjacency_matrix_graph.calculate_position_weights()
+
+    vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
+    vanilla_text_rank.train()
+    top_vanilla_text_rank = vanilla_text_rank.get_top_keywords(10)
+    decoded_top_vanilla = encoded_text.decode(top_vanilla_text_rank)
+    print(decoded_top_vanilla)
+
+    position_biased_rank_adjacency_matrix_graph = PositionBiasedTextRank(adjacency_matrix_graph)
+    position_biased_rank_adjacency_matrix_graph.train()
+    top_position_biased_rank_adjacency_matrix_graph = position_biased_rank_adjacency_matrix_graph.get_top_keywords(10)
+    decoded_top_biased_adjacency_matrix_graph = encoded_text.decode(top_position_biased_rank_adjacency_matrix_graph)
+    print(decoded_top_biased_adjacency_matrix_graph)
+
+    edge_list_graph = EdgeListGraph()
+    edge_list_graph.fill_from_tokens(encoded_tokens, 3)
+    edge_list_graph.fill_positions(encoded_tokens)
+    edge_list_graph.calculate_position_weights()
+
+    vanilla_text_rank = VanillaTextRank(edge_list_graph)
+    vanilla_text_rank.train()
+    top_vanilla_text_rank = vanilla_text_rank.get_top_keywords(10)
+    decoded_top_vanilla = encoded_text.decode(top_vanilla_text_rank)
+    print(decoded_top_vanilla)
+
+    position_biased_rank_edge_graph = PositionBiasedTextRank(edge_list_graph)
+    position_biased_rank_edge_graph.train()
+    top_position_biased_rank_edge_graph = position_biased_rank_edge_graph.get_top_keywords(10)
+    decoded_top_biased_edge_graph = encoded_text.decode(top_position_biased_rank_edge_graph)
+    print(decoded_top_biased_edge_graph)
+
+    RESULT = pairs, decoded_top_vanilla, decoded_top_biased_adjacency_matrix_graph, decoded_top_biased_edge_graph
     assert RESULT, 'Keywords are not extracted'
