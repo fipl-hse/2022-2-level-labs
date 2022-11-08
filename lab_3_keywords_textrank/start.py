@@ -4,8 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, EdgeListGraph, \
-    VanillaTextRank, PositionBiasedTextRank
+from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, VanillaTextRank
 
 
 if __name__ == "__main__":
@@ -24,10 +23,11 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    words = TextPreprocessor(stop_words, punctuation).preprocess_text(text)
+    processed = TextPreprocessor(stop_words, punctuation)
+    words = processed.preprocess_text(text)
     encoded = TextEncoder()
     tokens = encoded.encode(words)
-    pairs = extract_pairs(tokens, 5)
+    pairs = extract_pairs(tokens, 7)
     print(pairs)
     graph = AdjacencyMatrixGraph()
     for pair in pairs:

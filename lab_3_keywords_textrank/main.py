@@ -625,7 +625,6 @@ class VanillaTextRank:
             sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i)
         self._scores[vertex] = sum_of_values * self._damping_factor + (1 - self._damping_factor)
 
-
     # Step 5.3
     def train(self) -> None:
         """
@@ -671,7 +670,6 @@ class VanillaTextRank:
         """
         # поменять в соответствии с условием
         return [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords]
-
 
 class PositionBiasedTextRank(VanillaTextRank):
     """
