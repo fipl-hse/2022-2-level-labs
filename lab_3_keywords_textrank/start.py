@@ -25,9 +25,8 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     preprocessed_text = TextPreprocessor(stop_words, tuple(punctuation))
-    tokens = preprocessed_text.preprocess_text(text)
     encoded_text = TextEncoder()
-    encoded_tokens = tuple(encoded_text.encode(tokens))
+    encoded_tokens = encoded_text.encode(preprocessed_text.preprocess_text(text))
     pairs = extract_pairs(encoded_tokens, 3)
     print(pairs)
 
