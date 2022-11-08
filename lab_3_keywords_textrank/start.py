@@ -27,6 +27,7 @@ if __name__ == "__main__":
     preprocessed_text = TextPreprocessor(stop_words, tuple(punctuation))
     encoded_text = TextEncoder()
     encoded_tokens = encoded_text.encode(preprocessed_text.preprocess_text(text))
+    print(extract_pairs(encoded_tokens, 3))
 
     adjacency_matrix_graph = AdjacencyMatrixGraph()
     adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
@@ -62,5 +63,5 @@ if __name__ == "__main__":
     decoded_top_biased_edge_graph = encoded_text.decode(top_position_biased_rank_edge_graph)
     print(decoded_top_biased_edge_graph)
 
-    RESULT = pairs, decoded_top_vanilla, decoded_top_biased_adjacency_matrix_graph, decoded_top_biased_edge_graph
+    RESULT = True
     assert RESULT, 'Keywords are not extracted'
