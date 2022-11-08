@@ -54,7 +54,7 @@ class TextPreprocessor:
         for mark in self._punctuation:
             text = text.replace(mark, '')
         split_text = text.lower().split()
-        cleaned_text = [i.strip() for i in split_text if i]
+        cleaned_text = [i.strip() for i in split_text]
         return tuple(cleaned_text)
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -301,8 +301,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
             return -1
-        v1_ind = self._matrix[0].index(vertex1)
-        v2_ind = self._matrix[0].index(vertex2)
+        v1_ind = self._matrix[0].index(vertex1) + 1
+        v2_ind = self._matrix[0].index(vertex2) + 1
         incidental = self._matrix[v1_ind][v2_ind]
         return incidental
 
@@ -333,7 +333,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex in self._matrix[0]:
             v_ind = self._matrix[0].index(vertex)+1
-            return self._matrix[v_ind][1:].count(1)
+            return sum(self._matrix[v_ind][1:])
         return -1
 
     # Step 4.6
@@ -477,7 +477,9 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 in self._edges.get(vertex2, []) and vertex2 in self._edges.get(vertex1, []):
+        if vertex1 not in self._edges or vertex2 not in self._edges:
+            return -1
+        if vertex1 in self._edges[vertex2] and vertex2 in self._edges[vertex1]:
             return 1
         return 0
 
@@ -527,11 +529,9 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
+
         for count, value in enumerate(tokens, start=1):
-            if value not in self._positions:
-                self._positions[value] = [count]
-            else:
-                self._positions[value].append(count)
+            self._positions[value] = self._positions.get(value, []) + [count]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -669,6 +669,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
+        # поменять в соответствии с условием
         return [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords]
 
 

@@ -25,9 +25,23 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     words = TextPreprocessor(stop_words, punctuation).preprocess_text(text)
-    print(words)
-    tokens = TextEncoder().encode(words)
+    encoded = TextEncoder()
+    tokens = encoded.encode(words)
+    pairs = extract_pairs(tokens, 5)
+    print(pairs)
+    graph = AdjacencyMatrixGraph()
+    for pair in pairs:
+        graph.add_edge(pair[0], pair[1])
+    van_graph = VanillaTextRank(graph)
+    van_graph.train()
+    top10 = van_graph.get_top_keywords(10)
+    decoded10 = encoded.decode(top10)
+    print(decoded10)
 
-    RESULT = None
+
+
+
+
+    #RESULT = decoded10
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     #assert RESULT, 'Keywords are not extracted'
