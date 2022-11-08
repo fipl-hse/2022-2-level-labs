@@ -55,11 +55,7 @@ class TextPreprocessor:
         for mark in self._punctuation:
             text = text.replace(mark, '')
         split_text = text.split(' ')
-        word_list = []
-        for word in split_text:
-            if word1 := word.lower():
-                word_list.append(word1)
-        return tuple(word_list)
+        return tuple(word1 for word in split_text if (word1 := word.lower()))
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -74,11 +70,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        tokens_list = []
-        for token in tokens:
-            if token not in self._stop_words:
-                tokens_list.append(token)
-        return tuple(tokens_list)
+        return tuple(token for token in tokens if token not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -93,9 +85,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        tokenized = TextPreprocessor._clean_and_tokenize(self, text)
-        clean_text = TextPreprocessor._remove_stop_words(self, tokenized)
-        return clean_text
+        tokenized = self._clean_and_tokenize(text)
+        return self._remove_stop_words(tokenized)
 
 
 class TextEncoder:
