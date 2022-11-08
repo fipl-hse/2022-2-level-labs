@@ -364,7 +364,7 @@ class AdjacencyMatrixGraph:
             if token in self._positions:
                 self._positions[token] = [token] + [index + 1]
             else:
-                self._positions[token] = [] + [index + 1]
+                self._positions[token] = [index + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -536,7 +536,7 @@ class EdgeListGraph:
             if token in self._positions:
                 self._positions[token] = [token] + [index + 1]
             else:
-                self._positions[token] = [] + [index + 1]
+                self._positions[token] = [index + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -549,7 +549,7 @@ class EdgeListGraph:
                 if token not in position_weights:
                     position_weights[token] = 1 / position
                 else:
-                    position_weights[token] = sum(1 / position)
+                    position_weights[token] += 1 / position
         for token in self._positions:
             self._position_weights[token] = position_weights[token] / sum(position_weights.values())
 
