@@ -38,8 +38,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self.stop_words = stop_words
-        self.punctuation = punctuation
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -54,7 +54,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        return tuple(''.join([symbol.lower() for symbol in text if symbol not in self.punctuation]).split())
+        clean_text = [symbol.lower() for symbol in text if symbol not in self._punctuation]
+        return tuple(''.join(clean_text).split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -69,7 +70,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(word for word in tokens if word not in self.stop_words)
+        return tuple(word for word in tokens if word not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -126,8 +127,10 @@ class TextEncoder:
                 sequence of string tokens
         """
         self._word2id = {token: randint(1000, 9999) for token in tokens}
-        for index, token in enumerate(self._word2id.keys()):
-            self._id2word[list(self._word2id.values())[index]] = token
+        for index, token in enumerate(self._word2id):
+            w2i_values = list(self._word2id.values())
+            needed_value = w2i_values[index]
+            self._id2word[needed_value] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -488,8 +491,7 @@ class EdgeListGraph:
             return -1
         if vertex2 in self._edges[vertex1]:
             return 1
-        else:
-            return 0
+        return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -535,7 +537,7 @@ class EdgeListGraph:
         """
         for token in tokens:
             if token not in self._positions:
-                token_positions = [idx + 1 for idx, elem in enumerate(tokens) if elem == token]
+                token_positions = [idx for idx, elem in enumerate(tokens, start=1) if elem == token]
                 self._positions[token] = token_positions
 
     # Step 8.3
