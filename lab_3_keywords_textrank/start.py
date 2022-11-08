@@ -4,7 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, VanillaTextRank
+from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph
 
 if __name__ == "__main__":
 
@@ -26,21 +26,44 @@ if __name__ == "__main__":
     for punc in punctuation:
         PUNCTUATION_MARKS_LIST.append(punc)
     PUNCTUATION_MARKS = tuple(PUNCTUATION_MARKS_LIST)
-
     PREPROCESSED_TEXT = TextPreprocessor(stop_words, PUNCTUATION_MARKS)
     TOKENS = PREPROCESSED_TEXT.preprocess_text(text)
     TEXT_TO_CODE = TextEncoder()
     ENCODED_TXT = TEXT_TO_CODE.encode(TOKENS)
-    TEXT_PAIRS = extract_pairs(ENCODED_TXT, 8)
+    # TEXT_PAIRS = extract_pairs(ENCODED_TXT, 8)
+
+    # step 6
+
     GRAPH_OF_TEXT = AdjacencyMatrixGraph()
-    for one_pair in TEXT_PAIRS:
-        GRAPH_OF_TEXT.add_edge(one_pair[0], one_pair[1])
-    VANILLA_GRAPH = VanillaTextRank(GRAPH_OF_TEXT)
-    VANILLA_GRAPH.train()
-    BEST_TOKENS = VANILLA_GRAPH.get_top_keywords(10)
-    DECODED_TOKENS = TEXT_TO_CODE.decode(BEST_TOKENS)
-    RESULT = DECODED_TOKENS
-    print(RESULT)
+    GRAPH_OF_TEXT.fill_from_tokens(ENCODED_TXT, 5)
+    VANILLA_GRAPH_ADJA = VanillaTextRank(GRAPH_OF_TEXT)
+    VANILLA_GRAPH_ADJA.train()
+    # for one_pair in TEXT_PAIRS:
+    #     GRAPH_OF_TEXT.add_edge(one_pair[0], one_pair[1])
+
+    # step 7.3
+
+    EDGE_LIST_GRAPH = EdgeListGraph()
+    EDGE_LIST_GRAPH.fill_from_tokens(ENCODED_TXT, 5)
+    VANILLA_GRAPH_EDGE = VanillaTextRank(EDGE_LIST_GRAPH)
+    VANILLA_GRAPH_EDGE.train()
+
+    BEST_TOKENS_ADJA = VANILLA_GRAPH_ADJA.get_top_keywords(10)
+    DECODED_TOKENS_ADJA = TEXT_TO_CODE.decode(BEST_TOKENS_ADJA)
+    BEST_TOKENS_EDGE = VANILLA_GRAPH_EDGE.get_top_keywords(10)
+    DECODED_TOKENS_EDGE = TEXT_TO_CODE.decode(BEST_TOKENS_EDGE)
+
+    print(DECODED_TOKENS_ADJA)
+    print(DECODED_TOKENS_EDGE)
+    if DECODED_TOKENS_EDGE == DECODED_TOKENS_ADJA:
+        print(1)
+    else:
+        print(0)
+
+
+
+    RESULT = DECODED_TOKENS_ADJA
+    # print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 
