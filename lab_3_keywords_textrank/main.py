@@ -696,8 +696,9 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        self._scores[vertex] = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * sum(
-            scores[j] / self._graph.calculate_inout_score(j) for j in incidental_vertices)
+        incidental_sum = sum(scores[j] / self._graph.calculate_inout_score(j) for j in incidental_vertices)
+        self._scores[vertex] = (1 - self._damping_factor) * self._position_weights[vertex] + \
+                                    self._damping_factor * incidental_sum
 
 
 class TFIDFAdapter:
@@ -930,6 +931,7 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
+        n_keywords = 50
         names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
         self.report = {name: {} for name in names}
         preprocessor = TextPreprocessor(self.stop_words, self.punctuation)
@@ -954,9 +956,11 @@ class KeywordExtractionBenchmark:
             for algorithm in tfidf, rake, vanilla, biased:
                 algorithm.train()
 
-            predict_tfidf, predict_rake = tfidf.get_top_keywords(50), rake.get_top_keywords(50)
-            predict_vanilla = encoder.decode(vanilla.get_top_keywords(50))
-            predict_biased = encoder.decode(biased.get_top_keywords(50))
+            predict_tfidf = tfidf.get_top_keywords(n_keywords)
+            predict_rake = rake.get_top_keywords(n_keywords)
+            predict_vanilla = encoder.decode(vanilla.get_top_keywords(n_keywords))
+            predict_biased = encoder.decode(biased.get_top_keywords(n_keywords))
+
             if predict_vanilla is None or predict_biased is None:
                 return None
             for name, predict in zip(names, [predict_tfidf, predict_rake, predict_vanilla, predict_biased]):
