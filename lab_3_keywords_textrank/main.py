@@ -174,8 +174,8 @@ class TextEncoder:
         """
         if not encoded_tokens:
             return None
-        for t in encoded_tokens:
-            if t not in self._id2word.keys():
+        for token in encoded_tokens:
+            if token not in self._id2word.keys():
                 return None
         tokens_list = [self._id2word[key] for token in encoded_tokens for key in self._id2word if token == key]
         return tuple(tokens_list)
@@ -202,9 +202,9 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or not isinstance(window_length, int) or window_length < 2:
         return None
     final = []
-    ds = list(tokens)
+    tokens_list = list(tokens)
     for i in range(len(tokens)):
-        window_tokens = ds[i:window_length + i]
+        window_tokens = tokens_list[i:window_length + i]
         for j in window_tokens:
             for k in window_tokens:
                 if (j, k) in final or (k, j) in final:
