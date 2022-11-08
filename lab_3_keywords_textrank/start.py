@@ -3,9 +3,10 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from string import punctuation
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
     extract_pairs, EdgeListGraph, PositionBiasedTextRank
-from string import punctuation
+
 
 if __name__ == "__main__":
 

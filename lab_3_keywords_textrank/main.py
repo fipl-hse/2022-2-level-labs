@@ -55,7 +55,11 @@ class TextPreprocessor:
         for mark in self._punctuation:
             text = text.replace(mark, '')
         split_text = text.split(' ')
-        return tuple([word1 for word in split_text if (word1 := word.lower())])
+        word_list = []
+        for word in split_text:
+            if word1 := word.lower():
+                word_list.append(word1)
+        return tuple(word_list)
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -938,4 +942,3 @@ class KeywordExtractionBenchmark:
                 a path where to save the report file
         """
         pass
-
