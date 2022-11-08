@@ -155,7 +155,8 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple([self._word2id[i] for t in tokens for i in self._word2id.keys() if t == i])
+        tokens_list = [self._word2id[key] for token in tokens for key in self._word2id if token == key]
+        return tuple(tokens_list)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -176,7 +177,8 @@ class TextEncoder:
         for t in encoded_tokens:
             if t not in self._id2word.keys():
                 return None
-        return tuple([self._id2word[j] for t in encoded_tokens for j in self._id2word.keys() if t == j])
+        tokens_list = [self._id2word[key] for token in encoded_tokens for key in self._id2word if token == key]
+        return tuple(tokens_list)
 
 
 # Step 3
@@ -208,8 +210,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                 if (j, k) in final or (k, j) in final:
                     continue
                 if not j == k:
-                    ls = tuple([j, k])
-                    final.append(ls)
+                    pair = tuple([j, k])
+                    final.append(pair)
     return tuple(final)
 
 
@@ -378,12 +380,12 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        s = {}
+        position_weights = {}
         for token in self._positions:
             for position in self._positions[token]:
-                s[token] = 1 / position
-        for i in s:
-            self._position_weights[i] = s[i] / sum(s.values())
+                position_weights[token] = 1 / position
+        for i in position_weights:
+            self._position_weights[i] = position_weights[i] / sum(position_weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
