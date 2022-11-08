@@ -40,6 +40,7 @@ if __name__ == "__main__":
     BEST_TOKENS = VANILLA_GRAPH.get_top_keywords(10)
     DECODED_TOKENS = TEXT_TO_CODE.decode(BEST_TOKENS)
     RESULT = DECODED_TOKENS
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 

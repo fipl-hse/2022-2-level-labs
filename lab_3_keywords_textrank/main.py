@@ -358,6 +358,7 @@ class AdjacencyMatrixGraph:
         pairs = extract_pairs(tokens, window_length)
         for each_pair in pairs:
             self.add_edge(each_pair[0], each_pair[1])
+        print(self._matrix)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -590,10 +591,10 @@ class VanillaTextRank:
         """
         inout_weight_sum = 0
         for vertices in incidental_vertices:
-            new_score = (1/self._graph.calculate_inout_score(vertices)) * scores[vertices]
+            new_score = scores[vertices]/self._graph.calculate_inout_score(vertices)
             inout_weight_sum += new_score
         weight = (1 - self._damping_factor) + self._damping_factor * inout_weight_sum
-        scores[vertex] = weight
+        self._scores[vertex] = weight
 
     # Step 5.3
     def train(self) -> None:
@@ -639,7 +640,7 @@ class VanillaTextRank:
                 top n most important tokens in the encoded text
         """
         top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)][:n_keywords]
-        return top_keywords
+        return tuple(top_keywords)
 
 class PositionBiasedTextRank(VanillaTextRank):
     """
