@@ -3,7 +3,7 @@ Lab 3
 Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
-from typing import Optional, Union
+from typing import Optional, Union, List
 import csv
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
@@ -920,7 +920,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(sorted(self._scores.keys(), reverse=True, key=lambda key: self._scores[key])[:n_keywords])
+        sorted_scores = dict(sorted(self._scores.items()))
+        return tuple(sorted(sorted_scores, reverse=True, key=lambda key: sorted_scores[key])[:n_keywords])
 
 
 # Step 12.1
