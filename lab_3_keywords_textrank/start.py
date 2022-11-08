@@ -31,8 +31,9 @@ if __name__ == "__main__":
         print(extract_pairs(encoded_tokens, 3))
 
     adjacency_matrix_graph = AdjacencyMatrixGraph()
-    adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
-    adjacency_matrix_graph.fill_positions(encoded_tokens)
+    if encoded_tokens:
+        adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
+        adjacency_matrix_graph.fill_positions(encoded_tokens)
     adjacency_matrix_graph.calculate_position_weights()
 
     vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
@@ -48,8 +49,9 @@ if __name__ == "__main__":
     print(decoded_top_biased_adjacency_matrix_graph)
 
     edge_list_graph = EdgeListGraph()
-    edge_list_graph.fill_from_tokens(encoded_tokens, 3)
-    edge_list_graph.fill_positions(encoded_tokens)
+    if encoded_tokens:
+        edge_list_graph.fill_from_tokens(encoded_tokens, 3)
+        edge_list_graph.fill_positions(encoded_tokens)
     edge_list_graph.calculate_position_weights()
 
     vanilla_text_rank = VanillaTextRank(edge_list_graph)
