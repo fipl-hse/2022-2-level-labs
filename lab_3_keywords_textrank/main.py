@@ -547,7 +547,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -562,7 +566,9 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        scores[vertex] = (1 - self._damping_factor) + self._damping_factor * sum(
+            scores[inc_vertex] / self._graph.calculate_inout_score(inc_vertex)
+            for inc_vertex in incidental_vertices)
 
     # Step 5.3
     def train(self) -> None:
@@ -596,7 +602,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -607,7 +613,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        return tuple(sorted(self._scores.keys(), key=lambda x: self._scores[x],
+                            reverse=True)[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
