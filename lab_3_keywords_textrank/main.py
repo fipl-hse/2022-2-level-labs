@@ -2,8 +2,12 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+import csv
 from pathlib import Path
 from typing import Optional, Union
+from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calculate_tfidf
+from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
+    calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
 
 class TextPreprocessor:
@@ -665,8 +669,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_dict = sorted(self._scores, key=lambda key: self._scores[key], reverse=True)
-        return tuple(sorted_dict)[:n_keywords]
+        sorted_dict = sorted(self._scores, key=lambda key: self._scores[key], reverse=True)[:n_keywords]
+        return tuple(sorted_dict)
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -764,7 +768,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+        self._tokens = tokens
+        self._idf = idf
+        self._scores = {}
 
     # Step 10.2
     def train(self) -> int:
@@ -775,7 +781,14 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        if not (frequencies := calculate_frequencies(list(self._tokens))):
+            return -1
+        if not (term_freq := calculate_tf(frequencies)):
+            return -1
+        if not (tfidf := calculate_tfidf(term_freq, self._idf)):
+            return -1
+        self._scores = tfidf
+        return 0
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -790,7 +803,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        sorted_dict = sorted(self._scores, key=lambda key: self._scores[key], reverse=True)[:n_keywords]
+        return tuple(sorted_dict)
 
 
 class RAKEAdapter:
@@ -827,7 +841,9 @@ class RAKEAdapter:
             stop_words: tuple[str, ...]
                 a sequence of stop-words
         """
-        pass
+        self._text = text
+        self._stop_words = stop_words
+        self._scores = {}
 
     # Step 11.2
     def train(self) -> int:
@@ -838,7 +854,18 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        if not (phrases := extract_phrases(self._text)):
+            return -1
+        if not (candidate_keyword_phrases := extract_candidate_keyword_phrases(phrases, list(self._stop_words))):
+            return -1
+        if not (frequencies_for_content_words := calculate_frequencies_for_content_words(candidate_keyword_phrases)):
+            return -1
+        if not (word_degrees := calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words))):
+            return -1
+        if not (word_scores := calculate_word_scores(word_degrees, frequencies_for_content_words)):
+            return -1
+        self._scores = dict(word_scores)
+        return 0
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -853,7 +880,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        sorted_dict = sorted(sorted(self._scores), key=lambda key: self._scores[key], reverse=True)[:n_keywords]
+        return tuple(sorted_dict)
 
 
 # Step 12.1
@@ -871,7 +899,15 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    true_positive = 0
+    false_negative = 0
+    for token in predicted:
+        if token in target:
+            true_positive += 1
+        else:
+            false_negative += 1
+    recall = true_positive / (true_positive + false_negative)
+    return recall
 
 
 class KeywordExtractionBenchmark:
@@ -916,7 +952,12 @@ class KeywordExtractionBenchmark:
             materials_path: Path
                 a path to materials to use for comparison
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf = idf
+        self._materials_path = materials_path
+        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -928,7 +969,56 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        comparison_report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TFIDFAdapter': {}, 'RAKEAdapter': {}}
+        preprocessed_text = TextPreprocessor(self._stop_words, self._punctuation)
+        encoded_text = TextEncoder()
+
+        for index, theme in enumerate(self.themes):
+            text_path = str(index) + '_text.txt'
+            text_file = open(self._materials_path / text_path, encoding='utf-8')
+            text = text_file.read()
+            keywords_path = str(index) + '_keywords.txt'
+            keywords_file = open(self._materials_path / keywords_path, encoding='utf-8')
+            keywords = tuple(keywords_file.read().split())
+
+            tokens = preprocessed_text.preprocess_text(text)
+            encoded_tokens = encoded_text.encode(tokens)
+            if not encoded_tokens:
+                return None
+
+            edge_list_graph = EdgeListGraph()
+            if encoded_tokens:
+                edge_list_graph.fill_from_tokens(encoded_tokens, 3)
+                edge_list_graph.fill_positions(encoded_tokens)
+            edge_list_graph.calculate_position_weights()
+
+            vanilla_text_rank = VanillaTextRank(edge_list_graph)
+            vanilla_text_rank.train()
+            top_vanilla_text_rank = vanilla_text_rank.get_top_keywords(50)
+            decoded_top_vanilla = encoded_text.decode(top_vanilla_text_rank)
+            if not decoded_top_vanilla:
+                return None
+            comparison_report['VanillaTextRank'][theme] = calculate_recall(decoded_top_vanilla, keywords)
+
+            position_biased_rank_edge_graph = PositionBiasedTextRank(edge_list_graph)
+            position_biased_rank_edge_graph.train()
+            top_position_biased_rank_edge_graph = position_biased_rank_edge_graph.get_top_keywords(50)
+            decoded_top_biased_edge_graph = encoded_text.decode(top_position_biased_rank_edge_graph)
+            if not decoded_top_biased_edge_graph:
+                return None
+            comparison_report['PositionBiasedTextRank'][theme] = calculate_recall(decoded_top_biased_edge_graph,
+                                                                                  keywords)
+            tfidf = TFIDFAdapter(tokens, self._idf)
+            tfidf.train()
+            top_tfidf = tfidf.get_top_keywords(50)
+            comparison_report['TFIDFAdapter'][theme] = calculate_recall(top_tfidf, keywords)
+
+            rake = RAKEAdapter(text, self._stop_words)
+            rake.train()
+            top_rake = rake.get_top_keywords(50)
+            comparison_report['RAKEAdapter'][theme] = calculate_recall(top_rake, keywords)
+
+        self.report = comparison_report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -939,4 +1029,9 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        with open(path, 'w', encoding='utf-8') as csv_file:
+            writer = csv.writer(csv_file)
+            writer.writerow(['name'] + list(self.themes))
+            for method in self.report:
+                for theme in self.themes:
+                    writer.writerow([method] + [self.report[method][theme]])
