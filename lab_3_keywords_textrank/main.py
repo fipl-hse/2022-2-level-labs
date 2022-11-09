@@ -854,15 +854,20 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        if not (phrases := extract_phrases(self._text)):
+        phrases = extract_phrases(self._text)
+        if not phrases:
             return -1
-        if not (candidate_keyword_phrases := extract_candidate_keyword_phrases(phrases, list(self._stop_words))):
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
+        if not candidate_keyword_phrases:
             return -1
-        if not (frequencies_for_content_words := calculate_frequencies_for_content_words(candidate_keyword_phrases)):
+        frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+        if not frequencies_for_content_words:
             return -1
-        if not (word_degrees := calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words))):
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words))
+        if not word_degrees:
             return -1
-        if not (word_scores := calculate_word_scores(word_degrees, frequencies_for_content_words)):
+        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+        if not word_scores:
             return -1
         self._scores = dict(word_scores)
         return 0
@@ -1019,6 +1024,7 @@ class KeywordExtractionBenchmark:
             comparison_report['RAKEAdapter'][theme] = calculate_recall(top_rake, keywords)
 
         self.report = comparison_report
+        return comparison_report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
