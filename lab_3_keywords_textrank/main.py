@@ -55,7 +55,7 @@ class TextPreprocessor:
         for mark in self._punctuation:
             text = text.replace(mark, '')
         split_text = text.split(' ')
-        return tuple(word1 for word in split_text if (word1 := word.lower()))
+        return tuple(word.lower() for word in split_text if word)
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -437,6 +437,13 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
+    # function to add a vertex to the dict
+    def add_vertex_to_dict(self, vertex1: int, vertex2: int) -> None:
+        if vertex1 not in self._edges:
+            self._edges[vertex1] = [vertex2]
+        else:
+            self._edges[vertex1].append(vertex2)
+
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
@@ -455,14 +462,8 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if vertex1 not in self._edges:
-            self._edges[vertex1] = [vertex2]
-        else:
-            self._edges[vertex1].append(vertex2)
-        if vertex2 not in self._edges:
-            self._edges[vertex2] = [vertex1]
-        else:
-            self._edges[vertex2].append(vertex1)
+        self.add_vertex_to_dict(vertex1, vertex2)
+        self.add_vertex_to_dict(vertex2, vertex1)
         return 0
 
     # Step 7.2
