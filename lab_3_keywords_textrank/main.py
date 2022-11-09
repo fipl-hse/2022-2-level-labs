@@ -974,28 +974,36 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        comparison_report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TFIDFAdapter': {}, 'RAKEAdapter': {}}
+        comparison_report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
         preprocessed_text = TextPreprocessor(self._stop_words, self._punctuation)
         encoded_text = TextEncoder()
 
         for index, theme in enumerate(self.themes):
             text_path = str(index) + '_text.txt'
-            text_file = open(self._materials_path / text_path, encoding='utf-8')
+            text_file = open(self._materials_path / text_path, 'r', encoding='utf-8')
             text = text_file.read()
             keywords_path = str(index) + '_keywords.txt'
-            keywords_file = open(self._materials_path / keywords_path, encoding='utf-8')
+            keywords_file = open(self._materials_path / keywords_path, 'r', encoding='utf-8')
             keywords = tuple(keywords_file.read().split())
 
             tokens = preprocessed_text.preprocess_text(text)
             encoded_tokens = encoded_text.encode(tokens)
-            if not encoded_tokens:
-                return None
 
             edge_list_graph = EdgeListGraph()
             if encoded_tokens:
                 edge_list_graph.fill_from_tokens(encoded_tokens, 3)
                 edge_list_graph.fill_positions(encoded_tokens)
             edge_list_graph.calculate_position_weights()
+
+            tfidf = TFIDFAdapter(tokens, self._idf)
+            tfidf.train()
+            top_tfidf = tfidf.get_top_keywords(50)
+            comparison_report['TF-IDF'][theme] = calculate_recall(top_tfidf, keywords)
+
+            rake = RAKEAdapter(text, self._stop_words)
+            rake.train()
+            top_rake = rake.get_top_keywords(50)
+            comparison_report['RAKE'][theme] = calculate_recall(top_rake, keywords)
 
             vanilla_text_rank = VanillaTextRank(edge_list_graph)
             vanilla_text_rank.train()
@@ -1013,15 +1021,6 @@ class KeywordExtractionBenchmark:
                 return None
             comparison_report['PositionBiasedTextRank'][theme] = calculate_recall(decoded_top_biased_edge_graph,
                                                                                   keywords)
-            tfidf = TFIDFAdapter(tokens, self._idf)
-            tfidf.train()
-            top_tfidf = tfidf.get_top_keywords(50)
-            comparison_report['TFIDFAdapter'][theme] = calculate_recall(top_tfidf, keywords)
-
-            rake = RAKEAdapter(text, self._stop_words)
-            rake.train()
-            top_rake = rake.get_top_keywords(50)
-            comparison_report['RAKEAdapter'][theme] = calculate_recall(top_rake, keywords)
 
         self.report = comparison_report
         return comparison_report
@@ -1039,5 +1038,4 @@ class KeywordExtractionBenchmark:
             writer = csv.writer(csv_file)
             writer.writerow(['name'] + list(self.themes))
             for method in self.report:
-                for theme in self.themes:
-                    writer.writerow([method] + [self.report[method][theme]])
+                writer.writerow([method] + [self.report[method][theme] for theme in self.themes])
