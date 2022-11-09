@@ -437,8 +437,10 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
-    # function to add a vertex to the dict
     def add_vertex_to_dict(self, first_vertex: int, second_vertex: int) -> None:
+        """
+        Adds a vertex to the dict
+        """
         if first_vertex not in self._edges:
             self._edges[first_vertex] = [second_vertex]
         else:
