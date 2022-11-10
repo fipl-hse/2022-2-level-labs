@@ -359,8 +359,8 @@ class AdjacencyMatrixGraph:
         """
         p_tokens = {token: sum(1 / position for position in positions) for token, positions in self._positions.items()}
         p_sum = sum(p_tokens.values())
-        for token, p in p_tokens.items():
-            self._position_weights[token] = p / p_sum
+        for token, p_token in p_tokens.items():
+            self._position_weights[token] = p_token / p_sum
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -520,8 +520,8 @@ class EdgeListGraph:
         """
         p_tokens = {token: sum(1 / position for position in positions) for token, positions in self._positions.items()}
         p_sum = sum(p_tokens.values())
-        for token, p in p_tokens.items():
-            self._position_weights[token] = p / p_sum
+        for token, p_token in p_tokens.items():
+            self._position_weights[token] = p_token / p_sum
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
