@@ -202,9 +202,11 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not tokens or (not isinstance(window_length, int) or isinstance(window_length, bool)) or window_length < 2:
         return None
+    windows = [range(i, i+window_length-1) for i in range(len(tokens) - window_length)]
     pairs = []
-    for window in [range(i, i+window_length-1) for i in range(len(tokens) - window_length)]:
-        for pair in [(tokens[one:one+two+1:two]) for one in window for two in range(1, window_length)]:
+    for window in windows:
+        window_pairs = [(tokens[one:one+two+1:two]) for one in window for two in range(1, window_length)]
+        for pair in window_pairs:
             if not pair[0] == pair[1] and pair not in pairs and (pair[1], pair[0]) not in pairs:
                 pairs.append(pair)
     return tuple(pairs)
