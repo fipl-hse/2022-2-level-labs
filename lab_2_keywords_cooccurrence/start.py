@@ -3,7 +3,8 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from main import extract_phrases, extract_candidate_keyword_phrases
+from main import extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
+    calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n
 
 
 def read_target_text(file_path: Path) -> str:
@@ -42,6 +43,12 @@ if __name__ == "__main__":
     for title, text in corpus.items():
         extracted_phrases = extract_phrases(text)
         candidate_keywords = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+        word_frequencies = calculate_frequencies_for_content_words(candidate_keywords)
+        word_degrees = calculate_word_degrees(candidate_keywords, list(word_frequencies.keys()))
+        word_scores = calculate_word_scores(word_degrees, word_frequencies)
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keywords, word_scores)
+        top_n = get_top_n(keyword_phrases_with_scores, 10, 5)
+        print(title, top_n)
 
     RESULT = None
 
