@@ -34,6 +34,12 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
 
 def check_list_types(sequence: Sequence, expected_type: Any) -> bool:
+    """
+    Checks element's type in a list
+    :param sequence: a list
+    :param expected_type: expected type
+    :return: True if element's type is same as expected type, otherwise False
+    """
     for item in sequence:
         if not isinstance(item, expected_type):
             return False
