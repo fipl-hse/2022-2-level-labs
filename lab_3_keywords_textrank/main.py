@@ -685,7 +685,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -700,7 +701,8 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        self._scores[vertex] = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * sum(
+            scores[inc_vertex] / self._graph.calculate_inout_score(inc_vertex) for inc_vertex in incidental_vertices)
 
 
 class TFIDFAdapter:

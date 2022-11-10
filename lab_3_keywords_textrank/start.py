@@ -5,7 +5,7 @@ TextRank keyword extraction starter
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank, EdgeListGraph
+    VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
 
 
 if __name__ == "__main__":
@@ -46,6 +46,13 @@ if __name__ == "__main__":
         vanilla_rank.train()
         print(encoder.decode(vanilla_rank.get_top_keywords(10)))
 
-    RESULT = None
+    # step 9
+    position_rank_adjacency = PositionBiasedTextRank(adjacency_matrix_graph)
+    position_rank_edge = PositionBiasedTextRank(edge_list_graph)
+    for position_rank in position_rank_adjacency, position_rank_edge:
+        position_rank.train()
+        print(encoder.decode(position_rank.get_top_keywords(10)))
+
+    RESULT = 'Checking start.py readiness. Will remove it later.'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
