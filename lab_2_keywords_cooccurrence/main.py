@@ -3,8 +3,10 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
+
 from typing import Optional, Sequence, Mapping, Any
 from string import punctuation
+
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -82,6 +84,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         if new_candidate:
             candidate_keywords.append(tuple(new_candidate))
     return candidate_keywords
+    
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
@@ -91,7 +94,6 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-
     if not candidate_keyword_phrases:
         return None
     if not isinstance(candidate_keyword_phrases, list):
@@ -143,6 +145,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             if token in content_words:
                 word_degrees_dict[token] += len(item)
     return word_degrees_dict
+
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
                           word_frequencies: Mapping[str, int]) -> Optional[Mapping[str, float]]:
@@ -229,6 +232,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     return joined_phrases[:top_n]
 
 
+
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
                                                      phrases: Sequence[str]) -> Optional[KeyPhrases]:
     """
@@ -263,6 +267,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             repeated_pairs.append(pair)
     return repeated_pairs
 
+
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
                                                               stop_words: Sequence[str]) \
@@ -290,7 +295,6 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :return: a list of stop words
     """
     pass
-
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
