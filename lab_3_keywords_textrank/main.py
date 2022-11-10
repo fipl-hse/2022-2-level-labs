@@ -282,9 +282,6 @@ class AdjacencyMatrixGraph:
                 if len(i) > len(self._matrix[0]):
                     break
                 i.append(0)
-        for i in self._matrix:
-            if i == self._matrix[0]:
-                continue
             for j in range(len(self._matrix[0])):
                 if (i[0] == vertex1 and self._matrix[0][j] == vertex2) or (
                         self._matrix[0][j] == vertex1 and i[0] == vertex2):
