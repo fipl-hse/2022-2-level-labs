@@ -287,8 +287,8 @@ class AdjacencyMatrixGraph:
                 for element in range(count):
                     row += ['?']
         for row in self._matrix:
-            for idx in range(len(row)):
-                if row[idx] == '?':
+            for idx, element in enumerate(row):
+                if element == '?':
                     if ((row[0] == vertex1 and self._matrix[0][idx] == vertex2)
                             or (row[0] == vertex2 and self._matrix[0][idx] == vertex1)):
                         row[idx] = 1
@@ -316,11 +316,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0][1:] or vertex2 not in self._matrix[0][1:]:
-            return -1
-        for row in self._matrix:
-            if row[0] == vertex1:
-                return row[self._matrix[0].index(vertex2)]
+        if vertex1 in self._matrix[0][1:] and vertex2 in self._matrix[0][1:]:
+            for row in self._matrix:
+                if row[0] == vertex1:
+                    return row[self._matrix[0].index(vertex2)]
+        return -1
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -347,11 +347,11 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0][1:]:
-            return -1
-        for row in self._matrix:
-            if row[0] == vertex:
-                return row[1:].count(1)
+        if vertex in self._matrix[0][1:]:
+            for row in self._matrix:
+                if row[0] == vertex:
+                    return row[1:].count(1)
+        return -1
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -388,7 +388,7 @@ class AdjacencyMatrixGraph:
         Computes position weights for all tokens in text
         """
         dct = {}
-        for vertex in self._positions.keys():
+        for vertex in self._positions:
             summary = 0
             for position in self._positions[vertex]:
                 summary += 1/position
