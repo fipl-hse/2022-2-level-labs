@@ -285,18 +285,9 @@ class AdjacencyMatrixGraph:
             if len(row) < len(self._matrix[0]):
                 count = len(self._matrix[0]) - len(row)
                 for element in range(count):
-                    row += ['?']
-            for idx, element in enumerate(row):
-                if element == '?':
-                    if ((row[0] == vertex1 and self._matrix[0][idx] == vertex2)
-                            or (row[0] == vertex2 and self._matrix[0][idx] == vertex1)):
-                        row[idx] = 1
-                    else:
-                        row[idx] = 0
-                elif row[0] == vertex1 and self._matrix[0][idx] == vertex2 and row[idx] == 0:
-                    row[idx] = 1
-                elif row[0] == vertex2 and self._matrix[0][idx] == vertex1 and row[idx] == 0:
-                    row[idx] = 1
+                    row.append(0)
+        self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
+        self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
         return 0
 
     # Step 4.3
