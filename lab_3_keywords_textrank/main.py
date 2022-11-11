@@ -90,8 +90,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        text = self._remove_stop_words(self._clean_and_tokenize(text))
-        return text
+        cleaned_text = self._clean_and_tokenize(text)
+        return self._remove_stop_words(cleaned_text)
 
 
 class TextEncoder:
@@ -211,7 +211,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     for element in pairs:
         if element not in unique and element[::-1] not in unique and element[0] != element[1]:
             unique.append(element)
-    return tuple(tuple(element) for element in unique)
+    result = tuple(tuple(element) for element in unique)
+    return result
 
 
 class AdjacencyMatrixGraph:
@@ -378,7 +379,7 @@ class AdjacencyMatrixGraph:
         """
         dct = {}
         for vertex in self._positions:
-            summary = 0
+            summary = 0.0
             for position in self._positions[vertex]:
                 summary += 1/position
             dct[vertex] = summary
@@ -629,7 +630,7 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summary = 0
+        summary = 0.0
         for vertice in incidental_vertices:
             inout_score = self._graph.calculate_inout_score(vertice)
             summary += 1/inout_score * self._scores[vertice]
@@ -739,7 +740,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summary = 0
+        summary = 0.0
         for vertice in incidental_vertices:
             inout_score = self._graph.calculate_inout_score(vertice)
             summary += 1 / inout_score * self._scores[vertice]
