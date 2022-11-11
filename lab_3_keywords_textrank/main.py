@@ -208,9 +208,9 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
             for subel in small:
                 pairs.append([element, subel])
     unique = []
-    for element in pairs:
-        if element not in unique and element[::-1] not in unique and element[0] != element[1]:
-            unique.append(element)
+    for pair in pairs:
+        if pair not in unique and pair[::-1] not in unique and pair[0] != pair[1]:
+            unique.append(pair)
     result = tuple(tuple(element) for element in unique)
     return result
 
