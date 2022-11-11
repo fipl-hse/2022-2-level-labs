@@ -3,7 +3,6 @@ TextRank keyword extraction starter
 """
 import string
 from pathlib import Path
-from string import punctuation
 from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, extract_pairs,
                                           AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph, PositionBiasedTextRank)
 
@@ -24,15 +23,15 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     RESULT = None
-    pairs = None
+    PAIRS = None
 
     # mark 4
-    preprocessed_text = TextPreprocessor(stop_words, tuple(punctuation)).preprocess_text(text)
+    preprocessed_text = TextPreprocessor(stop_words, tuple(string.punctuation)).preprocess_text(text)
     encoder = TextEncoder()
     tokens = encoder.encode(preprocessed_text)
     if tokens:
-        pairs = extract_pairs(tokens, 3)
-    print(pairs)
+        PAIRS = extract_pairs(tokens, 3)
+    print(PAIRS)
 
     # mark 6
     matrix_graph = AdjacencyMatrixGraph()
