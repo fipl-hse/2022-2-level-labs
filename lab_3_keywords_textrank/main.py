@@ -286,7 +286,6 @@ class AdjacencyMatrixGraph:
                 count = len(self._matrix[0]) - len(row)
                 for element in range(count):
                     row += ['?']
-        for row in self._matrix:
             for idx, element in enumerate(row):
                 if element == '?':
                     if ((row[0] == vertex1 and self._matrix[0][idx] == vertex2)
