@@ -134,11 +134,11 @@ class TextEncoder:
         id_min = 1000
         for word in tokens:
             if word in self._word2id:
-                pass
-            else:
-                self._word2id[word] = id_min
-                self._id2word[id_min] = word
-                id_min += 1
+                continue
+            self._word2id[word] = self._word2id.get(word, id_min)
+            self._id2word[id_min] = self._id2word.get(id_min, word)
+            id_min += 1  # not working
+
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -156,11 +156,8 @@ class TextEncoder:
         """
         if not tokens:
             return None
-        encoded_tokens = []
         self._learn_indices(tokens)
-        for i in tokens:
-            encoded_tokens.append(self._word2id[i])
-        return tuple(encoded_tokens)
+        return tuple(self._word2id[i] for i in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -206,13 +203,12 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         return None
     extracted = []
     for idx in range(len(tokens) - window_length + 1):
-        new_sequence = tokens[idx:idx + window_length]
-        for first in range(window_length-1):
-            for second in range(1, window_length):
-                to_append = tuple([new_sequence[first], new_sequence[second]])
-                if new_sequence[first] != new_sequence[second] and to_append not in extracted:
-                    extracted.append(to_append)
+        for j in range(1, window_length):
+            if tokens[idx] == tokens[idx + j]:
+                continue
+            extracted.append(tuple([tokens[idx], tokens[idx + j]]))
     return tuple(extracted)
+
 
 class AdjacencyMatrixGraph:
     """
@@ -253,8 +249,11 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
-
+        self._matrix = []
+        self._vertexes = {}
+        self._id_vertex = 0
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -274,19 +273,15 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-
         for one_vert in vertex1, vertex2:
-            if one_vert not in self._matrix[0]:  # zero list is the list of vertexes
-                self._matrix[0].append(one_vert)  # adding a new vertex if it's not in
-                self._matrix.append([0 for i in range(len(self._matrix[0])-1)])
-                # place = self._matrix[0].index(one_vert)
-                for i in range(1, len(self._matrix)):
+            if one_vert not in self._vertexes:
+                self._vertexes[one_vert] = self._id_vertex
+                self._matrix.append([0 for i in range(self._id_vertex)])
+                for i in range(self._id_vertex+1):
                     self._matrix[i].append(0)
-
-        place_1 = self._matrix[0].index(vertex1)
-        place_2 = self._matrix[0].index(vertex2)
-        self._matrix[place_1 + 1][place_2] = 1
-        self._matrix[place_2 + 1][place_1] = 1
+                self._id_vertex += 1
+        self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]] = 1
+        self._matrix[self._vertexes[vertex2]][self._vertexes[vertex1]] = 1
         return 0
 
     # Step 4.3
@@ -305,11 +300,9 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
+        if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
-        place_1 = self._matrix[0].index(vertex1)
-        place_2 = self._matrix[0].index(vertex2)
-        return self._matrix[place_1+1][place_2]
+        return self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -320,7 +313,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._vertexes.keys())
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -336,14 +329,10 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
+        if vertex not in self._vertexes:
             return -1
-        place = self._matrix[0].index(vertex)
-        number = 0
-        number = sum(self._matrix[place+1])
-        # for i in self._matrix[1:]:
-        #     number += i[place]
-        return number
+        place = self._vertexes[vertex]
+        return sum(self._matrix[place])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -359,7 +348,7 @@ class AdjacencyMatrixGraph:
         """
         pairs = extract_pairs(tokens, window_length)
         for each_pair in pairs:
-            self.add_edge(each_pair[0], each_pair[1])
+            self.add_edge(*each_pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -369,14 +358,23 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for idx, word in enumerate(tokens):
+            self._positions[word] = self._positions.get(word, []) + [idx+1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        all_weights = 0
+        for key, value in self._positions.items():
+            position_weight = 0
+            for one_token in value:
+                position_weight += 1/one_token
+            self._position_weights[key] = position_weight
+            all_weights += position_weight
+        for key in self._positions.keys():
+            self._position_weights[key] = self._position_weights[key]/all_weights
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -387,7 +385,7 @@ class AdjacencyMatrixGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class EdgeListGraph:
@@ -424,6 +422,8 @@ class EdgeListGraph:
         Constructs all the necessary attributes for the edge list graph object
         """
         self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -452,13 +452,11 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        # if vertex1 == vertex2 or (vertex1 in self._edges and vertex2 in self._edges):
         if vertex1 == vertex2:
             return -1
-        # if vertex1 not in self._edges(vertex2):
-        if vertex1 not in self._edges or vertex2 not in self._edges or vertex1 not in self._edges[vertex2]:
-            self._edges[vertex1] = sorted(self._edges.get(vertex1, []) + [vertex2])
-            self._edges[vertex2] = sorted(self._edges.get(vertex2, []) + [vertex1])
+        if (vertex1 and vertex2) not in self._edges or vertex1 not in self._edges[vertex2]:
+            self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
+            self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
         return 0
 
     # Step 7.2
@@ -526,14 +524,23 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for idx, word in enumerate(tokens):
+            self._positions[word] = self._positions.get(word, []) + [idx+1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        all_weights = 0
+        for key, value in self._positions.items():
+            position_weight = 0
+            for one_token in value:
+                position_weight += 1 / one_token
+            self._position_weights[key] = position_weight
+            all_weights += position_weight
+        for key in self._positions.keys():
+            self._position_weights[key] = self._position_weights[key] / all_weights
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -544,7 +551,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class VanillaTextRank:
@@ -656,7 +663,6 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        # top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)][:n_keywords]
         top_keywords = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
         return tuple(top_keywords)
 
