@@ -284,8 +284,7 @@ class AdjacencyMatrixGraph:
         for row in self._matrix:
             if len(row) < len(self._matrix[0]):
                 count = len(self._matrix[0]) - len(row)
-                for element in range(count):
-                    row.append(0)
+                row.extend([0] * count)
         self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
         self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
         return 0
