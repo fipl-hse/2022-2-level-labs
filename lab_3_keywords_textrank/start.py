@@ -30,7 +30,7 @@ if __name__ == "__main__":
     TOKENS = PREPROCESSED_TEXT.preprocess_text(text)
     TEXT_TO_CODE = TextEncoder()
     ENCODED_TXT = TEXT_TO_CODE.encode(TOKENS)
-    # TEXT_PAIRS = extract_pairs(ENCODED_TXT, 8)
+    TEXT_PAIRS = extract_pairs(ENCODED_TXT, 8)
 
     # step 6
 
@@ -38,8 +38,7 @@ if __name__ == "__main__":
     GRAPH_OF_TEXT.fill_from_tokens(ENCODED_TXT, 5)
     VANILLA_GRAPH_ADJA = VanillaTextRank(GRAPH_OF_TEXT)
     VANILLA_GRAPH_ADJA.train()
-    # for one_pair in TEXT_PAIRS:
-    #     GRAPH_OF_TEXT.add_edge(one_pair[0], one_pair[1])
+
 
     # step 7.3
 
@@ -48,6 +47,11 @@ if __name__ == "__main__":
     VANILLA_GRAPH_EDGE = VanillaTextRank(EDGE_LIST_GRAPH)
     VANILLA_GRAPH_EDGE.train()
 
+    for i in set(ENCODED_TXT):
+        if not EDGE_LIST_GRAPH.calculate_inout_score(i) == GRAPH_OF_TEXT.calculate_inout_score(i):
+            print(i)
+
+
     BEST_TOKENS_ADJA = VANILLA_GRAPH_ADJA.get_top_keywords(10)
     DECODED_TOKENS_ADJA = TEXT_TO_CODE.decode(BEST_TOKENS_ADJA)
     BEST_TOKENS_EDGE = VANILLA_GRAPH_EDGE.get_top_keywords(10)
@@ -55,12 +59,6 @@ if __name__ == "__main__":
 
     print(DECODED_TOKENS_ADJA)
     print(DECODED_TOKENS_EDGE)
-    if DECODED_TOKENS_EDGE == DECODED_TOKENS_ADJA:
-        print(1)
-    else:
-        print(0)
-
-
 
     RESULT = DECODED_TOKENS_ADJA
     # print(RESULT)

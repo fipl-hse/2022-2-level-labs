@@ -274,13 +274,15 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
+
         for one_vert in vertex1, vertex2:
             if one_vert not in self._matrix[0]:  # zero list is the list of vertexes
                 self._matrix[0].append(one_vert)  # adding a new vertex if it's not in
                 self._matrix.append([0 for i in range(len(self._matrix[0])-1)])
-                place = self._matrix[0].index(one_vert)
+                # place = self._matrix[0].index(one_vert)
                 for i in range(1, len(self._matrix)):
-                    self._matrix[i].insert(place, 0)
+                    self._matrix[i].append(0)
+
         place_1 = self._matrix[0].index(vertex1)
         place_2 = self._matrix[0].index(vertex2)
         self._matrix[place_1 + 1][place_2] = 1
@@ -338,8 +340,9 @@ class AdjacencyMatrixGraph:
             return -1
         place = self._matrix[0].index(vertex)
         number = 0
-        for i in self._matrix[1:]:
-            number += i[place]
+        number = sum(self._matrix[place+1])
+        # for i in self._matrix[1:]:
+        #     number += i[place]
         return number
 
     # Step 4.6
@@ -449,10 +452,13 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
+        # if vertex1 == vertex2 or (vertex1 in self._edges and vertex2 in self._edges):
         if vertex1 == vertex2:
             return -1
-        self._edges[vertex1] = sorted(self._edges.get(vertex1, []) + [vertex2])
-        self._edges[vertex2] = sorted(self._edges.get(vertex2, []) + [vertex1])
+        # if vertex1 not in self._edges(vertex2):
+        if vertex1 not in self._edges or vertex2 not in self._edges or vertex1 not in self._edges[vertex2]:
+            self._edges[vertex1] = sorted(self._edges.get(vertex1, []) + [vertex2])
+            self._edges[vertex2] = sorted(self._edges.get(vertex2, []) + [vertex1])
         return 0
 
     # Step 7.2
@@ -471,7 +477,7 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if (vertex1 or vertex2) not in self._edges:
+        if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
         if vertex2 in self._edges[vertex1]:
             return 1
@@ -650,7 +656,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)][:n_keywords]
+        # top_keywords = [key for (key, value) in sorted(self._scores.items(), key=lambda x: x[1], reverse=True)][:n_keywords]
+        top_keywords = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
         return tuple(top_keywords)
 
 class PositionBiasedTextRank(VanillaTextRank):
