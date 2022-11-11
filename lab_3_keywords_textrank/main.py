@@ -53,9 +53,9 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         no_punct = ""
-        for el in text:
-            if el not in self.punctuation:
-                no_punct += el
+        for element in text:
+            if element not in self.punctuation:
+                no_punct += element
         return tuple(no_punct.lower().split())
 
     # Step 1.3
@@ -72,9 +72,9 @@ class TextPreprocessor:
                 tokens without stop-words
         """
         words = []
-        for el in tokens:
-            if el not in self.stop_words:
-                words.append(el)
+        for element in tokens:
+            if element not in self.stop_words:
+                words.append(element)
         return tuple(words)
 
     # Step 1.4
@@ -132,12 +132,12 @@ class TextEncoder:
                 sequence of string tokens
         """
         unique = []
-        for el in tokens:
-            if el not in unique:
-                unique.append(el)
-        for idx, el in enumerate(unique, start=1000):
-            self._word2id[el] = idx
-            self._id2word[idx] = el
+        for element in tokens:
+            if element not in unique:
+                unique.append(element)
+        for idx, element in enumerate(unique, start=1000):
+            self._word2id[element] = idx
+            self._id2word[idx] = element
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -203,15 +203,15 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     pairs = []
     for num in range(0, len(tokens) - window_length + 1):
         big = tokens[num:window_length + num]
-        for el in big:
-            small = big[big.index(el) + 1:]
+        for element in big:
+            small = big[big.index(element) + 1:]
             for subel in small:
-                pairs.append([el, subel])
+                pairs.append([element, subel])
     unique = []
-    for el in pairs:
-        if el not in unique and el[::-1] not in unique and el[0] != el[1]:
-            unique.append(el)
-    return tuple(tuple(el) for el in unique)
+    for element in pairs:
+        if element not in unique and element[::-1] not in unique and element[0] != element[1]:
+            unique.append(element)
+    return tuple(tuple(element) for element in unique)
 
 
 class AdjacencyMatrixGraph:
@@ -284,7 +284,7 @@ class AdjacencyMatrixGraph:
         for row in self._matrix:
             if len(row) < len(self._matrix[0]):
                 count = len(self._matrix[0]) - len(row)
-                for el in range(count):
+                for element in range(count):
                     row += ['?']
         for row in self._matrix:
             for idx in range(len(row)):
@@ -377,10 +377,10 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for idx, el in enumerate(tokens):
-            if el not in self._positions.keys():
-                self._positions[el] = []
-            self._positions[el].append(idx + 1)
+        for idx, element in enumerate(tokens):
+            if element not in self._positions.keys():
+                self._positions[element] = []
+            self._positions[element].append(idx + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -393,8 +393,8 @@ class AdjacencyMatrixGraph:
             for position in self._positions[vertex]:
                 summary += 1/position
             dct[vertex] = summary
-        for el in dct:
-            self._position_weights[el] = dct[el]/sum(dct.values())
+        for element in dct:
+            self._position_weights[element] = dct[element]/sum(dct.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -549,10 +549,10 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for idx, el in enumerate(tokens):
-            if el not in self._positions.keys():
-                self._positions[el] = []
-            self._positions[el].append(idx + 1)
+        for idx, element in enumerate(tokens):
+            if element not in self._positions.keys():
+                self._positions[element] = []
+            self._positions[element].append(idx + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -560,13 +560,13 @@ class EdgeListGraph:
         Computes position weights for all tokens in text
         """
         dct = {}
-        for vertex in self._positions.keys():
+        for vertex in self._positions:
             summary = 0
             for position in self._positions[vertex]:
                 summary += 1/position
             dct[vertex] = summary
-        for el in dct:
-            self._position_weights[el] = dct[el]/sum(dct.values())
+        for element in dct:
+            self._position_weights[element] = dct[element]/sum(dct.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
