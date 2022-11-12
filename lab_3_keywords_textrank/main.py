@@ -305,7 +305,8 @@ class AdjacencyMatrixGraph:
         if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
         answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
-        return answer
+        if isinstance(answer, int):
+            return answer
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -371,7 +372,7 @@ class AdjacencyMatrixGraph:
         """
         all_weights = 0.0
         for key, value in self._positions.items():
-            position_weight = 0
+            position_weight = 0.0
             for one_token in value:
                 position_weight += 1/one_token
             self._position_weights[key] = position_weight
