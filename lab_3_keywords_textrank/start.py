@@ -46,15 +46,15 @@ if __name__ == "__main__":
 
     LABELS = ['VanillaTextRank method for adjacency graph: ', 'VanillaTextRank method for edge graph: ',
               'Position biased method for adjacency graph: ', 'Position biased method for edge graph: ']
-    idx = 0
+    IDX = 0
 
     for one_method in VANILLA_GRAPH_ADJA, VANILLA_GRAPH_EDGE, POSITION_BIASED_ADJACENCY, POSITION_BIASED_EDGE:
         one_method.train()
         TOP_WORDS = one_method.get_top_keywords(10)
         DECODED_WORDS = TEXT_TO_CODE.decode(TOP_WORDS)
-        print(LABELS[idx])
+        print(LABELS[IDX])
         print(DECODED_WORDS)
-        idx += 1
+        IDX += 1
 
     RESULT = DECODED_WORDS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

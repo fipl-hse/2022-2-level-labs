@@ -71,7 +71,7 @@ class TextPreprocessor:
                 tokens without stop-words
         """
         cleaned_tokens = list(tokens[:])
-        for idx, words in enumerate(tokens):
+        for words in tokens:
             if words in self.stop_words:
                 cleaned_tokens.remove(words)
         return tuple(cleaned_tokens)
@@ -372,7 +372,7 @@ class AdjacencyMatrixGraph:
                 position_weight += 1/one_token
             self._position_weights[key] = position_weight
             all_weights += position_weight
-        for key in self._positions.keys():
+        for key in self._positions:
             self._position_weights[key] = self._position_weights[key]/all_weights
 
     # Step 8.4
@@ -538,7 +538,7 @@ class EdgeListGraph:
                 position_weight += 1 / one_token
             self._position_weights[key] = position_weight
             all_weights += position_weight
-        for key in self._positions.keys():
+        for key in self._positions:
             self._position_weights[key] = self._position_weights[key] / all_weights
 
     # Step 8.4
