@@ -91,7 +91,7 @@ class TextPreprocessor:
         """
         tokenized = self._clean_and_tokenize(text)
         cleaned_text = self._remove_stop_words(tokenized)
-        return (cleaned_text)
+        return cleaned_text
 
 
 class TextEncoder:
@@ -139,7 +139,6 @@ class TextEncoder:
             self._id2word[id_min] = self._id2word.get(id_min, word)
             id_min += 1  # not working
 
-
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
         """
@@ -174,10 +173,10 @@ class TextEncoder:
         In case of out-of-dictionary input data, None is returned
         """
         decoded_tokens = []
-        for i in list(encoded_tokens):
-            if i not in self._id2word:
+        for one_token in list(encoded_tokens):
+            if one_token not in self._id2word:
                 return None
-            decoded_tokens.append(self._id2word[i])
+            decoded_tokens.append(self._id2word[one_token])
         return tuple(decoded_tokens)
 
 
@@ -666,6 +665,7 @@ class VanillaTextRank:
         top_keywords = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
         return tuple(top_keywords)
 
+
 class PositionBiasedTextRank(VanillaTextRank):
     """
     Advanced TextRank implementation: positions of tokens in text are taken into consideration
@@ -707,7 +707,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -722,7 +723,13 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        inout_weight_sum = 0
+        for vertices in incidental_vertices:
+            new_score = scores[vertices] / self._graph.calculate_inout_score(vertices)
+            inout_weight_sum += new_score
+        weight = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * inout_weight_sum
+        self._scores[vertex] = weight  # why do we need scores in function
+        # declaration if we change scores in self._scores?
 
 
 class TFIDFAdapter:

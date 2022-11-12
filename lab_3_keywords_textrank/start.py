@@ -4,7 +4,8 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph
+from main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
+    EdgeListGraph, PositionBiasedTextRank
 
 if __name__ == "__main__":
 
@@ -30,38 +31,31 @@ if __name__ == "__main__":
     TOKENS = PREPROCESSED_TEXT.preprocess_text(text)
     TEXT_TO_CODE = TextEncoder()
     ENCODED_TXT = TEXT_TO_CODE.encode(TOKENS)
-    TEXT_PAIRS = extract_pairs(ENCODED_TXT, 8)
-
-    # step 6
 
     GRAPH_OF_TEXT = AdjacencyMatrixGraph()
-    GRAPH_OF_TEXT.fill_from_tokens(ENCODED_TXT, 5)
-    VANILLA_GRAPH_ADJA = VanillaTextRank(GRAPH_OF_TEXT)
-    VANILLA_GRAPH_ADJA.train()
-
-
-    # step 7.3
-
     EDGE_LIST_GRAPH = EdgeListGraph()
-    EDGE_LIST_GRAPH.fill_from_tokens(ENCODED_TXT, 5)
+    for one_class_algoritm in GRAPH_OF_TEXT, EDGE_LIST_GRAPH:
+        one_class_algoritm.fill_from_tokens(ENCODED_TXT, 5)
+        one_class_algoritm.fill_positions(ENCODED_TXT)
+        one_class_algoritm.calculate_position_weights()
+
+    VANILLA_GRAPH_ADJA = VanillaTextRank(GRAPH_OF_TEXT)
     VANILLA_GRAPH_EDGE = VanillaTextRank(EDGE_LIST_GRAPH)
-    VANILLA_GRAPH_EDGE.train()
+    POSITION_BIASED_ADJACENCY = PositionBiasedTextRank(GRAPH_OF_TEXT)
+    POSITION_BIASED_EDGE = PositionBiasedTextRank(EDGE_LIST_GRAPH)
 
-    for i in set(ENCODED_TXT):
-        if not EDGE_LIST_GRAPH.calculate_inout_score(i) == GRAPH_OF_TEXT.calculate_inout_score(i):
-            print(i)
+    LABELS = ['VanillaTextRank method for adjacency graph: ', 'VanillaTextRank method for edge graph: ',
+              'Position biased method for adjacency graph: ', 'Position biased method for edge graph: ']
+    idx = 0
 
+    for one_method in VANILLA_GRAPH_ADJA, VANILLA_GRAPH_EDGE, POSITION_BIASED_ADJACENCY, POSITION_BIASED_EDGE:
+        one_method.train()
+        TOP_WORDS = one_method.get_top_keywords(10)
+        DECODED_WORDS = TEXT_TO_CODE.decode(TOP_WORDS)
+        print(LABELS[idx])
+        print(DECODED_WORDS)
+        idx += 1
 
-    BEST_TOKENS_ADJA = VANILLA_GRAPH_ADJA.get_top_keywords(10)
-    DECODED_TOKENS_ADJA = TEXT_TO_CODE.decode(BEST_TOKENS_ADJA)
-    BEST_TOKENS_EDGE = VANILLA_GRAPH_EDGE.get_top_keywords(10)
-    DECODED_TOKENS_EDGE = TEXT_TO_CODE.decode(BEST_TOKENS_EDGE)
-
-    print(DECODED_TOKENS_ADJA)
-    print(DECODED_TOKENS_EDGE)
-
-    RESULT = DECODED_TOKENS_ADJA
-    # print(RESULT)
+    RESULT = DECODED_WORDS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-
