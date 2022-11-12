@@ -4,7 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
     EdgeListGraph, PositionBiasedTextRank
 
 if __name__ == "__main__":

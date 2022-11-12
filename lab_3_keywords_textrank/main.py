@@ -119,8 +119,10 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        self._word2id = {str: int}
-        self._id2word = {int: str}
+        # self._word2id = {str: int}
+        # self._id2word = {int: str}
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -135,8 +137,8 @@ class TextEncoder:
         for word in tokens:
             if word in self._word2id:
                 continue
-            self._word2id[word] = self._word2id.get(word, id_min)
-            self._id2word[id_min] = self._id2word.get(id_min, word)
+            self._word2id[word] = id_min
+            self._id2word[id_min] = word
             id_min += 1  # not working
 
     # Step 2.3
@@ -156,7 +158,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple(self._word2id[i] for i in tokens)
+        return tuple([self._word2id[i] for i in tokens])
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -177,7 +179,8 @@ class TextEncoder:
             if one_token not in self._id2word:
                 return None
             decoded_tokens.append(self._id2word[one_token])
-        return tuple(decoded_tokens)
+        tuple_of_decoded = tuple(decoded_tokens)
+        return tuple_of_decoded
 
 
 # Step 3
@@ -301,7 +304,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
-        return self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
+        answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
+        return answer
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -365,7 +369,7 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        all_weights = 0
+        all_weights = 0.0
         for key, value in self._positions.items():
             position_weight = 0
             for one_token in value:
@@ -612,7 +616,7 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        inout_weight_sum = 0
+        inout_weight_sum = 0.0
         for vertices in incidental_vertices:
             new_score = scores[vertices]/self._graph.calculate_inout_score(vertices)
             inout_weight_sum += new_score
@@ -723,7 +727,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        inout_weight_sum = 0
+        inout_weight_sum = 0.0
         for vertices in incidental_vertices:
             new_score = scores[vertices] / self._graph.calculate_inout_score(vertices)
             inout_weight_sum += new_score
