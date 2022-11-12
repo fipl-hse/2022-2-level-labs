@@ -734,9 +734,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             new_score = scores[vertices] / self._graph.calculate_inout_score(vertices)
             inout_weight_sum += new_score
         weight = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * inout_weight_sum
-        self._scores[vertex] = weight  # why do we need scores in function
-        # declaration if we change scores in self._scores?
-
+        self._scores[vertex] = weight
 
 class TFIDFAdapter:
     """
