@@ -53,9 +53,8 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         if self._punctuation:
-            for char in text:
-                if char in self._punctuation:
-                    text = text.replace(char, '')
+            for punc in self._punctuation:
+                text = text.replace(punc, '')
         return tuple(text.lower().split())
 
     # Step 1.3
@@ -126,9 +125,13 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for token, id in zip(tokens, range(1000, 1000 + len(tokens))):
-            self._word2id[token] = id
-            self._id2word[id] = token
+        # for token, idx in zip(tokens, range(1001, 1001 + len(tokens))):
+        #     self._word2id[token] = idx
+        for token, idx in zip(tokens, range(1001 + len(tokens), 1001, -1)):
+            self._word2id[token] = idx
+
+        for token, idx in self._word2id.items():
+             self._id2word[idx] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -147,7 +150,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple(self._word2id.values())
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -165,7 +168,7 @@ class TextEncoder:
         """
         if not (encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
             return None
-        return tuple(self._id2word.values())
+        return tuple(self._id2word[encoded_token] for encoded_token in encoded_tokens)
 
 
 # Step 3
@@ -191,7 +194,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     pairs = set()
     for token1 in tokens:
         for token2 in tokens:
-            if token1 != token2 and abs(tokens.index(token1) - tokens.index(token2)) <= window_length - 1:
+            if token1 != token2 and abs(tokens.index(token1) - tokens.index(token2)) < window_length:
                 pairs.add(tuple(sorted((token1, token2))))
     return tuple(pairs)
 
@@ -259,19 +262,19 @@ class AdjacencyMatrixGraph:
         #     return None
         if vertex1 == vertex2:
             return -1
-        for vertex in (vertex1, vertex2):
+        for vertex in vertex1, vertex2:
             if vertex not in self._matrix[0]:
                 self._matrix[0].append(vertex)
-                self._matrix.append([vertex] + [0 for _ in range(len(self._matrix[0]))])
+                self._matrix.append([])
 
-                for i in range(1, len(self._matrix[0]) + 1):
-                    self._matrix[i].append(0)
+        for edges_list in self._matrix[1:]:
+            if len(edges_list) < len(self._matrix[0]):
+                edges_list.extend([0 for _ in range(len(self._matrix[0]) - len(edges_list))])
 
         idx1 = self._matrix[0].index(vertex1)
         idx2 = self._matrix[0].index(vertex2)
-        self._matrix[idx1 + 1][idx2 + 1] = 1
-        self._matrix[idx2 + 1][idx1 + 1] = 1
-
+        self._matrix[idx1 + 1][idx2] = 1
+        self._matrix[idx2 + 1][idx1] = 1
         return 0
 
     # Step 4.3
@@ -290,11 +293,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if not(vertex1 in self._matrix[0] or vertex2 in self._matrix[0]):
+        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
             return -1
         idx1 = self._matrix[0].index(vertex1)
         idx2 = self._matrix[0].index(vertex2)
-        return 1 if (self._matrix[idx1 + 1][idx2 + 1] == 1 and self._matrix[idx2 + 1][idx1 + 1] == 1) else 0
+        return int(self._matrix[idx1 + 1][idx2] == 1)
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -324,7 +327,7 @@ class AdjacencyMatrixGraph:
         if vertex not in self._matrix[0]:
             return -1
         idx = self._matrix[0].index(vertex)
-        return self._matrix[idx + 1][1:].count(1)
+        return self._matrix[idx + 1].count(1)
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -350,14 +353,26 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for i in range(len(tokens)):
+            if tokens[i] not in self._positions:
+                self._positions[tokens[i]] = []
+            self._positions[tokens[i]] += [i + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        non_norm_weight = 0
+        non_norm_total_weight = 0
+        for token, positions in self._positions.items():
+            for position in positions:
+                non_norm_weight += 1 / position
+            self._position_weights[token] = non_norm_weight
+            non_norm_total_weight += non_norm_weight
+
+        for token in self._position_weights:
+            self._position_weights[token] = self._position_weights.get(token) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -368,7 +383,7 @@ class AdjacencyMatrixGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class EdgeListGraph:
@@ -404,7 +419,9 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -415,7 +432,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._edges.keys())
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -433,7 +450,14 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+        for vertex in vertex1, vertex2:
+            if vertex not in self._edges:
+                self._edges[vertex] = []
+        self._edges[vertex1].append(vertex2)
+        self._edges[vertex2].append(vertex1)
+        return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -451,7 +475,9 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        if vertex1 not in self._edges or vertex2 not in self._edges:
+            return -1
+        return int(vertex1 in self._edges.get(vertex2))
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -467,7 +493,9 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._edges:
+            return -1
+        return len(self._edges[vertex])
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -481,7 +509,8 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        for pair in extract_pairs(tokens, window_length):
+            self.add_edge(*pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -491,14 +520,27 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for i in range(len(tokens)):
+            if tokens[i] not in self._positions:
+                self._positions[tokens[i]] = []
+            self._positions[tokens[i]] += [i + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        non_norm_weight = 0
+        non_norm_total_weight = 0
+        for token, positions in self._positions.items():
+            for position in positions:
+                non_norm_weight += 1 / position
+            self._position_weights[token] = non_norm_weight
+            non_norm_total_weight += non_norm_weight
+
+        for token in self._position_weights:
+            self._position_weights[token] = self._position_weights.get(token) / non_norm_total_weight
+
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -509,7 +551,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class VanillaTextRank:

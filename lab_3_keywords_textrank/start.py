@@ -3,13 +3,13 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from lab_3_keywords_textrank.main import(
+from lab_3_keywords_textrank.main import (
     TextPreprocessor,
     TextEncoder,
     extract_pairs,
     AdjacencyMatrixGraph,
     VanillaTextRank,
-    # EdgeListGraph,
+    EdgeListGraph,
     # PositionBiasedTextRank,
     # KeywordExtractionBenchmark
 )
@@ -32,36 +32,25 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    preprocessor = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
-    clean_tokens = preprocessor.preprocess_text(text)
+    PREPROCESSOR = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
+    TOKENS = PREPROCESSOR.preprocess_text(text)
 
-    text_encoder = TextEncoder()
-    encoded_tokens = text_encoder.encode(clean_tokens)
-    if encoded_tokens:
-        pairs = extract_pairs(encoded_tokens, 3)
-        print(pairs)
+    ENCODER = TextEncoder()
+    ENCODED_TOKENS = ENCODER.encode(TOKENS)
+    # step 3
+    if ENCODED_TOKENS:
+        print(extract_pairs(ENCODED_TOKENS, 3))
 
-    graph = AdjacencyMatrixGraph()
-    # for pair in pairs:
-    #     graph.add_edge(*pair)
-    #     graph.is_incidental(*pair)
-    #     graph.get_vertices()
-    #     print(graph.calculate_inout_score(pair[0]), graph.calculate_inout_score(pair[1]))
-    if encoded_tokens:
-        graph.fill_from_tokens(encoded_tokens, 3)
+    ADJ_GRAPH = AdjacencyMatrixGraph()
+    EDGE_GRAPH = EdgeListGraph()
+    for GRAPH in ADJ_GRAPH, EDGE_GRAPH:
+        GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
+        TEXTRANK = VanillaTextRank(GRAPH)
+        TEXTRANK.train()
+        TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
+        TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
+        print(f'Top tokens: {TOP_DECODED_TOKENS}')
 
-    textrank = VanillaTextRank(graph)
-    textrank.train()
-    top_tokens_encoded = textrank.get_top_keywords(10)
-    top_tokens_decoded = text_encoder.decode(top_tokens_encoded)
-    print(top_tokens_decoded)
-
-
-
-    # print(textrank.get_scores())
-
-
-
-    RESULT = None
+    RESULT = TOP_DECODED_TOKENS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
