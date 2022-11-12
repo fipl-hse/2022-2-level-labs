@@ -307,6 +307,7 @@ class AdjacencyMatrixGraph:
         answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
         if isinstance(answer, int):
             return answer
+        return -1
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
