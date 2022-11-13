@@ -7,7 +7,6 @@ from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 from string import punctuation
 
-
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
@@ -84,7 +83,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         if new_candidate:
             candidate_keywords.append(tuple(new_candidate))
     return candidate_keywords
-    
+
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
     """
@@ -215,7 +214,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(keyword_phrases_with_scores, dict) or not isinstance(top_n, int) or not isinstance(max_length, int):
+    if not isinstance(keyword_phrases_with_scores, dict) or not isinstance(top_n, int) or not isinstance(max_length,
+                                                                                                         int):
         return None
     if not keyword_phrases_with_scores or max_length <= 0 or top_n <= 0:
         return None
@@ -230,7 +230,6 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     for phrase in sorted_phrases:
         joined_phrases.append(' '.join(phrase))
     return joined_phrases[:top_n]
-
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -258,14 +257,29 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if not candidate_keyword_phrases or not phrases:
         return None
 
-    pairs = []
-    for i in range(len(candidate_keyword_phrases) - 1):
-        pairs.append((candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]))
-    repeated_pairs = []
-    for pair in pairs:
-        if pairs.count(pair) > 1 and pair not in repeated_pairs:
-            repeated_pairs.append(pair)
-    return repeated_pairs
+    pairs = [(candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1])
+             for i in range(len(candidate_keyword_phrases) - 1)]
+
+    repeated_pairs = [pair for pair in set(pairs) if pairs.count(pair) > 1]
+
+    keyword_phrases_with_stopwords = []
+    for pair in repeated_pairs:
+        pair_1, pair_2 = (' '.join(element) for element in pair)
+        for phrase in phrases:
+            phrase = phrase.lower()
+            pair_2_end = 0
+            while (pair_1_i := phrase.find(pair_1, pair_2_end)) != -1 and (
+                    pair_2_i := phrase.find(pair_2, pair_2_end)) != -1:
+                pair_1_end = pair_1_i + len(pair_1)
+                pair_2_end = pair_2_i + len(pair_2)
+                stopword = (phrase[pair_1_end: pair_2_i].strip(),)
+                keyword_phrases_with_stopwords.append(pair[0] + stopword + pair[1])
+
+    repeated_keyword_phrases = []
+    for keyword_phrase in keyword_phrases_with_stopwords:
+        if keyword_phrases_with_stopwords.count(keyword_phrase) > 1 and keyword_phrase not in repeated_keyword_phrases:
+            repeated_keyword_phrases.append(keyword_phrase)
+    return repeated_keyword_phrases
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -283,7 +297,19 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not candidate_keyword_phrases or not word_scores or not stop_words:
+        return None
+    if not isinstance(word_scores, dict) or not isinstance(candidate_keyword_phrases, list) or not isinstance(
+            stop_words, list):
+        return None
+    if not check_list_types(candidate_keyword_phrases, tuple) or not check_list_types(stop_words, str):
+        return None
+
+    phrases_scores_dict = {}
+    for phrase in candidate_keyword_phrases:
+        phrases_scores_dict[phrase] = sum([word_scores[word] for word in phrase
+                                           if word in word_scores and word not in stop_words])
+    return phrases_scores_dict
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -295,6 +321,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :return: a list of stop words
     """
     pass
+
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """

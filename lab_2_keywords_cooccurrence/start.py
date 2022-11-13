@@ -5,8 +5,8 @@ Co-occurrence-driven keyword extraction starter
 from pathlib import Path
 
 from main import extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
-    calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n
-
+    calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n, \
+    extract_candidate_keyword_phrases_with_adjoining, calculate_cumulative_score_for_candidates_with_stop_words
 
 
 def read_target_text(file_path: Path) -> str:
@@ -42,16 +42,23 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
+    RESULT = {}
+
     for title, text in corpus.items():
         extracted_phrases = extract_phrases(text)
         candidate_keywords = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
         word_frequencies = calculate_frequencies_for_content_words(candidate_keywords)
         word_degrees = calculate_word_degrees(candidate_keywords, list(word_frequencies.keys()))
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
-        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keywords, word_scores)
-        top_n = get_top_n(keyword_phrases_with_scores, 10, 5)
+        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keywords, word_scores)
+        ajoined_candidate_keywords = extract_candidate_keyword_phrases_with_adjoining(candidate_keywords,
+                                                                                      extracted_phrases)
+        cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
+            ajoined_candidate_keywords, word_scores, stop_words)
+        if cumulative_score_with_stopwords:
+            cumulative_score.update(cumulative_score_with_stopwords)
+        top_n = get_top_n(cumulative_score, 10, 5)
+        RESULT[title] = top_n
         print(title, top_n)
-
-    RESULT = None
 
     assert RESULT, 'Keywords are not extracted'
