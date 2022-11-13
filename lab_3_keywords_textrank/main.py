@@ -462,7 +462,7 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
-    def check_vertex_in_edges(self, ver1, ver2):
+    def check_vertex_in_edges(self, ver1: int, ver2: int):
         """
         The function checks if vertex is in self._edges
         """
