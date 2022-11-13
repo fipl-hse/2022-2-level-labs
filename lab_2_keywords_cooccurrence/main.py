@@ -111,7 +111,8 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     if not my_isinstance(text, str):
         return None
-    pattern = re.compile(r"(?!=\w)\W(?!\w)")
+    pattern = re.compile(r"(?!\w+)+\W+(?!=\w+)")
+    #  (?<=^)[^\s\w]+|(?<=\s)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)
 
     #  ?= -- positive lookahead     ?<= -- positive lookbehind
     #  ?! -- negative lookahead     ?!= -- negative lookbehind
@@ -330,7 +331,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not (my_isinstance(text, str) and my_isinstance(max_length, int) and max_length >= 2):
         return None
 
-    pattern = re.compile(r"(?!=\w)\W(?!\w)")
+    pattern = re.compile(r"(?!\w+)+\W+(?!=\w+)")
 
     tokens = re.sub(pattern, "", text.lower()).split()
     freqs = {token: tokens.count(token) for token in frozenset(tokens)}
