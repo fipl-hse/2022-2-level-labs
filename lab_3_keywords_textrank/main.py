@@ -462,14 +462,14 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
-    def check_vertex_in_edges(self, vertex1, vertex2):
+    def check_vertex_in_edges(self, ver1, ver2):
         """
         The function checks if vertex is in self._edges
         """
-        if vertex1 not in self._edges:
-            self._edges[vertex1] = [vertex2]
+        if ver1 not in self._edges:
+            self._edges[ver1] = [ver2]
         else:
-            self._edges[vertex1].append(vertex2)
+            self._edges[ver1].append(ver2)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
