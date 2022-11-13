@@ -5,8 +5,8 @@ TextRank keyword extraction starter
 from pathlib import Path
 from string import punctuation
 
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs
-
+from lab_3_keywords_textrank.main import TextPreprocessor, \
+    TextEncoder, extract_pairs, AdjacencyMatrixGraph, VanillaTextRank
 
 if __name__ == "__main__":
 
@@ -25,20 +25,38 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
-    clean_tokens = preprocessor._clean_and_tokenize(text)
-    print(clean_tokens)
-    without_stop_words = preprocessor._remove_stop_words(clean_tokens)
-    print(without_stop_words)
-    prerocess_text = preprocessor.preprocess_text(text)
-    print(prerocess_text)
+    # clean_tokens = preprocessor._clean_and_tokenize(text)
+    # print(clean_tokens)
+    # without_stop_words = preprocessor._remove_stop_words(clean_tokens)
+    # print(without_stop_words)
+    preprocessed_text = preprocessor.preprocess_text(text)
+    # print(preprocessed_text)
     encoder = TextEncoder()
-    ids_tokens = encoder.encode(prerocess_text)
-    print(ids_tokens)
+    ids_tokens = encoder.encode(preprocessed_text)
+    # print(ids_tokens)
     token_ids = encoder.decode(ids_tokens)
     print(token_ids)
-    pairs = extract_pairs(ids_tokens, 3)
-    print(pairs)
+    if token_ids:
+        pairs = extract_pairs(ids_tokens, 3)
+        print(pairs)
 
-    # RESULT = clean_tokens
+    adjacency_matrix = AdjacencyMatrixGraph()
+    if token_ids:
+        adjacency_matrix.fill_from_tokens(ids_tokens, 3)
+        adjacency_matrix.is_incidental(1000, 1235)
+        adjacency_matrix.get_vertices()
+        adjacency_matrix.calculate_inout_score(1235)
+    #     adjacency_matrix.fill_positions(ids_tokens)
+    # adjacency_matrix.calculate_position_weights()
+
+    vanilla_rank = VanillaTextRank(adjacency_matrix)
+    vanilla_rank.train()
+    # top_n_vanilla = vanilla_rank.get_top_keywords(10)
+    # print(top_vanilla_decode := encoder.decode(top_n_vanilla))
+    scores = vanilla_rank.get_scores()
+    top_keywords_adj = vanilla_rank.get_top_keywords(10)
+    print(encoded_top_adj := encoder.decode(top_keywords_adj))
+
+    # RESULT = top_keywords_adj
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     # assert RESULT, 'Keywords are not extracted'
