@@ -131,7 +131,7 @@ class TextEncoder:
             self._word2id[token] = idx
 
         for token, idx in self._word2id.items():
-             self._id2word[idx] = token
+            self._id2word[idx] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -238,7 +238,8 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
+        self._matrix = []
+        self._vertices = []
         self._positions = {}
         self._position_weights = {}
 
@@ -263,18 +264,18 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         for vertex in vertex1, vertex2:
-            if vertex not in self._matrix[0]:
-                self._matrix[0].append(vertex)
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
                 self._matrix.append([])
 
-        for edges_list in self._matrix[1:]:
-            if len(edges_list) < len(self._matrix[0]):
-                edges_list.extend([0 for _ in range(len(self._matrix[0]) - len(edges_list))])
+        for edges_list in self._matrix:
+            if len(edges_list) < len(self._vertices):
+                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
 
-        idx1 = self._matrix[0].index(vertex1)
-        idx2 = self._matrix[0].index(vertex2)
-        self._matrix[idx1 + 1][idx2] = 1
-        self._matrix[idx2 + 1][idx1] = 1
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        self._matrix[idx1][idx2] = 1
+        self._matrix[idx2][idx1] = 1
         return 0
 
     # Step 4.3
@@ -293,11 +294,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
+        if vertex1 not in self._vertices or vertex2 not in self._vertices:
             return -1
-        idx1 = self._matrix[0].index(vertex1)
-        idx2 = self._matrix[0].index(vertex2)
-        return int(self._matrix[idx1 + 1][idx2] == 1)
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        return int(self._matrix[idx1][idx2] == 1)
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -308,7 +309,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -324,10 +325,10 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
+        if vertex not in self._vertices:
             return -1
-        idx = self._matrix[0].index(vertex)
-        return self._matrix[idx + 1].count(1)
+        idx = self._vertices.index(vertex)
+        return sum(self._matrix[idx])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -343,7 +344,6 @@ class AdjacencyMatrixGraph:
         """
         for pair in extract_pairs(tokens, window_length):
             self.add_edge(*pair)
-            
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -353,10 +353,10 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for i in range(len(tokens)):
-            if tokens[i] not in self._positions:
-                self._positions[tokens[i]] = []
-            self._positions[tokens[i]] += [i + 1]
+        for idx, token in enumerate(tokens):
+            if tokens[idx] not in self._positions:
+                self._positions[tokens[idx]] = []
+            self._positions[tokens[idx]] += [idx + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -520,10 +520,10 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for i in range(len(tokens)):
-            if tokens[i] not in self._positions:
-                self._positions[tokens[i]] = []
-            self._positions[tokens[i]] += [i + 1]
+        for idx, token in enumerate(tokens):
+            if tokens[idx] not in self._positions:
+                self._positions[tokens[idx]] = []
+            self._positions[tokens[idx]] += [idx + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -613,7 +613,8 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex] for inc_vertex in incidental_vertices)
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
         pass
 
