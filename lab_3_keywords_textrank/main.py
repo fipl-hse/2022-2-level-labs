@@ -466,10 +466,10 @@ class EdgeListGraph:
         """
         The function checks if vertex is in self._edges
         """
-        if vertex2 not in self._edges:
-            self._edges[vertex2] = [vertex1]
+        if vertex1 not in self._edges:
+            self._edges[vertex1] = [vertex2]
         else:
-            self._edges[vertex2].append(vertex1)
+            self._edges[vertex1].append(vertex2)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -489,8 +489,8 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        self.check_vertex_in_edges(vertex2, vertex1)
         self.check_vertex_in_edges(vertex1, vertex2)
+        self.check_vertex_in_edges(vertex2, vertex1)
         return 0
 
     # Step 7.2
@@ -1013,14 +1013,11 @@ class KeywordExtractionBenchmark:
 
         text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
         for ind, elem in enumerate(self.themes):
-            text_path = str(ind) + '_text.txt'
-            keywords_path = str(ind) + '_keywords.txt'
-
-            path1 = self._materials_path / text_path
+            path1 = self._materials_path / f'{str(ind)}_text.txt'
             with path1.open('r', encoding='utf-8') as file:
                 text = file.read()
-            
-            path2 = self._materials_path / keywords_path
+
+            path2 = self._materials_path / f'{str(ind)}_keywords.txt'
             with path2.open('r', encoding='utf-8') as file:
                 keywords = tuple(file.read().split())
 
