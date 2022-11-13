@@ -40,7 +40,7 @@ def my_isinstance(instance: Any, type_of_instance: Type) -> bool:
 
     if type_of_instance is not int:
         return bool(isinstance(instance, type_of_instance) and instance)
-    return bool(not isinstance(instance, bool) and  isinstance(instance, int) and instance)
+    return bool(not isinstance(instance, bool) and isinstance(instance, int) and instance)
 
 
 def for_i_type_checker(collection: Sequence[Any],
@@ -111,7 +111,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     if not my_isinstance(text, str):
         return None
-    pattern = re.compile(r"(?<=^)[^\s\w]+|(?<=\s)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)")
+    pattern = re.compile(r"\w(?!=)\W(?!\w)")
 
     #  ?= -- positive lookahead     ?<= -- positive lookbehind
     #  ?! -- negative lookahead     ?!= -- negative lookbehind
@@ -330,7 +330,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     if not (my_isinstance(text, str) and my_isinstance(max_length, int) and max_length >= 2):
         return None
 
-    pattern = re.compile(r"(?<=^)[^\s\w]+|(?<=\s)[^\s\w]+|[^\s\w]+(?=\s)|[^\s\w]+(?=$)")
+    pattern = re.compile(r"\w(?!=)\W(?!\w)")
 
     tokens = re.sub(pattern, "", text.lower()).split()
     freqs = {token: tokens.count(token) for token in frozenset(tokens)}
