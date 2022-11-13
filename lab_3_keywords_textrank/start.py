@@ -30,8 +30,11 @@ if __name__ == "__main__":
     encode_text = TextEncoder()
     coded_text = encode_text.encode(tokens=preprocessed_text)
     decoded_text = encode_text.decode(encoded_tokens=coded_text)
+    pairs = extract_pairs(tokens=coded_text, window_length=3)
+    RESULT = pairs
     print('tokens: ', preprocessed_text, '\n',
           'coded tokens: ', coded_text, '\n',
-          'decoded tokens: ', decoded_text, '\n')
+          'decoded tokens: ', decoded_text, '\n',
+          'pairs: ', pairs)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
