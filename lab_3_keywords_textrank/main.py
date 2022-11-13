@@ -358,7 +358,8 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        self._positions = {key: [i + 1 for i in range(len(tokens)) if tokens[i] == key] for key in set(tokens)}
+        for key in set(tokens):
+            self._positions[key] = [i + 1 for i in range(len(tokens)) if tokens[i] == key]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
