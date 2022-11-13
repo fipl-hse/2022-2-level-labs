@@ -26,6 +26,12 @@ if __name__ == "__main__":
     punctuation = ('!', '"', '#', '$', '%', '&', '''''', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';',
                    '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~')
     raw_text = TextPreprocessor(stop_words=stop_words, punctuation=punctuation)
-    print(raw_text.preprocess_text(text=text))
+    preprocessed_text = raw_text.preprocess_text(text=text)
+    encode_text = TextEncoder()
+    coded_text = encode_text.encode(tokens=preprocessed_text)
+    decoded_text = encode_text.decode(encoded_tokens=coded_text)
+    print('tokens: ', preprocessed_text, '\n',
+          'coded tokens: ', coded_text, '\n',
+          'decoded tokens: ', decoded_text, '\n')
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

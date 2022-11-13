@@ -122,7 +122,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -133,7 +134,11 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        number = 1000
+        for item in tokens:
+            self._word2id[item] = number
+            self._id2word[number] = item
+            number += 1
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -149,7 +154,13 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        self._learn_indices(tokens=tokens)
+        if not tokens:
+            return None
+        integer_tokens = []
+        for item in tokens:
+            integer_tokens.append(self._word2id[item])
+        return tuple(integer_tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -165,7 +176,14 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        if not encoded_tokens:
+            return None
+        tokens = []
+        for code in encoded_tokens:
+            if code not in self._id2word.keys():
+                return None
+            tokens.append(self._id2word[code])
+        return tuple(tokens)
 
 
 # Step 3
