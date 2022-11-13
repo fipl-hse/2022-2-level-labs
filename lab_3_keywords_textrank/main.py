@@ -73,7 +73,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        result = []
+        for item in tokens:
+            if item not in self.stop_words:
+                result.append(item)
+        return tuple(result)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -88,7 +92,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        tokens = self._clean_and_tokenize(text)
+        result = self._remove_stop_words(tokens)
+        return result
 
 
 class TextEncoder:
