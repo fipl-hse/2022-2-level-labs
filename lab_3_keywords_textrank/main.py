@@ -856,8 +856,7 @@ class RAKEAdapter:
         scores = calculate_word_scores(word_degrees, word_frequencies)
         if not scores:
             return -1
-        tokens = sorted(scores.keys(), key=lambda x: ' '.join(' '.join(i) for i in candidate_keywords).find(x))
-        self._scores = {token: scores[token] for token in tokens}
+        self._scores = scores
         return 0
 
     # Step 11.3
@@ -873,10 +872,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        keywords = get_top_n(self._scores, n_keywords)
-        if not keywords:
-            return ()
-        return tuple(keywords)
+        sorted_by_keys = sorted(self._scores)
+        return tuple(sorted(sorted_by_keys, key=lambda x: - self._scores[x])[:n_keywords])
 
 
 # Step 12.1
