@@ -4,7 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, extract_pairs,
-                                          AdjacencyMatrixGraph)
+                                          AdjacencyMatrixGraph, VanillaTextRank)
 
 
 if __name__ == "__main__":
@@ -30,11 +30,23 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     encoded = encoder.encode(tokens)
     print(encoded)
-    print(encoder.decode(encoded))
+    decoded = encoder.decode(encoded)
+    print(decoded)
+
     if encoded:
-        print(extract_pairs(encoded, 3))
+        pairs = extract_pairs(encoded, 3)
+
     graph = AdjacencyMatrixGraph()
+    graph.fill_from_tokens(encoded, 3)
+    #
     print(graph.add_edge(1001, 1005))
+    print(graph.is_incidental(1001, 1005))
+    print(graph.calculate_inout_score(1001))
+    vanilla_text_rank = VanillaTextRank(graph)
+    if encoded:
+        top_10 = vanilla_text_rank.get_top_keywords(10)
+        top = encoder.decode(top_10)
+        print(top)
 
     # RESULT = None
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

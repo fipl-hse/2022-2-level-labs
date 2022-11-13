@@ -173,7 +173,7 @@ class TextEncoder:
         """
         if not all(id in self._id2word for id in encoded_tokens):
             return None
-        return tuple(self._id2word.get(token) for token in encoded_tokens)
+        return tuple(self._id2word[token] for token in encoded_tokens)
 
 
 # Step 3
@@ -199,17 +199,21 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     pairs = []
     for idx, token in enumerate(tokens):
         for i in range(1, window_length):
-            try:
+            if idx <= len(tokens) - window_length:
                 pair = tokens[idx], tokens[idx + i]
                 if pair[0] != pair[1]:
                     pairs.append(pair)
-            except IndexError:
-                pass
-    #       if idx <= len(tokens) - window_length:
-    #           pair = tokens[idx], tokens[idx + i]
-    #               if pair[0] != pair[1]:
-    #                   pairs.append(pair)
     return tuple(pairs)
+    # pairs = []
+    # for idx, token in enumerate(tokens):
+    #     for i in range(1, window_length):
+    #         try:
+    #             pair = tokens[idx], tokens[idx + i]
+    #             if pair[0] != pair[1]:
+    #                 pairs.append(pair)
+    #         except IndexError:
+    #             pass
+    # return tuple(pairs)
 
 
 class AdjacencyMatrixGraph:
@@ -297,7 +301,7 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if not (vertex1 in self._matrix and vertex2 in self._matrix):
+        if not (vertex1 in self._matrix[0] and vertex2 in self._matrix[0]):
             return -1
         idx_vrtx1 = self._matrix[0].index(vertex1)
         idx_vrtx2 = self._matrix[0].index(vertex2)
@@ -330,15 +334,16 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix:
+        if vertex not in self._matrix[0]:
             return -1
-        count = []
-        for rows in self._matrix:
-            if rows[0] == vertex:
-                for num in rows[self._matrix[0].index(vertex)][1:]:
-                    if num == 1:
-                        count.append(num)
-        return len(count)
+        # count = []
+        number = [x[self._matrix[0].index(vertex)] for x in self._matrix]
+        # print(number)
+        # for rows in self._matrix:
+        #     for num in rows[1:][self._matrix[0].index(vertex)]:
+        #         if num == 1:
+        #             count.append(num)
+        return len(number[:1])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -566,7 +571,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -581,7 +590,12 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summa = 0.
+        for vrtx in incidental_vertices:
+            inout_score = 1 / self._graph.calculate_inout_score(vrtx) * scores[vrtx]
+            summa += inout_score
+            weight = summa * self._damping_factor + (1 - self._damping_factor)
+            self._scores[vrtx] = weight
 
     # Step 5.3
     def train(self) -> None:
@@ -615,7 +629,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -626,7 +640,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        return tuple(sorted(sorted(self._scores), key=lambda x: self._scores[x], reverse=True))[:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
