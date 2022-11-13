@@ -4,6 +4,10 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tfidf, calculate_tf
+from lab_2_keywords_cooccurrence.main import extract_phrases,\
+    extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
+    calculate_word_degrees, calculate_word_scores
 
 from random import randint
 
@@ -199,8 +203,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     pairs = []
     for window in windows_list:
         for number in window:
-            for num in range(len(window)):
-                pairs.append([number, window[num]])
+            for num, win in enumerate(window):
+                pairs.append([number, win])
     pairs_new = []
     for pair in pairs:
         pair.sort()
@@ -282,11 +286,11 @@ class AdjacencyMatrixGraph:
                 diff = vertexes - line_len
                 self._matrix[idx+1].extend([0]*diff)
             if val[0] == vertex1:
-                g = self._matrix[0].index(vertex2)
-                self._matrix[idx + 1][g] = 1
+                point = self._matrix[0].index(vertex2)
+                self._matrix[idx + 1][point] = 1
             if val[0] == vertex2:
-                g = self._matrix[0].index(vertex1)
-                self._matrix[idx + 1][g] = 1
+                point = self._matrix[0].index(vertex1)
+                self._matrix[idx + 1][point] = 1
         return 0
 
     # Step 4.3
@@ -470,6 +474,7 @@ class EdgeListGraph:
                 self._edges[vertex] = []
         self._edges[vertex1].append(vertex2)
         self._edges[vertex2].append(vertex1)
+        return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -775,7 +780,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+        self._tokens = tokens
+        self._idf = idf
+        self._scores = {}
 
     # Step 10.2
     def train(self) -> int:
@@ -786,7 +793,14 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        freqs = calculate_frequencies(list(self._tokens))
+        # if not freqs:
+        #     return -1
+        tfs = calculate_tf(freqs)
+        # if not tfs:
+        #     return -1
+        self._scores = calculate_tfidf(tfs, self._idf)
+        return 0 if self._scores else -1
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -801,7 +815,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        return tuple(sorted(self._scores.keys(), key=lambda v: self._scores[v], reverse=True)[:n_keywords])
 
 
 class RAKEAdapter:
@@ -838,7 +852,9 @@ class RAKEAdapter:
             stop_words: tuple[str, ...]
                 a sequence of stop-words
         """
-        pass
+        self._text = text
+        self._stop_words = stop_words
+        self._scores = {}
 
     # Step 11.2
     def train(self) -> int:
@@ -849,7 +865,12 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        phrases = extract_phrases(self._text)
+        candidate_kwp = extract_candidate_keyword_phrases(phrases, self._stop_words)
+        freqs = calculate_frequencies_for_content_words(candidate_kwp)
+        word_degrees = calculate_word_degrees(candidate_kwp, list(freqs.keys()))
+        self._scores = calculate_word_scores(word_degrees, freqs)
+        return 0 if self._scores else -1
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -864,7 +885,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        scores_sort = sorted(self._scores.items(), key=lambda f: f[0])
+        return tuple(sorted(scores_sort, key=lambda s: s[1], reverse=True))[:n_keywords]
 
 
 # Step 12.1
@@ -882,7 +904,11 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    predicted_set = frozenset(predicted)
+    target_set = frozenset(target)
+    true_positive = len(predicted_set.intersection(target_set))
+    false_negative = len(target_set - predicted_set)
+    return true_positive / (true_positive + false_negative)
 
 
 class KeywordExtractionBenchmark:
@@ -927,7 +953,12 @@ class KeywordExtractionBenchmark:
             materials_path: Path
                 a path to materials to use for comparison
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf = idf
+        self._material_path = materials_path
+        self._themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self._report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -939,7 +970,47 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        self._report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TFIDFAdapter': {}, 'RAKEAdapter': {}}
+        list_of_files = list(self._material_path.iterdir())
+        for idx, file in enumerate(list_of_files[:-3]):
+            if idx % 2 == 0:
+                with open(list_of_files[idx-1], 'r', encoding='utf-8') as text_file:
+                    keywords = tuple(text_file.read().split('\n'))
+                with open(file, 'r', encoding='utf-8') as text_file:
+                    text = text_file.read()
+                text_to_clean = TextPreprocessor(self._punctuation, self._stop_words)
+                preprocessed_text = text_to_clean.preprocess_text(text)
+
+                TFIDF_kw = TFIDFAdapter(preprocessed_text, self._idf)
+                # train1 = TFIDF_kw.train()
+                train1_result = TFIDF_kw.get_top_keywords(50)
+                TFIDFrecall = calculate_recall(train1_result, keywords)
+                self._report['TFIDFAdapter'][self._themes[idx]] = TFIDFrecall
+
+                RAKE_kw = RAKEAdapter(text, self._stop_words)
+                train2_result = RAKE_kw.get_top_keywords(50)
+                RAKErecall = calculate_recall(train2_result, keywords)
+                self._report['RAKEAdapter'][self._themes[idx]] = RAKErecall
+
+                text_to_int = TextEncoder()
+                tokens = text_to_int.encode(preprocessed_text)
+                graph = EdgeListGraph()
+                graph.fill_from_tokens(tokens, 3)
+
+                VanillaTR_kw = VanillaTextRank(graph)
+                train3_result = VanillaTR_kw.get_top_keywords(50)
+                train3_result_decode = text_to_int.decode(train3_result)
+                VanillaTRrecall = calculate_recall(train3_result_decode, keywords)
+                self._report['VanillaTextRank'][self._themes[idx]] = VanillaTRrecall
+
+                PositionBiasedTR_kw = PositionBiasedTextRank(graph)
+                graph.fill_positions(tokens)
+                graph.calculate_position_weights()
+                train4_result = PositionBiasedTR_kw.get_top_keywords(50)
+                train4_result_decode = text_to_int.decode(train4_result)
+                PositionBiasedTRrecall = calculate_recall(train4_result_decode, keywords)
+                self._report['PositionBiasedTextRank'][self._themes[idx]] = PositionBiasedTRrecall
+        return self._report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
