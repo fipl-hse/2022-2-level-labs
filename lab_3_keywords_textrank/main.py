@@ -294,8 +294,11 @@ class AdjacencyMatrixGraph:
             if len(element) < maxi:
                 element.extend([0 for _ in range(maxi - len(element))])
 
-        self._matrix[self._matrix[0].index(vertex1)][self._matrix[0].index(vertex2)] = 1
-        self._matrix[self._matrix[0].index(vertex2)][self._matrix[0].index(vertex1)] = 1
+        matrix_vertex_1 = self._matrix[0].index(vertex1)
+        matrix_vertex_2 = self._matrix[0].index(vertex2)
+
+        self._matrix[matrix_vertex_1][matrix_vertex_2] = 1
+        self._matrix[matrix_vertex_2][matrix_vertex_1] = 1
         return 0
 
     # Step 4.3
@@ -396,7 +399,8 @@ class AdjacencyMatrixGraph:
                 else:
                     positions[key] = 1 / elem
         for key in self._positions:
-            self._position_weights[key] = positions[key] / sum(positions.values())
+            sum_position_values = sum(positions.values())
+            self._position_weights[key] = positions[key] / sum_position_values
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -458,6 +462,15 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
+    def check_vertex_in_edges(self, vertex1, vertex2):
+        """
+        The function checks if vertex is in self._edges
+        """
+        if vertex2 not in self._edges:
+            self._edges[vertex2] = [vertex1]
+        else:
+            self._edges[vertex2].append(vertex1)
+
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
@@ -476,14 +489,8 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if vertex1 not in self._edges:
-            self._edges[vertex1] = [vertex2]
-        else:
-            self._edges[vertex1].append(vertex2)
-        if vertex2 not in self._edges:
-            self._edges[vertex2] = [vertex1]
-        else:
-            self._edges[vertex2].append(vertex1)
+        self.check_vertex_in_edges(vertex2, vertex1)
+        self.check_vertex_in_edges(vertex1, vertex2)
         return 0
 
     # Step 7.2
@@ -1009,10 +1016,12 @@ class KeywordExtractionBenchmark:
             text_path = str(ind) + '_text.txt'
             keywords_path = str(ind) + '_keywords.txt'
 
-            with open(self._materials_path / text_path, 'r', encoding='utf-8') as file:
+            path1 = self._materials_path / text_path
+            with path1.open('r', encoding='utf-8') as file:
                 text = file.read()
-
-            with open(self._materials_path / keywords_path, 'r', encoding='utf-8') as file:
+            
+            path2 = self._materials_path / keywords_path
+            with path2.open('r', encoding='utf-8') as file:
                 keywords = tuple(file.read().split())
 
             tuple_words = text_preprocessor.preprocess_text(text)
