@@ -44,22 +44,24 @@ class Game:
             self._current_player_idx = 0
 
     def play_game(self):
-        # num_steps should be eliminated further, here just to make sure program does not 
+        # num_steps should be eliminated further, here just to make sure program does not
         # run forever
         num_steps = 0
-        while num_steps < 3: # while True:
-            print(f'Current move no. {num_steps+1}: Player {self._current_player_idx} decides...')
+
+        while num_steps < 3:  # while True:
+            print(f"Current move no. {num_steps+1}: Player {self._current_player_idx} decides...")
             move = self._players[self._current_player_idx].make_move()
 
             if self._check_move(move):
-                print('Move accepted')
+                print("Move accepted")
                 self._moves.append(move)
             else:
-                print('Move rejected')
+                print("Move rejected")
 
             self._next_player()
 
             num_steps += 1
+
 
 def main():
     player1 = Player("X")
