@@ -140,8 +140,9 @@ class TextEncoder:
         """
         start = 1000 if not self._word2id else max(self._word2id.values()) + 1
         for count, token in enumerate(tokens):
-            self._word2id[token] = start + count
-            self._id2word[self._word2id[token]] = token
+            identifier = start + count
+            self._word2id[token] = identifier
+            self._id2word[identifier] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -275,11 +276,12 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         for vertex in vertex1, vertex2:
-            if vertex not in self._vertices:
-                self._vertices.append(vertex)
-                for i in self._matrix:
-                    i.append(0)
-                self._matrix.append([0 for _ in self._vertices])
+            if vertex in self._vertices:
+                continue
+            self._vertices.append(vertex)
+            for i in self._matrix:
+                i.append(0)
+            self._matrix.append([0 for _ in self._vertices])
         index1, index2 = self._vertices.index(vertex1), self._vertices.index(vertex2)
         self._matrix[index1][index2] = self._matrix[index2][index1] = 1
         return 0
@@ -824,7 +826,10 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        candidate_keyword_phrases, word_frequencies, word_degrees, scores = [None for _ in range(4)]
+        candidate_keyword_phrases = None
+        word_frequencies = None
+        word_degrees = None
+        scores = None
         phrases = extract_phrases(self._text)
         if phrases and self._stop_words:
             candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
