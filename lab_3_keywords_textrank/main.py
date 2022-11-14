@@ -204,6 +204,28 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         return None
 
 
+    pairs = []
+    windows = []
+
+    for count, value in enumerate(tokens):
+        window = tokens[count:window_length + count]
+        windows.append(window)
+
+    for window in windows:
+        if len(window) != window_length:
+            continue
+
+        for i in range(0, len(window) - 1):
+            for n in range(window_length - 1):
+                pair = []
+                if window[i + n - 1] != window[i]:
+                    pair.append(window[i])
+                    pair.append(window[i + n - 1])
+
+                if pair not in pairs and pair:
+                    pair.sort()
+                    pairs.append(tuple(pair))
+    return tuple(pairs)
 
 
 class AdjacencyMatrixGraph:
