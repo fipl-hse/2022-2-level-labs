@@ -30,28 +30,36 @@ class Game:
         self._size = board_size
 
     def _check_move(self, move: Move):
-        for i in self.moves:
+        for i in self._moves:
             if i.row == move.row and i.col == move.col:
                 return False
-        if move.row >= self.size or move.col >= self.size:
+        if move.row >= self._size or move.col >= self._size:
             return False
         return True
 
     def _next_player(self):
-        if self.current_player_idx == 0:
-            self.current_player_idx = 1
+        if self._current_player_idx == 0:
+            self._current_player_idx = 1
         else:
-            self.current_player_idx = 0
+            self._current_player_idx = 0
 
     def play_game(self):
-        while True:
-            move = self.players[self.current_player_idx].make_move()
+        # num_steps should be eliminated further, here just to make sure program does not 
+        # run forever
+        num_steps = 0
+        while num_steps < 3: # while True:
+            print(f'Current move no. {num_steps+1}: Player {self._current_player_idx} decides...')
+            move = self._players[self._current_player_idx].make_move()
 
-            if self.check_move(move):
-                self.moves.append(move)
+            if self._check_move(move):
+                print('Move accepted')
+                self._moves.append(move)
+            else:
+                print('Move rejected')
 
-            self.next_player()
+            self._next_player()
 
+            num_steps += 1
 
 def main():
     player1 = Player("X")
