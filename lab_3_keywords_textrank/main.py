@@ -192,9 +192,9 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not(isinstance(window_length, int) and window_length >= 2 and tokens):
         return None
     pairs = set()
-    for token1 in tokens:
-        for token2 in tokens:
-            if token1 != token2 and abs(tokens.index(token1) - tokens.index(token2)) < window_length:
+    for idx1, token1 in enumerate(tokens):
+        for idx2, token2 in enumerate(tokens):
+            if token1 != token2 and abs(idx2 - idx1) < window_length:
                 pairs.add(tuple(sorted((token1, token2))))
     return tuple(pairs)
 
@@ -259,8 +259,6 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        # if not(isinstance(vertex1, int) and isinstance(vertex2, int)):
-        #     return None
         if vertex1 == vertex2:
             return -1
         for vertex in vertex1, vertex2:
@@ -298,7 +296,7 @@ class AdjacencyMatrixGraph:
             return -1
         idx1 = self._vertices.index(vertex1)
         idx2 = self._vertices.index(vertex2)
-        return int(self._matrix[idx1][idx2] == 1)
+        return self._matrix[idx1][idx2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -354,9 +352,9 @@ class AdjacencyMatrixGraph:
                 sequence of tokens
         """
         for idx, token in enumerate(tokens):
-            if tokens[idx] not in self._positions:
-                self._positions[tokens[idx]] = []
-            self._positions[tokens[idx]] += [idx + 1]
+            if token not in self._positions:
+                self._positions[token] = []
+            self._positions[token].append([idx + 1])
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -455,8 +453,11 @@ class EdgeListGraph:
         for vertex in vertex1, vertex2:
             if vertex not in self._edges:
                 self._edges[vertex] = []
-        self._edges[vertex1].append(vertex2)
-        self._edges[vertex2].append(vertex1)
+
+        if vertex1 not in self._edges[vertex2]:
+            self._edges[vertex2].append(vertex1)
+        if vertex2 not in self._edges[vertex1]:
+            self._edges[vertex1].append(vertex2)
         return 0
 
     # Step 7.2
@@ -521,9 +522,9 @@ class EdgeListGraph:
                 sequence of tokens
         """
         for idx, token in enumerate(tokens):
-            if tokens[idx] not in self._positions:
-                self._positions[tokens[idx]] = []
-            self._positions[tokens[idx]] += [idx + 1]
+            if token not in self._positions:
+                self._positions[token] = []
+            self._positions[token] += [idx + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
