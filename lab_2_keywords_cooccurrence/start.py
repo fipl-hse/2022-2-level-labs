@@ -5,7 +5,7 @@ Co-occurrence-driven keyword extraction starter
 from pathlib import Path
 
 from main import extract_phrases, extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
-    calculate_word_degrees, calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n, \
+    calculate_word_degrees, calculate_word_scores, get_top_n, \
     extract_candidate_keyword_phrases_with_adjoining, calculate_cumulative_score_for_candidates_with_stop_words
 
 
@@ -54,8 +54,6 @@ if __name__ == "__main__":
         word_frequencies = calculate_frequencies_for_content_words(candidate_keywords)
         word_degrees = calculate_word_degrees(candidate_keywords, list(word_frequencies.keys()))
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
-#        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keywords, word_scores)
-
         cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
             candidate_keywords, word_scores, stop_words)
         top_n = get_top_n(cumulative_score_with_stopwords, 10, 5)
