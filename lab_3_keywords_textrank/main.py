@@ -305,7 +305,7 @@ class AdjacencyMatrixGraph:
         If either of vertices is not present in the graph, -1 is returned
         """
         if vertex1 in self._vertices and vertex2 in self._vertices:
-            for idx, row in enumerate(self._matrix):
+            for idx in range(len(self._matrix)):
                 if idx == self._vertices.index(vertex1):
                     return self._matrix[idx][self._vertices.index(vertex2)]
         return -1
