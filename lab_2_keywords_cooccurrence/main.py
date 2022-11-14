@@ -220,11 +220,11 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not keyword_phrases_with_scores or max_length <= 0 or top_n <= 0:
         return None
 
-    filtered_phrases = {}
+    filtered_phrases = []
     for phrase in keyword_phrases_with_scores:
         if len(phrase) <= max_length:
-            filtered_phrases[phrase] = keyword_phrases_with_scores[phrase]
-    sorted_phrases = sorted(filtered_phrases, key=lambda phrase: filtered_phrases[phrase], reverse=True)
+            filtered_phrases.append(phrase)
+    sorted_phrases = sorted(filtered_phrases, key=lambda phrase: keyword_phrases_with_scores[phrase], reverse=True)
 
     joined_phrases = []
     for phrase in sorted_phrases:

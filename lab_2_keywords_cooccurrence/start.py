@@ -47,17 +47,18 @@ if __name__ == "__main__":
     for title, text in corpus.items():
         extracted_phrases = extract_phrases(text)
         candidate_keywords = extract_candidate_keyword_phrases(extracted_phrases, stop_words)
+        ajoined_candidate_keywords = extract_candidate_keyword_phrases_with_adjoining(candidate_keywords,
+                                                                                      extracted_phrases)
+        if ajoined_candidate_keywords:
+            candidate_keywords += ajoined_candidate_keywords
         word_frequencies = calculate_frequencies_for_content_words(candidate_keywords)
         word_degrees = calculate_word_degrees(candidate_keywords, list(word_frequencies.keys()))
         word_scores = calculate_word_scores(word_degrees, word_frequencies)
-        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keywords, word_scores)
-        ajoined_candidate_keywords = extract_candidate_keyword_phrases_with_adjoining(candidate_keywords,
-                                                                                      extracted_phrases)
+#        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keywords, word_scores)
+
         cumulative_score_with_stopwords = calculate_cumulative_score_for_candidates_with_stop_words(
-            ajoined_candidate_keywords, word_scores, stop_words)
-        if cumulative_score_with_stopwords:
-            cumulative_score.update(cumulative_score_with_stopwords)
-        top_n = get_top_n(cumulative_score, 10, 5)
+            candidate_keywords, word_scores, stop_words)
+        top_n = get_top_n(cumulative_score_with_stopwords, 10, 5)
         RESULT[title] = top_n
         print(title, top_n)
 
