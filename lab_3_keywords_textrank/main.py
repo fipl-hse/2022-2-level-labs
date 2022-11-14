@@ -245,9 +245,10 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
+        self._matrix = []
         self._positions = {}
         self._position_weights = {}
+        self._list_of_vertexes = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -269,17 +270,16 @@ class AdjacencyMatrixGraph:
             return -1
         vertexes = [vertex1, vertex2]
         for i in vertexes:
-            if i not in self._matrix[0]:
-                self._matrix[0].append(i)
-                self._matrix.append([i])
-        for count in range(len(self._matrix[0])):
-            # вот тут как будто можно переделать
-            for i in range(len(self._matrix[0]) - len(self._matrix[count + 1]) + 1):
-                self._matrix[count + 1].append(0)
+            if i not in self._list_of_vertexes:
+                self._list_of_vertexes.append(i)
+                self._matrix.append([0])
+        for count in range(len(self._list_of_vertexes)):
+            while len(self._list_of_vertexes) != len(self._matrix[count]):
+                self._matrix[count].append(0)
         for i in vertexes:
-            for count, value in enumerate(self._matrix[0]):
+            for count, value in enumerate(self._list_of_vertexes):
                 if (i and value) in vertexes and i != value:
-                    self._matrix[self._matrix[0].index(i) + 1][count + 1] = 1
+                    self._matrix[self._list_of_vertexes.index(i)][count] = 1
         return 0
 
 
@@ -299,10 +299,10 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
+        if vertex1 not in self._list_of_vertexes or vertex2 not in self._list_of_vertexes:
             return -1
-        v1_ind = self._matrix[0].index(vertex1) + 1
-        v2_ind = self._matrix[0].index(vertex2) + 1
+        v1_ind = self._list_of_vertexes.index(vertex1)
+        v2_ind = self._list_of_vertexes.index(vertex2)
         incidental = self._matrix[v1_ind][v2_ind]
         return incidental
 
@@ -315,7 +315,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._list_of_vertexes)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -331,9 +331,9 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex in self._matrix[0]:
-            v_ind = self._matrix[0].index(vertex)+1
-            return sum(self._matrix[v_ind][1:])
+        if vertex in self._list_of_vertexes:
+            v_ind = self._list_of_vertexes.index(vertex)
+            return sum(self._matrix[v_ind])
         return -1
 
     # Step 4.6
@@ -372,7 +372,7 @@ class AdjacencyMatrixGraph:
         """
         wrong_weights = {}
         for key in self._positions:
-            wrong_p = 0
+            wrong_p = 0.0
             for elem in self._positions[key]:
                 wrong_p += 1/elem
             wrong_weights[key] = wrong_p
@@ -620,9 +620,9 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        sum_of_values = 0
+        sum_of_values = 0.0
         for i in incidental_vertices:
-            sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i)
+            sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i, 0)
         self._scores[vertex] = sum_of_values * self._damping_factor + (1 - self._damping_factor)
 
     # Step 5.3
@@ -941,3 +941,4 @@ class KeywordExtractionBenchmark:
                 a path where to save the report file
         """
         pass
+
