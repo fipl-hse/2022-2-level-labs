@@ -4,32 +4,35 @@ Seminar 5
 
 Brainstorm from the lecture on designing a TicTacToe game
 """
+from typing import Literal
+
+MarkerType = Literal["X", "O"]
 
 
 class Move:
-    def __init__(self, row, col, label):
+    def __init__(self, row: int, col: int, label: MarkerType) -> None:
         self.row = row
         self.col = col
         self.label = label
 
 
 class Player:
-    def __init__(self, label):
+    def __init__(self, label: MarkerType) -> None:
         self.label = label
 
-    def make_move(self):
+    def make_move(self) -> Move:
         return Move(row=2, col=2, label=self.label)
 
 
 class Game:
-    def __init__(self, players, board_size):
+    def __init__(self, players: tuple[Player, ...], board_size: int) -> None:
         self._moves = []
         self._players = players
         self._win_states = []
         self._current_player_idx = 0
         self._size = board_size
 
-    def _check_move(self, move: Move):
+    def _check_move(self, move: Move) -> bool:
         for i in self._moves:
             if i.row == move.row and i.col == move.col:
                 return False
@@ -37,13 +40,13 @@ class Game:
             return False
         return True
 
-    def _next_player(self):
+    def _next_player(self) -> None:
         if self._current_player_idx == 0:
             self._current_player_idx = 1
         else:
             self._current_player_idx = 0
 
-    def play_game(self):
+    def play_game(self) -> None:
         # num_steps should be eliminated further, here just to make sure program does not
         # run forever
         num_steps = 0
@@ -63,7 +66,7 @@ class Game:
             num_steps += 1
 
 
-def main():
+def main() -> None:
     player1 = Player("X")
     player2 = Player("O")
 
