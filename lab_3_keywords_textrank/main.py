@@ -118,7 +118,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        self._word2id, self._id2word = {}, {}
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -129,8 +130,8 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for index, token in enumerate(tokens):
-            self._word2id[token] = 1000 + index
+        for index, token in enumerate(tokens, start=1000):
+            self._word2id[token] = index
             self._id2word[self._word2id[token]] = token
 
     # Step 2.3
@@ -150,8 +151,8 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        tokens_list = [self._word2id[key] for token in tokens for key in self._word2id if token == key]
-        return tuple(tokens_list)
+        tokens_list = tuple(self._word2id[key] for token in tokens for key in self._word2id if token == key)
+        return tokens_list
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -170,10 +171,10 @@ class TextEncoder:
         if not encoded_tokens:
             return None
         for token in encoded_tokens:
-            if token not in self._id2word.keys():
+            if token not in self._id2word:
                 return None
-        tokens_list = [self._id2word[key] for token in encoded_tokens for key in self._id2word if token == key]
-        return tuple(tokens_list)
+        tokens_list = tuple(self._id2word[key] for token in encoded_tokens for key in self._id2word if token == key)
+        return tokens_list
 
 
 # Step 3
@@ -205,7 +206,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                 if (j, k) in final or (k, j) in final:
                     continue
                 if not j == k:
-                    pair = tuple([j, k])
+                    pair = (j, k)
                     final.append(pair)
     return tuple(final)
 
@@ -283,8 +284,8 @@ class AdjacencyMatrixGraph:
                     break
                 i.append(0)
             for j in range(len(self._matrix[0])):
-                if (i[0] == vertex1 and self._matrix[0][j] == vertex2) or (
-                        self._matrix[0][j] == vertex1 and i[0] == vertex2):
+                if (i[0] == vertex1 and self._matrix[0][j] == vertex2) or \
+                        (self._matrix[0][j] == vertex1 and i[0] == vertex2):
                     i[j + 1] = 1
         return 0
 
