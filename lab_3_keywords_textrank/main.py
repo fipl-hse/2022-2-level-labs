@@ -303,7 +303,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._vertex_list or vertex2 not in self._vertex_list:
             return -1
-        equal = self._matrix[self._vertex_list.index(vertex1) + 1][self._vertex_list.index(vertex2) + 1]
+        equal = self._matrix[self._vertex_list.index(vertex1)][self._vertex_list.index(vertex2)]
         return equal
 
     # Step 4.4
