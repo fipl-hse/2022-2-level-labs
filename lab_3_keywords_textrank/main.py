@@ -333,7 +333,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._vertex_list:
             return -1
-        return sum(self._matrix[self._vertex_list.index(vertex)][1:])
+        return sum(self._matrix[self._vertex_list.index(vertex)])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
