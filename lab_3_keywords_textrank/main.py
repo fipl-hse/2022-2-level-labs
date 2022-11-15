@@ -299,10 +299,10 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if (vertex1 not in self._matrix[0]) or (vertex2 not in self._matrix[0]):
+        if (vertex1 not in self._vertices) or (vertex2 not in self._vertices):
             return -1
-        index1 = self._matrix[0].index(vertex1)
-        index2 = self._matrix[0].index(vertex2)
+        index1 = self._vertices.index(vertex1)
+        index2 = self._vertices.index(vertex2)
         return self._matrix[index1][index2]
 
     # Step 4.4
@@ -369,6 +369,11 @@ class AdjacencyMatrixGraph:
         Computes position weights for all tokens in text
         """
         dictionary = {}
+        for vertex in self._positions:
+            dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
+        sum_dictionary = sum(dictionary.values())
+        for vertex in sum_dictionary:
+            self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
 
 
@@ -381,7 +386,7 @@ class AdjacencyMatrixGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class EdgeListGraph:
@@ -430,7 +435,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-
+        return tuple(self._edges.keys())
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -448,7 +453,15 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+        for vertex in [vertex1, vertex2]:
+            if vertex not in self._edges:
+                self._edges[vertex] = []
+        self._edges[vertex1].append(vertex2)
+        self._edges[vertex2].append(vertex1)
+        return 0
+
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -466,7 +479,12 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        if (vertex1 not in self._vertices) or (vertex2 not in self._vertices):
+            return -1
+        if vertex2 in self._edges[vertex1]:
+            return 1
+        else:
+            return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -482,7 +500,9 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._vertices:
+            return -1
+        return len(self._edges[vertex])
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -496,7 +516,8 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        for pair in extract_pairs(tokens, window_length):
+            self.add_edge()
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -506,14 +527,20 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for index, word in enumerate(tokens):
+            self._positions[word] = self._positions.get(index, []) + [index + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        dictionary = {}
+        for vertex in self._positions:
+            dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
+        sum_dictionary = sum(dictionary.values())
+        for vertex in sum_dictionary:
+            self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -524,7 +551,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class VanillaTextRank:
@@ -676,7 +703,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -691,7 +719,8 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        self._scores[vertex] = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * sum(
+            1 / self._graph.calculate_inout_score(elem) * scores[elem] for elem in incidental_vertices)
 
 
 class TFIDFAdapter:
