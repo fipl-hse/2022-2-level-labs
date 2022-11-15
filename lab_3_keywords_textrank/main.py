@@ -4,12 +4,11 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+from random import randint
 from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tfidf, calculate_tf
 from lab_2_keywords_cooccurrence.main import extract_phrases,\
     extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
     calculate_word_degrees, calculate_word_scores
-
-from random import randint
 
 
 class TextPreprocessor:
@@ -130,11 +129,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        self._word2id = {token: randint(1000, 9999) for token in tokens}
-        for index, token in enumerate(self._word2id):
-            w2i_values = list(self._word2id.values())
-            needed_value = w2i_values[index]
-            self._id2word[needed_value] = token
+        self._word2id = {token: 1000 + index for index, token in enumerate(tokens)}
+        for token in self._word2id:
+            self._id2word[self._word2id[token]] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -256,6 +253,7 @@ class AdjacencyMatrixGraph:
         self._matrix = [[0]]
         self._positions = {}
         self._position_weights = {}
+        self._matrix_vertexes = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -276,21 +274,19 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         for vertex in [vertex1, vertex2]:
-            if not vertex in self._matrix[0]:
-                self._matrix[0].append(vertex)
-                self._matrix.append([vertex])
-        vertexes = len(self._matrix[0])
-        for idx, val in enumerate(self._matrix[1:]):
-            line_len = len(self._matrix[idx+1])
+            if not vertex in self._matrix_vertexes:
+                self._matrix_vertexes.append(vertex)
+                self._matrix.append([])
+        vertexes = len(self._matrix_vertexes)
+        for idx, val in enumerate(self._matrix):
+            line_len = len(val)
             if line_len != vertexes:
                 diff = vertexes - line_len
-                self._matrix[idx+1].extend([0]*diff)
-            if val[0] == vertex1:
-                point = self._matrix[0].index(vertex2)
-                self._matrix[idx + 1][point] = 1
-            if val[0] == vertex2:
-                point = self._matrix[0].index(vertex1)
-                self._matrix[idx + 1][point] = 1
+                self._matrix[idx].extend([0]*diff)
+        ver1_idx = self._matrix_vertexes.index(vertex1)
+        ver2_idx = self._matrix_vertexes.index(vertex2)
+        self._matrix[ver2_idx][ver1_idx] = 1
+        self._matrix[ver1_idx][ver2_idx] = 1
         return 0
 
     # Step 4.3
@@ -309,10 +305,10 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
+        if vertex1 not in self._matrix_vertexes or vertex2 not in self._matrix_vertexes:
             return -1
-        vertex2_idx = self._matrix[0].index(vertex2)
-        vertex1_idx = self._matrix[0].index(vertex1)
+        vertex2_idx = self._matrix_vertexes.index(vertex2)
+        vertex1_idx = self._matrix_vertexes.index(vertex1)
         return self._matrix[vertex2_idx][vertex1_idx]
 
     # Step 4.4
@@ -324,7 +320,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0][1:])
+        return tuple(self._matrix_vertexes)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -342,10 +338,10 @@ class AdjacencyMatrixGraph:
         """
         score = 0
         try:
-            vertex_idx = self._matrix[0].index(vertex)
+            vertex_idx = self._matrix_vertexes.index(vertex)
         except ValueError:
             return -1
-        for line in self._matrix[1:]:
+        for line in self._matrix:
             if line[vertex_idx] == 1:
                 score += 1
         return score

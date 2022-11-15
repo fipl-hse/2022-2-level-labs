@@ -3,10 +3,9 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, \
-    AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
 from string import punctuation
-
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, \
+    AdjacencyMatrixGraph, EdgeListGraph, VanillaTextRank, PositionBiasedTextRank
 
 if __name__ == "__main__":
 
@@ -30,14 +29,14 @@ if __name__ == "__main__":
     encoded_tokens = encoded_text.encode(tokens)
 
     text_graph = AdjacencyMatrixGraph()
-    text_graph.fill_from_tokens(encoded_tokens, 3)
+    text_graph.fill_from_tokens(encoded_tokens, 5)
     text_rank1 = VanillaTextRank(text_graph)
     text_rank1.train()
     top1 = text_rank1.get_top_keywords(10)
     decoded_text1 = encoded_text.decode(top1)
     print(decoded_text1)
     text_graph = EdgeListGraph()
-    text_graph.fill_from_tokens(encoded_tokens, 3)
+    text_graph.fill_from_tokens(encoded_tokens, 5)
     text_rank1 = VanillaTextRank(text_graph)
     text_rank1.train()
     top1 = text_rank1.get_top_keywords(10)
@@ -45,7 +44,7 @@ if __name__ == "__main__":
     print(decoded_text1)
 
     text_graph = AdjacencyMatrixGraph()
-    text_graph.fill_from_tokens(encoded_tokens, 3)
+    text_graph.fill_from_tokens(encoded_tokens, 2)
     text_graph.fill_positions(encoded_tokens)
     text_graph.calculate_position_weights()
     text_rank2 = PositionBiasedTextRank(text_graph)
