@@ -55,6 +55,16 @@ if __name__ == "__main__":
         print(LABELS[IDX])
         print(DECODED_WORDS)
         IDX += 1
+    #
+    # THEMES = {0: 'culture', 1: 'business', 2: 'crime', 3: 'fashion', 4: 'health',
+    #           5: 'politics', 6: 'science', 7: 'sports', 8: 'tech'}
+    # for files in range(len(THEMES)):
+    #     name = THEMES[files]
+    #     keywords_name = 'KEYWORD_FOR'
+    #     with open "lab_3_keywords_textrank/assets/benchmark_materials/{}_keywords.txt".format(files) as keywords_file:
+    #
+    # with open("lab_3_keywords_textrank/assets/benchmark_materials/eng_stop_words.txt") as eng_stop_words:
+    #     STOP_WORDS_BENCHMARK = eng_stop_words.read()
 
     RESULT = DECODED_WORDS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

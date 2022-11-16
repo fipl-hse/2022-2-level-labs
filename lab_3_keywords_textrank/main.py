@@ -36,8 +36,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self.stop_words = stop_words
-        self.punctuation = punctuation
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -53,7 +53,7 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         cleaned = text
-        for marks in self.punctuation:
+        for marks in self._punctuation:
             cleaned = cleaned.replace(marks, '')
         return tuple(cleaned.lower().split())
 
@@ -70,10 +70,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        cleaned_tokens = list(tokens[:])
-        for words in tokens:
-            if words in self.stop_words:
-                cleaned_tokens.remove(words)
+        cleaned_tokens = [word for word in tokens if word not in self._stop_words]
         return tuple(cleaned_tokens)
 
     # Step 1.4
@@ -119,8 +116,6 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        # self._word2id = {str: int}
-        # self._id2word = {int: str}
         self._word2id = {}
         self._id2word = {}
 
@@ -179,8 +174,7 @@ class TextEncoder:
             if one_token not in self._id2word:
                 return None
             decoded_tokens.append(self._id2word[one_token])
-        tuple_of_decoded = tuple(decoded_tokens)
-        return tuple_of_decoded
+        return tuple(decoded_tokens)
 
 
 # Step 3
@@ -278,8 +272,8 @@ class AdjacencyMatrixGraph:
         for one_vert in vertex1, vertex2:
             if one_vert not in self._vertexes:
                 self._vertexes[one_vert] = self._id_vertex
-                self._matrix.append([0 for i in range(self._id_vertex)])
-                for i in range(self._id_vertex+1):
+                self._matrix.append([0 for i in range(self._id_vertex+1)])
+                for i in range(self._id_vertex):
                     self._matrix[i].append(0)
                 self._id_vertex += 1
         self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]] = 1
@@ -305,9 +299,10 @@ class AdjacencyMatrixGraph:
         if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
         answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
-        if isinstance(answer, int):
-            return answer
-        return -1
+        # if isinstance(answer, int):
+        #     return answer
+        # return -1
+        return answer
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
