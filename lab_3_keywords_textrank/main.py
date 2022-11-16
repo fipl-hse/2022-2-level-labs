@@ -775,7 +775,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords))
+        return tuple(get_top_n(self._scores, n_keywords)) if self._scores else ()
 
 
 class RAKEAdapter:
@@ -833,7 +833,7 @@ class RAKEAdapter:
         word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys())) \
             if candidate_keyword_phrases and frequencies else None
         word_scores = calculate_word_scores(word_degrees, frequencies) if word_degrees and frequencies else None
-        self._scores = word_scores if word_scores else {}
+        self._scores = dict(word_scores) if word_scores else {}
         return 0 if self._scores else -1
 
     # Step 11.3
