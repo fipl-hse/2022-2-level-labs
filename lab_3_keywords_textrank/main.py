@@ -368,7 +368,7 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        all_weights = 0
+        all_weights = 0.0
         for key, value in self._positions.items():
             position_weight = 0.0
             for one_token in value:
