@@ -169,9 +169,9 @@ class TextEncoder:
         for token in encoded_tokens:
             if token not in self._id2word:
                 return None
-            for id in self._id2word:
-                if token == id:
-                    tokens.append(self._id2word[id])
+            for number in self._id2word:
+                if token == number:
+                    tokens.append(self._id2word[number])
         return tuple(tokens)
 
 
@@ -375,7 +375,7 @@ class AdjacencyMatrixGraph:
                 position_weight += 1 / one_token
             self._position_weights[key] = position_weight
             all_weights += position_weight
-        for key in self._positions.keys():
+        for key in self._positions:
             self._position_weights[key] = self._position_weights[key] / all_weights
 
     # Step 8.4
@@ -539,7 +539,7 @@ class EdgeListGraph:
                 position_weight += 1 / one_token
             self._position_weights[key] = position_weight
             all_weights += position_weight
-        for key in self._positions.keys():
+        for key in self._positions:
             self._position_weights[key] = self._position_weights[key] / all_weights
 
     # Step 8.4
@@ -733,7 +733,8 @@ class PositionBiasedTextRank(VanillaTextRank):
                 sign -= 1
             else:
                 sign += 1
-        self._scores[vertex] = (sign * self._damping_factor) + (1 - self._damping_factor) * self._position_weights[vertex]
+        self._scores[vertex] = (sign * self._damping_factor) +\
+                               (1 - self._damping_factor) * self._position_weights[vertex]
 
 
 class TFIDFAdapter:
