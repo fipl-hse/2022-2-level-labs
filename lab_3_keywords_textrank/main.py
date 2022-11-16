@@ -55,8 +55,7 @@ class TextPreprocessor:
         for i in text.lower():
             if i in self.punctuation:
                 text = text.replace(i, '')
-        tokens = tuple(text.lower().split())
-        return tokens
+        return tuple(text.lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -75,8 +74,7 @@ class TextPreprocessor:
         for word in tokens:
             if word not in self.stop_words:
                 prepared_text.append(word)
-        tokens_tup = tuple(prepared_text)
-        return tokens_tup
+        return tuple(prepared_text)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -91,7 +89,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        return self._remove_stop_words(self._clean_and_tokenize(text))
+        preprocessing = (self._clean_and_tokenize(text))
+        return self._remove_stop_words(preprocessing)
 
 
 class TextEncoder:
@@ -155,8 +154,7 @@ class TextEncoder:
         ids_list = []
         for i in tokens:
             ids_list.append(self._word2id[i])
-        ids_tuple = tuple(ids_list)
-        return ids_tuple
+        return tuple(ids_list)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -179,8 +177,7 @@ class TextEncoder:
             if i not in self._id2word:
                 return None
             tokens_list.append(self._id2word[i])
-        encoded_tokens_tuple = tuple(tokens_list)
-        return encoded_tokens_tuple
+        return tuple(tokens_list)
 
 
 # Step 3
@@ -283,8 +280,8 @@ class AdjacencyMatrixGraph:
                 self._matrix[0].append(vertex)
                 self._matrix.append([vertex] + [0 for _ in range(len(self._matrix[0]))])
 
-                for i in range(1, len(self._matrix[0]) + 1):
-                    self._matrix[i].append(0)
+            for i in range(1, len(self._matrix[0]) + 1):
+                self._matrix[i].append(0)
 
         index_one = self._matrix[0].index(vertex1)
         index_two = self._matrix[0].index(vertex2)
@@ -314,7 +311,6 @@ class AdjacencyMatrixGraph:
         idx_vertex1 = self._matrix[0].index(vertex1)
         idx_vertex2 = self._matrix[0].index(vertex2)
         vertexes_inc = self._matrix[idx_vertex1 + 1][idx_vertex2 + 1]
-        print(vertexes_inc)
         return vertexes_inc
 
     # Step 4.4
@@ -326,9 +322,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        graph = tuple(self._matrix[0])
-        print(graph)
-        return graph
+        return tuple(self._matrix[0])
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -578,7 +572,7 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        self._graph = AdjacencyMatrixGraph()
+        self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
         self._max_iter = 50
@@ -635,7 +629,6 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        print(self._scores)
         return self._scores
 
     # Step 5.5
@@ -649,7 +642,6 @@ class VanillaTextRank:
         """
         sort_keywords = sorted(self._scores, reverse=True, key=lambda key: self._scores[key])
         top_n_keywords = sort_keywords[:n_keywords]
-        print(top_n_keywords)
         return tuple(top_n_keywords)
 
 
