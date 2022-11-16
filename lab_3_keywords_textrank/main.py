@@ -299,10 +299,9 @@ class AdjacencyMatrixGraph:
         if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
         answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
-        # if isinstance(answer, int):
-        #     return answer
-        # return -1
-        return answer
+        if isinstance(answer, int):
+            return answer
+        return -1
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
