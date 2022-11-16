@@ -19,12 +19,12 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not (text and isinstance(text,str)):
         return None
-    punctuation = '''.,;:¡!¿?…⋯‹›«»"“”\/[]()⟨⟩}{&]|[-–~—]'''
+    punctuation = '''.,;:¡!¿?…⋯‹›«»"“”\\[]()⟨⟩}{&]|[-–~—]'''
     for symbol in text:
         if symbol in punctuation:
             text = text.replace(symbol, '.')
     phrases_list = text.split('.')
-    new_phrases = [new_phrase for phrase in phrases_list if (new_phrase := phrase.strip())]
+    new_phrases = [phrase.strip() for phrase in phrases_list if phrase.strip()]
     return new_phrases
 
 
@@ -37,19 +37,28 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    if not (phrases and isinstance(phrases,list) and stop_words and isinstance(stop_words,list)):
+    if not (phrases and stop_words):
+        return None
+    if not (isinstance(phrases, list) and isinstance(stop_words, list)):
         return None
     for phrase in phrases:
         if not isinstance(phrase,str):
             return None
 
-    new_list = []
+    candidate_phrases = []
     for phrase in phrases:
         phrase = phrase.lower().split()
+        lst = []
         for word in phrase:
             if word not in stop_words:
-                new_list.append(word)
-    return new_list
+                lst.append(word)
+            elif (word in stop_words) and lst:
+                candidate_phrases.append(tuple(lst))
+                lst.clear()
+        if lst:
+            candidate_phrases.append(tuple(lst))
+            lst.clear()
+    return candidate_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
