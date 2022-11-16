@@ -53,8 +53,8 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         for i in self._punctuation:
-            separator = text.replace(i, '')
-        return tuple(separator.lower().strip())
+            text = text.replace(i, '')
+        return tuple(text.lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -72,7 +72,7 @@ class TextPreprocessor:
         lst = []
         for i in tokens:
             if i not in self._stop_words:
-                lst = lst.append(i)
+                lst.append(i)
         return tuple(lst)
 
 
@@ -169,7 +169,7 @@ class TextEncoder:
         In case of out-of-dictionary input data, None is returned
         """
         for index in encoded_tokens:
-            if index not in self._word2id:
+            if index not in self._id2word.keys():
                 return None
         return tuple(self._id2word[i] for i in encoded_tokens)
 
@@ -193,17 +193,17 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    if not (tokens or isinstance(window_length, int) or window_length <= 2):
+    if not tokens or not isinstance(window_length, int) or window_length <= 2:
         return None
     pairs = []
-    list_of_tokens = []
+    list_of_tokens = list(tokens)
     for token in range(len(tokens)):
         window = list_of_tokens[token: token + window_length]
         for index1 in window:
             for index2 in window:
                 if index1 == index2:
                     continue
-                if (index1, index2) not in list_of_tokens or (index2, index1) not in list_of_tokens:
+                if ((index1, index2)  or (index2, index1)) not in list_of_tokens:
                     pair = tuple([index1, index2])
                     pairs.append(pair)
     return tuple(pairs)
@@ -274,9 +274,9 @@ class AdjacencyMatrixGraph:
         for vertex in vertex1, vertex2:
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
-        for i in self._matrix:
-            i.append(0)
-            self._matrix.append([0 for _ in self._vertices])
+            for i in self._matrix:
+                i.append(0)
+                self._matrix.append([0 for _ in self._vertices])
         index1 = self._vertices.index(vertex1)
         index2 = self._vertices.index(vertex2)
         self._matrix[index1][index2] = self._matrix[index2][index1] = 1
@@ -659,7 +659,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
+        return tuple(sorted(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords]))
 
 
 class PositionBiasedTextRank(VanillaTextRank):
