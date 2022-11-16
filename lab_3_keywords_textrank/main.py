@@ -133,10 +133,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        if not self._word2id:
-            first_number = 1001
-        else:
-            first_number = max(self._word2id.values()) + 1
+        first_number = 1001 if not self._word2id else max(self._word2id.values()) + 1
 
         for ind, element in enumerate(tokens):
             self._word2id |= {element: ind + first_number}
@@ -206,14 +203,11 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or window_length < 2 or not isinstance(window_length, int):
         return None
     pairs = []
-    for ind, elem in enumerate(tokens):
-        for i in range(window_length):
-            try:
-                pair = (elem, tokens[ind + i])
-                if pair[0] != pair[1]:
-                    pairs.append(pair)
-            except IndexError:
-                pass
+    for ind in range(len(tokens)):
+        for i in range(1, window_length):
+            pair = tokens[ind: ind + i + 1: i]
+            if pair and len(pair) == 2 and pair[0] != pair[1]:
+                pairs.append(pair)
     return tuple(pairs)
 
 
@@ -511,9 +505,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        if vertex1 in self._edges[vertex2]:
-            return 1
-        return 0
+        return int(vertex1 in self._edges[vertex2])
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -814,18 +806,15 @@ class TFIDFAdapter:
                 0 if importance scores were calculated successfully, otherwise -1
         """
         freq_dict = calculate_frequencies(list(self._tokens))
-        if freq_dict:
-            tf_dict = calculate_tf(freq_dict)
-        else:
+        if not freq_dict:
             return -1
-        if tf_dict:
-            tfidf_dict = calculate_tfidf(tf_dict, self._idf)
-        else:
+        tf_dict = calculate_tf(freq_dict)
+        if not tf_dict:
             return -1
-        if tfidf_dict:
-            self._scores |= tfidf_dict
-        else:
+        tfidf_dict = calculate_tfidf(tf_dict, self._idf)
+        if not tfidf_dict:
             return -1
+        self._scores |= tfidf_dict
         return 0
 
     # Step 10.3
