@@ -25,12 +25,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     for symbol in full_punctuation:
         text = text.replace(symbol, '.')
     phrases = text.split('.')
-    phrases_stripped = []
-    for string in phrases:
-        string = string.strip()
-        if string:
-            phrases_stripped.append(string)
-
+    phrases_stripped = [string.strip() for string in phrases if string.strip()]
     return phrases_stripped
 
 
@@ -164,10 +159,9 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     word_score = {}
     for word in word_degrees:
-        if word in word_frequencies:
-            word_score[word] = word_degrees[word] / word_frequencies[word]
-        else:
+        if word not in word_frequencies:
             return None
+        word_score[word] = word_degrees[word] / word_frequencies[word]
     return word_score
 
 
@@ -194,10 +188,9 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for phrase in candidate_keyword_phrases:
         phrases_scores_dict[phrase] = 0
         for word in phrase:
-            if word in word_scores:
-                phrases_scores_dict[phrase] += word_scores[word]
-            else:
+            if word not in word_scores:
                 return None
+            phrases_scores_dict[phrase] += word_scores[word]
     return phrases_scores_dict
 
 
