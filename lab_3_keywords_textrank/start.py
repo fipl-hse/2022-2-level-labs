@@ -5,7 +5,9 @@ TextRank keyword extraction starter
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
-    EdgeListGraph, PositionBiasedTextRank
+    EdgeListGraph, PositionBiasedTextRank, KeywordExtractionBenchmark
+import os
+import json
 
 if __name__ == "__main__":
 
@@ -55,16 +57,15 @@ if __name__ == "__main__":
         print(LABELS[IDX])
         print(DECODED_WORDS)
         IDX += 1
-    #
-    # THEMES = {0: 'culture', 1: 'business', 2: 'crime', 3: 'fashion', 4: 'health',
-    #           5: 'politics', 6: 'science', 7: 'sports', 8: 'tech'}
-    # for files in range(len(THEMES)):
-    #     name = THEMES[files]
-    #     keywords_name = 'KEYWORD_FOR'
-    #     with open "lab_3_keywords_textrank/assets/benchmark_materials/{}_keywords.txt".format(files) as keywords_file:
-    #
-    # with open("lab_3_keywords_textrank/assets/benchmark_materials/eng_stop_words.txt") as eng_stop_words:
-    #     STOP_WORDS_BENCHMARK = eng_stop_words.read()
+
+    with open("assets/benchmark_materials/IDF.json", encoding='UTF-8') as FILE:
+        JSON_FILE = json.load(FILE)
+
+    with open("assets/benchmark_materials/eng_stop_words.txt", encoding='UTF-8') as FILE:
+        ENGLISH_STOPS = [line.rstrip('\n') for line in FILE]
+
+    PATH_TO_BENCH = '/assets/benchmark_materials'
+    KeywordExtractionBenchmark(ENGLISH_STOPS, PUNCTUATION_MARKS, JSON_FILE, PATH_TO_BENCH)
 
     RESULT = DECODED_WORDS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
