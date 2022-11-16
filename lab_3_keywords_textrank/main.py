@@ -370,7 +370,7 @@ class AdjacencyMatrixGraph:
         """
         all_weights = 0
         for key, value in self._positions.items():
-            position_weight = 0
+            position_weight = 0.0
             for one_token in value:
                 position_weight += 1 / one_token
             self._position_weights[key] = position_weight
