@@ -254,6 +254,7 @@ class AdjacencyMatrixGraph:
         self._matrix = [[]]
         self._positions = {}
         self._position_weights = {}
+        self._vertices = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -340,11 +341,10 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._matrix[0]:
             return -1
-        for vertex in self._matrix[0]:
-            if vertex in self._matrix[0]:
-                index = self._matrix[0].index(vertex)+1
-                summa = sum(self._matrix[index][1:])
-                return summa
+        else:
+            index = self._matrix[0].index(vertex)+1
+            summa = sum(self._matrix[index][1:])
+        return summa
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
