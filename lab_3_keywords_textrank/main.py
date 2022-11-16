@@ -251,7 +251,7 @@ class AdjacencyMatrixGraph:
         self._matrix = [[]]
         self._positions = {}
         self._position_weights = {}
-        self._list_of_vertices = [] = []
+        self._list_of_vertices = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
