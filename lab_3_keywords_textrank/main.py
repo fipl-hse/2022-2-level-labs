@@ -4,7 +4,10 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-from lab_1_keywords_tfidf.main import check_positive_int
+from lab_1_keywords_tfidf.main import check_positive_int, calculate_frequencies, calculate_tf, \
+    calculate_tfidf, get_top_n
+from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
+    calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
 
 class TextPreprocessor:
@@ -740,7 +743,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+        self._tokens = tokens
+        self._idf = idf
+        self._scores = {}
 
     # Step 10.2
     def train(self) -> int:
@@ -751,7 +756,11 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        frequencies = calculate_frequencies(list(self._tokens))
+        tf_scores = calculate_tf(frequencies) if frequencies else None
+        tfidf_scores = calculate_tfidf(tf_scores, self._idf) if tf_scores else None
+        self._scores = tfidf_scores if tfidf_scores else {}
+        return 0 if self._scores else -1
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -766,7 +775,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        return tuple(get_top_n(self._scores, n_keywords))
 
 
 class RAKEAdapter:
@@ -803,7 +812,9 @@ class RAKEAdapter:
             stop_words: tuple[str, ...]
                 a sequence of stop-words
         """
-        pass
+        self._text = text
+        self._stop_words = stop_words
+        self._scores = {}
 
     # Step 11.2
     def train(self) -> int:
@@ -814,7 +825,16 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        phrases = extract_phrases(self._text)
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words)) \
+            if phrases else None
+        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases) \
+            if candidate_keyword_phrases else None
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys())) \
+            if candidate_keyword_phrases and frequencies else None
+        word_scores = calculate_word_scores(word_degrees, frequencies) if word_degrees and frequencies else None
+        self._scores = word_scores if word_scores else {}
+        return 0 if self._scores else -1
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -829,7 +849,9 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        scores_sorted = sorted(self._scores)
+        scores_top = sorted(scores_sorted, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
+        return tuple(scores_top)
 
 
 # Step 12.1
@@ -847,7 +869,8 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    true_positive = sum(1 for keyword in predicted if keyword in target)
+    return true_positive / len(target)
 
 
 class KeywordExtractionBenchmark:
@@ -892,7 +915,12 @@ class KeywordExtractionBenchmark:
             materials_path: Path
                 a path to materials to use for comparison
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf = idf
+        self._materials_path = materials_path
+        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
