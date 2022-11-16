@@ -9,7 +9,10 @@ from lab_3_keywords_textrank.main import (
     TextEncoder,
     extract_pairs,
     AdjacencyMatrixGraph,
-    VanillaTextRank)
+    EdgeListGraph,
+    VanillaTextRank,
+    PositionBiasedTextRank
+)
 
 if __name__ == "__main__":
 
@@ -31,25 +34,46 @@ if __name__ == "__main__":
     text_preprocessed = text_preprocessor.preprocess_text(text)
     encoder = TextEncoder()
     tokens = encoder.encode(text_preprocessed)
-
+    adjacency_matrix_graph = AdjacencyMatrixGraph()
+    edge_graph = EdgeListGraph()
     PAIRS = None
 
     if tokens:
         PAIRS = extract_pairs(tokens, 3)
     print(PAIRS)
 
-    adjacency_matrix_graph = AdjacencyMatrixGraph()
-
     if tokens:
         adjacency_matrix_graph.fill_from_tokens(tokens, 3)
         adjacency_matrix_graph.fill_positions(tokens)
         adjacency_matrix_graph.calculate_position_weights()
-    vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
-    vanilla_text_rank.train()
-    top_10_vanilla = vanilla_text_rank.get_top_keywords(10)
-    DECODED_TOP_10_VANILLA = encoder.decode(top_10_vanilla)
-    print(DECODED_TOP_10_VANILLA)
+    vanilla_rank_adj = VanillaTextRank(adjacency_matrix_graph)
+    vanilla_rank_adj.train()
+    top_10_vanilla_adj = vanilla_rank_adj.get_top_keywords(10)
+    DECODED_TOP_10_VANILLA_ADJ = encoder.decode(top_10_vanilla_adj)
+    print(DECODED_TOP_10_VANILLA_ADJ)
 
-    RESULT = DECODED_TOP_10_VANILLA
+    if tokens:
+        edge_graph.fill_from_tokens(tokens, 3)
+        edge_graph.fill_positions(tokens)
+        edge_graph.calculate_position_weights()
+    vanilla_rank_edge = VanillaTextRank(edge_graph)
+    vanilla_rank_edge.train()
+    top_10_vanilla_edge = vanilla_rank_edge.get_top_keywords(10)
+    DECODED_TOP_10_VANILLA_EDGE = encoder.decode(top_10_vanilla_edge)
+    print(DECODED_TOP_10_VANILLA_EDGE)
+
+    biased_rank_adj = PositionBiasedTextRank(adjacency_matrix_graph)
+    biased_rank_adj.train()
+    top_10_biased_adj = biased_rank_adj.get_top_keywords(10)
+    DECODED_TOP_10_BIASED_ADJ = encoder.decode(top_10_biased_adj)
+    print(DECODED_TOP_10_BIASED_ADJ)
+
+    biased_rank_edge = PositionBiasedTextRank(edge_graph)
+    biased_rank_edge.train()
+    top_10_biased_edge = biased_rank_edge.get_top_keywords(10)
+    DECODED_TOP_10_BIASED_EDGE = encoder.decode(top_10_biased_edge)
+    print(DECODED_TOP_10_BIASED_EDGE)
+
+    RESULT = DECODED_TOP_10_BIASED_ADJ
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
