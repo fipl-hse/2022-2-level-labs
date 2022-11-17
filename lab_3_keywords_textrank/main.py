@@ -314,7 +314,7 @@ class AdjacencyMatrixGraph:
         if self._matrix[self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1 and\
             self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
             return 1
-        elif vertex1 or vertex2 not in self._vertexes:
+        elif (vertex1 or vertex2) not in self._vertexes:
             return -1
         else:
             return 0
@@ -602,7 +602,7 @@ class VanillaTextRank:
             summary += multiply1
         multiply2 = summary * self._damping_factor
         new_weight = multiply2 + (1-self._damping_factor)
-        scores[vertex] = new_weight
+        self._scores[vertex] = new_weight
 
     # Step 5.3
     def train(self) -> None:
