@@ -599,7 +599,7 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        self._graph = AdjacencyMatrixGraph()
+        self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
         self._max_iter = 50
@@ -647,6 +647,7 @@ class VanillaTextRank:
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
             if sum(abs_score_diff) <= self._convergence_threshold:
                 break
+        print(self._scores)
 
     # Step 5.4
     def get_scores(self) -> dict[int, float]:
@@ -668,8 +669,22 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        # поменять в соответствии с условием
-        return [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords]
+        '''
+        top_list = [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords]
+        new_top_list = []
+        for i in range(len(top_list)-1):
+            elem2 = top_list[i + 1]
+            elem1 = top_list[i]
+            if elem1 > elem2 and self._scores[elem1] == self._scores[elem2]:
+                new_top_list.insert(i, elem2)
+                new_top_list.insert(top_list[i+1], elem1)
+            else:
+                new_top_list.insert(i, elem1)
+        if top_list[-1] not in new_top_list:
+            new_top_list.append(top_list[-1])
+        return tuple(new_top_list)
+        '''
+        return tuple([key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords])
 
 class PositionBiasedTextRank(VanillaTextRank):
     """
@@ -728,7 +743,11 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-
+        sum_of_values = 0.0
+        for i in incidental_vertices:
+            sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i, 0)
+        new_v_score = (1 - self._damping_factor) * self._position_weights[vertex] + sum_of_values
+        self._scores[vertex] = new_v_score
 
 
 class TFIDFAdapter:
@@ -941,4 +960,3 @@ class KeywordExtractionBenchmark:
                 a path where to save the report file
         """
         pass
-
