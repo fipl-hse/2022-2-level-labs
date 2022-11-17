@@ -29,11 +29,11 @@ if __name__ == "__main__":
     encoded_text = encoder.encode(new_text)
     decoded_text = encoder.decode(encoded_text)
 
-    if encoded_text:
+    if decoded_text:
         pairs = extract_pairs(encoded_text, 3)
 
     matrix = AdjacencyMatrixGraph()
-    if encoded_text:
+    if decoded_text:
         matrix.fill_from_tokens(encoded_text, 3)
 
     vanilla = VanillaTextRank(matrix)
