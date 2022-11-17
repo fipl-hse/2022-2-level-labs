@@ -2,7 +2,9 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+
 from typing import Optional, Union
+from itertools import combinations
 
 
 class TextPreprocessor:
@@ -39,7 +41,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        pass
+        self.stop_words = stop_words
+        self.punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -56,7 +59,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+        for i in self.punctuation:
+                text = text.replace(i, '')
+        text = text.lower().split()
+        return tuple(text)
+
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -73,7 +80,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        new_tokens = []
+        for i in tokens:
+            if i not in self.stop_words:
+                new_tokens.append(i)
+        return tuple(new_tokens)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -90,7 +101,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        clean_text = self._clean_and_tokenize(text)
+        no_stops = self._remove_stop_words(clean_text)
+        return no_stops
 
 
 class TextEncoder:
@@ -121,7 +134,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -133,7 +147,13 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        no_same_tokens = []
+        for i in tokens:
+            if i not in no_same_tokens:
+                no_same_tokens.append(i)
+        for number, token in enumerate(no_same_tokens, 1000):
+            self._word2id[token] = number
+            self._id2word[number] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -152,7 +172,10 @@ class TextEncoder:
 
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        return tuple(self._word2id.values())
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -171,8 +194,13 @@ class TextEncoder:
 
         In case of out-of-dictionary input data, None is returned
         """
-        pass
-
+        for i in encoded_tokens:
+            if i not in self._id2word.keys():
+                return None
+        words = []
+        for i in encoded_tokens:
+            words.append(self._id2word[i])
+        return tuple(words)
 
 # Step 3
 def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
@@ -195,7 +223,20 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not tokens or not isinstance(window_length, int) or window_length < 2:
+        return None
+    pairs = []
+    for i, token in enumerate(tokens):
+        window = tokens[i:window_length + i]   #creating windows
+        pair = list(combinations(window, 2))  #creating pairs
+        pairs += pair
+    iterable = pairs
+    for i in iterable[::-1]:
+        x = i[::-1]
+        if x[0] == x[1] or x in pairs:
+            pairs.remove(i)
+    pairs = tuple(set(pairs))
+    return pairs
 
 
 class AdjacencyMatrixGraph:
@@ -240,7 +281,10 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        pass
+        self._matrix = [[]]
+        self._vertexes = []
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -261,7 +305,20 @@ class AdjacencyMatrixGraph:
 
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertexes:
+                self._vertexes.append(vertex)
+                self._matrix.append([])
+        for line in self._matrix:
+            for vertex in self._vertexes:
+                if len(line) < len(self._vertexes):  #if lines=number of vertexes
+                    line.append(0)   #puts 0 in every cell in matrix
+        self._matrix = [self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] = 1
+        self._matrix = [self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] = 1
+        return 0
+
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -282,7 +339,13 @@ class AdjacencyMatrixGraph:
 
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        if [self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1 and\
+            [self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
+            return 1
+        elif vertex1 or vertex2 not in self._vertexes:
+            return -1
+        else:
+            return 0
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -294,7 +357,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._vertexes)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -313,7 +376,10 @@ class AdjacencyMatrixGraph:
 
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._vertexes:
+            return -1
+        line = self._matrix[self._vertexes.index(vertex)]
+        return sum(line)
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -327,7 +393,9 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        pairs = extract_pairs(tokens, window_length)
+        for pair in pairs:
+            self.add_edge(pair[0], pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
