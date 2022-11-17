@@ -276,7 +276,7 @@ class AdjacencyMatrixGraph:
                 self._vertices.append(vertex)
             for i in self._matrix:
                 i.append(0)
-                self._matrix.append([0 for _ in self._vertices])
+            self._matrix.append([0 for _ in self._vertices])
         index1 = self._vertices.index(vertex1)
         index2 = self._vertices.index(vertex2)
         self._matrix[index1][index2] = self._matrix[index2][index1] = 1
@@ -299,7 +299,7 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if (vertex1 not in self._vertices) or (vertex2 not in self._vertices):
+        if vertex1 not in self._vertices or vertex2 not in self._vertices:
             return -1
         index1 = self._vertices.index(vertex1)
         index2 = self._vertices.index(vertex2)
@@ -314,7 +314,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self.get_vertices)
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -333,7 +333,7 @@ class AdjacencyMatrixGraph:
         if vertex not in self._vertices:
             return -1
         else:
-            return sum(self._matrix[self._vertices.index(vertex) + 1][1:])
+            return sum(self._matrix[self._vertices.index(vertex)])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -372,7 +372,7 @@ class AdjacencyMatrixGraph:
         for vertex in self._positions:
             dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
         sum_dictionary = sum(dictionary.values())
-        for vertex in sum_dictionary:
+        for vertex in self._positions:
             self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
 
@@ -425,6 +425,7 @@ class EdgeListGraph:
         self._edges = {}
         self._positions = {}
         self._position_weights = {}
+        self._vertices = []
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -479,12 +480,11 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if (vertex1 not in self._vertices) or (vertex2 not in self._vertices):
+        if vertex1 not in self._vertices or vertex2 not in self._vertices:
             return -1
         if vertex2 in self._edges[vertex1]:
             return 1
-        else:
-            return 0
+        return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -500,7 +500,7 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._vertices:
+        if vertex not in self._edges:
             return -1
         return len(self._edges[vertex])
 
@@ -517,7 +517,7 @@ class EdgeListGraph:
                 if they appear in the same window of this length
         """
         for pair in extract_pairs(tokens, window_length):
-            self.add_edge()
+            self.add_edge(pair[0], pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -539,7 +539,7 @@ class EdgeListGraph:
         for vertex in self._positions:
             dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
         sum_dictionary = sum(dictionary.values())
-        for vertex in sum_dictionary:
+        for vertex in self._positions:
             self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
     # Step 8.4
@@ -659,7 +659,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords]))
+        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
