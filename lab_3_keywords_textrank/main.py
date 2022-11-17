@@ -126,8 +126,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        new_tokens = set(tokens)
-        for count, token in enumerate(new_tokens, start=1000):
+        for count, token in enumerate(tokens, start=1000):
             self._word2id[token] = count
             self._id2word[count] = token
 
@@ -540,7 +539,7 @@ class EdgeListGraph:
         """
         wrong_weights = {}
         for key in self._positions:
-            wrong_p = 0
+            wrong_p = 0.0
             for elem in self._positions[key]:
                 wrong_p += (1 / elem)
             wrong_weights[key] = wrong_p
@@ -669,22 +668,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        '''
-        top_list = [key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords]
-        new_top_list = []
-        for i in range(len(top_list)-1):
-            elem2 = top_list[i + 1]
-            elem1 = top_list[i]
-            if elem1 > elem2 and self._scores[elem1] == self._scores[elem2]:
-                new_top_list.insert(i, elem2)
-                new_top_list.insert(top_list[i+1], elem1)
-            else:
-                new_top_list.insert(i, elem1)
-        if top_list[-1] not in new_top_list:
-            new_top_list.append(top_list[-1])
-        return tuple(new_top_list)
-        '''
-        return tuple([key for (key, value) in sorted(self._scores.items(), key=lambda val: val[1], reverse=True)][:n_keywords])
+        return tuple([key for (key, value) in sorted(self._scores.items(),
+                                                     key=lambda val: val[1], reverse=True)][:n_keywords])
 
 class PositionBiasedTextRank(VanillaTextRank):
     """

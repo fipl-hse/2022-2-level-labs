@@ -4,7 +4,8 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, VanillaTextRank
+from main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph,\
+    PositionBiasedTextRank
 
 
 if __name__ == "__main__":
@@ -25,23 +26,39 @@ if __name__ == "__main__":
 
     processed = TextPreprocessor(stop_words, punctuation)
     words = processed.preprocess_text(text)
+
     encoded = TextEncoder()
     tokens = encoded.encode(words)
-    pairs = extract_pairs(tokens, 7)
-    print(pairs)
+
     graph = AdjacencyMatrixGraph()
-    for pair in pairs:
-        graph.add_edge(pair[0], pair[1])
+    graph.fill_from_tokens(tokens, 7)
+
     van_graph = VanillaTextRank(graph)
     van_graph.train()
-    top10 = van_graph.get_top_keywords(10)
-    decoded10 = encoded.decode(top10)
-    print(decoded10)
+    top10_adj = van_graph.get_top_keywords(10)
+    decoded10_adj = encoded.decode(top10_adj)
+    print(decoded10_adj)
 
+    edge_list_graph = EdgeListGraph()
+    edge_list_graph.fill_from_tokens(tokens, 7)
 
+    van_edge_graph = VanillaTextRank(edge_list_graph)
+    van_edge_graph.train()
+    top10_edge = van_edge_graph.get_top_keywords(10)
+    decoded10_edge = encoded.decode(top10_edge)
+    print(decoded10_edge)
 
+    position_graph1 = PositionBiasedTextRank(graph)
+    position_graph1.train()
+    top_10_adj2 = position_graph1.get_top_keywords(10)
+    decoded10_adj2 = encoded.decode(top_10_adj2)
+    print(decoded10_adj2)
 
-
-    #RESULT = decoded10
+    position_graph2 = PositionBiasedTextRank(edge_list_graph)
+    position_graph2.train()
+    top_10_edge2 = position_graph2.get_top_keywords(10)
+    decoded10_edge2 = encoded.decode(top_10_edge2)
+    print(decoded10_edge2)
+    RESULT = decoded10_edge2
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    #assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
