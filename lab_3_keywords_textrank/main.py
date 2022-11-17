@@ -308,8 +308,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if [self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1 and\
-            [self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertexes:
+                return -1
+        if self._matrix[self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1 and\
+            self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
             return 1
         elif vertex1 or vertex2 not in self._vertexes:
             return -1
@@ -574,9 +577,9 @@ class VanillaTextRank:
         """
         self._graph = graph
         self._damping_factor = 0.85
-        self._convergence_treshold = 0.0001
+        self._convergence_threshold = 0.0001
         self._max_iter = 50
-        self._score = {}
+        self._scores = {}
 
 
     # Step 5.2
@@ -594,7 +597,7 @@ class VanillaTextRank:
         """
         summary = 0
         for i in incidental_vertices:
-            inout = AdjacencyMatrixGraph.calculate_inout_score()
+            inout = self._graph.calculate_inout_score(i)
             multiply1 = 1/inout * scores[vertex]
             summary += multiply1
         multiply2 = summary * self._damping_factor
