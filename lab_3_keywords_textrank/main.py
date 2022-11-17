@@ -44,7 +44,7 @@ class TextPreprocessor:
                 punctuation symbols to remove during text cleaning
         """
         self._stop_words = stop_words
-        self.__punctuation = punctuation
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -59,7 +59,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        punctuation = ''.join(self.__punctuation)
+        punctuation = ''.join(self._punctuation)
         return tuple(re.findall(fr"[^{punctuation}\s]+", text.lower()))
 
     # Step 1.3
@@ -243,7 +243,9 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
+        self._matrix = []
+        self._vertices = {}
+        self._last_vertex = 0
         self._positions = {}
         self._position_weights = {}
 
@@ -265,22 +267,21 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-
-        if vertex1 not in self._matrix[0]:
-            self._matrix[0].append(vertex1)
-            self._matrix.append([vertex1] + [0 for _ in range(len(self._matrix[0]) - 1)])
-            for i in range(1, len(self._matrix[0]) + 1):
+        if vertex1 not in self._vertices:
+            self._vertices[vertex1] = self._last_vertex
+            self._last_vertex += 1
+            self._matrix.append([0 for _ in range(self._last_vertex)])
+            for i in range(self._last_vertex - 1):
                 self._matrix[i].append(0)
-
-        if vertex2 not in self._matrix[0]:
-            self._matrix[0].append(vertex2)
-            self._matrix.append([vertex2] + [0 for _ in range(len(self._matrix[0]) - 1)])
-            for i in range(1, len(self._matrix[0]) + 1):
+        if vertex2 not in self._vertices:
+            self._vertices[vertex2] = self._last_vertex
+            self._last_vertex += 1
+            self._matrix.append([0 for _ in range(self._last_vertex)])
+            for i in range(self._last_vertex - 1):
                 self._matrix[i].append(0)
-
-        ind1, ind2 = self._matrix[0].index(vertex1), self._matrix[0].index(vertex2)
-        self._matrix[ind1 + 1][ind2 + 1] = 1
-        self._matrix[ind2 + 1][ind1 + 1] = 1
+        ind1, ind2 = self._vertices[vertex1], self._vertices[vertex2]
+        self._matrix[ind1][ind2] = 1
+        self._matrix[ind2][ind1] = 1
         return 0
 
     # Step 4.3
@@ -299,11 +300,12 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
+        try:
+            ind1 = self._vertices[vertex1]
+            ind2 = self._vertices[vertex2]
+        except KeyError:
             return -1
-        ind1 = self._matrix[0].index(vertex1)
-        ind2 = self._matrix[0].index(vertex2)
-        return self._matrix[ind1 + 1][ind2 + 1]
+        return self._matrix[ind1][ind2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -314,7 +316,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -330,10 +332,11 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
+        try:
+            ind = self._vertices[vertex]
+        except KeyError:
             return -1
-        ind = self._matrix[0].index(vertex)
-        return sum(self._matrix[ind + 1][1:])
+        return sum(self._matrix[ind])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
