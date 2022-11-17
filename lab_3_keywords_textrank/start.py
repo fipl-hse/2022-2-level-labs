@@ -4,8 +4,8 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph,\
-    PositionBiasedTextRank
+from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank,
+                                          EdgeListGraph, PositionBiasedTextRank)
 
 
 if __name__ == "__main__":
@@ -59,6 +59,7 @@ if __name__ == "__main__":
     top_10_edge2 = position_graph2.get_top_keywords(10)
     decoded10_edge2 = encoded.decode(top_10_edge2)
     print(decoded10_edge2)
+
     RESULT = decoded10_edge2
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

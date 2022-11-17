@@ -646,7 +646,6 @@ class VanillaTextRank:
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
             if sum(abs_score_diff) <= self._convergence_threshold:
                 break
-        print(self._scores)
 
     # Step 5.4
     def get_scores(self) -> dict[int, float]:
@@ -728,10 +727,10 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        sum_of_values = 0.0
+        sum_of_values = 0
         for i in incidental_vertices:
             sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i, 0)
-        new_v_score = (1 - self._damping_factor) * self._position_weights[vertex] + sum_of_values
+        new_v_score = (1 - self._damping_factor) * self._position_weights[vertex] + sum_of_values * self._damping_factor
         self._scores[vertex] = new_v_score
 
 
