@@ -64,8 +64,10 @@ if __name__ == "__main__":
     with open("assets/benchmark_materials/eng_stop_words.txt", encoding='UTF-8') as FILE:
         ENGLISH_STOPS = [line.rstrip('\n') for line in FILE]
 
-    PATH_TO_BENCH = '/assets/benchmark_materials'
-    KeywordExtractionBenchmark(ENGLISH_STOPS, PUNCTUATION_MARKS, JSON_FILE, PATH_TO_BENCH)
+    PATH_TO_BENCH = "assets/benchmark_materials/"
+    KEYWORD_EXTRACTION = KeywordExtractionBenchmark(ENGLISH_STOPS, PUNCTUATION_MARKS, JSON_FILE, PATH_TO_BENCH)
+    KEYWORD_EXTRACTION.run()
+    KEYWORD_EXTRACTION.save_to_csv('report.csv')
 
     RESULT = DECODED_WORDS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

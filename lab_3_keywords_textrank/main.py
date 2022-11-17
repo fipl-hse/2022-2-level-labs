@@ -8,6 +8,7 @@ from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calcu
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 import os
+import csv
 
 class TextPreprocessor:
     """
@@ -979,18 +980,21 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        LIST_OF_FILES = os.listdir(self._materials_path)
+        list_of_files = os.listdir(self._materials_path)
         keywords_dict = {}
         texts_dict = {}
         file_idx = 0
-        for one_file in LIST_OF_FILES[:-2]:
-            way_to_file = 'assets/benchmark_materials' + '/' + one_file
+        for one_file in list_of_files[:-2]:
+            way_to_file = self._materials_path + one_file
             with open(way_to_file, encoding='UTF-8') as read_file:
                 read_file = [line.rstrip('\n') for line in read_file]
             if 'keywords' in one_file:
                 keywords_dict[file_idx] = read_file
             else:
-                texts_dict[file_idx] = read_file
+                text = ''
+                for elem in read_file:
+                    text += '. ' + elem
+                texts_dict[file_idx] = text
                 file_idx += 1
         for one_method in self._methods_names:
             self.report[one_method] = {}
@@ -1036,4 +1040,13 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        themes_list = ['name'] + list(self.themes)
+        with open(path, 'w') as csvfile:
+            file_writer = csv.writer(csvfile, delimiter=',')
+            file_writer.writerow(themes_list)
+            for name in self.report:
+                list_to_write = [name]
+                for one_theme in self.report[name]:
+                    list_to_write.append(self.report[name][one_theme])
+                file_writer.writerow(list_to_write)
+
