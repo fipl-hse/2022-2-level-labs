@@ -5,6 +5,8 @@ Extract keywords based on co-occurrence frequency
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
 from string import punctuation
+from lab_1_keywords_tfidf.main import check_positive_int
+from itertools import pairwise
 
 
 KeyPhrase = tuple[str, ...]
@@ -169,7 +171,20 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-
+    if not check_type(keyword_phrases_with_scores, dict)\
+                or not check_positive_int(top_n)\
+                or not check_positive_int(max_length):
+            return None
+    for phrase in keyword_phrases_with_scores:
+        if not check_type(phrase, tuple):
+            return None
+    sort_top_phr = sorted(keyword_phrases_with_scores.keys(),
+                          key=lambda key_phr: keyword_phrases_with_scores[key_phr], reverse=True)
+    top = []
+    for key_phr in sort_top_phr:
+        if len(key_phr) <= max_length:
+            top.append(' '.join(key_phr))
+    return top[:top_n]
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -192,7 +207,32 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_type(candidate_keyword_phrases, list) or not check_type(phrases, list):
+        return None
+    words_pairs = list(pairwise(candidate_keyword_phrases))
+    clean_word_pairs = []
+    for pair in set(words_pairs):
+        if words_pairs.count(pair) > 1:
+            clean_word_pairs.append(pair)
+    adjoined_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower()
+        phrase_list = phrase.split()
+        for pair in clean_word_pairs:
+            for part1, part2 in pairwise(pair):
+                part1_str = ' '.join(part1)
+                part2_str = ' '.join(part2)
+                if part1_str in phrase and part2_str in phrase:
+                    for index in range(len(phrase_list) - 2):
+                        if phrase_list[index] == part1[-1] and phrase_list[index + 2] == part2[0]:
+                            adjoined_phrase = f'{part1_str} {phrase_list [index + 1]} {part2_str}'
+                            if adjoined_phrase in phrase:
+                                adjoined_phrases.append(tuple(adjoined_phrase.split()))
+    clean_adjoined_phrases = []
+    for phrase in set(adjoined_phrases):
+        if adjoined_phrases.count(phrase) > 1:
+            clean_adjoined_phrases.append(phrase)
+    return clean_adjoined_phrases
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
