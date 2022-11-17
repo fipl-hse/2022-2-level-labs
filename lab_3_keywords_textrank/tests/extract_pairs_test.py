@@ -20,9 +20,16 @@ class ExtractPairsTest(unittest.TestCase):
     @pytest.mark.mark8
     @pytest.mark.mark10
     def test_ideal_case(self):
+        pairs = ({1, 2}, {2, 3}, {1, 3}, {3, 4}, {2, 4})
         actual = extract_pairs((1, 2, 3, 4, 3, 2), 3)
-        pairs = ((1, 2), (1, 3), (2, 3), (3, 4), (2, 4), (4, 3))
-        self.assertCountEqual(actual, pairs)
+
+        self.assertIsInstance(actual, tuple, "Return value of extract_pairs must be tuple")
+        self.assertTrue(all(isinstance(pair, tuple) for pair in actual),
+                        "Elements of extract_pairs return value must be tuple")
+
+        actual_unordered = [set(pair) for pair in actual]
+        self.assertTrue(all(pair in pairs for pair in actual_unordered), "There are incorrect pairs extracted")
+        self.assertTrue(all(pair in actual_unordered for pair in pairs), "Some of the pairs were not extracted")
 
     @pytest.mark.lab_3_keywords_textrank
     @pytest.mark.mark4
