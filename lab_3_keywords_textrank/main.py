@@ -647,7 +647,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_list = sorted(self._scores, key=lambda key: - self._scores[key])
+        sorted_keys = sorted(self._scores)
+        sorted_list = sorted(sorted_keys, key=lambda key: - sorted_keys[key])
         top = sorted_list[:n_keywords]
         return tuple(top)
 
