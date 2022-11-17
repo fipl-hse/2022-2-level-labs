@@ -280,17 +280,15 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        for vertex in self._vertexes:
-            self._matrix.append([])
         for vertex in vertex1, vertex2:
             if vertex not in self._vertexes:
                 self._vertexes.append(vertex)
                 self._matrix.append([])
         for line in self._matrix:
-            while len(line) < len(self._vertexes):  #if lines=number of vertexes
+            while len(line) < len(self._vertexes):  #while lines < number of vertexes
                 line.append(0)   #puts 0 in every cell in matrix
-        self._matrix = [self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] = 1
-        self._matrix = [self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] = 1
+        self._matrix[self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] = 1
+        self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] = 1
         return 0
 
 
