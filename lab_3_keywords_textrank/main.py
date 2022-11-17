@@ -280,14 +280,15 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
+        for vertex in self._vertexes:
+            self._matrix.append([])
         for vertex in vertex1, vertex2:
             if vertex not in self._vertexes:
                 self._vertexes.append(vertex)
                 self._matrix.append([])
         for line in self._matrix:
-            for vertex in self._vertexes:
-                if len(line) < len(self._vertexes):  #if lines=number of vertexes
-                    line.append(0)   #puts 0 in every cell in matrix
+            while len(line) < len(self._vertexes):  #if lines=number of vertexes
+                line.append(0)   #puts 0 in every cell in matrix
         self._matrix = [self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] = 1
         self._matrix = [self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] = 1
         return 0
@@ -573,7 +574,12 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_treshold = 0.0001
+        self._max_iter = 50
+        self._score = {}
+
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -588,7 +594,14 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summary = 0
+        for i in incidental_vertices:
+            inout = AdjacencyMatrixGraph.calculate_inout_score()
+            multiply1 = 1/inout * scores[vertex]
+            summary += multiply1
+        multiply2 = summary * self._damping_factor
+        new_weight = multiply2 + (1-self._damping_factor)
+        scores[vertex] = new_weight
 
     # Step 5.3
     def train(self) -> None:
@@ -622,7 +635,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -633,7 +646,9 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        sorted_list = sorted(self._scores, reverse=True, key=lambda key: self._scores[key])
+        top = sorted_list[:n_keywords]
+        return tuple(top)
 
 
 class PositionBiasedTextRank(VanillaTextRank):
