@@ -34,11 +34,11 @@ if __name__ == "__main__":
 
     matrix = AdjacencyMatrixGraph()
     if encoded_text:
-        graph = matrix.fill_from_tokens(encoded_text, 3)
+        matrix.fill_from_tokens(encoded_text, 3)
 
-    vanilla = VanillaTextRank(graph)
+    vanilla = VanillaTextRank(matrix)
     vanilla.train()
-    top_list = vanilla.get_top_keywords(encoded_text)
+    top_list = vanilla.get_top_keywords(10)
     TOP_10_VANILLA = encoder.decode(top_list)
     print(TOP_10_VANILLA)
 
