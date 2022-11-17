@@ -649,7 +649,7 @@ class VanillaTextRank:
         """
         def sort_keys(item):
             key, value = item
-            return -value, key
+            return value, -key
         sorted_list = sorted(self._scores.items(), key=sort_keys)
         final_sort = []
         for i in sorted_list:
