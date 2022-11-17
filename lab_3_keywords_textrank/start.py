@@ -4,8 +4,14 @@ TextRank keyword extraction starter
 import json
 from pathlib import Path
 from string import punctuation
-from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder,\
-    VanillaTextRank, AdjacencyMatrixGraph, EdgeListGraph, PositionBiasedTextRank, KeywordExtractionBenchmark
+from lab_3_keywords_textrank.main import (extract_pairs,
+                                          TextPreprocessor,
+                                          TextEncoder,
+                                          VanillaTextRank,
+                                          AdjacencyMatrixGraph,
+                                          EdgeListGraph,
+                                          PositionBiasedTextRank,
+                                          KeywordExtractionBenchmark)
 
 
 if __name__ == "__main__":
@@ -29,6 +35,11 @@ if __name__ == "__main__":
     IDF_PATH = BENCHMARK_MATERIALS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
+
+    ENGLISH_STOP_WORDS_PATH = BENCHMARK_MATERIALS_PATH / 'eng_stop_words.txt'
+    with open(ENGLISH_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
+        eng_stop_words = tuple(file.read().split('\n'))
+
     # mark 4: extract pairs from text
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
@@ -74,12 +85,12 @@ if __name__ == "__main__":
     print(encoded_top_edge_pos_bias := encoder.decode(top_keywords_edge_bias))
 
     #   mark 10: comparing methods in csv file
-    benchmark = KeywordExtractionBenchmark(stop_words,
+    benchmark = KeywordExtractionBenchmark(eng_stop_words,
                                            tuple(punctuation),
                                            idf,
                                            BENCHMARK_MATERIALS_PATH)
     benchmark.run()
-    benchmark.save_to_csv(PROJECT_ROOT)
+    benchmark.save_to_csv(PROJECT_ROOT / 'assets')
 
     RESULT = 'hi'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

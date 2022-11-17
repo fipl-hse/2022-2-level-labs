@@ -251,6 +251,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
+        self._vertexes = []
         self._matrix = [[]]
         self._positions = {}
         self._position_weights = {}
@@ -273,24 +274,25 @@ class AdjacencyMatrixGraph:
         """
         if not (type_check(vertex1, int) and type_check(vertex2, int) and vertex1 != vertex2):
             return -1
-        if vertex1 not in self._matrix[0]:
-            self._matrix[0].append(vertex1)
+
+        if vertex1 not in self._vertexes:
+            self._vertexes.append(vertex1)
             self._matrix.append([vertex1])
 
-        if vertex2 not in self._matrix[0]:
-            self._matrix[0].append(vertex2)
+        if vertex2 not in self._vertexes:
+            self._vertexes.append(vertex2)
             self._matrix.append([vertex2])
 
-        len_all_vertex = len(self._matrix[0])
+        len_vertexes = len(self._vertexes)
 
-        for element in self._matrix[1:]:
-            num_columns = (len(element) - 1)
-            element.extend([0 for _ in range(len_all_vertex - num_columns)])
+        for element in self._matrix:
+            num_columns = (len(element))
+            element.extend([0 for _ in range(len_vertexes - num_columns)])
 
-        ind1 = self._matrix[0].index(vertex1)
-        ind2 = self._matrix[0].index(vertex2)
-        self._matrix[ind1 + 1][ind2 + 1] = 1
-        self._matrix[ind2 + 1][ind1 + 1] = 1
+        ind1 = self._vertexes.index(vertex1)
+        ind2 = self._vertexes.index(vertex2)
+        self._matrix[ind1][ind2] = 1
+        self._matrix[ind2][ind1] = 1
         return 0
 
     # Step 4.3
@@ -309,11 +311,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if not (vertex1 in self._matrix[0] and vertex2 in self._matrix[0]):
+        if not (vertex1 in self._vertexes and vertex2 in self._vertexes):
             return -1
-        ind1 = self._matrix[0].index(vertex1)
-        ind2 = self._matrix[0].index(vertex2)
-        return self._matrix[ind1 + 1][ind2 + 1]
+        ind1 = self._vertexes.index(vertex1)
+        ind2 = self._vertexes.index(vertex2)
+        return self._matrix[ind1][ind2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -324,7 +326,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._vertexes)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -340,9 +342,9 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
+        if vertex not in self._vertexes:
             return -1
-        return self._matrix[self._matrix[0].index(vertex) + 1][1:].count(1)
+        return self._matrix[self._vertexes.index(vertex)].count(1)
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -871,7 +873,7 @@ class RAKEAdapter:
         phrases = extract_phrases(self._text)
         if not phrases:
             return -1
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, self._stop_words)
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
 
         if not candidate_keyword_phrases:
             return -1
@@ -879,7 +881,7 @@ class RAKEAdapter:
 
         if not (candidate_keyword_phrases and word_frequencies):
             return -1
-        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies))
 
         if not (word_degrees and word_frequencies):
             return -1
@@ -887,7 +889,7 @@ class RAKEAdapter:
 
         if not word_scores:
             return -1
-        self._scores = word_scores
+        self._scores = dict(word_scores)
         return 0
 
     # Step 11.3
@@ -903,7 +905,10 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords)) if self._scores else ()
+        if self._scores:
+            sorted_tokens = sorted(self._scores)
+            return tuple(sorted(sorted_tokens, key=lambda key: self._scores[key], reverse=True)[:n_keywords])
+        return ()
 
 
 # Step 12.1
@@ -972,8 +977,8 @@ class KeywordExtractionBenchmark:
         self._punctuation = punctuation
         self._idf = idf
         self._materials_path = materials_path
-        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
-        self.report = {}
+        self._themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self._report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -985,11 +990,11 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        self.report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
+        self._report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
         preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
         encoder = TextEncoder()
 
-        for ind, theme in enumerate(self.themes):
+        for ind, theme in enumerate(self._themes):
             with open(self._materials_path / f'{ind}_text.txt', 'r',  encoding='utf-8') as file:
                 text = file.read()
             with open(self._materials_path / f'{ind}_keywords.txt', 'r',  encoding='utf-8') as file:
@@ -1018,11 +1023,11 @@ class KeywordExtractionBenchmark:
             keywords_text_rank = encoder.decode(text_rank.get_top_keywords(50))
             keywords_bias = encoder.decode(text_rank_bias.get_top_keywords(50))
 
-            self.report['TF-IDF'][theme] = calculate_recall(keywords_tfidf, keywords)
-            self.report['RAKE'][theme] = calculate_recall(keywords_rake, keywords)
-            self.report['VanillaTextRank'][theme] = calculate_recall(keywords_text_rank, keywords)
-            self.report['PositionBiasedTextRank'][theme] = calculate_recall(keywords_bias, keywords)
-        return self.report
+            self._report['TF-IDF'][theme] = calculate_recall(keywords_tfidf, keywords)
+            self._report['RAKE'][theme] = calculate_recall(keywords_rake, keywords)
+            self._report['VanillaTextRank'][theme] = calculate_recall(keywords_text_rank, keywords)
+            self._report['PositionBiasedTextRank'][theme] = calculate_recall(keywords_bias, keywords)
+        return self._report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1035,6 +1040,6 @@ class KeywordExtractionBenchmark:
         """
         with open(path, 'w') as csv_file:
             csv_file = csv.writer(csv_file)
-            csv_file.writerow(['name'] + list(self.themes))
-            for k in self.report:
-                csv_file.writerow([k] + [self.report[k][theme] for theme in self.report[k]])
+            csv_file.writerow(['name'] + list(self._themes))
+            for k in self._report:
+                csv_file.writerow([k] + [self._report[k][theme] for theme in self._report[k]])
