@@ -3,7 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
-from lab_2_keywords_cooccurrence.main import (extract_phrases)
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -41,8 +41,10 @@ if __name__ == "__main__":
 
     text = corpus['gagarin']
     if text:
-        phrases_list = extract_phrases(text)
-    RESULT = extract_phrases(text)
+        new_phrases = extract_phrases(text)
+    if extract_phrases:
+        candidate_phrases = extract_candidate_keyword_phrases(new_phrases, stop_words)
+    RESULT = extract_candidate_keyword_phrases(new_phrases, stop_words)
     print(RESULT)
 
     assert RESULT, 'Keywords are not extracted'
