@@ -4,7 +4,6 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-from string import punctuation
 from lab_1_keywords_tfidf.main import check_positive_int
 from itertools import pairwise
 
@@ -12,7 +11,8 @@ from itertools import pairwise
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-def check_type (user_input: Any, object_type: Any, token_type: Any = None) -> bool:
+
+def check_type(user_input: Any, object_type: Any, token_type: Any = None) -> bool:
     """
     Checks type and emptiness for objects.
     """
@@ -37,10 +37,16 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not check_type(text, str):
         return None
+    punctuation = """.,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]"""
     for token in text:
         if token in punctuation:
             text = text.replace(token, ',')
-    phrases = text.strip().split(',')
+    clean_list = text.strip().split(',')
+    phrases = []
+    for phrase in clean_list:
+        phrase = phrase.strip()
+        if phrase:
+            phrases.append(phrase)
     return phrases
 
 
@@ -127,11 +133,11 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
             or not check_type(word_frequencies, dict):
         return None
     word_scores_dict = {}
-    for word in word_degrees.keys():
+    for word in word_degrees:
         if word not in word_frequencies:
             return None
         word_scores_dict[word] = word_degrees[word] / word_frequencies[word]
-        return word_scores_dict
+    return word_scores_dict
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -250,7 +256,17 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_type(candidate_keyword_phrases, list) or not check_type(word_scores, dict) \
+            or not check_type(stop_words, list):
+        return None
+    cumulative_score = {}
+    for phrase in candidate_keyword_phrases:
+        score = 0
+        for word in phrase:
+            if word not in stop_words:
+                score += word_scores[word]
+        cumulative_score[phrase] = score
+    return cumulative_score
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
