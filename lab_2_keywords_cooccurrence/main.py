@@ -3,10 +3,10 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 import string
+import json
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from lab_1_keywords_tfidf.main import check_list, check_dict, clean_and_tokenize, calculate_frequencies
-import json
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -88,9 +88,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             # проверка пустой ли i или нет, потому что если там были пробелы,
             # то пердыдущее действия их все удалило и он пуст, нам такой мусор не нужен
 
-    for string in final_list:
-        if string:
-            final_list_tuples.append(tuple(string.split(' ')))
+    for f_string in final_list:
+        if f_string:
+            final_list_tuples.append(tuple(f_string.split(' ')))
 
     return final_list_tuples
 
@@ -331,7 +331,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                 frequent_pair_with_stop_words[full_phrase] = 0
                 frequent_pair_with_stop_words[full_phrase] += 1
     final_list_of_str = []
-    for key in frequent_pair_with_stop_words.keys():
+    for key in frequent_pair_with_stop_words:
         if frequent_pair_with_stop_words[key] >= 2:
             final_list_of_str.append(key)
     final_list_of_tuples = []
@@ -422,9 +422,6 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
 
 def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
 
-    candidate_keyword_phrases, frequencies, word_degrees, word_scores, \
-        cumulative_score, candidate_with_stop_words, cumulative_with_stop_words = [None for i in range(7)]
-
     phrases = extract_phrases(text)
 
     if not phrases or not stop_words:
@@ -443,7 +440,7 @@ def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
         return None
     cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
     if not cumulative_scores:
-        return
+        return None
     print(get_top_n(cumulative_scores, 5, 2))
     if not key_phrases or not phrases:
         return None
