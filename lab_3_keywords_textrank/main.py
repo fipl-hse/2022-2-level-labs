@@ -5,6 +5,7 @@ Extract keywords based on TextRank algorithm
 from pathlib import Path
 from typing import Optional, Union
 import re
+import csv
 from lab_1_keywords_tfidf.main import calculate_frequencies, \
     calculate_tf, calculate_tfidf, get_top_n
 from lab_2_keywords_cooccurrence.main import type_check, extract_phrases, \
@@ -245,7 +246,7 @@ class AdjacencyMatrixGraph:
         """
         self._matrix = []
         self._vertices = {}
-        self._last_vertex = 0
+        self._last_vertex_index = 0
         self._positions = {}
         self._position_weights = {}
 
@@ -268,16 +269,16 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         if vertex1 not in self._vertices:
-            self._vertices[vertex1] = self._last_vertex
-            self._last_vertex += 1
-            self._matrix.append([0 for _ in range(self._last_vertex)])
-            for i in range(self._last_vertex - 1):
+            self._vertices[vertex1] = self._last_vertex_index
+            self._last_vertex_index += 1
+            self._matrix.append([0 for _ in range(self._last_vertex_index)])
+            for i in range(self._last_vertex_index - 1):
                 self._matrix[i].append(0)
         if vertex2 not in self._vertices:
-            self._vertices[vertex2] = self._last_vertex
-            self._last_vertex += 1
-            self._matrix.append([0 for _ in range(self._last_vertex)])
-            for i in range(self._last_vertex - 1):
+            self._vertices[vertex2] = self._last_vertex_index
+            self._last_vertex_index += 1
+            self._matrix.append([0 for _ in range(self._last_vertex_index)])
+            for i in range(self._last_vertex_index - 1):
                 self._matrix[i].append(0)
         ind1, ind2 = self._vertices[vertex1], self._vertices[vertex2]
         self._matrix[ind1][ind2] = 1
@@ -523,7 +524,9 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        self._positions = {key: [i + 1 for i in range(len(tokens)) if tokens[i] == key] for key in set(tokens)}
+        for ind, el in enumerate(tokens, start=1):
+            self._positions[el] = self._positions.get(el, [])
+            self._positions[el].append(ind)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -960,7 +963,9 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        models_scores = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
+        algorithms = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
+        for algorithm in algorithms:
+            self.report[algorithm] = {}
 
         for number, topic in enumerate(self.themes):
             keywords_path = self._materials_path / f'{number}_keywords.txt'
@@ -974,14 +979,14 @@ class KeywordExtractionBenchmark:
             processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
             tfidf = TFIDFAdapter(processor.preprocess_text(text), self._idf)
             tfidf.train()
-            models_scores['TF-IDF'][topic] = calculate_recall(tfidf.get_top_keywords(50), target_keywords)
+            self.report['TF-IDF'][topic] = calculate_recall(tfidf.get_top_keywords(50), target_keywords)
 
             encoder = TextEncoder()
             tokens = encoder.encode(processor.preprocess_text(text))
             rake = RAKEAdapter(text, self._stop_words)
             rake.train()
             keywords = rake.get_top_keywords(50)
-            models_scores['RAKE'][topic] = calculate_recall(keywords, target_keywords)
+            self.report['RAKE'][topic] = calculate_recall(keywords, target_keywords)
 
             graph = EdgeListGraph()
             if not tokens:
@@ -991,7 +996,7 @@ class KeywordExtractionBenchmark:
             vanilla_text_rank.train()
             if not (decoded_keywords := encoder.decode(vanilla_text_rank.get_top_keywords(50))):
                 return None
-            models_scores['VanillaTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
+            self.report['VanillaTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
@@ -999,10 +1004,9 @@ class KeywordExtractionBenchmark:
             positional_rank.train()
             if not (decoded_keywords := encoder.decode(positional_rank.get_top_keywords(50))):
                 return None
-            models_scores['PositionBiasedTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
+            self.report['PositionBiasedTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
-        self.report = models_scores
-        return models_scores
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
