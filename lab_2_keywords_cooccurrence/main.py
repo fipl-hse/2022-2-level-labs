@@ -4,8 +4,9 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-from lab_1_keywords_tfidf.main import check_positive_int
+from lab_1_keywords_tfidf.main import check_positive_int, clean_and_tokenize, calculate_frequencies
 from itertools import pairwise
+import json
 
 
 KeyPhrase = tuple[str, ...]
@@ -115,6 +116,7 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         for phrase in candidate_keyword_phrases:
             if word in phrase:
                 word_degrees[word] += len(phrase)
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -276,21 +278,19 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-   
-   
+    if not text or not isinstance(text, str) or not check_positive_int(max_length):
+        return None
+
+
+
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
     Loads stop word lists from the file
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-
-
-def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
-        -> Optional[Mapping[KeyPhrase, float]]:
-    """
-    Uses previous functions to process a text and extract key phrases.
-    Accepts raw text and stop words list (or maximum length of a stop word if they have to be generated
-    from the text).
-    Returns extracted key phrases or None if something goes wrong.
-    """
+    if not path or not isinstance(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as file:
+        stop_words = dict(json.load(file))
+    return stop_words
