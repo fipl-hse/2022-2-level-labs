@@ -36,7 +36,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -51,7 +52,13 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+        clean_text = ''
+        for el in text:
+            if el not in self._punctuation:
+                clean_text += el
+        clean_text = clean_text.lower()
+        tokens = tuple(clean_text.split())
+        return tokens
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -66,7 +73,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        no_stopwords_txt = []
+        for token in tokens:
+            if token not in self._stop_words:
+                no_stopwords_txt.append(token)
+        return tuple(no_stopwords_txt)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -81,7 +92,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        tokens = self._clean_and_tokenize(text)
+        no_stopwords = self._remove_stop_words(tokens)
+        return no_stopwords
 
 
 class TextEncoder:
@@ -109,7 +122,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -120,7 +134,13 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        i = 0
+        for token in tokens:
+            for numb in range(1000 + i, len(tokens) + 1000):
+                if token not in self._word2id:
+                    self._word2id[token] = numb
+                    i += 1
+        self._id2word = {v: k for k, v in self._word2id.items()}
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -136,7 +156,14 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        tuple_numb = []
+        for token in tokens:
+            x = self._word2id.get(token)
+            tuple_numb.append(x)
+        return tuple(tuple_numb)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -152,7 +179,12 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        tuple_strings = []
+        for token in encoded_tokens:
+            if token not in self._id2word:
+                return None
+            tuple_strings.append(self._id2word[token])
+        return tuple(tuple_strings)
 
 
 # Step 3
@@ -173,9 +205,17 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not (tokens and isinstance(window_length, int) and window_length >= 2):
+        return None
+    pairs = set()
+    for idx, token in enumerate(tokens):
+        for ind, tok in enumerate(tokens):
+            if token != tok and abs(ind - idx) < window_length:
+                pairs.add(tuple((token, tok)))
 
+    return tuple(pairs)
 
+# разберись, как делать дальше (постарайся не делать как у саши) + напиши начало 4 функции
 class AdjacencyMatrixGraph:
     """
     A class to represent graph as matrix of adjacency
