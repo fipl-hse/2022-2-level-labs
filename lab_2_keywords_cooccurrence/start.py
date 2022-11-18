@@ -3,6 +3,7 @@ Co-occurrence-driven keyword extraction starter
 """
 
 from pathlib import Path
+
 from lab_2_keywords_cooccurrence.main import generate_stop_words, load_stop_words, find_keyword_phrases
 
 
