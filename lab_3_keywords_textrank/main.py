@@ -36,6 +36,7 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
+
         pass
 
     # Step 1.2
