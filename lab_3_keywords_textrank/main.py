@@ -127,9 +127,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for index, element in enumerate(tokens):
-            self._word2id[element] = 1000 + index
-            self._id2word[1000 + index] = element
+        for index, element in enumerate(tokens, start=1000):
+            self._word2id[element] = index
+            self._id2word[index] = element
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
