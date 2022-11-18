@@ -969,7 +969,7 @@ class KeywordExtractionBenchmark:
         self._materials_path = materials_path
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self.report = {}
-        self._methods_names = ['VanillaTextRank', 'PositionBiasedTextRank', 'TFIDFAdapter', 'RAKEAdapter']
+        self._methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -1016,8 +1016,7 @@ class KeywordExtractionBenchmark:
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
             rake_adapt = RAKEAdapter(texts_dict[place], self._stop_words)
-
-            methods_list = [vanilla_graph, position_biased, tfidf_adapt, rake_adapt]
+            methods_list = [tfidf_adapt, rake_adapt, vanilla_graph, position_biased]
 
             for idx, method in enumerate(methods_list):
                 method.train()
@@ -1030,7 +1029,6 @@ class KeywordExtractionBenchmark:
                 target_keywords = keywords_dict[place]
                 self.report[method_name][theme] = calculate_recall(top_keywords, target_keywords)
         return self.report
-
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
