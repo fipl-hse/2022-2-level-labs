@@ -283,7 +283,7 @@ class AdjacencyMatrixGraph:
         for vertex in vertex1, vertex2:
             if vertex not in self._vertexes:
                 self._vertexes.append(vertex)
-                self._matrix.append([])
+                self._matrix.append([])   #creates a line for a new vertex
         for line in self._matrix:
             while len(line) < len(self._vertexes):  #while lines < number of vertexes
                 line.append(0)   #puts 0 in every cell in matrix
@@ -427,7 +427,7 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -647,7 +647,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_list = sorted(self._scores, key=lambda key: self._scores[key], reverse=True)
+        sorted_scores = sorted(self._scores)
+        sorted_list = sorted(sorted_scores, key=lambda key: sorted_scores[key], reverse=True)
         top = sorted_list[:n_keywords]
         return tuple(top)
 
