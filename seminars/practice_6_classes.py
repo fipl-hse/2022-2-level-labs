@@ -12,16 +12,16 @@ class Student:
         self._age = age
         self._grades = {}
 
-    def study(self):
+    def study(self) -> None:
         print(f'{self._name} is studying!')
 
-    def sleep(self):
+    def sleep(self) -> None:
         print(f'{self._name} is sleeping!')
 
-    def do_homework(self):
+    def do_homework(self) -> None:
         print(f'{self._name} is doing homework!')
 
-    def add_grade(self, subject: str, grade: int):
+    def add_grade(self, subject: str, grade: int) -> None:
         if not isinstance(subject, str) or not isinstance(grade, int):
             print('INVALID VALUE')
             return
@@ -30,7 +30,7 @@ class Student:
         else:
             self._grades[subject] = [grade]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self._name + ' ' + self._last_name
 
 
@@ -47,7 +47,7 @@ class StudentGroup:
         self._max_number_of_students = 15
         self._list_of_students = []
 
-    def add_student(self, student: Student):
+    def add_student(self, student: Student) -> None:
         if self.get_number_of_students() == self._max_number_of_students:
             print('There are too many students in the group')
             return
@@ -55,13 +55,13 @@ class StudentGroup:
 
     def get_number_of_students(self) -> int:
         return len(self._list_of_students)
-    
-    def get_students() -> list[Students]:
+
+    def get_students(self) -> list[Student]:
         return self._list_of_students
-    
-student1 = Student('Andrej', 'K', 22)
+
+student1 = Student('Andrej', 'K', '17FPL1', 22)
 group1 = StudentGroup('20FPL3')
 print(group1.get_number_of_students)
 group1.add_student(student1)
-print(group1.get_number_of_students)
-print(group1.list_of_students)
+print(group1.get_number_of_students())
+print(group1.get_students())
