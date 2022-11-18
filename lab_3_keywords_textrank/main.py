@@ -868,7 +868,7 @@ class RAKEAdapter:
         frequencies_for_content = calculate_frequencies_for_content_words(keyword_phrases)
         if not frequencies_for_content:
             return -1
-        content_words = [key for key in frequencies_for_content.keys()]
+        content_words = [key for key in frequencies_for_content]
         word_degrees = calculate_word_degrees(keyword_phrases, content_words)
         if not word_degrees:
             return -1
@@ -970,7 +970,9 @@ class KeywordExtractionBenchmark:
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self.report = {}
         self._methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
-
+        self._keywords_dict = {}
+        self._texts_dict = {}
+        self._list_of_files = os.listdir(self._materials_path)
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
         """
@@ -981,28 +983,25 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        list_of_files = os.listdir(self._materials_path)
-        keywords_dict = {}
-        texts_dict = {}
         file_idx = 0
-        for one_file in list_of_files[:-2]:
+        for one_file in self._list_of_files[:-2]:
             way_to_file = self._materials_path / one_file
             with open(way_to_file, encoding='UTF-8') as read_file:
                 read_file = [line.rstrip('\n') for line in read_file]
             if 'keywords' in one_file:
-                keywords_dict[file_idx] = read_file
+                self._keywords_dict[file_idx] = read_file
             else:
                 text = ''
                 for elem in read_file:
                     text += '. ' + elem
-                texts_dict[file_idx] = text
+                self._texts_dict[file_idx] = text
                 file_idx += 1
         for one_method in self._methods_names:
             self.report[one_method] = {}
         for theme in self.themes:
             preprocessed_text = TextPreprocessor(self._stop_words, self._punctuation)
             place = self.themes.index(theme)
-            tokens = preprocessed_text.preprocess_text(texts_dict[place])
+            tokens = preprocessed_text.preprocess_text(self._texts_dict[place])
             text_to_code = TextEncoder()
             encoded_txt = text_to_code.encode(tokens)
             if not encoded_txt:
@@ -1015,7 +1014,7 @@ class KeywordExtractionBenchmark:
             vanilla_graph = VanillaTextRank(edge_graph)
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
-            rake_adapt = RAKEAdapter(texts_dict[place], self._stop_words)
+            rake_adapt = RAKEAdapter(self._texts_dict[place], self._stop_words)
             methods_list = [tfidf_adapt, rake_adapt, vanilla_graph, position_biased]
 
             for idx, method in enumerate(methods_list):
@@ -1026,7 +1025,9 @@ class KeywordExtractionBenchmark:
                     if not top_keywords:
                         return None
                 method_name = self._methods_names[idx]
-                target_keywords = keywords_dict[place]
+                target_keywords = self._keywords_dict.get(place, 0)
+                if not target_keywords:
+                    return None
                 self.report[method_name][theme] = calculate_recall(top_keywords, target_keywords)
         return self.report
 
