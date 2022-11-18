@@ -621,7 +621,7 @@ class VanillaTextRank:
         """
         sum_of_values = 0.0
         for i in incidental_vertices:
-            sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i, 0)
+            sum_of_values += 1 / self._graph.calculate_inout_score(i) * self._scores.get(i, 0)
         self._scores[vertex] = sum_of_values * self._damping_factor + (1 - self._damping_factor)
 
     # Step 5.3
@@ -730,7 +730,7 @@ class PositionBiasedTextRank(VanillaTextRank):
         """
         sum_of_values = 0.0
         for i in incidental_vertices:
-            sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i, 0)
+            sum_of_values += 1 / self._graph.calculate_inout_score(i) * self._scores.get(i, 0)
         new_v_score = (1 - self._damping_factor) * self._position_weights.get(vertex, 0) \
                       + sum_of_values * self._damping_factor
         self._scores[vertex] = new_v_score

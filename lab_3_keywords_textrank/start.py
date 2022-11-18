@@ -24,14 +24,15 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    processed = TextPreprocessor(stop_words, punctuation)
+    processed = TextPreprocessor(stop_words, tuple(punctuation))
     words = processed.preprocess_text(text)
 
     encoded = TextEncoder()
     tokens = encoded.encode(words)
 
-    graph = AdjacencyMatrixGraph()
-    graph.fill_from_tokens(tokens, 7)
+    if isinstance(tokens, tuple):
+        graph = AdjacencyMatrixGraph()
+        graph.fill_from_tokens(tokens, 7)
 
     van_graph = VanillaTextRank(graph)
     van_graph.train()
@@ -39,8 +40,9 @@ if __name__ == "__main__":
     decoded10_adj = encoded.decode(top10_adj)
     print(decoded10_adj)
 
-    edge_list_graph = EdgeListGraph()
-    edge_list_graph.fill_from_tokens(tokens, 7)
+    if isinstance(tokens, tuple):
+        edge_list_graph = EdgeListGraph()
+        edge_list_graph.fill_from_tokens(tokens, 7)
 
     van_edge_graph = VanillaTextRank(edge_list_graph)
     van_edge_graph.train()
