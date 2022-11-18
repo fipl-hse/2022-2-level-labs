@@ -2,6 +2,7 @@
 Lab 2
 Extract keywords based on co-occurrence frequency
 """
+import string
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from lab_1_keywords_tfidf.main import check_list, check_dict, clean_and_tokenize, calculate_frequencies
@@ -33,7 +34,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or len(text) == 0:
         return None
 
-    punct = '''.,;:¡!¿?…\\\\⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'''
+    punct = string.punctuation + '¡¿…⋯‹›«»“”⟨⟩–—'
     for symbol in punct:
         text = text.replace(symbol, ',')
         # проходится по всем знакам пункуации и заменяет все на запятые
@@ -62,7 +63,6 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    
     if not check_list(phrases, str, False) or not check_list(stop_words, str, False):
         return None
     final_list = []
