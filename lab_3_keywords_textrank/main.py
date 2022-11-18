@@ -973,6 +973,7 @@ class KeywordExtractionBenchmark:
         self._keywords_dict = {}
         self._texts_dict = {}
         self._list_of_files = os.listdir(self._materials_path)
+
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
         """
@@ -1015,20 +1016,20 @@ class KeywordExtractionBenchmark:
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
             rake_adapt = RAKEAdapter(self._texts_dict[place], self._stop_words)
-            methods_list = [tfidf_adapt, rake_adapt, vanilla_graph, position_biased]
 
-            for idx, method in enumerate(methods_list):
-                method.train()
+            for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
+                returned_val = method.train()
+                if returned_val != 0 and returned_val is not None:
+                    return None
                 top_keywords = method.get_top_keywords(50)
-                if method == vanilla_graph or method == position_biased:
+                if not top_keywords:
+                    return None
+                if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                    if not top_keywords:
-                        return None
-                method_name = self._methods_names[idx]
-                target_keywords = self._keywords_dict.get(place, 0)
+                target_keywords = self._keywords_dict.get(place)
                 if not target_keywords:
                     return None
-                self.report[method_name][theme] = calculate_recall(top_keywords, target_keywords)
+                self.report[self._methods_names[idx]][theme] = calculate_recall(top_keywords, target_keywords)
         return self.report
 
     # Step 12.4
@@ -1049,4 +1050,3 @@ class KeywordExtractionBenchmark:
                 for one_theme in self.report[name]:
                     list_to_write.append(self.report[name][one_theme])
                 file_writer.writerow(list_to_write)
-
