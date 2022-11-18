@@ -2,13 +2,14 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+import os
+import csv
 from pathlib import Path
 from typing import Optional, Union
 from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calculate_tfidf
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
-import os
-import csv
+
 
 class TextPreprocessor:
     """
@@ -985,7 +986,7 @@ class KeywordExtractionBenchmark:
         texts_dict = {}
         file_idx = 0
         for one_file in list_of_files[:-2]:
-            way_to_file = self._materials_path + one_file
+            way_to_file = self._materials_path / one_file
             with open(way_to_file, encoding='UTF-8') as read_file:
                 read_file = [line.rstrip('\n') for line in read_file]
             if 'keywords' in one_file:
@@ -998,9 +999,10 @@ class KeywordExtractionBenchmark:
                 file_idx += 1
         for one_method in self._methods_names:
             self.report[one_method] = {}
-        for theme in range(file_idx):
+        for theme in self.themes:
             preprocessed_text = TextPreprocessor(self._stop_words, self._punctuation)
-            tokens = preprocessed_text.preprocess_text(texts_dict[theme])
+            place = self.themes.index(theme)
+            tokens = preprocessed_text.preprocess_text(texts_dict[place])
             text_to_code = TextEncoder()
             encoded_txt = text_to_code.encode(tokens)
             if not encoded_txt:
@@ -1013,7 +1015,7 @@ class KeywordExtractionBenchmark:
             vanilla_graph = VanillaTextRank(edge_graph)
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
-            rake_adapt = RAKEAdapter(texts_dict[theme], self._stop_words)
+            rake_adapt = RAKEAdapter(texts_dict[place], self._stop_words)
 
             methods_list = [vanilla_graph, position_biased, tfidf_adapt, rake_adapt]
 
@@ -1025,9 +1027,8 @@ class KeywordExtractionBenchmark:
                     if not top_keywords:
                         return None
                 method_name = self._methods_names[idx]
-                current_theme = self.themes[theme]
-                target_keywords = keywords_dict[theme]
-                self.report[method_name][current_theme] = calculate_recall(top_keywords, target_keywords)
+                target_keywords = keywords_dict[place]
+                self.report[method_name][theme] = calculate_recall(top_keywords, target_keywords)
         return self.report
 
 

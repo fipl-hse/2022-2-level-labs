@@ -2,12 +2,11 @@
 TextRank keyword extraction starter
 """
 
+import json
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, \
     EdgeListGraph, PositionBiasedTextRank, KeywordExtractionBenchmark
-import os
-import json
 
 if __name__ == "__main__":
 
@@ -58,13 +57,14 @@ if __name__ == "__main__":
         print(DECODED_WORDS)
         IDX += 1
 
-    with open("assets/benchmark_materials/IDF.json", encoding='UTF-8') as FILE:
+    IDF_PATH = ASSETS_PATH / 'benchmark_materials/IDF.json'
+    with open(IDF_PATH, encoding='UTF-8') as FILE:
         JSON_FILE = json.load(FILE)
-
-    with open("assets/benchmark_materials/eng_stop_words.txt", encoding='UTF-8') as FILE:
+    ENG_PATH = ASSETS_PATH / 'benchmark_materials/eng_stop_words.txt'
+    with open(ENG_PATH, encoding='UTF-8') as FILE:
         ENGLISH_STOPS = [line.rstrip('\n') for line in FILE]
 
-    PATH_TO_BENCH = "assets/benchmark_materials/"
+    PATH_TO_BENCH = ASSETS_PATH / 'benchmark_materials'
     KEYWORD_EXTRACTION = KeywordExtractionBenchmark(ENGLISH_STOPS, PUNCTUATION_MARKS, JSON_FILE, PATH_TO_BENCH)
     KEYWORD_EXTRACTION.run()
     KEYWORD_EXTRACTION.save_to_csv('report.csv')
