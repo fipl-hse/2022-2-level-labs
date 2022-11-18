@@ -33,7 +33,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or len(text) == 0:
         return None
 
-    punct = '''.,;:¡!¿?…⋯‹›«»"“”()⟨⟩}{&]|[-–~—]'''
+    punct = '''.,;:¡!¿?…\\\\⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]'''
     for symbol in punct:
         text = text.replace(symbol, ',')
         # проходится по всем знакам пункуации и заменяет все на запятые
@@ -298,32 +298,34 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         last_word_of_fisrt_part = first_part[-1]
         for phrase in phrases:
             phrase = phrase.lower().split()
-            if last_word_of_fisrt_part in phrase:
-                occurrence = phrase.count(last_word_of_fisrt_part)
-                if occurrence == 1:
+            if last_word_of_fisrt_part not in phrase:
+                continue
+            occurrence = phrase.count(last_word_of_fisrt_part)
+            if occurrence == 1:
+                index = phrase.index(last_word_of_fisrt_part)
+                if last_word_of_fisrt_part == phrase[-1]:
+                    continue
+                stop_word_to_include = phrase[index + 1]
+                full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
+                if full_phrase in frequent_pair_with_stop_words:
+                    frequent_pair_with_stop_words[full_phrase] += 1
+                else:
+                    frequent_pair_with_stop_words[full_phrase] = 1
+            elif occurrence > 1:
+                while occurrence > 0:
                     index = phrase.index(last_word_of_fisrt_part)
-                    if last_word_of_fisrt_part != phrase[-1]:
-                        stop_word_to_include = phrase[index + 1]
-                        full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
-                        if full_phrase in frequent_pair_with_stop_words:
-                            frequent_pair_with_stop_words[full_phrase] += 1
-                        else:
-                            frequent_pair_with_stop_words[full_phrase] = 1
-                elif occurrence > 1:
-                    while occurrence > 0:
-                        index = phrase.index(last_word_of_fisrt_part)
-                        stop_word_to_include = phrase[index + 1]
-                        index_of_stop_word = phrase.index(stop_word_to_include)
-                        full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
-                        if full_phrase in frequent_pair_with_stop_words:
-                            frequent_pair_with_stop_words[full_phrase] += 1
-                        else:
-                            frequent_pair_with_stop_words[full_phrase] = 1
-                        occurrence = occurrence - 1
-                        phrase = phrase[index_of_stop_word:]
-                if occurrence == 0:
-                    break
-    for key in frequent_pair_with_stop_words.keys():
+                    stop_word_to_include = phrase[index + 1]
+                    index_of_stop_word = phrase.index(stop_word_to_include)
+                    full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
+                    if full_phrase in frequent_pair_with_stop_words:
+                        frequent_pair_with_stop_words[full_phrase] += 1
+                    else:
+                        frequent_pair_with_stop_words[full_phrase] = 1
+                    occurrence = occurrence - 1
+                    phrase = phrase[index_of_stop_word:]
+            if occurrence == 0:
+                break
+    for key in frequent_pair_with_stop_words:
         for phrase in phrases:
             if key in phrase:
                 frequent_pair_with_stop_words[full_phrase] = 0
