@@ -712,6 +712,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             a graph representing the text
         """
         super().__init__(graph)
+        graph.calculate_position_weights()
         self._position_weights = graph.get_position_weights()
 
     # Step 9.2
@@ -727,10 +728,11 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        sum_of_values = 0
+        sum_of_values = 0.0
         for i in incidental_vertices:
             sum_of_values += 1 / abs(self._graph.calculate_inout_score(i)) * self._scores.get(i, 0)
-        new_v_score = (1 - self._damping_factor) * self._position_weights[vertex] + sum_of_values * self._damping_factor
+        new_v_score = (1 - self._damping_factor) * self._position_weights.get(vertex, 0) \
+                      + sum_of_values * self._damping_factor
         self._scores[vertex] = new_v_score
 
 
