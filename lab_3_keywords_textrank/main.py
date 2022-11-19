@@ -989,11 +989,11 @@ class KeywordExtractionBenchmark:
         for one_file in os.listdir(self._materials_path):
             way_to_file = self._materials_path / one_file
             with open(way_to_file, encoding='UTF-8') as read_file:
-                read_file = [line.rstrip('\n') for line in read_file]
+                readen_file = [line.rstrip('\n') for line in read_file]
             if 'keywords' in one_file:
-                _keywords_dict[file_idx] = read_file
+                _keywords_dict[file_idx] = readen_file
             elif 'text' in one_file:
-                _texts_dict[file_idx] = '. '.join(read_file)
+                _texts_dict[file_idx] = '. '.join(readen_file)
                 file_idx += 1
         for one_method in methods_names:
             self.report[one_method] = {}
