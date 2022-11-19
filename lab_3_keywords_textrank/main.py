@@ -974,7 +974,7 @@ class KeywordExtractionBenchmark:
         self._methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
         self._keywords_dict = {}
         self._texts_dict = {}
-        self._list_of_files = os.listdir(self._materials_path)
+        self._list_of_files = os.listdir(materials_path)
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
