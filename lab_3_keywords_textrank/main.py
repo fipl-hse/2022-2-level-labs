@@ -1028,7 +1028,7 @@ class KeywordExtractionBenchmark:
                 target_keywords = _keywords_dict.get(theme_index, 0)
                 if not target_keywords:
                     return None
-                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, tuple(target_keywords))
+                self.report[methods_names[idx]][theme] = calculate_recall(tuple(top_keywords), target_keywords)
         return self.report
 
     # Step 12.4

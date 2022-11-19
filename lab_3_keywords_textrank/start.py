@@ -67,7 +67,7 @@ if __name__ == "__main__":
     PATH_TO_BENCH = ASSETS_PATH / 'benchmark_materials'
     KEYWORD_EXTRACTION = KeywordExtractionBenchmark(tuple(ENGLISH_STOPS), PUNCTUATION_MARKS, JSON_FILE, PATH_TO_BENCH)
     KEYWORD_EXTRACTION.run()
-    PATH_TO_CSV = 'lab_3_keywords_textrank/report.csv'
+    PATH_TO_CSV = PROJECT_ROOT / 'report.csv'
     KEYWORD_EXTRACTION.save_to_csv(PATH_TO_CSV)
 
     RESULT = DECODED_WORDS
