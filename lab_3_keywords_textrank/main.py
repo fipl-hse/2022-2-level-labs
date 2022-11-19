@@ -246,6 +246,7 @@ class AdjacencyMatrixGraph:
         self._matrix = [[]]
         self._positions = {}
         self._position_weights = {}
+        self._vertices_list = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -265,18 +266,18 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        vertexes = [vertex1, vertex2]
-        for vertex in vertexes:
-            if vertex not in self._matrix[0]:
-                self._matrix[0].append(vertex)
-                size_matrix = len(self._matrix[0])
-                self._matrix.append([vertex] + [0 for _ in range(size_matrix)])
-                for index in range(1, size_matrix + 1):
-                    self._matrix[index].append(0)
 
-        index1 = self._matrix[0].index(vertex1)
-        index2 = self._matrix[0].index(vertex2)
-        self._matrix[index1 + 1][index2 + 1] = self._matrix[index2 + 1][index1 + 1] = 1
+        for vertex in [vertex1, vertex2]:
+            if vertex in self._vertices_list:
+                continue
+            self._vertices_list.append(vertex)
+            for element in self._matrix:
+                element.append(0)
+            self._matrix.append([0 for _ in self._vertices_list])
+
+        index1 = self._vertices_list.index(vertex1)
+        index2 = self._vertices_list.index(vertex2)
+        self._matrix[index1][index2] = self._matrix[index2][index1] = 1
         return 0
 
     # Step 4.3
@@ -295,10 +296,10 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._matrix[0] or vertex2 not in self._matrix[0]:
+        if vertex1 not in self._vertices_list or vertex2 not in self._vertices_list:
             return -1
-        index1 = self._matrix[0].index(vertex1) + 1
-        index2 = self._matrix[0].index(vertex2) + 1
+        index1 = self._vertices_list.index(vertex1)
+        index2 = self._vertices_list.index(vertex2)
         return self._matrix[index1][index2]
 
     # Step 4.4
@@ -310,7 +311,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._vertices_list)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -326,15 +327,11 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
+        if vertex not in self._vertices_list:
             return -1
-        same_ones = []
-        for element in self._matrix:
-            if element[0] == vertex:
-                for i in element[1:]:
-                    if i == 1:
-                        same_ones.append(i)
-        return len(same_ones)
+        index = self._vertices_list.index(vertex)
+        inout_score = sum(self._matrix[index])
+        return inout_score
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
