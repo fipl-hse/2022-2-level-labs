@@ -987,13 +987,13 @@ class KeywordExtractionBenchmark:
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
         file_idx = 0
-        for one_file in self._list_of_files[:-2]:
+        for one_file in self._list_of_files:
             way_to_file = self._materials_path / one_file
             with open(way_to_file, encoding='UTF-8') as read_file:
                 read_file = [line.rstrip('\n') for line in read_file]
             if 'keywords' in one_file:
                 self._keywords_dict[file_idx] = read_file
-            else:
+            elif 'text' in one_file:
                 text = ''
                 for elem in read_file:
                     text += elem + '. '
