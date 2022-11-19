@@ -25,6 +25,7 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
+
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -36,7 +37,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -51,7 +53,10 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+        for symbol in self._punctuation:
+            text = text.replace(symbol, '')
+        tokens = tuple(text.lower().split())
+        return tokens
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -66,7 +71,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        filtered_tokens = tuple(token for token in tokens if token not in self._stop_words)
+        return filtered_tokens
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -81,7 +87,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        tokens = self._clean_and_tokenize(text)
+        filtered_tokens = self._remove_stop_words(tokens)
+        return filtered_tokens
 
 
 class TextEncoder:
@@ -109,7 +117,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -120,7 +129,11 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        code = 1000
+        for word in set(tokens):
+            self._word2id[word] = code
+            self._id2word[code] = word
+            code += 1
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -136,7 +149,12 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+
+        self._learn_indices(tokens)
+        encoded_tokens = tuple(self._word2id[token] for token in tokens)
+        return encoded_tokens
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -152,7 +170,13 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        if not encoded_tokens:
+            return None
+
+        decoded_tokens = tuple(self._id2word[token] for token in encoded_tokens if token in self._id2word)
+        if len(encoded_tokens) != len(decoded_tokens):
+            return None
+        return decoded_tokens
 
 
 # Step 3
@@ -173,7 +197,26 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not tokens and isinstance(tokens, tuple):
+        return None
+    if not isinstance(window_length, int) or window_length < 2:
+        return None
+
+    filtered_pairs = set()
+    for window_position in range(len(tokens) - window_length + 1):
+        window = tokens[window_position:window_position + window_length]
+
+        for frame_length in range(2, window_length + 1):
+            for frame_position in range(window_length - frame_length + 1):
+                frame = window[frame_position:frame_position + frame_length]
+                frame_start = frame[0]
+                frame_end = frame[-1]
+
+                if frame_start != frame_end:
+                    pair = tuple(sorted((frame_start, frame_end)))
+                    filtered_pairs.add(pair)
+
+    return tuple(filtered_pairs)
 
 
 class AdjacencyMatrixGraph:
