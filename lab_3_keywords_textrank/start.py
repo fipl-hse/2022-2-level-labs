@@ -19,17 +19,17 @@ if __name__ == "__main__":
     # reading the text from which keywords are going to be extracted
     TARGET_TEXT_PATH = ASSETS_PATH / 'article.txt'
     with open(TARGET_TEXT_PATH, 'r', encoding='utf-8') as file:
-        TEXT = file.read()
+        text = file.read()
 
     # reading list of stop words
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
-        STOP_WORDS = tuple(file.read().split('\n'))
+        stop_words = tuple(file.read().split('\n'))
 
     # text preprocessing and pairs extraction
-    PROCESSOR = TextPreprocessor(STOP_WORDS, tuple(punctuation))
+    PROCESSOR = TextPreprocessor(stop_words, tuple(punctuation))
     ENCODER = TextEncoder()
-    TOKENS = ENCODER.encode(PROCESSOR.preprocess_text(TEXT))
+    TOKENS = ENCODER.encode(PROCESSOR.preprocess_text(text))
     if TOKENS:
         print(extract_pairs(TOKENS, 5))
         print()
