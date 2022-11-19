@@ -994,10 +994,7 @@ class KeywordExtractionBenchmark:
             if 'keywords' in one_file:
                 _keywords_dict[file_idx] = read_file
             elif 'text' in one_file:
-                text = ''
-                for elem in read_file:
-                    text += elem + '. '
-                _texts_dict[file_idx] = text
+                _texts_dict[file_idx] = '. '.join(read_file)
                 file_idx += 1
         for one_method in methods_names:
             self.report[one_method] = {}
@@ -1007,12 +1004,15 @@ class KeywordExtractionBenchmark:
             tokens = preprocessed_text.preprocess_text(_texts_dict[theme_index])
             text_to_code = TextEncoder()
             encoded_txt = text_to_code.encode(tokens)
+
             if not encoded_txt:
                 return None
+
             edge_graph = EdgeListGraph()
             edge_graph.fill_from_tokens(encoded_txt, 5)
             edge_graph.fill_positions(encoded_txt)
             edge_graph.calculate_position_weights()
+
             vanilla_graph = VanillaTextRank(edge_graph)
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
