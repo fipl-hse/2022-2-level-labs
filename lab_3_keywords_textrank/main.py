@@ -972,7 +972,6 @@ class KeywordExtractionBenchmark:
                            'science': 6, 'sports': 7, 'tech': 8}
         self.report = {}
 
-
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
         """
@@ -1026,7 +1025,8 @@ class KeywordExtractionBenchmark:
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, _keywords_dict.get(theme_index, 0))
+                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords,
+                                                                          _keywords_dict.get(theme_index, 0))
         return self.report
 
     # Step 12.4
