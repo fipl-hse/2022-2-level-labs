@@ -858,17 +858,19 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        if not(phrases := extract_phrases(self._text)):
+        phrases = extract_phrases(self._text)
+        if not phrases:
             return -1
-        if not(key_phrases := extract_candidate_keyword_phrases(list(phrases), list(self._stop_words))):
+        key_phrases = extract_candidate_keyword_phrases(list(phrases), list(self._stop_words))
+        if not key_phrases:
             return -1
-        if not(freq_dict := calculate_frequencies_for_content_words(key_phrases)):
+        freq_dict = calculate_frequencies_for_content_words(key_phrases)
+        if not freq_dict:
             return -1
-        if not(degree_dict := calculate_word_degrees(key_phrases, list(freq_dict.keys()))):
+        degree_dict = calculate_word_degrees(key_phrases, list(freq_dict.keys()))
+        if not degree_dict:
             return -1
-        if not(calculate_word_scores(degree_dict, freq_dict)):
-            return -1
-        self._scores = dict(calculate_word_scores(degree_dict, freq_dict))
+        self._scores = calculate_word_scores(degree_dict, freq_dict)
         return 0
 
     # Step 11.3
