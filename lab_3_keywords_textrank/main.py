@@ -968,6 +968,8 @@ class KeywordExtractionBenchmark:
         self._idf = idf
         self._materials_path = materials_path
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self._themes_id = {'culture': 0, 'business': 1, 'crime': 2, 'fashion': 3, 'health': 4, 'politics': 5,
+                           'science': 6, 'sports': 7, 'tech': 8}
         self.report = {}
         self._methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
         self._keywords_dict = {}
@@ -994,15 +996,15 @@ class KeywordExtractionBenchmark:
             else:
                 text = ''
                 for elem in read_file:
-                    text += '. ' + elem
+                    text += elem + '. '
                 self._texts_dict[file_idx] = text
                 file_idx += 1
         for one_method in self._methods_names:
             self.report[one_method] = {}
         for theme in self.themes:
             preprocessed_text = TextPreprocessor(self._stop_words, self._punctuation)
-            place = self.themes.index(theme)
-            tokens = preprocessed_text.preprocess_text(self._texts_dict[place])
+            theme_index = self._themes_id[theme]
+            tokens = preprocessed_text.preprocess_text(self._texts_dict[theme_index])
             text_to_code = TextEncoder()
             encoded_txt = text_to_code.encode(tokens)
             if not encoded_txt:
@@ -1015,18 +1017,18 @@ class KeywordExtractionBenchmark:
             vanilla_graph = VanillaTextRank(edge_graph)
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
-            rake_adapt = RAKEAdapter(self._texts_dict[place], self._stop_words)
+            rake_adapt = RAKEAdapter(self._texts_dict[theme_index], self._stop_words)
 
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
                 returned_val = method.train()
-                if returned_val != 0 and returned_val is not None:
+                if returned_val:
                     return None
                 top_keywords = method.get_top_keywords(50)
                 if not top_keywords:
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                target_keywords = self._keywords_dict.get(place)
+                target_keywords = self._keywords_dict[theme_index]
                 if not target_keywords:
                     return None
                 self.report[self._methods_names[idx]][theme] = calculate_recall(top_keywords, target_keywords)
