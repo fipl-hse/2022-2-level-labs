@@ -355,8 +355,8 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for ind, el in enumerate(tokens, start=1):
-            self._positions.setdefault(el, []).append(ind)
+        for ind, elem in enumerate(tokens, start=1):
+            self._positions.setdefault(elem, []).append(ind)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -513,8 +513,8 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for ind, el in enumerate(tokens, start=1):
-            self._positions.setdefault(el, []).append(ind)
+        for ind, elem in enumerate(tokens, start=1):
+            self._positions.setdefault(elem, []).append(ind)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -977,7 +977,7 @@ class KeywordExtractionBenchmark:
             for name, model in models.items():
                 model.train()
                 keywords = model.get_top_keywords(50)
-                if name == 'VanillaTextRank' or name == 'PositionBiasedTextRank':
+                if name in 'VanillaTextRank_PositionBiasedTextRank':
                     keywords = encoder.decode(keywords)
                 self.report.setdefault(name, {})[topic] = calculate_recall(keywords, target_keywords)
         return self.report
