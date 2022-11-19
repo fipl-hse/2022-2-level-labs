@@ -866,9 +866,9 @@ class RAKEAdapter:
             return -1
         if not(degree_dict := calculate_word_degrees(key_phrases, list(freq_dict.keys()))):
             return -1
-        if not(score_dict := dict(calculate_word_scores(degree_dict, freq_dict))):
+        if not(calculate_word_scores(degree_dict, freq_dict)):
             return -1
-        self._scores = score_dict
+        self._scores = dict(calculate_word_scores(degree_dict, freq_dict))
         return 0
 
     # Step 11.3

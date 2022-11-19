@@ -52,7 +52,7 @@ if __name__ == "__main__":
         GRAPH.calculate_position_weights()
         print(f'The graph is {GRAPH.__class__.__name__}.', end=' ')
 
-        for TEXTRANK in (VanillaTextRank(GRAPH), PositionBiasedTextRank(GRAPH)):
+        for TEXTRANK in VanillaTextRank(GRAPH), PositionBiasedTextRank(GRAPH):
             print(f'The textrank algorithm is {TEXTRANK.__class__.__name__}.', end=' ')
             time_start = process_time()
             TEXTRANK.train()
