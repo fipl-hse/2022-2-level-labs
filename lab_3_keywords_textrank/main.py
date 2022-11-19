@@ -1008,6 +1008,7 @@ class KeywordExtractionBenchmark:
             text_to_code = TextEncoder()
             encoded_txt = text_to_code.encode(tokens)
             if not encoded_txt:
+                print(1)
                 return None
             edge_graph = EdgeListGraph()
             edge_graph.fill_from_tokens(encoded_txt, 5)
@@ -1022,14 +1023,17 @@ class KeywordExtractionBenchmark:
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
                 returned_val = method.train()
                 if returned_val:
+                    print(2)
                     return None
                 top_keywords = method.get_top_keywords(50)
                 if not top_keywords:
+                    print(3)
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
                 target_keywords = self._keywords_dict.get(theme_index, 0)
                 if not target_keywords:
+                    print(4)
                     return None
                 self.report[self._methods_names[idx]][theme] = calculate_recall(top_keywords, target_keywords)
         return self.report
