@@ -1,12 +1,12 @@
 """
 TextRank keyword extraction starter
 """
-
+import string
 from pathlib import Path
-
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, \
+    VanillaTextRank
 
 if __name__ == "__main__":
-
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'
@@ -21,6 +21,26 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    RESULT = None
+    keywords = None
+    punctuation = tuple(string.punctuation + "–—¡¿⟨⟩«»…⋯‹›“”")
+
+    preprocessor = TextPreprocessor(stop_words, punctuation)
+    tokens = preprocessor.preprocess_text(text)
+
+    encoder = TextEncoder()
+    encoded_tokens = encoder.encode(tokens)
+
+    if encoded_tokens:
+        graph = AdjacencyMatrixGraph()
+        graph.fill_from_tokens(encoded_tokens, 3)
+
+        ranker = VanillaTextRank(graph)
+        ranker.train()
+        encoded_keywords = ranker.get_top_keywords(10)
+
+        keywords = encoder.decode(encoded_keywords)
+        print(keywords)
+
+    RESULT = keywords
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
