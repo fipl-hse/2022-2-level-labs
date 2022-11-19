@@ -269,6 +269,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     if len(candidate_keyword_phrases) == 0 or len(phrases) == 0:
         return None
+
+
+def collect_all_pairs(candidate_keyword_phrases: KeyPhrases):
+    """
+    collect all possible pairs by
+    1) get every word+next word combo
+    2) make a dictionary that count how many times some phrase appeared
+    """
     all_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):  # потому что дальше работа с индексами, а они с 0, а не с 1
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
@@ -276,6 +284,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             all_pairs[pair] = all_pairs.get(pair, 1)
         else:
             all_pairs[pair] += 1
+    return all_pairs
+
+
+def collect_only_frequent_pairs(all_pairs: dict):
+    """
+    if pair appeared more than 1 time - get it into the dictionary with frequent pairs
+    """
     pairs_frequent = []
     for pair in all_pairs:
         pairs = []
@@ -286,33 +301,56 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     list_of_a_phrase.append(word)
                 pairs.append(list_of_a_phrase)
         pairs_frequent.append(pairs)
+    return pairs_frequent
 
+
+def trimm_empty_pairs(pairs_frequent: list):
+    """
+    PAIRS FREQUENT: [[], [['одной'], ['важнейших', 'задач']], [], [], [], [], [['ящик'], ['железа']], [], []]
+    PAIRS TRIMMED: [[['одной'], ['важнейших', 'задач']], [['ящик'], ['железа']]]
+    """
     pairs_frequent_stripped = []
     for pair in pairs_frequent:
         if len(pair) != 0:
             pairs_frequent_stripped.append(pair)
+    return pairs_frequent_stripped
 
+
+def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]) -> Optional[KeyPhrases]:
+    """
+    literally adding the inbetween word (descriptions are line by line)
+    """
     frequent_pair_with_stop_words = {}
     for pair in pairs_frequent_stripped:
         first_part = pair[0][0].split()
         last_word_of_fisrt_part = first_part[-1]
+        # gets the last word of the first part (['одной'], ['важнейших', 'задач']], [['ящик'], ['железа'] -> одной)
         for phrase in phrases:
             phrase = phrase.lower().split()
             if last_word_of_fisrt_part not in phrase:
                 continue
             occurrence = phrase.count(last_word_of_fisrt_part)
+            # it this word in the sentence once or more times
             if occurrence == 1:
                 index = phrase.index(last_word_of_fisrt_part)
                 if last_word_of_fisrt_part == phrase[-1]:
+                    # if this word is not the last one in the phrase
                     continue
                 stop_word_to_include = phrase[index + 1]
+                # getting the next word, the inbetween one
+                # одной
+                # Во времена Советского Союза исследование космоса было одной из важнейших задач
+                # слово = из
                 full_phrase = (' '.join(pair[0])) + " " + stop_word_to_include + " " + (' '.join(pair[-1]))
+                # joining the whole phrase with inbetween word
+                # counting how many times this joined phrase coumes up
                 if full_phrase in frequent_pair_with_stop_words:
                     frequent_pair_with_stop_words[full_phrase] += 1
                 else:
                     frequent_pair_with_stop_words[full_phrase] = 1
             elif occurrence > 1:
                 while occurrence > 0:
+                    # doing this loop until there are no more occurrences of this word
                     index = phrase.index(last_word_of_fisrt_part)
                     stop_word_to_include = phrase[index + 1]
                     index_of_stop_word = phrase.index(stop_word_to_include)
@@ -325,11 +363,25 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     phrase = phrase[index_of_stop_word:]
             if occurrence == 0:
                 break
+    return frequent_pair_with_stop_words
+
+
+def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: dict,
+                                       phrases: Sequence[str]) -> Optional[KeyPhrases]:
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
             if key in phrase:
                 frequent_pair_with_stop_words[full_phrase] = 0
                 frequent_pair_with_stop_words[full_phrase] += 1
+    return frequent_pair_with_stop_words
+
+
+def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: dict):
+    """
+    frequent_pair_with_stop_words {'одной из важнейших задач': 2, 'ящик для железа': 1, 'ящик из железа': 1}
+    final_list_of_str ['одной из важнейших задач']
+    final_list_of_str [('одной', 'из', 'важнейших', 'задач')]
+    """
     final_list_of_str = []
     for key in frequent_pair_with_stop_words:
         if frequent_pair_with_stop_words[key] >= 2:
@@ -359,13 +411,11 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
-    if not isinstance(word_scores, dict) or not word_scores:
+    if not isinstance(word_scores, dict) or not word_scores or not isinstance(stop_words, list) or not stop_words:
         return None
     for word, score in word_scores.items():
         if not (isinstance(word, str) or isinstance(score, (float, int))):
             return None
-    if not isinstance(stop_words, list) or not stop_words:
-        return None
     for word in stop_words:
         if not isinstance(word, str):
             return None
