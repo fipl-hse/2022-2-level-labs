@@ -987,7 +987,6 @@ class KeywordExtractionBenchmark:
         _keywords_dict = {}
         _texts_dict = {}
         file_idx = 0
-        # for one_file in self._list_of_files:
         for one_file in os.listdir(self._materials_path):
             way_to_file = self._materials_path / one_file
             with open(way_to_file, encoding='UTF-8') as read_file:
@@ -1009,7 +1008,6 @@ class KeywordExtractionBenchmark:
             text_to_code = TextEncoder()
             encoded_txt = text_to_code.encode(tokens)
             if not encoded_txt:
-                print(1)
                 return None
             edge_graph = EdgeListGraph()
             edge_graph.fill_from_tokens(encoded_txt, 5)
@@ -1024,19 +1022,13 @@ class KeywordExtractionBenchmark:
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
                 returned_val = method.train()
                 if returned_val:
-                    print(2)
                     return None
                 top_keywords = method.get_top_keywords(50)
                 if not top_keywords:
-                    print(3)
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                target_keywords = _keywords_dict.get(theme_index, 0)
-                if not target_keywords:
-                    print(4)
-                    return None
-                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, target_keywords)
+                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, _keywords_dict[theme_index])
         return self.report
 
     # Step 12.4
