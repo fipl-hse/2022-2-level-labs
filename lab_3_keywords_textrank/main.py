@@ -2,22 +2,24 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
-from lab_1_keywords_tfidf.main import(
+from pathlib import Path
+from typing import Optional, Union
+
+import csv
+
+from lab_1_keywords_tfidf.main import (
     calculate_frequencies,
     calculate_tf,
     calculate_tfidf
 )
 
-from lab_2_keywords_cooccurrence.main import(
+from lab_2_keywords_cooccurrence.main import (
     extract_phrases,
     extract_candidate_keyword_phrases,
     calculate_frequencies_for_content_words,
     calculate_word_degrees,
     calculate_word_scores,
 )
-
-from pathlib import Path
-from typing import Optional, Union
 
 
 class TextPreprocessor:
@@ -864,10 +866,11 @@ class RAKEAdapter:
             return -1
         if not(degree_dict := calculate_word_degrees(key_phrases, list(freq_dict.keys()))):
             return -1
-        if not(score_dict := calculate_word_scores(degree_dict, freq_dict)):
+        if not(score_dict := dict(calculate_word_scores(degree_dict, freq_dict))):
             return -1
-        self._scores = score_dict
-        return 0
+        if score_dict:
+            self._scores = score_dict
+            return 0
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -901,9 +904,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_positive = len(set(predicted) & set(target))
-    neg_positive = len(set(target) - set(true_positive))
-    return true_positive / (true_positive + neg_positive)
+    true_pos = len(set(predicted) & set(target))
+    false_neg = len(set(target) - set(predicted))
+    return true_pos / (true_pos + false_neg)
 
 
 class KeywordExtractionBenchmark:
@@ -964,16 +967,44 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
-        vanilla_rank = VanillaTextRank()
-        position_rank = PositionBiasedTextRank()
-        tfidf_adapter = TFIDFAdapter()
-        rake_adapter = RAKEAdapter()
+        rank_dict = {}
         for theme in self.themes:
+
             text_path = self._materials_path / f'{self.themes.index(theme)}_text.txt'
-            with open(text_path, 'r', encoding='utf-8') as file:
-                text = file.read()
+            keywords_path = self._materials_path / f'{self.themes.index(theme)}_keywords.txt'
+
+            with (open(text_path, 'r', encoding='utf-8') as text_to_read,
+                    open(keywords_path, 'r', encoding='utf-8') as keywords_to_read):
+                text = text_to_read.read()
+                keywords = tuple(keywords_to_read.read().split('\n'))
+
                 preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+                tokens = preprocessor.preprocess_text(text)
+                encoder = TextEncoder()
+                encoded_tokens = encoder.encode(tokens)
+
+                graph = EdgeListGraph()
+                graph.fill_from_tokens(encoded_tokens, 3)
+                graph.fill_positions(encoded_tokens)
+                graph.calculate_position_weights()
+
+                for algorithm in (VanillaTextRank(graph),
+                                  PositionBiasedTextRank(graph),
+                                  TFIDFAdapter(tokens, self._idf),
+                                  RAKEAdapter(text, self._stop_words)):
+                    algorithm.train()
+                    top_tokens = algorithm.get_top_keywords(50)
+                    if algorithm.__class__.__name__ in ('VanillaTextRank', 'PositionBiasedTextRank'):
+                        top_tokens = encoder.decode(top_tokens)
+                    score = calculate_recall(top_tokens, keywords)
+
+                    inner_dict = {theme: score}
+                    # rank_dict[algorithm.__class__.__name__] = rank_dict.get(algorithm.__class__.__name__, {})
+                    if algorithm.__class__.__name__ not in rank_dict:
+                        rank_dict[algorithm.__class__.__name__] = {}
+                    rank_dict[algorithm.__class__.__name__].update(inner_dict)
+        self.report = rank_dict
+        return rank_dict
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -984,4 +1015,10 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        report_path = path / 'report.csv'
+        with open(report_path, 'w') as csv_file:
+            writer = csv.writer(csv_file)
+            headers = 'name', *self.themes
+            writer.writerow(headers)
+            for algorithm in self.report:
+                writer.writerow((algorithm, *self.report[algorithm].values()))

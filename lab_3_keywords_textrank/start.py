@@ -5,6 +5,8 @@ TextRank keyword extraction starter
 from pathlib import Path
 from time import process_time
 
+import json
+
 from lab_3_keywords_textrank.main import (
     TextPreprocessor,
     TextEncoder,
@@ -13,13 +15,8 @@ from lab_3_keywords_textrank.main import (
     VanillaTextRank,
     EdgeListGraph,
     PositionBiasedTextRank,
-    # KeywordExtractionBenchmark
+    KeywordExtractionBenchmark
 )
-from lab_1_keywords_tfidf.main import get_top_n
-
-import json
-
-
 
 
 if __name__ == "__main__":
@@ -48,7 +45,7 @@ if __name__ == "__main__":
     if ENCODED_TOKENS:
         print(f'Extracted pairs: {extract_pairs(ENCODED_TOKENS, 3)}\n')
 
-    # steps 6, 7.2, 9.3
+    # # steps 6, 7.2, 9.3
     for GRAPH in AdjacencyMatrixGraph(), EdgeListGraph():
         GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
         GRAPH.fill_positions(ENCODED_TOKENS)
@@ -67,8 +64,17 @@ if __name__ == "__main__":
 
     # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
 
-    with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
-        text = file.read()
+    MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
+    ENG_STOP_WORDS_PATH = MATERIALS_PATH / 'eng_stop_words.txt'
+    IDF_PATH = MATERIALS_PATH / 'IDF.json'
+    with (open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as stop_words_to_read,
+          open(IDF_PATH, 'r', encoding='utf-8') as idf_to_read):
+        eng_stop_words = tuple(stop_words_to_read.read().split('\n'))
+        idf = json.load(idf_to_read)
+
+    BENCHMARK = KeywordExtractionBenchmark(eng_stop_words, tuple('.,!?-:;()&'), idf, MATERIALS_PATH)
+    BENCHMARK.run()
+    BENCHMARK.save_to_csv(MATERIALS_PATH)
 
     RESULT = TOP_DECODED_TOKENS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
