@@ -868,8 +868,6 @@ class RAKEAdapter:
             return -1
         if not(score_dict := dict(calculate_word_scores(degree_dict, freq_dict))):
             return -1
-        if not score_dict:
-            return -1
         self._scores = score_dict
         return 0
 
