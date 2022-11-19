@@ -2,6 +2,20 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+from lab_1_keywords_tfidf.main import(
+    calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf
+)
+
+from lab_2_keywords_cooccurrence.main import(
+    extract_phrases,
+    extract_candidate_keyword_phrases,
+    calculate_frequencies_for_content_words,
+    calculate_word_degrees,
+    calculate_word_scores,
+)
+
 from pathlib import Path
 from typing import Optional, Union
 
@@ -125,8 +139,6 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        # for token, idx in zip(tokens, range(1001, 1001 + len(tokens))):
-        #     self._word2id[token] = idx
         for token, idx in zip(tokens, range(1001 + len(tokens), 1001, -1)):
             self._word2id[token] = idx
 
@@ -354,23 +366,21 @@ class AdjacencyMatrixGraph:
         for idx, token in enumerate(tokens):
             if token not in self._positions:
                 self._positions[token] = []
-            self._positions[token].append([idx + 1])
+            self._positions[token].append(idx + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_weight = 0
         non_norm_total_weight = 0
-        for token, positions in self._positions.items():
-            for position in positions:
-                non_norm_weight += 1 / position
-            self._position_weights[token] = non_norm_weight
-            non_norm_total_weight += non_norm_weight
+        for vertex in self._positions:
+            for position in self._positions[vertex]:
+                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
+            non_norm_total_weight += self._position_weights[vertex]
 
-        for token in self._position_weights:
-            self._position_weights[token] = self._position_weights.get(token) / non_norm_total_weight
+        for vertex in self._position_weights:
+            self._position_weights[vertex] = self._position_weights.get(vertex) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -531,17 +541,14 @@ class EdgeListGraph:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_weight = 0
         non_norm_total_weight = 0
-        for token, positions in self._positions.items():
-            for position in positions:
-                non_norm_weight += 1 / position
-            self._position_weights[token] = non_norm_weight
-            non_norm_total_weight += non_norm_weight
+        for vertex in self._positions:
+            for position in self._positions[vertex]:
+                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
+            non_norm_total_weight += self._position_weights[vertex]
 
-        for token in self._position_weights:
-            self._position_weights[token] = self._position_weights.get(token) / non_norm_total_weight
-
+        for vertex in self._position_weights:
+            self._position_weights[vertex] = self._position_weights.get(vertex) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -662,7 +669,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
+        srtd_by_key = sorted(self._scores)
+        return tuple(sorted(srtd_by_key, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -706,7 +714,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -721,7 +730,10 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = (summa * self._damping_factor +
+                                (1 - self._damping_factor) * self._position_weights[vertex])
 
 
 class TFIDFAdapter:
@@ -758,7 +770,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+        self._tokens = tokens
+        self._idf = idf
+        self._scores = {}
 
     # Step 10.2
     def train(self) -> int:
@@ -769,7 +783,14 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        if not(freq_dict := calculate_frequencies(list(self._tokens))):
+            return -1
+        if not(tf_dict := calculate_tf(freq_dict)):
+            return -1
+        if not(tfidf_dict := calculate_tfidf(tf_dict, self._idf)):
+            return -1
+        self._scores = tfidf_dict
+        return 0
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -784,7 +805,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        srtd_by_key = sorted(self._scores)
+        return tuple(sorted(srtd_by_key, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
 
 
 class RAKEAdapter:
@@ -821,7 +843,9 @@ class RAKEAdapter:
             stop_words: tuple[str, ...]
                 a sequence of stop-words
         """
-        pass
+        self._text = text
+        self._stop_words = stop_words
+        self._scores = {}
 
     # Step 11.2
     def train(self) -> int:
@@ -832,7 +856,18 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        if not(phrases := extract_phrases(self._text)):
+            return -1
+        if not(key_phrases := extract_candidate_keyword_phrases(list(phrases), list(self._stop_words))):
+            return -1
+        if not(freq_dict := calculate_frequencies_for_content_words(key_phrases)):
+            return -1
+        if not(degree_dict := calculate_word_degrees(key_phrases, list(freq_dict.keys()))):
+            return -1
+        if not(score_dict := calculate_word_scores(degree_dict, freq_dict)):
+            return -1
+        self._scores = score_dict
+        return 0
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -847,7 +882,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        srtd_by_key = sorted(self._scores)
+        return tuple(sorted(srtd_by_key, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
 
 
 # Step 12.1
@@ -865,7 +901,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    true_positive = len(set(predicted) & set(target))
+    neg_positive = len(set(target) - set(true_positive))
+    return true_positive / (true_positive + neg_positive)
 
 
 class KeywordExtractionBenchmark:
@@ -893,7 +931,6 @@ class KeywordExtractionBenchmark:
     save_to_csv(self, path: Path) -> None:
         saves the report in the .csv format
     """
-
     # Step 12.2
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...],
                  idf: dict[str, float], materials_path: Path) -> None:
@@ -910,7 +947,12 @@ class KeywordExtractionBenchmark:
             materials_path: Path
                 a path to materials to use for comparison
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf = idf
+        self._materials_path = materials_path
+        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -922,7 +964,16 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        vanilla_rank = VanillaTextRank()
+        position_rank = PositionBiasedTextRank()
+        tfidf_adapter = TFIDFAdapter()
+        rake_adapter = RAKEAdapter()
+        for theme in self.themes:
+            text_path = self._materials_path / f'{self.themes.index(theme)}_text.txt'
+            with open(text_path, 'r', encoding='utf-8') as file:
+                text = file.read()
+                preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
