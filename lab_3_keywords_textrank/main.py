@@ -1020,15 +1020,17 @@ class KeywordExtractionBenchmark:
             rake_adapt = RAKEAdapter(_texts_dict[theme_index], self._stop_words)
 
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
-                returned_val = method.train()
-                if returned_val:
+                # returned_val = method.train()
+                # if returned_val:
+                #     return None
+                if method.train():
                     return None
                 top_keywords = method.get_top_keywords(50)
                 if not top_keywords:
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, _keywords_dict[theme_index])
+                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, _keywords_dict.get(theme_index, 0))
         return self.report
 
     # Step 12.4
