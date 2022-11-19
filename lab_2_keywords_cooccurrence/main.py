@@ -8,7 +8,6 @@ from typing import Optional, Sequence, Mapping
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
-
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -17,6 +16,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
+
     if not (text and isinstance(text,str)):
         return None
     punctuation = '''.,;:¡!¿?…⋯‹›«»"“”\\[]()⟨⟩}{&]|[-–~—]'''
@@ -41,6 +41,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     if not (isinstance(phrases, list) and isinstance(stop_words, list)):
         return None
+
     for phrase in phrases:
         if not isinstance(phrase,str):
             return None
