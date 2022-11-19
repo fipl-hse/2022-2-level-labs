@@ -3,9 +3,11 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from json import load
 from string import punctuation
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, \
-    AdjacencyMatrixGraph, EdgeListGraph, VanillaTextRank, PositionBiasedTextRank
+    AdjacencyMatrixGraph, EdgeListGraph, VanillaTextRank, PositionBiasedTextRank, \
+    KeywordExtractionBenchmark
 
 if __name__ == "__main__":
 
@@ -61,6 +63,19 @@ if __name__ == "__main__":
     top2 = text_rank2.get_top_keywords(10)
     decoded_text2 = encoded_text.decode(top2)
     print(decoded_text2)
+
+    material_path = ASSETS_PATH / 'benchmark_materials'
+    ENG_STOP_WORDS_PATH = ASSETS_PATH / 'benchmark_materials/eng_stop_words.txt'
+    with open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as eng:
+        eng_stop_words = tuple(eng.read().split('\n'))
+    IDF = ASSETS_PATH / 'benchmark_materials/IDF.json'
+    with open(IDF, 'r', encoding='utf-8') as json:
+        idf = load(json)
+    report = KeywordExtractionBenchmark(eng_stop_words, tuple(punct for punct in punctuation),
+                                        idf, material_path)
+    report_dict = report.run()
+    REPORT_CSV = ASSETS_PATH / 'report.csv'
+    report.save_to_csv(REPORT_CSV)
 
     RESULT = decoded_text2
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
