@@ -868,9 +868,10 @@ class RAKEAdapter:
             return -1
         if not(score_dict := dict(calculate_word_scores(degree_dict, freq_dict))):
             return -1
-        if score_dict:
-            self._scores = score_dict
-            return 0
+        if not score_dict:
+            return -1
+        self._scores = score_dict
+        return 0
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
