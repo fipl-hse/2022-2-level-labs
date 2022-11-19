@@ -1013,16 +1013,12 @@ class KeywordExtractionBenchmark:
             edge_graph.fill_from_tokens(encoded_txt, 5)
             edge_graph.fill_positions(encoded_txt)
             edge_graph.calculate_position_weights()
-
             vanilla_graph = VanillaTextRank(edge_graph)
             position_biased = PositionBiasedTextRank(edge_graph)
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
             rake_adapt = RAKEAdapter(_texts_dict[theme_index], self._stop_words)
 
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
-                # returned_val = method.train()
-                # if returned_val:
-                #     return None
                 if method.train():
                     return None
                 top_keywords = method.get_top_keywords(50)
