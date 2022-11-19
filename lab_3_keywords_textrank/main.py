@@ -375,14 +375,14 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0
+        non_norm_total_weight = 0.0
         for vertex in self._positions:
             for position in self._positions[vertex]:
-                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
+                self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) + 1 / position
             non_norm_total_weight += self._position_weights[vertex]
 
         for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex) / non_norm_total_weight
+            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -490,7 +490,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        return int(vertex1 in self._edges.get(vertex2))
+        return int(vertex1 in self._edges.get(vertex2, 0))
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -543,14 +543,14 @@ class EdgeListGraph:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0
+        non_norm_total_weight = 0.0
         for vertex in self._positions:
             for position in self._positions[vertex]:
                 self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
             non_norm_total_weight += self._position_weights[vertex]
 
         for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex) / non_norm_total_weight
+            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -983,9 +983,10 @@ class KeywordExtractionBenchmark:
                 encoded_tokens = encoder.encode(tokens)
 
                 graph = EdgeListGraph()
-                graph.fill_from_tokens(encoded_tokens, 3)
-                graph.fill_positions(encoded_tokens)
-                graph.calculate_position_weights()
+                if encoded_tokens:
+                    graph.fill_from_tokens(encoded_tokens, 3)
+                    graph.fill_positions(encoded_tokens)
+                    graph.calculate_position_weights()
 
                 for algorithm in (VanillaTextRank(graph),
                                   PositionBiasedTextRank(graph),
