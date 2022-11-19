@@ -238,15 +238,15 @@ class AdjacencyMatrixGraph:
     _matrix: list[list[int]]
     _positions: dict[int, list[int]]
     _position_weights: dict[int, float]
+    _vertices: dict[int, int]
 
     # Step 4.1
     def __init__(self) -> None:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = []
+        self._matrix = [[0]]
         self._vertices = {}
-        self._last_vertex_index = 0
         self._positions = {}
         self._position_weights = {}
 
@@ -268,21 +268,14 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if vertex1 not in self._vertices:
-            self._vertices[vertex1] = self._last_vertex_index
-            self._last_vertex_index += 1
-            self._matrix.append([0 for _ in range(self._last_vertex_index)])
-            for i in range(self._last_vertex_index - 1):
-                self._matrix[i].append(0)
-        if vertex2 not in self._vertices:
-            self._vertices[vertex2] = self._last_vertex_index
-            self._last_vertex_index += 1
-            self._matrix.append([0 for _ in range(self._last_vertex_index)])
-            for i in range(self._last_vertex_index - 1):
-                self._matrix[i].append(0)
-        ind1, ind2 = self._vertices[vertex1], self._vertices[vertex2]
-        self._matrix[ind1][ind2] = 1
-        self._matrix[ind2][ind1] = 1
+        ind1 = self._vertices.setdefault(vertex1, len(self._vertices))
+        ind2 = self._vertices.setdefault(vertex2, len(self._vertices))
+        diff = max(ind1, ind2) - len(self._matrix) + 1
+        for _ in range(diff):
+            self._matrix.append([0 for _ in range(len(self._matrix[0]))])
+        for row in self._matrix:
+            row.extend((0,) * diff)
+        self._matrix[ind1][ind2] = self._matrix[ind2][ind1] = 1
         return 0
 
     # Step 4.3
@@ -306,7 +299,7 @@ class AdjacencyMatrixGraph:
             ind2 = self._vertices[vertex2]
         except KeyError:
             return -1
-        return 1 if self._matrix[ind1][ind2] else 0
+        return self._matrix[ind1][ind2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -362,8 +355,8 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for key in set(tokens):
-            self._positions[key] = [i + 1 for i in range(len(tokens)) if tokens[i] == key]
+        for ind, el in enumerate(tokens, start=1):
+            self._positions.setdefault(el, []).append(ind)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -435,7 +428,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._edges.keys())
+        return tuple(self._edges)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -455,12 +448,8 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if vertex1 not in self._edges:
-            self._edges[vertex1] = []
-        if vertex2 not in self._edges:
-            self._edges[vertex2] = []
-        self._edges[vertex1].append(vertex2)
-        self._edges[vertex2].append(vertex1)
+        self._edges.setdefault(vertex1, []).append(vertex2)
+        self._edges.setdefault(vertex2, []).append(vertex1)
         return 0
 
     # Step 7.2
@@ -481,7 +470,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        return vertex2 in self._edges[vertex1]
+        return int(vertex2 in self._edges[vertex1])
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -525,8 +514,7 @@ class EdgeListGraph:
                 sequence of tokens
         """
         for ind, el in enumerate(tokens, start=1):
-            self._positions[el] = self._positions.get(el, [])
-            self._positions[el].append(ind)
+            self._positions.setdefault(el, []).append(ind)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -611,9 +599,9 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        new_score = ((1 - self._damping_factor) + self._damping_factor
-                     * sum(((1 / self._graph.calculate_inout_score(incidental)) * scores[incidental]
-                            for incidental in incidental_vertices)))
+        incidental = sum(((1 / self._graph.calculate_inout_score(i)) * scores[i]
+                          for i in incidental_vertices))
+        new_score = (1 - self._damping_factor) + self._damping_factor * incidental
         self._scores[vertex] = new_score
 
     # Step 5.3
@@ -659,8 +647,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_by_keys = sorted(self._scores)
-        return tuple(sorted(sorted_by_keys, key=lambda x: - self._scores[x])[:n_keywords])
+        return tuple(sorted(self._scores, key=lambda x: (-self._scores[x], x))[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -720,9 +707,10 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        new_score = ((1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor
-                     * sum((1 / self._graph.calculate_inout_score(incidental)) * scores[incidental]
-                           for incidental in incidental_vertices))
+        incidental = sum((1 / self._graph.calculate_inout_score(i)) * scores[i]
+                         for i in incidental_vertices)
+        new_score = ((1 - self._damping_factor) * self._position_weights[vertex]
+                     + self._damping_factor * incidental)
         self._scores[vertex] = new_score
 
 
@@ -879,8 +867,7 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        sorted_by_keys = sorted(self._scores)
-        return tuple(sorted(sorted_by_keys, key=lambda x: - self._scores[x])[:n_keywords])
+        return tuple(sorted(self._scores, key=lambda x: (- self._scores[x], x))[:n_keywords])
 
 
 # Step 12.1
@@ -963,49 +950,36 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        algorithms = ('TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank')
-        for algorithm in algorithms:
-            self.report[algorithm] = {}
-
         for number, topic in enumerate(self.themes):
             keywords_path = self._materials_path / f'{number}_keywords.txt'
             with open(keywords_path, encoding='utf-8') as file:
                 target_keywords = tuple(file.read().split())
-
             text_path = self._materials_path / f'{number}_text.txt'
             with open(text_path, encoding='utf-8') as file:
                 text = file.read()
 
             processor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
             tfidf = TFIDFAdapter(processor.preprocess_text(text), self._idf)
-            tfidf.train()
-            self.report['TF-IDF'][topic] = calculate_recall(tfidf.get_top_keywords(50), target_keywords)
-
             encoder = TextEncoder()
             tokens = encoder.encode(processor.preprocess_text(text))
             rake = RAKEAdapter(text, self._stop_words)
-            rake.train()
-            keywords = rake.get_top_keywords(50)
-            self.report['RAKE'][topic] = calculate_recall(keywords, target_keywords)
-
             graph = EdgeListGraph()
             if not tokens:
                 return None
             graph.fill_from_tokens(tokens, 5)
             vanilla_text_rank = VanillaTextRank(graph)
-            vanilla_text_rank.train()
-            if not (decoded_keywords := encoder.decode(vanilla_text_rank.get_top_keywords(50))):
-                return None
-            self.report['VanillaTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
-
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
             positional_rank = PositionBiasedTextRank(graph)
-            positional_rank.train()
-            if not (decoded_keywords := encoder.decode(positional_rank.get_top_keywords(50))):
-                return None
-            self.report['PositionBiasedTextRank'][topic] = calculate_recall(decoded_keywords, target_keywords)
 
+            models = {'TF-IDF': tfidf, 'RAKE': rake, 'VanillaTextRank': vanilla_text_rank,
+                      'PositionBiasedTextRank': positional_rank}
+            for name, model in models.items():
+                model.train()
+                keywords = model.get_top_keywords(50)
+                if name == 'VanillaTextRank' or name == 'PositionBiasedTextRank':
+                    keywords = encoder.decode(keywords)
+                self.report.setdefault(name, {})[topic] = calculate_recall(keywords, target_keywords)
         return self.report
 
     # Step 12.4
@@ -1017,10 +991,8 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        columns = 'name,' + ','.join(tuple(self.report.values())[0])
-        with open(path, 'w') as file:
-            file.write(columns)
-            file.write('\n')
+        with open(path, 'w', encoding='utf-8', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(('name', *self.themes))
             for i in self.report:
-                file.write(','.join([i, *map(str, self.report[i].values())]))
-                file.write('\n')
+                writer.writerow((i, *self.report[i].values()))
