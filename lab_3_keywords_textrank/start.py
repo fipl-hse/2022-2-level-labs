@@ -70,9 +70,8 @@ if __name__ == "__main__":
     biased_edge = PositionBiasedTextRank(edge_list)
     biased_edge.train()
     top_biased_edge = biased_edge.get_top_keywords(10)
-    if top_biased_edge:
-        top_biased_edge = encoder.decode(top_biased_edge)
-        print(top_biased_edge)
+    top_biased_edge = encoder.decode(top_biased_edge)
+    print(top_biased_edge)
 
     RESULT = top_biased_edge
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
