@@ -746,15 +746,15 @@ class PositionBiasedTextRank(VanillaTextRank):
                 scores of all vertices in the graph
         """
         if vertex not in self._position_weights:
-            pass
+            return None
         summary = 0.0
         for i in incidental_vertices:
             inout = self._graph.calculate_inout_score(i)
             multiply1 = 1 / inout * scores[vertex]
             summary += multiply1
         multiply2 = summary * self._damping_factor
-        new_weight = multiply2 + (1 - self._damping_factor)*self._position_weights[vertex]
-        self._scores[vertex] = new_weight
+        self._scores[vertex] = multiply2 + (1 - self._damping_factor) * self._position_weights[vertex]
+        return None
 
 
 class TFIDFAdapter:
