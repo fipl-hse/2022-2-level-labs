@@ -46,7 +46,8 @@ if __name__ == "__main__":
         print(f'Extracted pairs: {extract_pairs(ENCODED_TOKENS, 3)}\n')
 
     # # steps 6, 7.2, 9.3
-    for GRAPH in AdjacencyMatrixGraph(), EdgeListGraph():
+    for GRAPH_TYPE in AdjacencyMatrixGraph(), EdgeListGraph():
+        GRAPH = GRAPH_TYPE
         GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
         GRAPH.fill_positions(ENCODED_TOKENS)
         GRAPH.calculate_position_weights()
