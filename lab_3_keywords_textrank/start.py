@@ -8,7 +8,9 @@ from lab_3_keywords_textrank.main import (TextPreprocessor,
                                           TextEncoder,
                                           extract_pairs,
                                           AdjacencyMatrixGraph,
-                                          VanillaTextRank, )
+                                          VanillaTextRank,
+                                          EdgeListGraph,
+                                          PositionBiasedTextRank)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -30,19 +32,48 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     encoded_tokens = encoder.encode(tokens)
     if encoded_tokens:
-        print(extract_pairs(encoded_tokens, 5))
+        print(extract_pairs(encoded_tokens, 3))
 
     adjacency_matrix_graph = AdjacencyMatrixGraph()
     if encoded_tokens:
-        adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 4)
+        adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
+        adjacency_matrix_graph.fill_positions(encoded_tokens)
+    adjacency_matrix_graph.calculate_position_weights()
 
     vanilla_matrix = VanillaTextRank(adjacency_matrix_graph)
     vanilla_matrix.train()
-    top_vanilla_matrix = vanilla_matrix.get_top_keywords(6)
+    top_vanilla_matrix = vanilla_matrix.get_top_keywords(10)
     if top_vanilla_matrix:
-        words = encoder.decode(top_vanilla_matrix)
-        print(words)
+        top_words = encoder.decode(top_vanilla_matrix)
+        print(top_words)
 
-    RESULT = top_vanilla_matrix
+    edge_list = EdgeListGraph()
+    if encoded_tokens:
+        edge_list.fill_from_tokens(encoded_tokens, 3)
+        edge_list.fill_positions(encoded_tokens)
+    edge_list.calculate_position_weights()
+
+    vanilla_rank = VanillaTextRank(edge_list)
+    vanilla_rank.train()
+    top_vanilla_edge = vanilla_rank.get_top_keywords(10)
+    if top_vanilla_edge:
+        top_words2 = encoder.decode(top_vanilla_edge)
+        print(top_words2)
+
+    biased_matrix = PositionBiasedTextRank(adjacency_matrix_graph)
+    biased_matrix.train()
+    top_biased_matrix = biased_matrix.get_top_keywords(10)
+    if top_biased_matrix:
+        top_words3 = encoder.decode(top_biased_matrix)
+        print(top_words3)
+
+    biased_edge = PositionBiasedTextRank(edge_list)
+    biased_edge.train()
+    top_biased_edge = biased_edge.get_top_keywords(10)
+    if top_biased_edge:
+        top_biased_edge = encoder.decode(top_biased_edge)
+        print(top_biased_edge)
+
+    RESULT = top_biased_edge
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
