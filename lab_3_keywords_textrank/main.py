@@ -987,11 +987,10 @@ class KeywordExtractionBenchmark:
         _texts_dict = {}
         file_idx = 0
         for one_file in os.listdir(self._materials_path):
-            # way_to_file = self._materials_path / one_file
             way_to_file = os.path.join(self._materials_path, one_file)
             with open(way_to_file, encoding='UTF-8') as read_file:
                 readen_file = [line.rstrip('\n') for line in read_file]
-            if 'keywords' in one_file:
+            if 'keyword' in one_file:
                 _keywords_dict[file_idx] = readen_file
             elif 'text' in one_file:
                 _texts_dict[file_idx] = '. '.join(readen_file)
@@ -1018,18 +1017,19 @@ class KeywordExtractionBenchmark:
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
             rake_adapt = RAKEAdapter(_texts_dict[theme_index], self._stop_words)
 
+            target_keywords = tuple(_keywords_dict[theme_index])
+            if not target_keywords:
+                return None
+
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
                 if method.train():
                     return None
-                top_keywords = method.get_top_keywords(50)
+                top_keywords = tuple(method.get_top_keywords(50))
                 if not top_keywords:
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                target_keywords = _keywords_dict.get(theme_index)
-                if not target_keywords:
-                    return None
-                self.report[methods_names[idx]][theme] = calculate_recall(tuple(top_keywords), tuple(target_keywords))
+                self.report[methods_names[idx]][theme] = calculate_recall(top_keywords, target_keywords)
         return self.report
 
     # Step 12.4
