@@ -56,7 +56,7 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         for i in self.punctuation:
-                text = text.replace(i, '')
+            text = text.replace(i, '')
         text = text.lower().split()
         return tuple(text)
 
@@ -205,14 +205,14 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or not isinstance(window_length, int) or window_length < 2:
         return None
     pairs = []
-    for i, token in enumerate(tokens):
+    for i, _ in enumerate(tokens):
         window = tokens[i:window_length + i]   #creating windows
         pair = list(combinations(window, 2))  #creating pairs
         pairs += pair
     iterable = pairs
     for i in iterable[::-1]:
-        x = i[::-1]
-        if x[0] == x[1] or x in pairs:
+        reverse = i[::-1]
+        if reverse[0] == reverse[1] or reverse in pairs:
             pairs.remove(i)
     pairs = tuple(set(pairs))
     return pairs
@@ -314,10 +314,9 @@ class AdjacencyMatrixGraph:
         if self._matrix[self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1 and\
             self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
             return 1
-        elif (vertex1 or vertex2) not in self._vertexes:
+        if (vertex1 or vertex2) not in self._vertexes:
             return -1
-        else:
-            return 0
+        return 0
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
