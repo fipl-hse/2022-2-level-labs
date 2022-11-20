@@ -686,7 +686,7 @@ class VanillaTextRank:
         def sort_key(item):
             key, value = item
             return -value, key
-        sorted_dict = sorted(self._scores.items(), key=sort_key, reverse=True)
+        sorted_dict = sorted(self._scores.items(), key=sort_key)
         sorted_list = []
         for i in sorted_dict:
             sorted_list.append(i[0])
