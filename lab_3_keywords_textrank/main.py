@@ -425,7 +425,6 @@ class EdgeListGraph:
         self._edges = {}
         self._positions = {}
         self._position_weights = {}
-        self._vertices = []
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -436,7 +435,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._edges.keys())
+        return tuple(self._edges)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -480,7 +479,7 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._vertices or vertex2 not in self._vertices:
+        if not (vertex1 in self._edges and vertex2 in self._edges):
             return -1
         if vertex2 in self._edges[vertex1]:
             return 1
@@ -517,7 +516,7 @@ class EdgeListGraph:
                 if they appear in the same window of this length
         """
         for pair in extract_pairs(tokens, window_length):
-            self.add_edge(pair[0], pair[1])
+            self.add_edge(*pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -659,7 +658,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
+        sorted_by_key = sorted(self._scores)
+        return tuple(sorted(sorted_by_key, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -719,9 +719,8 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        self._scores[vertex] = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * sum(
-            1 / self._graph.calculate_inout_score(elem) * scores[elem] for elem in incidental_vertices)
-
+        self._scores[vertex] = ((1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * \
+            sum(1 / self._graph.calculate_inout_score(elem) * scores[elem] for elem in incidental_vertices))
 
 class TFIDFAdapter:
     """
