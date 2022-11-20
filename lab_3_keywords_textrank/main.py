@@ -57,8 +57,8 @@ class TextPreprocessor:
         """
         for i in self.punctuation:
             text = text.replace(i, '')
-        text = text.lower().split()
-        return tuple(text)
+        tokens = text.lower().split()
+        return tuple(tokens)
 
 
     # Step 1.3
@@ -204,18 +204,18 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not tokens or not isinstance(window_length, int) or window_length < 2:
         return None
-    pairs = []
-    for i, _ in enumerate(tokens):
+    full_list = []
+    for i in range(len(tokens)):
         window = tokens[i:window_length + i]   #creating windows
-        pair = list(combinations(window, 2))  #creating pairs
-        pairs += pair
-    iterable = pairs
-    for i in iterable[::-1]:
-        reverse = i[::-1]
-        if reverse[0] == reverse[1] or reverse in pairs:
-            pairs.remove(i)
-    pairs = tuple(set(pairs))
-    return pairs
+        pairs = list(combinations(window, 2))  #creating pairs
+        full_list += pairs
+    iterable = full_list
+    for pair in iterable[::-1]:
+        reverse = pair[::-1]
+        if reverse[0] == reverse[1] or reverse in full_list:
+            full_list.remove(pair)
+    final = tuple(set(full_list))
+    return final
 
 
 class AdjacencyMatrixGraph:
@@ -631,7 +631,7 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summary = 0
+        summary = 0.0
         for i in incidental_vertices:
             inout = self._graph.calculate_inout_score(i)
             multiply1 = 1/inout * scores[vertex]
@@ -745,7 +745,9 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summary = 0
+        if vertex not in self._position_weights:
+            return None
+        summary = 0.0
         for i in incidental_vertices:
             inout = self._graph.calculate_inout_score(i)
             multiply1 = 1 / inout * scores[vertex]
