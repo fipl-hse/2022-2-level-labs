@@ -686,7 +686,10 @@ class VanillaTextRank:
         def sort_key(item):
             key, value = item
             return value, -key
-        sorted_list = sorted(self._scores.items(), key=sort_key)
+        sorted_dict = sorted(self._scores.items(), key=sort_key)
+        sorted_list = []
+        for i in sorted_dict:
+            sorted_list.append(i[0])
         top = sorted_list[:n_keywords]
         return tuple(top)
 
