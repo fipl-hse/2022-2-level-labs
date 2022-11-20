@@ -341,9 +341,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._matrix[0]:
             return -1
-        else:
-            index = self._matrix[0].index(vertex)+1
-            summa = sum(self._matrix[index][1:])
+        index = self._matrix[0].index(vertex)+1
+        summa = sum(self._matrix[index][1:])
         return summa
 
     # Step 4.6
@@ -500,8 +499,7 @@ class EdgeListGraph:
             return -1
         if vertex2 in self._edges[vertex1]:
             return 1
-        else:
-            return 0
+        return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
