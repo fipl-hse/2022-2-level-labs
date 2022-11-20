@@ -152,10 +152,8 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        idx_of_words = []
-        for word in tokens:
-            idx_of_words.append(self._word2id[word])
-        return tuple(idx_of_words)
+        encoded_tokens = tuple(self._word2id.values())
+        return encoded_tokens
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
