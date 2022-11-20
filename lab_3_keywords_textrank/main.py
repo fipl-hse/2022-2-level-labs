@@ -219,7 +219,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                 if pair not in pairs and pair:
                     pair.sort()
                     pairs.append(tuple(pair))
-    return tuple(pairs)
+
+    return tuple(sorted(pairs))
 
 
 class AdjacencyMatrixGraph:
