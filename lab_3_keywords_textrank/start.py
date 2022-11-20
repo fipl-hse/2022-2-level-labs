@@ -52,15 +52,17 @@ if __name__ == "__main__":
     biased_rank = PositionBiasedTextRank(adjacency_matrix)
     biased_rank.train()
     top_biased_matrix = biased_rank.get_top_keywords(10)
-    result_of_adj_matrix = encoder.decode(top_biased_matrix)
-    print(result_of_adj_matrix)
+    if top_biased_matrix:
+        result_of_adj_matrix = encoder.decode(top_biased_matrix)
+        print(result_of_adj_matrix)
 
     biased_edge = PositionBiasedTextRank(edge_graph)
     biased_edge.train()
     top_biased_edge = biased_edge.get_top_keywords(10)
-    result_of_edge_graph = encoder.decode(top_biased_edge)
-    print(result_of_edge_graph)
+    if top_biased_edge:
+        result_of_edge_graph = encoder.decode(top_biased_edge)
+        print(result_of_edge_graph)
 
-    RESULT = decoded_10_vanilla_rank, result_of_adj_matrix, result_of_edge_graph
+    RESULT = decoded_10_vanilla_rank
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
