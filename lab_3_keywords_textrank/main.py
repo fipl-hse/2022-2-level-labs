@@ -598,7 +598,7 @@ class VanillaTextRank:
             sum_list.append(1 / inout_score * self._scores[vert])
         summa = sum(sum_list)
         vertex_score = (1 - self._damping_factor) + self._damping_factor * summa
-        scores[vertex] = vertex_score
+        self._scores[vertex] = vertex_score
 
 
     # Step 5.3
@@ -644,7 +644,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores.keys(), reverse=True, key=lambda word: self._scores[word]))[:n_keywords]
+        return tuple(sorted(self._scores, reverse=True, key=lambda word: self._scores[word])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
