@@ -66,7 +66,7 @@ if __name__ == "__main__":
     TOP_10_EDGE_BIASED = encoder.decode(top_edge_biased)
     print(TOP_10_EDGE_BIASED)
 
-    RESULT = TOP_10_EDGE_BIASED
+    RESULT = TOP_10_ADJ_BIASED
 
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
