@@ -989,11 +989,11 @@ class KeywordExtractionBenchmark:
         for one_file in os.listdir(self._materials_path):
             way_to_file = os.path.join(self._materials_path, one_file)
             with open(way_to_file, encoding='UTF-8') as read_file:
-                readen_file = [line.rstrip('\n') for line in read_file]
+                readen_file = read_file.read().strip()
                 if 'keyword' in one_file:
-                    _keywords_dict[file_idx] = readen_file
+                    _keywords_dict[file_idx] = readen_file.split()
                 elif 'text' in one_file:
-                    _texts_dict[file_idx] = '. '.join(readen_file)
+                    _texts_dict[file_idx] = readen_file
                     file_idx += 1
         for one_method in methods_names:
             self.report[one_method] = {}
@@ -1017,7 +1017,7 @@ class KeywordExtractionBenchmark:
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
             rake_adapt = RAKEAdapter(_texts_dict[theme_index], self._stop_words)
 
-            target_keywords = _keywords_dict[theme_index]
+            target_keywords = _keywords_dict.get(theme_index)
             if not target_keywords:
                 return None
 
