@@ -636,7 +636,7 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        total = 0
+        total = 0.0
         for i in incidental_vertices:
             updated_scores = self._graph.calculate_inout_score(i)
             total += 1 / abs(updated_scores) * scores[i]

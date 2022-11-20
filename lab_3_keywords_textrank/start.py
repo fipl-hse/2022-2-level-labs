@@ -26,18 +26,16 @@ if __name__ == "__main__":
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     preprocessed_text = preprocessor.preprocess_text(text)
     encoder = TextEncoder()
-    ids_tokens = encoder.encode(preprocessed_text)
-    token_ids = encoder.decode(ids_tokens)
-
+    token_ids = encoder.encode(preprocessed_text)
     if token_ids:
-        pairs = extract_pairs(ids_tokens, 3)
+        pairs = extract_pairs(token_ids, 3)
         print(pairs)
 
     adjacency_matrix = AdjacencyMatrixGraph()
     edge_graph = EdgeListGraph()
     if token_ids:
-        adjacency_matrix.fill_from_tokens(ids_tokens, 3)
-        adjacency_matrix.fill_positions(ids_tokens)
+        adjacency_matrix.fill_from_tokens(token_ids, 3)
+        adjacency_matrix.fill_positions(token_ids)
         adjacency_matrix.calculate_position_weights()
 
     vanilla_rank = VanillaTextRank(adjacency_matrix)
