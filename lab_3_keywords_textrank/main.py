@@ -987,7 +987,8 @@ class KeywordExtractionBenchmark:
         _texts_dict = {}
         file_idx = 0
         for one_file in os.listdir(self._materials_path):
-            way_to_file = self._materials_path / one_file
+            # way_to_file = self._materials_path / one_file
+            way_to_file = os.path.join(self._materials_path, one_file)
             with open(way_to_file, encoding='UTF-8') as read_file:
                 readen_file = [line.rstrip('\n') for line in read_file]
             if 'keywords' in one_file:
