@@ -1025,7 +1025,7 @@ class KeywordExtractionBenchmark:
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                target_keywords = _keywords_dict.get(theme_index, 0)
+                target_keywords = _keywords_dict.get(theme_index)
                 if not target_keywords:
                     return None
                 self.report[methods_names[idx]][theme] = calculate_recall(tuple(top_keywords), tuple(target_keywords))
