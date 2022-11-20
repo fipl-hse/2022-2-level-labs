@@ -746,7 +746,7 @@ class PositionBiasedTextRank(VanillaTextRank):
                 scores of all vertices in the graph
         """
         if vertex not in self._position_weights:
-            return None
+            pass
         summary = 0.0
         for i in incidental_vertices:
             inout = self._graph.calculate_inout_score(i)
