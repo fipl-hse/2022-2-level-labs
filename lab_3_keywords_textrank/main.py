@@ -368,8 +368,8 @@ class AdjacencyMatrixGraph:
         """
         weights = {}
         for vertex in self._positions:
-            pv = sum(1 / i for i in self._positions[vertex])
-            weights[vertex] = pv
+            positional_weight = sum(1 / i for i in self._positions[vertex])
+            weights[vertex] = positional_weight
         pv_sum = sum(weights.values())
         for vertex in weights:
             self._position_weights[vertex] = weights[vertex] / pv_sum
@@ -539,8 +539,8 @@ class EdgeListGraph:
         vertexes = self._positions.keys()
         weights = {}
         for vertex in vertexes:
-            pv = sum(1 / i for i in self._positions[vertex])
-            weights[vertex] = pv
+            positional_weight = sum(1 / i for i in self._positions[vertex])
+            weights[vertex] = positional_weight
         pv_sum = sum(weights.values())
         for position in weights:
             self._position_weights[position] = weights[position] / pv_sum
