@@ -332,8 +332,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._vertices:
             return -1
-        else:
-            return sum(self._matrix[self._vertices.index(vertex)])
+        return sum(self._matrix[self._vertices.index(vertex)])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -455,11 +454,15 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
+
         for vertex in [vertex1, vertex2]:
             if vertex not in self._edges:
                 self._edges[vertex] = []
-        self._edges[vertex1].append(vertex2)
-        self._edges[vertex2].append(vertex1)
+
+        if vertex1 not in self._edges[vertex2]:
+            self._edges[vertex2].append(vertex1)
+        if vertex2 not in self._edges[vertex1]:
+            self._edges[vertex1].append(vertex2)
         return 0
 
 
@@ -593,10 +596,10 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
+        self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
         self._max_iter = 50
-        self._graph = graph
         self._scores = {}
 
     # Step 5.2
