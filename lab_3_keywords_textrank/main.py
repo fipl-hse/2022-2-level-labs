@@ -875,8 +875,12 @@ class RAKEAdapter:
         word_degrees = calculate_word_degrees(candidate_kwp, list(freqs.keys()))
         if not word_degrees or not freqs:
             return -1
-        self._scores = calculate_word_scores(word_degrees, freqs)
-        return 0 if self._scores else -1
+        word_scores = calculate_word_scores(word_degrees, freqs)
+        if word_scores:
+            for score in word_scores:
+                self._scores[score] = word_scores[score]
+            return 0 if self._scores else -1
+        return -1
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -892,9 +896,8 @@ class RAKEAdapter:
                 a requested number tokens with the highest importance scores
         """
         scores_sort = sorted(self._scores.items(), key=lambda f: f[0])
-        scores_sort2 = sorted(scores_sort, key=lambda s: s[1], reverse=True)
-        return tuple(pair[0] for pair in scores_sort2)[:n_keywords]
-
+        score_sort2 = sorted(scores_sort, key=lambda s: s[1], reverse=True)
+        return tuple(score[0] for score in score_sort2)[:n_keywords]
 
 # Step 12.1
 def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> float:
@@ -981,13 +984,13 @@ class KeywordExtractionBenchmark:
         list_of_files = list(self._material_path.iterdir())[:-2]
         counter = {'TF-IDF': [], 'RAKE': [], 'VanillaTextRank': [], 'PositionBiasedTextRank': []}
         for idx, file in enumerate(list_of_files):
-            if idx > len(self.themes) * 2:
+            if idx > len(self.themes) * 2 - 1:
                 break
             if idx % 2 == 0:
                 with open(file, 'r', encoding='utf-8') as kw_file:
-                    keywords = tuple(kw_file.read().split('\n'))
+                    keywords = tuple(kw_file.read().strip().split())
                 with open(list_of_files[idx + 1], 'r', encoding='utf-8') as text_file:
-                    text = text_file.read()
+                    text = text_file.read().strip()
                 text_to_clean = TextPreprocessor(self._stop_words, self._punctuation)
                 preprocessed_text = text_to_clean.preprocess_text(text)
                 if not preprocessed_text:
@@ -999,7 +1002,7 @@ class KeywordExtractionBenchmark:
                 if not train1_result:
                     return None
                 tfidf_recall = calculate_recall(train1_result, keywords)
-                if not tfidf_recall:
+                if tfidf_recall is None:
                     return None
                 counter['TF-IDF'].append(tfidf_recall)
 
@@ -1009,7 +1012,7 @@ class KeywordExtractionBenchmark:
                 if not train2_result:
                     return None
                 rake_recall = calculate_recall(train2_result, keywords)
-                if not rake_recall:
+                if rake_recall is None:
                     return None
                 counter['RAKE'].append(rake_recall)
 
@@ -1031,7 +1034,7 @@ class KeywordExtractionBenchmark:
                 if not train3_result_decode:
                     return None
                 vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
-                if not vanilla_tr_recall:
+                if vanilla_tr_recall is None:
                     return None
                 counter['VanillaTextRank'].append(vanilla_tr_recall)
 
@@ -1050,7 +1053,7 @@ class KeywordExtractionBenchmark:
                 if not train4_result_decode:
                     return None
                 position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
-                if not position_biased_tr_recall:
+                if position_biased_tr_recall is None:
                     return None
                 counter['PositionBiasedTextRank'].append(position_biased_tr_recall)
         for method in self._report:
