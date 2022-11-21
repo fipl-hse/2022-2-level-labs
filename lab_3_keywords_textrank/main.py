@@ -1028,7 +1028,8 @@ class KeywordExtractionBenchmark:
 
             for method in self.report:
                 for keywords_method in keywords_tfidf, keywords_rake, keywords_text_rank, keywords_bias:
-                    self.report[method][theme] = calculate_recall(keywords_method, keywords)
+                    if keywords_method:
+                        self.report[method][theme] = calculate_recall(keywords_method, keywords)
         return self.report
 
     # Step 12.4
