@@ -49,13 +49,13 @@ if __name__ == "__main__":
         print(extract_pairs(encoded_tokens, 5))
 
     #   mark 6: extract keywords with AdjacencyMatrixGraph using VanillaTextRank
-    adjacency_graph = AdjacencyMatrixGraph()
-    if encoded_tokens:
-        adjacency_graph.fill_from_tokens(encoded_tokens, 5)
-    text_rank_adj = VanillaTextRank(adjacency_graph)
-    text_rank_adj.train()
-    top_keywords_adj = text_rank_adj.get_top_keywords(10)
-    print(encoded_top_adj := encoder.decode(top_keywords_adj))
+    # adjacency_graph = AdjacencyMatrixGraph()
+    # if encoded_tokens:
+    #     adjacency_graph.fill_from_tokens(encoded_tokens, 5)
+    # text_rank_adj = VanillaTextRank(adjacency_graph)
+    # text_rank_adj.train()
+    # top_keywords_adj = text_rank_adj.get_top_keywords(10)
+    # print(encoded_top_adj := encoder.decode(top_keywords_adj))
 
     #   mark 8: extract keywords with EdgeListGraph using VanillaTextRank
     edge_list = EdgeListGraph()
@@ -67,13 +67,13 @@ if __name__ == "__main__":
     print(encoded_top_edge := encoder.decode(top_keywords_edge))
 
     #   mark 8: extract keywords with AdjacencyMatrixGraph using PositionBiasedTextRank
-    if encoded_tokens:
-        adjacency_graph.fill_positions(encoded_tokens)
-    adjacency_graph.calculate_position_weights()
-    bias_text_rank_adj = PositionBiasedTextRank(adjacency_graph)
-    bias_text_rank_adj.train()
-    top_keywords_adj_bias = bias_text_rank_adj.get_top_keywords(10)
-    print(encoded_top_adj_pos_bias := encoder.decode(top_keywords_adj_bias))
+    # if encoded_tokens:
+    #     adjacency_graph.fill_positions(encoded_tokens)
+    # adjacency_graph.calculate_position_weights()
+    # bias_text_rank_adj = PositionBiasedTextRank(adjacency_graph)
+    # bias_text_rank_adj.train()
+    # top_keywords_adj_bias = bias_text_rank_adj.get_top_keywords(10)
+    # print(encoded_top_adj_pos_bias := encoder.decode(top_keywords_adj_bias))
 
     #   mark 8: extract keywords with EdgeListGraph using PositionBiasedTextRank
     if encoded_tokens:
@@ -90,8 +90,8 @@ if __name__ == "__main__":
                                            idf,
                                            BENCHMARK_MATERIALS_PATH)
     benchmark.run()
-    benchmark.save_to_csv(PROJECT_ROOT / 'assets')
+    benchmark.save_to_csv(PROJECT_ROOT / 'report.csv')
 
-    RESULT = 'hi'
+    RESULT = benchmark.report
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

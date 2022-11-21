@@ -977,8 +977,8 @@ class KeywordExtractionBenchmark:
         self._punctuation = punctuation
         self._idf = idf
         self._materials_path = materials_path
-        self._themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
-        self._report = {}
+        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -990,11 +990,11 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        self._report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
+        self.report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
         preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
         encoder = TextEncoder()
 
-        for ind, theme in enumerate(self._themes):
+        for ind, theme in enumerate(self.themes):
             with open(self._materials_path / f'{ind}_text.txt', 'r',  encoding='utf-8') as file:
                 text = file.read()
             with open(self._materials_path / f'{ind}_keywords.txt', 'r',  encoding='utf-8') as file:
@@ -1023,11 +1023,11 @@ class KeywordExtractionBenchmark:
             keywords_text_rank = encoder.decode(text_rank.get_top_keywords(50))
             keywords_bias = encoder.decode(text_rank_bias.get_top_keywords(50))
 
-            self._report['TF-IDF'][theme] = calculate_recall(keywords_tfidf, keywords)
-            self._report['RAKE'][theme] = calculate_recall(keywords_rake, keywords)
-            self._report['VanillaTextRank'][theme] = calculate_recall(keywords_text_rank, keywords)
-            self._report['PositionBiasedTextRank'][theme] = calculate_recall(keywords_bias, keywords)
-        return self._report
+            self.report['TF-IDF'][theme] = calculate_recall(keywords_tfidf, keywords)
+            self.report['RAKE'][theme] = calculate_recall(keywords_rake, keywords)
+            self.report['VanillaTextRank'][theme] = calculate_recall(keywords_text_rank, keywords)
+            self.report['PositionBiasedTextRank'][theme] = calculate_recall(keywords_bias, keywords)
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1040,6 +1040,6 @@ class KeywordExtractionBenchmark:
         """
         with open(path, 'w') as csv_file:
             csv_file = csv.writer(csv_file)
-            csv_file.writerow(['name'] + list(self._themes))
-            for k in self._report:
-                csv_file.writerow([k] + [self._report[k][theme] for theme in self._report[k]])
+            csv_file.writerow(['name'] + list(self.themes))
+            for k in self.report:
+                csv_file.writerow([k] + [self.report[k][theme] for theme in self.themes])
