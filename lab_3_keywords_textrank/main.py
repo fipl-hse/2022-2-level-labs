@@ -3,7 +3,7 @@ Lab 3
 Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
-from typing import Optional
+from typing import Optional, Union
 from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calculate_tfidf
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
@@ -130,14 +130,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        if not self._word2id:
-            first_number = 1001
-        else:
-            first_number = max(self._word2id.values()) + 1
-
-        for ind, element in enumerate(tokens):
-            self._word2id = {element: ind + first_number}
-            self._id2word = {ind + first_number: element}
+        for index, item in enumerate(tokens, start=1000):
+            self._word2id[item] = index
+            self._id2word[index] = item
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -172,13 +167,11 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        if not encoded_tokens:
-            return None
-        for token in encoded_tokens:
-            if token not in self._id2word.keys():
+        for index in encoded_tokens:
+            if index not in self._id2word.keys():
                 return None
-        tokens_list = [self._id2word[key] for token in encoded_tokens for key in self._id2word if token == key]
-        return tuple(tokens_list)
+        return tuple(self._id2word[token] for token in encoded_tokens)
+
 
 
 
@@ -202,19 +195,19 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    if not tokens or not isinstance(window_length, int) or window_length < 2:
+    if not tokens or not isinstance(window_length, int) or window_length <= 2:
         return None
     final = []
-    tokens_list = list(tokens)
-    for a in range(len(tokens)):
-        window_tokens = tokens_list[a:window_length + a]
-        for b in window_tokens:
-            for k in window_tokens:
-                if (b, k) in final or (k, b) in final:
+    list_of_tokens = list(tokens)
+    for token in range(len(tokens)):
+        window = list_of_tokens[token: token + window_length]
+        for index1 in window:
+            for index2 in window:
+                if index1 == index2:
                     continue
-                if not b == k:
-                    pair = tuple([b, k])
-                    final.append(pair)
+                if ((index1, index2) or (index2, index1)) not in list_of_tokens:
+                    pair = tuple([index1, index2])
+                    final.append(final)
     return tuple(final)
 
 
@@ -258,6 +251,7 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = [[]]
+        self._vertices = []
         self._positions = {}
         self._position_weights = {}
 
@@ -280,20 +274,14 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         for vertex in vertex1, vertex2:
-            if vertex not in self._matrix[0]:
-                self._matrix[0].append(vertex)
-                self._matrix.append([vertex])
-        for a in self._matrix:
-            if a == self._matrix[0]:
+            if vertex in self._vertices:
                 continue
-            for _ in self._matrix[0]:
-                if len(a) > len(self._matrix[0]):
-                    break
-                a.append(0)
-            for b in range(len(self._matrix[0])):
-                if (a[0] == vertex1 and self._matrix[0][b] == vertex2) or (
-                        self._matrix[0][b] == vertex1 and a[0] == vertex2):
-                    a[b + 1] = 1
+            self._vertices.append(vertex)
+            for i in self._matrix:
+                i.append(0)
+            self._matrix.append([0 for _ in self._vertices])
+        index1, index2 = self._vertices.index(vertex1), self._vertices.index(vertex2)
+        self._matrix[index1][index2] = self._matrix[index2][index1] = 1
         return 0
 
     # Step 4.3
@@ -441,7 +429,7 @@ class EdgeListGraph:
         self._edges = {}
         self._positions = {}
         self._position_weights = {}
-        self._vertices = []
+
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -453,7 +441,6 @@ class EdgeListGraph:
                 a sequence of vertices present in the graph
         """
         return tuple(self._edges.keys())
-
 
 
     # Step 7.2
@@ -474,11 +461,15 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
+
         for vertex in [vertex1, vertex2]:
             if vertex not in self._edges:
                 self._edges[vertex] = []
-        self._edges[vertex1].append(vertex2)
-        self._edges[vertex2].append(vertex1)
+
+        if vertex1 not in self._edges[vertex2]:
+            self._edges[vertex2].append(vertex1)
+        if vertex2 not in self._edges[vertex1]:
+            self._edges[vertex1].append(vertex2)
         return 0
 
     # Step 7.2
@@ -497,7 +488,7 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._vertices or vertex2 not in self._vertices:
+        if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
         if vertex2 in self._edges[vertex1]:
             return 1
@@ -534,7 +525,7 @@ class EdgeListGraph:
                 if they appear in the same window of this length
         """
         for pair in extract_pairs(tokens, window_length):
-            self.add_edge(pair[0], pair[1])
+            self.add_edge(*pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -558,7 +549,6 @@ class EdgeListGraph:
         sum_dictionary = sum(dictionary.values())
         for vertex in self._positions:
             self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
-
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
         """
@@ -642,7 +632,19 @@ class VanillaTextRank:
             dict[int, float]:
                 scores for all vertices present in the graph
         """
-        pass
+        vertices = self._graph.get_vertices()
+        for vertex in vertices:
+            self._scores[vertex] = 1.0
+
+        for _ in range(0, self._max_iter):
+            prev_score = self._scores.copy()
+            for scored_vertex in vertices:
+                incidental_vertices = [vertex for vertex in vertices
+                                       if self._graph.is_incidental(scored_vertex, vertex) == 1]
+                self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
+            abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
+            if sum(abs_score_diff) <= self._convergence_threshold:
+                break
 
     # Step 5.4
     def get_scores(self) -> dict[int, float]:
