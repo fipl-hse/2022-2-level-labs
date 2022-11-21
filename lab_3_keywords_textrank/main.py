@@ -961,7 +961,10 @@ class KeywordExtractionBenchmark:
         self._stop_words = stop_words
         self._punctuation = punctuation
         self._idf = idf
-        self._materials_path = materials_path
+        if 'benchmark_materials' in str(materials_path):
+            self._materials_path = materials_path
+        else:
+            self._materials_path = materials_path / 'benchmark_materials'
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self._themes_id = {'culture': 0, 'business': 1, 'crime': 2, 'fashion': 3, 'health': 4, 'politics': 5,
                            'science': 6, 'sports': 7, 'tech': 8}
@@ -980,15 +983,14 @@ class KeywordExtractionBenchmark:
         methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
         _keywords_dict = {}
         _texts_dict = {}
-        list_of_files = os.listdir(self._materials_path)[:-2]
-        for one_file in list_of_files:
+        for one_file in os.listdir(self._materials_path)[:-2]:
             file_idx = int(one_file[0])
             way_to_file = os.path.join(self._materials_path, one_file)
             with open(way_to_file, encoding='UTF-8') as read_file:
                 readen_file = read_file.read().strip()
             if 'keyword' in one_file:
                 _keywords_dict[file_idx] = readen_file.split()
-                print(_keywords_dict)
+                print(_keywords_dict[file_idx])
             elif 'text' in one_file:
                 _texts_dict[file_idx] = readen_file
                 #file_idx += 1
