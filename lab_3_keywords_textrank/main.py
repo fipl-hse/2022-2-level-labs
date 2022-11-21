@@ -56,7 +56,8 @@ class TextPreprocessor:
         for symbol in text:
             if symbol not in self._punctuation:
                 clean_text += symbol
-        return tuple(" ".join(clean_text).lower().split())
+        tokens = tuple(" ".join(clean_text).lower().split())
+        return tokens
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -71,9 +72,13 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        words = []
+        for token in tokens:
+            if token not in self._stop_words:
+                words += token
+        return tuple(words)
 
-    # Step 1.4
+        # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
         """
         Produces filtered clean lowercase tokens from raw text
@@ -86,7 +91,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        tokens = self._clean_and_tokenize(text)
+        return self._remove_stop_words(tokens)
 
 
 class TextEncoder:
@@ -114,7 +120,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -125,7 +132,13 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        list_of_tokens = []
+        for token in tokens:
+            if token not in list_of_tokens:
+                list_of_tokens += token
+        for index, token in enumerate(list_of_tokens, start=1000):
+            self._word2id[token] = index
+            self._id2word[index] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -141,7 +154,13 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        for token in tokens:
+            tokens = tuple(self._word2id[token])
+        encoded_tokens = tokens
+        return encoded_tokens
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -157,7 +176,14 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        for number in encoded_tokens:
+            if number not in self._id2word.keys():
+                return None
+        list_of_words = []
+        for number in encoded_tokens:
+            list_of_words += self._id2word[number]
+        list_of_words = tuple(list_of_words)
+        return list_of_words
 
 
 # Step 3
@@ -178,7 +204,21 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not tokens or not isinstance(window_length, int) or window_length < 2:
+        return None
+    list_of_tokens = list(tokens)
+    list_of_pairs = []
+    for token in range(len(tokens)):
+        window = list_of_tokens[token: token + window_length]
+        for first_index in window:
+            for second_index in window:
+                if first_index == second_index:
+                    continue
+                if ((first_index, second_index) or (second_index, first_index)) not in list_of_tokens:
+                    new_pair = tuple([first_index, second_index])
+                    list_of_pairs.append(new_pair)
+    return tuple(list_of_pairs)
+
 
 
 class AdjacencyMatrixGraph:
