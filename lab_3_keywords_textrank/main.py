@@ -820,7 +820,10 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords))
+        top_keywords = get_top_n(self._scores, n_keywords)
+        if not top_keywords:
+            return ()
+        return tuple(top_keywords)
 
 
 class RAKEAdapter:
@@ -1037,7 +1040,7 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        with open(path, 'w') as csv_file:
+        with open(path, 'w', newline='') as csv_file:
             csv_file = csv.writer(csv_file)
             csv_file.writerow(['name'] + list(self.themes))
             for k in self.report:
