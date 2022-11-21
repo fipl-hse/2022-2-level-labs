@@ -51,12 +51,16 @@ if __name__ == "__main__":
     print(decoded10_edge)
 
     position_graph1 = PositionBiasedTextRank(graph)
+    graph.fill_positions(tokens)
+    graph.calculate_position_weights()
     position_graph1.train()
     top_10_adj2 = position_graph1.get_top_keywords(10)
     decoded10_adj2 = encoded.decode(top_10_adj2)
     print(decoded10_adj2)
 
     position_graph2 = PositionBiasedTextRank(edge_list_graph)
+    graph.fill_positions(tokens)
+    graph.calculate_position_weights()
     position_graph2.train()
     top_10_edge2 = position_graph2.get_top_keywords(10)
     decoded10_edge2 = encoded.decode(top_10_edge2)

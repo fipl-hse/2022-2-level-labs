@@ -714,7 +714,6 @@ class PositionBiasedTextRank(VanillaTextRank):
             a graph representing the text
         """
         super().__init__(graph)
-        graph.calculate_position_weights()
         self._position_weights = graph.get_position_weights()
 
     # Step 9.2
