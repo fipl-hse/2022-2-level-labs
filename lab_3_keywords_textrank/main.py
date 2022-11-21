@@ -254,6 +254,21 @@ class AdjacencyMatrixGraph:
         self._positions = {}
         self._position_weights = {}
 
+    def fill_matrix(self, vertex: int) -> None:
+        """
+        Fills the matrix with a sufficient number of zeros
+        Parameters:
+        -----------
+            vertex : int
+                the vertex for which the matrix need to be filled
+        """
+        if vertex not in self._vertexes:
+            self._vertexes[vertex] = self._id_vertex
+            self._matrix.append([0 for i in range(self._id_vertex + 1)])
+            for i in range(self._id_vertex):
+                self._matrix[i].append(0)
+            self._id_vertex += 1
+
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
@@ -273,12 +288,7 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         for one_vert in vertex1, vertex2:
-            if one_vert not in self._vertexes:
-                self._vertexes[one_vert] = self._id_vertex
-                self._matrix.append([0 for i in range(self._id_vertex+1)])
-                for i in range(self._id_vertex):
-                    self._matrix[i].append(0)
-                self._id_vertex += 1
+            self.fill_matrix(one_vert)
         self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]] = 1
         self._matrix[self._vertexes[vertex2]][self._vertexes[vertex1]] = 1
         return 0
