@@ -51,22 +51,22 @@ if __name__ == "__main__":
     print(decoded10_edge)
 
     if isinstance(tokens, tuple):
-        position_graph1 = PositionBiasedTextRank(graph)
         graph.fill_positions(tokens)
         graph.calculate_position_weights()
-        position_graph1.train()
-        top_10_adj2 = position_graph1.get_top_keywords(10)
-        decoded10_adj2 = encoded.decode(top_10_adj2)
-        print(decoded10_adj2)
+    position_graph1 = PositionBiasedTextRank(graph)
+    position_graph1.train()
+    top_10_adj2 = position_graph1.get_top_keywords(10)
+    decoded10_adj2 = encoded.decode(top_10_adj2)
+    print(decoded10_adj2)
 
     if isinstance(tokens, tuple):
-        position_graph2 = PositionBiasedTextRank(edge_list_graph)
-        graph.fill_positions(tokens)
-        graph.calculate_position_weights()
-        position_graph2.train()
-        top_10_edge2 = position_graph2.get_top_keywords(10)
-        decoded10_edge2 = encoded.decode(top_10_edge2)
-        print(decoded10_edge2)
+        edge_list_graph.fill_positions(tokens)
+        edge_list_graph.calculate_position_weights()
+    position_graph2 = PositionBiasedTextRank(edge_list_graph)
+    position_graph2.train()
+    top_10_edge2 = position_graph2.get_top_keywords(10)
+    decoded10_edge2 = encoded.decode(top_10_edge2)
+    print(decoded10_edge2)
 
     RESULT = decoded10_edge2
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
