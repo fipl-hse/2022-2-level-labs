@@ -357,8 +357,10 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for index, word in enumerate(tokens):
-            self._positions[word] = self._positions.get(index, []) + [index + 1]
+        for index, token in enumerate(tokens):
+            if token not in self._positions:
+                self._positions[token] = []
+            self._positions[token].append(index + 1)
 
 
 
@@ -759,7 +761,7 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+
 
     # Step 10.2
     def train(self) -> int:
