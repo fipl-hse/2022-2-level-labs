@@ -45,25 +45,30 @@ if __name__ == "__main__":
     if ENCODED_TOKENS:
         print(f'Extracted pairs: {extract_pairs(ENCODED_TOKENS, 3)}\n')
 
+    # # steps 6, 7.2, 9.3
+    # for GRAPH in AdjacencyMatrixGraph(), EdgeListGraph():
+    #     GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
+    #     GRAPH.fill_positions(ENCODED_TOKENS)
+    #     GRAPH.calculate_position_weights()
+    #     print(f'The graph is {GRAPH.__class__.__name__}.', end=' ')
+
     ADJ_GRAPH = AdjacencyMatrixGraph()
     EDJ_GRAPH = EdgeListGraph()
-
-    # # steps 6, 7.2, 9.3
     for GRAPH in ADJ_GRAPH, EDJ_GRAPH:
         GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
         GRAPH.fill_positions(ENCODED_TOKENS)
         GRAPH.calculate_position_weights()
-        print(f'The graph is {GRAPH.__class__.__name__}.', end=' ')
 
-        for TEXTRANK in VanillaTextRank(GRAPH), PositionBiasedTextRank(GRAPH):
-            print(f'The textrank algorithm is {TEXTRANK.__class__.__name__}.', end=' ')
-            time_start = process_time()
-            TEXTRANK.train()
-            TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
-            TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
-            time_stop = process_time()
-            print(f'Elapsed in {time_stop - time_start} seconds.')
-            print(f'Top tokens: {TOP_DECODED_TOKENS}\n')
+    for TEXTRANK in (VanillaTextRank(ADJ_GRAPH), VanillaTextRank(EDJ_GRAPH),
+                     PositionBiasedTextRank(ADJ_GRAPH), PositionBiasedTextRank(EDJ_GRAPH)):
+        print(f'The textrank algorithm is {TEXTRANK.__class__.__name__}.', end=' ')
+        time_start = process_time()
+        TEXTRANK.train()
+        TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
+        TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
+        time_stop = process_time()
+        print(f'Elapsed in {time_stop - time_start} seconds.')
+        print(f'Top tokens: {TOP_DECODED_TOKENS}\n')
 
     # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
 
