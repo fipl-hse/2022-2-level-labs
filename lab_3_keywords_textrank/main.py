@@ -247,7 +247,8 @@ class AdjacencyMatrixGraph:
         self._matrix = []
         self._positions = {}
         self._position_weights = {}
-        self._list_of_vertexes = []
+        self._list_of_vertices = []
+        self._vertices = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -267,18 +268,18 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        vertexes = [vertex1, vertex2]
-        for i in vertexes:
-            if i not in self._list_of_vertexes:
-                self._list_of_vertexes.append(i)
+        vertices = [vertex1, vertex2]
+        for i in vertices:
+            if i not in self._list_of_vertices:
+                self._list_of_vertices.append(i)
                 self._matrix.append([0])
-        for count in range(len(self._list_of_vertexes)):
-            while len(self._list_of_vertexes) != len(self._matrix[count]):
+        for count in range(len(self._list_of_vertices)):
+            while len(self._matrix[count]) <= len(self._list_of_vertices):
                 self._matrix[count].append(0)
-        for i in vertexes:
-            for count, value in enumerate(self._list_of_vertexes):
-                if (i and value) in vertexes and i != value:
-                    self._matrix[self._list_of_vertexes.index(i)][count] = 1
+        v1_ind = self._list_of_vertices.index(vertex1)
+        v2_ind = self._list_of_vertices.index(vertex2)
+        self._matrix[v2_ind][v1_ind] = 1
+        self._matrix[v1_ind][v2_ind] = 1
         return 0
 
 
@@ -298,11 +299,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._list_of_vertexes or vertex2 not in self._list_of_vertexes:
+        if vertex1 not in self._list_of_vertices or vertex2 not in self._list_of_vertices:
             return -1
-        v1_ind = self._list_of_vertexes.index(vertex1)
-        v2_ind = self._list_of_vertexes.index(vertex2)
-        incidental = self._matrix[v1_ind][v2_ind]
+        v1_ind = self._list_of_vertices.index(vertex1)
+        v2_ind = self._list_of_vertices.index(vertex2)
+        incidental = self._matrix[v2_ind][v1_ind]
         return incidental
 
     # Step 4.4
@@ -314,7 +315,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._list_of_vertexes)
+        return tuple(self._list_of_vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -330,8 +331,8 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex in self._list_of_vertexes:
-            v_ind = self._list_of_vertexes.index(vertex)
+        if vertex in self._list_of_vertices:
+            v_ind = self._list_of_vertices.index(vertex)
             return sum(self._matrix[v_ind])
         return -1
 
@@ -541,7 +542,7 @@ class EdgeListGraph:
         for key in self._positions:
             wrong_p = 0.0
             for elem in self._positions[key]:
-                wrong_p += (1 / elem)
+                wrong_p += 1 / elem
             wrong_weights[key] = wrong_p
         for key in self._positions:
             self._position_weights[key] = wrong_weights[key] / sum(wrong_weights.values())
@@ -620,9 +621,10 @@ class VanillaTextRank:
                 scores of all vertices in the graph
         """
         sum_of_values = 0.0
+        # может ошибка здесь? проверь формулу
         for i in incidental_vertices:
-            sum_of_values += 1 / self._graph.calculate_inout_score(i) * self._scores.get(i, 0)
-        self._scores[vertex] = sum_of_values * self._damping_factor + (1 - self._damping_factor)
+            sum_of_values += (1 / self._graph.calculate_inout_score(i)) * scores.get(i)
+        self._scores[vertex] = (1 - self._damping_factor) + sum_of_values * self._damping_factor
 
     # Step 5.3
     def train(self) -> None:
@@ -730,8 +732,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         """
         sum_of_values = 0.0
         for i in incidental_vertices:
-            sum_of_values += 1 / self._graph.calculate_inout_score(i) * self._scores.get(i, 0)
-        new_v_score = (1 - self._damping_factor) * self._position_weights.get(vertex, 0) \
+            sum_of_values += 1 / self._graph.calculate_inout_score(i) * scores[i]
+        new_v_score = (1 - self._damping_factor) * self._position_weights[vertex]\
                       + sum_of_values * self._damping_factor
         self._scores[vertex] = new_v_score
 
