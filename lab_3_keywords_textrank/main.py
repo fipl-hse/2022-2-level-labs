@@ -861,8 +861,6 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        if not self._text:
-            return -1
         phrases = extract_phrases(self._text)
         if not phrases or not self._stop_words:
             return -1
@@ -983,9 +981,7 @@ class KeywordExtractionBenchmark:
         self._report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
         list_of_files = list(self._material_path.iterdir())[:-2]
         counter = {'TF-IDF': [], 'RAKE': [], 'VanillaTextRank': [], 'PositionBiasedTextRank': []}
-        for idx, file in enumerate(list_of_files):
-            if idx > len(self.themes) * 2 - 1:
-                break
+        for idx, file in enumerate(list_of_files[:len(self.themes) * 2 - 1]):
             if idx % 2 == 0:
                 try:
                     with open(file, 'r', encoding='utf-8') as kw_file:
@@ -997,14 +993,12 @@ class KeywordExtractionBenchmark:
 
                     tfidf_kw = TFIDFAdapter(preprocessed_text, self._idf)
                     tfidf_kw.train()
-                    train1_result = tfidf_kw.get_top_keywords(50)
-                    tfidf_recall = calculate_recall(train1_result, keywords)
+                    tfidf_recall = calculate_recall(tfidf_kw.get_top_keywords(50), keywords)
                     counter['TF-IDF'].append(tfidf_recall)
 
                     rake_kw = RAKEAdapter(text, self._stop_words)
                     rake_kw.train()
-                    train2_result = rake_kw.get_top_keywords(50)
-                    rake_recall = calculate_recall(train2_result, keywords)
+                    rake_recall = calculate_recall(rake_kw.get_top_keywords(50), keywords)
                     counter['RAKE'].append(rake_recall)
 
                     text_to_int = TextEncoder()
@@ -1014,8 +1008,7 @@ class KeywordExtractionBenchmark:
 
                     vanilla_tr_kw = VanillaTextRank(graph)
                     vanilla_tr_kw.train()
-                    train3_result = vanilla_tr_kw.get_top_keywords(50)
-                    train3_result_decode = text_to_int.decode(train3_result)
+                    train3_result_decode = text_to_int.decode(vanilla_tr_kw.get_top_keywords(50))
                     vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
                     counter['VanillaTextRank'].append(vanilla_tr_recall)
 
@@ -1023,10 +1016,10 @@ class KeywordExtractionBenchmark:
                     graph.calculate_position_weights()
                     position_biased_tr_kw = PositionBiasedTextRank(graph)
                     position_biased_tr_kw.train()
-                    train4_result = position_biased_tr_kw.get_top_keywords(50)
-                    train4_result_decode = text_to_int.decode(train4_result)
+                    train4_result_decode = text_to_int.decode(position_biased_tr_kw.get_top_keywords(50))
                     position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
                     counter['PositionBiasedTextRank'].append(position_biased_tr_recall)
+
                 except TypeError:
                     return None
         for method in self._report:
