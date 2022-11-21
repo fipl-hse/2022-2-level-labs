@@ -167,18 +167,6 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     if not check_dict(word_degrees, str, int, False) \
             or not check_dict(word_frequencies, str, int, False):
         return None
-    '''
-    if not (word_degrees and word_frequencies):
-        return
-    if not (isinstance(word_degrees, dict) and isinstance(word_frequencies, dict)):
-        return None
-    for word, degree in word_degrees:
-        if not (isinstance(word, str) and isinstance(degree, int)):
-            return None
-    for word, frequency in word_frequencies:
-        if not (isinstance(word, str) and isinstance(frequency, int)):
-            return None
-    '''
     if len(word_degrees) == 0 or len(word_frequencies) == 0:
         return None
     word_scores = {}
@@ -538,4 +526,3 @@ def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
         cumulative_score_with_stop_words = {}
     if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
         print(keyword_phrases_with_scores, cumulative_score_with_stop_words)
-    return None
