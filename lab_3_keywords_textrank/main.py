@@ -623,7 +623,7 @@ class VanillaTextRank:
         sum_of_values = 0.0
         # может ошибка здесь? проверь формулу
         for i in incidental_vertices:
-            sum_of_values += (1 / self._graph.calculate_inout_score(i)) * scores.get(i)
+            sum_of_values += (1 / self._graph.calculate_inout_score(i)) * scores.get(i, 0)
         self._scores[vertex] = (1 - self._damping_factor) + sum_of_values * self._damping_factor
 
     # Step 5.3
