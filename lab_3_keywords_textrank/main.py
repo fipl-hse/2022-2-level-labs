@@ -1040,8 +1040,8 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        with open(path, 'w', newline='') as csv_file:
-            csv_file = csv.writer(csv_file)
-            csv_file.writerow(['name'] + list(self.themes))
+        with open(path, 'w', encoding='utf-8') as csv_file:
+            csv_writer = csv.writer(csv_file)
+            csv_writer.writerow(['name'] + list(self.themes))
             for k in self.report:
-                csv_file.writerow([k] + [self.report[k][theme] for theme in self.themes])
+                csv_writer.writerow([k] + [self.report[k][theme] for theme in self.themes])
