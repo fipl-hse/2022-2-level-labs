@@ -301,7 +301,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
-        answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
+        answer = int(self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]])
         return answer
 
     # Step 4.4
@@ -995,7 +995,6 @@ class KeywordExtractionBenchmark:
             elif 'text' in one_file:
                 file_idx = int(one_file[0])
                 _texts_dict[file_idx] = readen_file
-                #file_idx += 1
         for one_method in methods_names:
             self.report[one_method] = {}
         for theme in self.themes:
