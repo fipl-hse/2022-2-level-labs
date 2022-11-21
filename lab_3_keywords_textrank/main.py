@@ -457,8 +457,9 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
-        self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
+        if vertex1 not in self._edges.get(vertex2, []):
+            self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
+            self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
         return 0
 
     # Step 7.2
