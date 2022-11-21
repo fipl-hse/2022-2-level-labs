@@ -4,6 +4,11 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words, calculate_word_degrees,
+                                              calculate_word_scores)
+import csv
 
 
 class TextPreprocessor:
@@ -36,8 +41,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self.stop_words = stop_words
-        self.punctuation = punctuation
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -54,7 +59,7 @@ class TextPreprocessor:
         """
         no_punct = ""
         for element in text:
-            if element not in self.punctuation:
+            if element not in self._punctuation:
                 no_punct += element
         return tuple(no_punct.lower().split())
 
@@ -71,7 +76,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(word for word in tokens if word not in self.stop_words)
+        return tuple(word for word in tokens if word not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -127,10 +132,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        unique = []
-        for element in tokens:
-            if element not in unique:
-                unique.append(element)
+        unique = set(tokens)
         for idx, element in enumerate(unique, start=1000):
             self._word2id[element] = idx
             self._id2word[idx] = element
@@ -168,7 +170,7 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        if any(number not in self._id2word.keys() for number in encoded_tokens):
+        if any(number not in self._id2word for number in encoded_tokens):
             return None
         return tuple(self._id2word[token] for token in encoded_tokens)
 
@@ -199,12 +201,10 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         for element in window:
             small = window[window.index(element) + 1:]
             for subel in small:
-                pairs.append([element, subel])
-    unique = []
-    for pair in pairs:
-        if pair not in unique and pair[::-1] not in unique and pair[0] != pair[1]:
-            unique.append(pair)
-    result = tuple(tuple(element) for element in unique)
+                if ([element, subel] not in pairs and [subel, element] not in pairs
+                        and element != subel):
+                    pairs.append([element, subel])
+    result = tuple(tuple(element) for element in pairs)
     return result
 
 
@@ -370,8 +370,9 @@ class AdjacencyMatrixGraph:
             for position in self._positions[vertex]:
                 summary += 1/position
             collection_of_weights[vertex] = summary
+        summ = sum(collection_of_weights.values())
         for element in collection_of_weights:
-            self._position_weights[element] = collection_of_weights[element]/sum(collection_of_weights.values())
+            self._position_weights[element] = collection_of_weights[element]/summ
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -534,14 +535,15 @@ class EdgeListGraph:
         """
         Computes position weights for all tokens in text
         """
-        dct = {}
+        collection_of_weights = {}
         for vertex in self._positions:
             summary = 0
             for position in self._positions[vertex]:
                 summary += 1/position
-            dct[vertex] = summary
-        for element in dct:
-            self._position_weights[element] = dct[element]/sum(dct.values())
+            collection_of_weights[vertex] = summary
+        summ = sum(collection_of_weights.values())
+        for element in collection_of_weights:
+            self._position_weights[element] = collection_of_weights[element]/summ
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -767,7 +769,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+        self._scores = {}
+        self._tokens = tokens
+        self._idf = idf
 
     # Step 10.2
     def train(self) -> int:
@@ -778,7 +782,16 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        frequencies = calculate_frequencies(list(self._tokens))
+        if not frequencies:
+            return -1
+        tf = calculate_tf(frequencies)
+        if not tf:
+            return -1
+        self._scores = calculate_tfidf(tf, self._idf)
+        if not self._scores:
+            return -1
+        return 0
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -793,7 +806,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        return tuple(sorted(self._scores.keys(), key=lambda key: self._scores[key], reverse=True)[:n_keywords])
 
 
 class RAKEAdapter:
@@ -830,7 +843,9 @@ class RAKEAdapter:
             stop_words: tuple[str, ...]
                 a sequence of stop-words
         """
-        pass
+        self._text = text
+        self._stop_words = stop_words
+        self._scores = {}
 
     # Step 11.2
     def train(self) -> int:
@@ -841,7 +856,23 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        phrases = extract_phrases(self._text)
+        if not phrases:
+            return -1
+        candidates = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
+        if not candidates:
+            return -1
+        frequencies = calculate_frequencies_for_content_words(candidates)
+        if not frequencies:
+            return -1
+        degrees = calculate_word_degrees(candidates, list(frequencies.keys()))
+        if not degrees:
+            return -1
+        word_scores = calculate_word_scores(degrees, frequencies)
+        if not word_scores:
+            return -1
+        self._scores = dict(word_scores)
+        return 0
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -856,7 +887,9 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        by_keys = sorted(self._scores)
+        by_values = sorted(by_keys, key=lambda key: self._scores[key], reverse=True)
+        return tuple(by_values[:n_keywords])
 
 
 # Step 12.1
@@ -874,7 +907,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    TP = [word for word in predicted if word in target]
+    FN = [word for word in target if word not in predicted]
+    return len(TP)/(len(TP) + len(FN))
 
 
 class KeywordExtractionBenchmark:
@@ -919,7 +954,13 @@ class KeywordExtractionBenchmark:
             materials_path: Path
                 a path to materials to use for comparison
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf = idf
+        self._materials_path = materials_path
+        self.themes = ('culture', 'business', 'crime', 'fashion',
+                       'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -931,7 +972,59 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        tf = {}
+        rake = {}
+        vanilla = {}
+        biased = {}
+
+        for idx, topic in enumerate(self.themes):
+            text_path = self._materials_path / f'{str(idx)}_text.txt'
+            with open(text_path, 'r', encoding='utf-8') as file:
+                text = file.read()
+
+            keywords_path = self._materials_path / f'{str(idx)}_keywords.txt'
+            with open(keywords_path, 'r', encoding='utf-8') as file:
+                keywords = tuple(file.read().split())
+
+            preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+            preprocessed_text = preprocessor.preprocess_text(text)
+            encoder = TextEncoder()
+            tokens = encoder.encode(preprocessed_text)
+            if not tokens:
+                return None
+
+            tfidf_adapter = TFIDFAdapter(preprocessed_text, self._idf)
+            tfidf_adapter.train()
+            top_tf = tfidf_adapter.get_top_keywords(50)
+            tf[topic] = calculate_recall(top_tf, keywords)
+
+            rake_adapter = RAKEAdapter(text, self._stop_words)
+            rake_adapter.train()
+            top_rake = rake_adapter.get_top_keywords(50)
+            rake[topic] = calculate_recall(top_rake, keywords)
+
+            graph = EdgeListGraph()
+            graph.fill_from_tokens(tokens, 3)
+            graph.fill_positions(tokens)
+            graph.calculate_position_weights()
+
+            vanilla_text_rank = VanillaTextRank(graph)
+            vanilla_text_rank.train()
+            top_vanilla = vanilla_text_rank.get_top_keywords(50)
+            decoded_vanilla = encoder.decode(top_vanilla)
+            vanilla[topic] = calculate_recall(decoded_vanilla, keywords)
+
+            position_biased_text_rank = PositionBiasedTextRank(graph)
+            position_biased_text_rank.train()
+            top_biased = position_biased_text_rank.get_top_keywords(50)
+            decoded_biased = encoder.decode(top_biased)
+            biased[topic] = calculate_recall(decoded_biased, keywords)
+
+        self.report['VanillaTextRank'] = vanilla
+        self.report['PositionBiasedTextRank'] = biased
+        self.report['TF-IDF'] = tf
+        self.report['RAKE'] = rake
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -942,4 +1035,8 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        with open(path, "w", encoding='utf-8') as file:
+            writer = csv.writer(file)
+            writer.writerow(['name'] + list(self.themes))
+            for method in self.report:
+                writer.writerow([method] + [self.report[method][theme] for theme in self.themes])
