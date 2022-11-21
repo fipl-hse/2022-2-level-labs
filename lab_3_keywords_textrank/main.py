@@ -793,9 +793,10 @@ class TFIDFAdapter:
         if not freqs:
             return -1
         tfs = calculate_tf(freqs)
-        if not tfs or not calculate_tfidf(tfs, self._idf):
+        if not tfs:
             return -1
-        self._scores = calculate_tfidf(tfs, self._idf)
+        if calculate_tfidf(tfs, self._idf):
+            self._scores = calculate_tfidf(tfs, self._idf)
         return 0 if self._scores else -1
 
     # Step 10.3
