@@ -90,7 +90,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        return self._remove_stop_words(self._clean_and_tokenize(text))
+        tokens = self._clean_and_tokenize(text)
+        return self._remove_stop_words(tokens)
 
 
 class TextEncoder:
@@ -130,11 +131,12 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
+        index_start = 1001
         for token in tokens:
             if token not in self._word2id:
-                self._word2id[token] = 1001 + tokens.index(token)
+                self._word2id[token] = index_start + tokens.index(token)
             if token not in self._id2word.values():
-                self._id2word[1001 + tokens.index(token)] = token
+                self._id2word[index_start + tokens.index(token)] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -273,7 +275,8 @@ class AdjacencyMatrixGraph:
                 self._matrix.append([0 for _ in self._vertices])
                 for vertex_list in range(0, len(self._matrix[0]) + 1):
                     self._matrix[vertex_list].append(0)
-        vertex1_index, vertex2_index = self._vertices.index(vertex1), self._vertices.index(vertex2)
+        vertex1_index = self._vertices.index(vertex1)
+        vertex2_index = self._vertices.index(vertex2)
         self._matrix[vertex1_index][vertex2_index] = 1
         self._matrix[vertex2_index][vertex1_index] = 1
         return 0
@@ -296,7 +299,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._vertices or vertex2 not in self._vertices:
             return -1
-        vertex1_index, vertex2_index = self._vertices.index(vertex1), self._vertices.index(vertex2)
+        vertex1_index = self._vertices.index(vertex1)
+        vertex2_index = self._vertices.index(vertex2)
         return self._matrix[vertex1_index][vertex2_index]
 
     # Step 4.4
