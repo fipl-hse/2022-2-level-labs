@@ -5,6 +5,7 @@ Extract keywords based on TextRank algorithm
 from pathlib import Path
 from typing import Optional, Union
 import csv
+import re
 from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tfidf, calculate_tf
 from lab_2_keywords_cooccurrence.main import extract_phrases,\
     extract_candidate_keyword_phrases, calculate_frequencies_for_content_words, \
@@ -980,51 +981,48 @@ class KeywordExtractionBenchmark:
         """
         self._report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
         list_of_files = list(self._material_path.iterdir())[:-2]
-        counter = {'TF-IDF': [], 'RAKE': [], 'VanillaTextRank': [], 'PositionBiasedTextRank': []}
-        for idx, file in enumerate(list_of_files[:len(self.themes) * 2 - 1]):
-            if idx % 2 == 0:
-                try:
-                    with open(file, 'r', encoding='utf-8') as kw_file:
-                        keywords = tuple(kw_file.read().strip().split())
-                    with open(list_of_files[idx + 1], 'r', encoding='utf-8') as text_file:
-                        text = text_file.read().strip()
-                    text_to_clean = TextPreprocessor(self._stop_words, self._punctuation)
-                    preprocessed_text = text_to_clean.preprocess_text(text)
+        for idx, theme in enumerate(self.themes):
+            try:
+                for file in list_of_files:
+                    if f'{str(idx)}_keywords' in file.name:
+                        with open(file, 'r', encoding='utf-8') as kw_file:
+                            keywords = tuple(kw_file.read().strip().split())
+                    elif f'{str(idx)}_text' in file.name:
+                        with open(file, 'r', encoding='utf-8') as text_file:
+                            text = text_file.read().strip()
+                text_to_clean = TextPreprocessor(self._stop_words, self._punctuation)
+                preprocessed_text = text_to_clean.preprocess_text(text)
 
-                    tfidf_kw = TFIDFAdapter(preprocessed_text, self._idf)
-                    tfidf_kw.train()
-                    tfidf_recall = calculate_recall(tfidf_kw.get_top_keywords(50), keywords)
-                    counter['TF-IDF'].append(tfidf_recall)
+                tfidf_kw = TFIDFAdapter(preprocessed_text, self._idf)
+                tfidf_kw.train()
+                tfidf_recall = calculate_recall(tfidf_kw.get_top_keywords(50), keywords)
+                self._report['TF-IDF'][theme] = tfidf_recall
 
-                    rake_kw = RAKEAdapter(text, self._stop_words)
-                    rake_kw.train()
-                    rake_recall = calculate_recall(rake_kw.get_top_keywords(50), keywords)
-                    counter['RAKE'].append(rake_recall)
+                rake_kw = RAKEAdapter(text, self._stop_words)
+                rake_kw.train()
+                rake_recall = calculate_recall(rake_kw.get_top_keywords(50), keywords)
+                self._report['RAKE'][theme] = rake_recall
 
-                    text_to_int = TextEncoder()
-                    tokens = text_to_int.encode(preprocessed_text)
-                    graph = EdgeListGraph()
-                    graph.fill_from_tokens(tokens, 3)
+                text_to_int = TextEncoder()
+                tokens = text_to_int.encode(preprocessed_text)
+                graph = EdgeListGraph()
+                graph.fill_from_tokens(tokens, 3)
 
-                    vanilla_tr_kw = VanillaTextRank(graph)
-                    vanilla_tr_kw.train()
-                    train3_result_decode = text_to_int.decode(vanilla_tr_kw.get_top_keywords(50))
-                    vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
-                    counter['VanillaTextRank'].append(vanilla_tr_recall)
+                vanilla_tr_kw = VanillaTextRank(graph)
+                vanilla_tr_kw.train()
+                train3_result_decode = text_to_int.decode(vanilla_tr_kw.get_top_keywords(50))
+                vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
+                self._report['VanillaTextRank'][theme] = vanilla_tr_recall
 
-                    graph.fill_positions(tokens)
-                    graph.calculate_position_weights()
-                    position_biased_tr_kw = PositionBiasedTextRank(graph)
-                    position_biased_tr_kw.train()
-                    train4_result_decode = text_to_int.decode(position_biased_tr_kw.get_top_keywords(50))
-                    position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
-                    counter['PositionBiasedTextRank'].append(position_biased_tr_recall)
-
-                except TypeError:
-                    return None
-        for method in self._report:
-            for index, theme in enumerate(self.themes):
-                self._report[method][theme] = counter[method][index]
+                graph.fill_positions(tokens)
+                graph.calculate_position_weights()
+                position_biased_tr_kw = PositionBiasedTextRank(graph)
+                position_biased_tr_kw.train()
+                train4_result_decode = text_to_int.decode(position_biased_tr_kw.get_top_keywords(50))
+                position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
+                self._report['PositionBiasedTextRank'][theme] = position_biased_tr_recall
+            except TypeError:
+                return None
         return self._report
 
     # Step 12.4
