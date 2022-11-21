@@ -61,6 +61,6 @@ if __name__ == "__main__":
         result_of_edge_graph = text_encoder.decode(top_biased_edge)
         print(result_of_edge_graph)
 
-    RESULT = True
+    RESULT = DECODED_TOP_10_VANILLA
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
