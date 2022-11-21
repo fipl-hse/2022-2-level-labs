@@ -136,7 +136,7 @@ class TextEncoder:
         for token in tokens:
             if token not in list_of_tokens:
                 list_of_tokens += token
-        for index, token in enumerate(list_of_tokens, start=1000):
+        for index, token in enumerate(tokens, start=1000):
             self._word2id[token] = index
             self._id2word[index] = token
 
@@ -157,10 +157,8 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        for token in tokens:
-            tokens = tuple(self._word2id[token])
-        encoded_tokens = tokens
-        return encoded_tokens
+        return tuple(self._word2id[token] for token in tokens)
+
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -179,12 +177,7 @@ class TextEncoder:
         for number in encoded_tokens:
             if number not in self._id2word.keys():
                 return None
-        list_of_words = []
-        for number in encoded_tokens:
-            list_of_words += self._id2word[number]
-        list_of_words = tuple(list_of_words)
-        return list_of_words
-
+        return tuple(self._id2word[number] for number in encoded_tokens)
 
 # Step 3
 def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
