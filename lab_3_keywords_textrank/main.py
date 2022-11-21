@@ -204,7 +204,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                 if index1 == index2:
                     continue
                 if ((index1, index2) or (index2, index1)) not in list_of_tokens:
-                    pair = tuple([index1, index2])
+                    final = tuple([index1, index2])
                     final.append(final)
     return tuple(final)
 
