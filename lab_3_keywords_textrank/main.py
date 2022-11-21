@@ -625,7 +625,7 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summ = 0
+        summ = 0.0
         for inc_vertex in incidental_vertices:
             summ += scores[inc_vertex] / self._graph.calculate_inout_score(inc_vertex)
         vertex_score = (1 - self._damping_factor) + self._damping_factor * summ
@@ -735,7 +735,7 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summ = 0
+        summ = 0.0
         for inc_vertex in incidental_vertices:
             summ += scores[inc_vertex] / self._graph.calculate_inout_score(inc_vertex)
         vertex_score = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * summ
@@ -793,7 +793,7 @@ class TFIDFAdapter:
         if not freqs:
             return -1
         tfs = calculate_tf(freqs)
-        if not tfs:
+        if not tfs or not calculate_tfidf(tfs, self._idf):
             return -1
         self._scores = calculate_tfidf(tfs, self._idf)
         return 0 if self._scores else -1
