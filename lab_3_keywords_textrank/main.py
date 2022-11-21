@@ -1009,14 +1009,12 @@ class KeywordExtractionBenchmark:
 
             vanilla_text_rank = VanillaTextRank(graph)
             vanilla_text_rank.train()
-            top_vanilla = vanilla_text_rank.get_top_keywords(50)
-            decoded_vanilla = encoder.decode(top_vanilla)
-            vanilla[topic] = calculate_recall(tuple(decoded_vanilla), keywords)
+            decoded_vanilla = encoder.decode(vanilla_text_rank.get_top_keywords(50))
+            vanilla[topic] = calculate_recall(decoded_vanilla, keywords)
 
             position_biased_text_rank = PositionBiasedTextRank(graph)
             position_biased_text_rank.train()
-            top_biased = position_biased_text_rank.get_top_keywords(50)
-            decoded_biased = encoder.decode(top_biased)
+            decoded_biased = encoder.decode(position_biased_text_rank.get_top_keywords(50))
             biased[topic] = calculate_recall(tuple(decoded_biased), keywords)
 
         self.report['VanillaTextRank'] = vanilla
