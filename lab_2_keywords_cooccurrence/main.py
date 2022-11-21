@@ -6,7 +6,7 @@ import string
 import json
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from lab_1_keywords_tfidf.main import check_list, check_dict, clean_and_tokenize, calculate_frequencies
+from lab_1_keywords_tfidf.main import check_dict, check_list, clean_and_tokenize, calculate_frequencies
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -164,9 +164,21 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-
-    if not (check_dict(word_degrees, str, int, False) and check_dict(word_frequencies, str, int, True)):
+    if not check_dict(word_degrees, str, int, False) \
+            or not check_dict(word_frequencies, str, int, False):
         return None
+    '''
+    if not (word_degrees and word_frequencies):
+        return
+    if not (isinstance(word_degrees, dict) and isinstance(word_frequencies, dict)):
+        return None
+    for word, degree in word_degrees:
+        if not (isinstance(word, str) and isinstance(degree, int)):
+            return None
+    for word, frequency in word_frequencies:
+        if not (isinstance(word, str) and isinstance(frequency, int)):
+            return None
+    '''
     if len(word_degrees) == 0 or len(word_frequencies) == 0:
         return None
     word_scores = {}
@@ -262,13 +274,30 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-
+    final_list_of_tuples = []
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
     if not (check_list(phrases, str, False)) or not phrases:
         return None
-    if len(candidate_keyword_phrases) == 0 or len(phrases) == 0:
+    if len(candidate_keyword_phrases) == 0:
         return None
+    if phrases == ['']:
+        return final_list_of_tuples
+    all_pairs = None
+    pairs_frequent = None
+    pairs_frequent_stripped = None
+    frequent_pair_with_stop_words = None
+    if candidate_keyword_phrases:
+        all_pairs = collect_all_pairs(candidate_keyword_phrases)
+    if all_pairs:
+        pairs_frequent = collect_only_frequent_pairs(all_pairs)
+    if pairs_frequent:
+        pairs_frequent_stripped = trimm_empty_pairs(pairs_frequent)
+    if pairs_frequent_stripped and phrases:
+        frequent_pair_with_stop_words = add_the_inbetween_word(pairs_frequent_stripped, phrases)
+    if frequent_pair_with_stop_words:
+        final_list_of_tuples = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
+    return final_list_of_tuples
 
 
 def collect_all_pairs(candidate_keyword_phrases: KeyPhrases):
@@ -472,36 +501,41 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
 
 def find_keyword_phrases(text: str, stop_words: Sequence[str]) -> None:
 
+    candidate_keyword_phrases = None
+    word_frequencies = None
+    word_degrees = None
+    word_scores = None
+    keyword_phrases_with_scores = None
+    candidates_adjoined = None
+
     phrases = extract_phrases(text)
+    if not stop_words and (stop_words_generated := generate_stop_words(text, 5)):
+        stop_words = stop_words_generated
 
-    if not phrases or not stop_words:
-        return None
-    key_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
-    if not key_phrases:
-        return None
-    word_frequencies = calculate_frequencies_for_content_words(key_phrases)
-    if not word_frequencies or not key_phrases:
-        return None
-    word_degrees = calculate_word_degrees(key_phrases, list(word_frequencies.keys()))
-    if not word_degrees or not word_frequencies:
-        return None
-    word_scores = calculate_word_scores(word_degrees, word_frequencies)
-    if not word_scores or not key_phrases:
-        return None
-    cumulative_scores = calculate_cumulative_score_for_candidates(key_phrases, word_scores)
-    if not cumulative_scores:
-        return None
-    print(get_top_n(cumulative_scores, 5, 2))
-    if not key_phrases or not phrases:
-        return None
-    key_phrases_with_sw = extract_candidate_keyword_phrases_with_adjoining(key_phrases, phrases)
-    if not key_phrases_with_sw or not word_scores or not stop_words:
-        return None
-    cumulative_scores_with_sw = calculate_cumulative_score_for_candidates_with_stop_words(key_phrases_with_sw,
-                                                                                          word_scores,
-                                                                                          stop_words)
-    if not cumulative_scores_with_sw:
-        return None
-    print(get_top_n(cumulative_scores_with_sw, 5, 4), '\n')
+    if phrases and stop_words:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
 
+    if candidate_keyword_phrases:
+        word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+
+    if candidate_keyword_phrases and word_frequencies:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
+
+    if word_degrees and word_frequencies:
+        word_scores = calculate_word_scores(word_degrees, word_frequencies)
+
+    if candidate_keyword_phrases and word_scores:
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+
+    if candidate_keyword_phrases and phrases:
+        candidates_adjoined = \
+            extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
+
+    if candidates_adjoined and word_scores and stop_words:
+        cumulative_score_with_stop_words = \
+            calculate_cumulative_score_for_candidates_with_stop_words(candidates_adjoined, word_scores, stop_words)
+    else:
+        cumulative_score_with_stop_words = {}
+    if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
+        print(keyword_phrases_with_scores, cumulative_score_with_stop_words)
     return None
