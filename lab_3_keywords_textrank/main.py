@@ -53,11 +53,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        new_text = ""
-        for token in text.lower():
-            if token not in self._punctuation:
-                new_text += token
-        return tuple(new_text.split())
+        for i in self._punctuation:
+            text = text.replace(i, '')
+        return tuple(text.lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -72,7 +70,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(token for token in tokens if token not in self._stop_words)
+        stop_list = []
+        for i in tokens:
+            if i not in self._stop_words:
+                stop_list.append(i)
+        return tuple(stop_list)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -87,8 +89,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        tokenized = self._clean_and_tokenize(text)
-        return self._remove_stop_words(tokenized)
+        tokenized_text = self._clean_and_tokenize(text)
+        return self._remove_stop_words(tokenized_text)
 
 
 class TextEncoder:
@@ -195,7 +197,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not tokens or not isinstance(window_length, int) or window_length <= 2:
         return None
-    final = []
+    all_pairs = []
     list_of_tokens = list(tokens)
     for token in range(len(tokens)):
         window = list_of_tokens[token: token + window_length]
@@ -204,9 +206,9 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                 if index1 == index2:
                     continue
                 if ((index1, index2) or (index2, index1)) not in list_of_tokens:
-                    final = tuple([index1, index2])
-                    final.append(final)
-    return tuple(final)
+                    pair = tuple([index1, index2])
+                    all_pairs.append(pair)
+    return tuple(all_pairs)
 
 
 class AdjacencyMatrixGraph:

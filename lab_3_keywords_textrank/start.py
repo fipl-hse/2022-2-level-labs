@@ -3,8 +3,7 @@ TextRank keyword extraction starter
 """
 from pathlib import Path
 from string import punctuation
-import json
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, \
+from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
     VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
 
 
@@ -34,17 +33,33 @@ if __name__ == "__main__":
         print(pairs)
 
     adjacency_matrix_graph = AdjacencyMatrixGraph()
+    edge_list_graph = EdgeListGraph()
 
     if encoded_tokens:
         adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
         adjacency_matrix_graph.fill_positions(encoded_tokens)
-    adjacency_matrix_graph.calculate_position_weights()
+        adjacency_matrix_graph.calculate_position_weights()
 
     vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
+    vanilla_rank_edge = VanillaTextRank(edge_list_graph)
     vanilla_text_rank.train()
     top_10_vanilla = vanilla_text_rank.get_top_keywords(10)
     DECODED_TOP_10_VANILLA = text_encoder.decode(top_10_vanilla)
     print(DECODED_TOP_10_VANILLA)
+
+    biased_rank = PositionBiasedTextRank(adjacency_matrix_graph)
+    biased_rank.train()
+    top_biased_matrix = biased_rank.get_top_keywords(10)
+    if top_biased_matrix:
+        result_of_adj_matrix = text_encoder.decode(top_biased_matrix)
+        print(result_of_adj_matrix)
+
+    biased_edge = PositionBiasedTextRank(edge_list_graph)
+    biased_edge.train()
+    top_biased_edge = biased_edge.get_top_keywords(10)
+    if top_biased_edge:
+        result_of_edge_graph = text_encoder.decode(top_biased_edge)
+        print(result_of_edge_graph)
 
     RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
