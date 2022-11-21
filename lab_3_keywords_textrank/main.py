@@ -983,6 +983,7 @@ class KeywordExtractionBenchmark:
         methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
         _keywords_dict = {}
         _texts_dict = {}
+        print(self._materials_path)
         for one_file in os.listdir(self._materials_path)[:-2]:
             file_idx = int(one_file[0])
             way_to_file = os.path.join(self._materials_path, one_file)
