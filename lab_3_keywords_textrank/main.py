@@ -200,7 +200,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     pairs = []
     for window in windows_list:
         for number in window:
-            for num, win in enumerate(window):
+            for win in window:
                 pairs.append([number, win])
     pairs_new = []
     for pair in pairs:
@@ -987,75 +987,48 @@ class KeywordExtractionBenchmark:
             if idx > len(self.themes) * 2 - 1:
                 break
             if idx % 2 == 0:
-                with open(file, 'r', encoding='utf-8') as kw_file:
-                    keywords = tuple(kw_file.read().strip().split())
-                with open(list_of_files[idx + 1], 'r', encoding='utf-8') as text_file:
-                    text = text_file.read().strip()
-                text_to_clean = TextPreprocessor(self._stop_words, self._punctuation)
-                preprocessed_text = text_to_clean.preprocess_text(text)
-                if not preprocessed_text:
-                    return None
+                try:
+                    with open(file, 'r', encoding='utf-8') as kw_file:
+                        keywords = tuple(kw_file.read().strip().split())
+                    with open(list_of_files[idx + 1], 'r', encoding='utf-8') as text_file:
+                        text = text_file.read().strip()
+                    text_to_clean = TextPreprocessor(self._stop_words, self._punctuation)
+                    preprocessed_text = text_to_clean.preprocess_text(text)
 
-                tfidf_kw = TFIDFAdapter(preprocessed_text, self._idf)
-                tfidf_kw.train()
-                train1_result = tfidf_kw.get_top_keywords(50)
-                if not train1_result:
-                    return None
-                tfidf_recall = calculate_recall(train1_result, keywords)
-                if tfidf_recall is None:
-                    return None
-                counter['TF-IDF'].append(tfidf_recall)
+                    tfidf_kw = TFIDFAdapter(preprocessed_text, self._idf)
+                    tfidf_kw.train()
+                    train1_result = tfidf_kw.get_top_keywords(50)
+                    tfidf_recall = calculate_recall(train1_result, keywords)
+                    counter['TF-IDF'].append(tfidf_recall)
 
-                rake_kw = RAKEAdapter(text, self._stop_words)
-                rake_kw.train()
-                train2_result = rake_kw.get_top_keywords(50)
-                if not train2_result:
-                    return None
-                rake_recall = calculate_recall(train2_result, keywords)
-                if rake_recall is None:
-                    return None
-                counter['RAKE'].append(rake_recall)
+                    rake_kw = RAKEAdapter(text, self._stop_words)
+                    rake_kw.train()
+                    train2_result = rake_kw.get_top_keywords(50)
+                    rake_recall = calculate_recall(train2_result, keywords)
+                    counter['RAKE'].append(rake_recall)
 
-                text_to_int = TextEncoder()
-                tokens = text_to_int.encode(preprocessed_text)
-                if not tokens:
-                    return None
-                graph = EdgeListGraph()
-                graph.fill_from_tokens(tokens, 3)
+                    text_to_int = TextEncoder()
+                    tokens = text_to_int.encode(preprocessed_text)
+                    graph = EdgeListGraph()
+                    graph.fill_from_tokens(tokens, 3)
 
-                if not graph:
-                    return None
-                vanilla_tr_kw = VanillaTextRank(graph)
-                vanilla_tr_kw.train()
-                train3_result = vanilla_tr_kw.get_top_keywords(50)
-                if not train3_result:
-                    return None
-                train3_result_decode = text_to_int.decode(train3_result)
-                if not train3_result_decode:
-                    return None
-                vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
-                if vanilla_tr_recall is None:
-                    return None
-                counter['VanillaTextRank'].append(vanilla_tr_recall)
+                    vanilla_tr_kw = VanillaTextRank(graph)
+                    vanilla_tr_kw.train()
+                    train3_result = vanilla_tr_kw.get_top_keywords(50)
+                    train3_result_decode = text_to_int.decode(train3_result)
+                    vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
+                    counter['VanillaTextRank'].append(vanilla_tr_recall)
 
-                if not tokens:
+                    graph.fill_positions(tokens)
+                    graph.calculate_position_weights()
+                    position_biased_tr_kw = PositionBiasedTextRank(graph)
+                    position_biased_tr_kw.train()
+                    train4_result = position_biased_tr_kw.get_top_keywords(50)
+                    train4_result_decode = text_to_int.decode(train4_result)
+                    position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
+                    counter['PositionBiasedTextRank'].append(position_biased_tr_recall)
+                except TypeError:
                     return None
-                graph.fill_positions(tokens)
-                graph.calculate_position_weights()
-                if not graph:
-                    return None
-                position_biased_tr_kw = PositionBiasedTextRank(graph)
-                position_biased_tr_kw.train()
-                train4_result = position_biased_tr_kw.get_top_keywords(50)
-                if not train4_result:
-                    return None
-                train4_result_decode = text_to_int.decode(train4_result)
-                if not train4_result_decode:
-                    return None
-                position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
-                if position_biased_tr_recall is None:
-                    return None
-                counter['PositionBiasedTextRank'].append(position_biased_tr_recall)
         for method in self._report:
             for index, theme in enumerate(self.themes):
                 self._report[method][theme] = counter[method][index]
