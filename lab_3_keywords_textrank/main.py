@@ -4,11 +4,11 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+import csv
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words, calculate_word_degrees,
                                               calculate_word_scores)
-import csv
 
 
 class TextPreprocessor:
@@ -785,10 +785,10 @@ class TFIDFAdapter:
         frequencies = calculate_frequencies(list(self._tokens))
         if not frequencies:
             return -1
-        tf = calculate_tf(frequencies)
-        if not tf:
+        term_freq = calculate_tf(frequencies)
+        if not term_freq:
             return -1
-        self._scores = calculate_tfidf(tf, self._idf)
+        self._scores = calculate_tfidf(term_freq, self._idf)
         if not self._scores:
             return -1
         return 0
@@ -907,9 +907,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    TP = [word for word in predicted if word in target]
-    FN = [word for word in target if word not in predicted]
-    return len(TP)/(len(TP) + len(FN))
+    true_positive = [word for word in predicted if word in target]
+    false_negative = [word for word in target if word not in predicted]
+    return len(true_positive)/(len(true_positive) + len(false_negative))
 
 
 class KeywordExtractionBenchmark:
@@ -972,7 +972,7 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        tf = {}
+        term_freq = {}
         rake = {}
         vanilla = {}
         biased = {}
@@ -995,13 +995,11 @@ class KeywordExtractionBenchmark:
 
             tfidf_adapter = TFIDFAdapter(preprocessed_text, self._idf)
             tfidf_adapter.train()
-            top_tf = tfidf_adapter.get_top_keywords(50)
-            tf[topic] = calculate_recall(top_tf, keywords)
+            term_freq[topic] = calculate_recall(tfidf_adapter.get_top_keywords(50), keywords)
 
             rake_adapter = RAKEAdapter(text, self._stop_words)
             rake_adapter.train()
-            top_rake = rake_adapter.get_top_keywords(50)
-            rake[topic] = calculate_recall(top_rake, keywords)
+            rake[topic] = calculate_recall(rake_adapter.get_top_keywords(50), keywords)
 
             graph = EdgeListGraph()
             graph.fill_from_tokens(tokens, 3)
@@ -1022,7 +1020,7 @@ class KeywordExtractionBenchmark:
 
         self.report['VanillaTextRank'] = vanilla
         self.report['PositionBiasedTextRank'] = biased
-        self.report['TF-IDF'] = tf
+        self.report['TF-IDF'] = term_freq
         self.report['RAKE'] = rake
         return self.report
 
