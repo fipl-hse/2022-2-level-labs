@@ -75,7 +75,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple([word for word in tokens if word not in self._stop_words])
+        return tuple(word for word in tokens if word not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
