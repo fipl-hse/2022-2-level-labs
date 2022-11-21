@@ -804,7 +804,7 @@ class TFIDFAdapter:
 
         if not tfidf_dict:
             return -1
-        self._scores = calculate_tfidf(tf_dict, self._idf)
+        self._scores = tfidf_dict
         return 0
 
     # Step 10.3
@@ -820,7 +820,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords)) if self._scores else ()
+        return tuple(get_top_n(self._scores, n_keywords))
 
 
 class RAKEAdapter:
@@ -1023,10 +1023,9 @@ class KeywordExtractionBenchmark:
             keywords_text_rank = encoder.decode(text_rank.get_top_keywords(50))
             keywords_bias = encoder.decode(text_rank_bias.get_top_keywords(50))
 
-            self.report['TF-IDF'][theme] = calculate_recall(keywords_tfidf, keywords)
-            self.report['RAKE'][theme] = calculate_recall(keywords_rake, keywords)
-            self.report['VanillaTextRank'][theme] = calculate_recall(keywords_text_rank, keywords)
-            self.report['PositionBiasedTextRank'][theme] = calculate_recall(keywords_bias, keywords)
+            for method in self.report:
+                for keywords_method in keywords_tfidf, keywords_rake, keywords_text_rank, keywords_bias:
+                    self.report[method][theme] = calculate_recall(keywords_method, keywords)
         return self.report
 
     # Step 12.4
