@@ -621,7 +621,6 @@ class VanillaTextRank:
                 scores of all vertices in the graph
         """
         sum_of_values = 0.0
-        # может ошибка здесь? проверь формулу
         for i in incidental_vertices:
             sum_of_values += (1 / self._graph.calculate_inout_score(i)) * scores.get(i, 0)
         self._scores[vertex] = (1 - self._damping_factor) + sum_of_values * self._damping_factor
@@ -669,8 +668,9 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple([key for (key, value) in sorted(self._scores.items(),
-                                                     key=lambda val: val[1], reverse=True)][:n_keywords])
+        # исправить сортировку
+        return tuple(k for k, v in sorted(self._scores.items(), key=lambda item: (item[1], -item[0]),
+                                          reverse=True)[:n_keywords])
 
 class PositionBiasedTextRank(VanillaTextRank):
     """
