@@ -151,7 +151,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        tokens_list = tuple(self._word2id[key] for token in tokens for key in self._word2id if token == key)
+        tokens_list = tuple(self._word2id[token] for token in tokens)
         return tokens_list
 
     # Step 2.4
@@ -303,8 +303,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._vertex_list or vertex2 not in self._vertex_list:
             return -1
-        equal = self._matrix[self._vertex_list.index(vertex1)][self._vertex_list.index(vertex2)]
-        return equal
+        incidental_vertex = self._matrix[self._vertex_list.index(vertex1)][self._vertex_list.index(vertex2)]
+        return incidental_vertex
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
