@@ -364,7 +364,9 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        non_normalized = {token: sum(1 / position for position in self._positions[token]) for token in self._positions}
+        non_normalized = {}
+        for key, positions in self._positions.items():
+            non_normalized[key] = sum(1 / position for position in positions)
         non_normalized_sum = sum(non_normalized.values())
         self._position_weights = {i: non_normalized[i] / non_normalized_sum for i in non_normalized}
 
@@ -520,7 +522,9 @@ class EdgeListGraph:
         """
         Computes position weights for all tokens in text
         """
-        non_normalized = {token: sum(1 / position for position in self._positions[token]) for token in self._positions}
+        non_normalized = {}
+        for key, positions in self._positions.items():
+            non_normalized[key] = sum(1 / position for position in positions)
         non_normalized_sum = sum(non_normalized.values())
         self._position_weights = {i: non_normalized[i] / non_normalized_sum for i in non_normalized}
 
@@ -595,8 +599,8 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        self._scores[vertex] = 1 + self._damping_factor * (
-                    sum(scores[i] / self._graph.calculate_inout_score(i) for i in incidental_vertices) - 1)
+        multiplier = sum(scores[i] / self._graph.calculate_inout_score(i) for i in incidental_vertices) - 1
+        self._scores[vertex] = 1 + self._damping_factor * multiplier
 
     # Step 5.3
     def train(self) -> None:
