@@ -75,8 +75,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        cleaned_tokens = [word for word in tokens if word not in self._stop_words]
-        return tuple(cleaned_tokens)
+        return tuple([word for word in tokens if word not in self._stop_words])
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -92,8 +91,7 @@ class TextPreprocessor:
                 clean lowercase tokens with no stop-words
         """
         tokenized = self._clean_and_tokenize(text)
-        cleaned_text = self._remove_stop_words(tokenized)
-        return cleaned_text
+        return self._remove_stop_words(tokenized)
 
 
 class TextEncoder:
@@ -139,7 +137,7 @@ class TextEncoder:
                 continue
             self._word2id[word] = id_min
             self._id2word[id_min] = word
-            id_min += 1  # not working
+            id_min += 1
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -304,9 +302,7 @@ class AdjacencyMatrixGraph:
         if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
             return -1
         answer = self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]]
-        if isinstance(answer, int):
-            return answer
-        return -1
+        return answer
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -501,8 +497,7 @@ class EdgeListGraph:
         """
         if vertex not in self._edges:
             return -1
-        number_incident = len(self._edges[vertex])
-        return number_incident
+        return len(self._edges[vertex])
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -990,11 +985,12 @@ class KeywordExtractionBenchmark:
             way_to_file = os.path.join(self._materials_path, one_file)
             with open(way_to_file, encoding='UTF-8') as read_file:
                 readen_file = read_file.read().strip()
-                if 'keyword' in one_file:
-                    _keywords_dict[file_idx] = readen_file.split()
-                elif 'text' in one_file:
-                    _texts_dict[file_idx] = readen_file
-                    file_idx += 1
+            if 'keyword' in one_file:
+                _keywords_dict[file_idx] = readen_file.split()
+                print(_keywords_dict)
+            elif 'text' in one_file:
+                _texts_dict[file_idx] = readen_file
+                file_idx += 1
         for one_method in methods_names:
             self.report[one_method] = {}
         for theme in self.themes:
