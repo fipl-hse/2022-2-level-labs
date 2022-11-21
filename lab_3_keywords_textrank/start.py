@@ -3,10 +3,10 @@ TextRank keyword extraction starter
 """
 import string
 from pathlib import Path
+import json
 from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, extract_pairs,
                                           AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph,
                                           PositionBiasedTextRank, KeywordExtractionBenchmark)
-import json
 
 if __name__ == "__main__":
 
