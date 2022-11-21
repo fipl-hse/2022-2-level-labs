@@ -91,7 +91,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        return self._remove_stop_words(self._clean_and_tokenize(text))
+        preprocess = self._clean_and_tokenize(text)
+        return self._remove_stop_words(preprocess)
 
 
 class TextEncoder:
@@ -152,10 +153,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        idx_of_words = []
-        for word in tokens:
-            idx_of_words.append(self._word2id[word])
-        return tuple(idx_of_words)
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -174,8 +172,7 @@ class TextEncoder:
         for word in encoded_tokens:
             if word not in self._id2word.keys():
                 return None
-        words = (self._id2word[token] for token in encoded_tokens)
-        return tuple(words)
+        return tuple(self._id2word[token] for token in encoded_tokens)
 
 
 # Step 3
