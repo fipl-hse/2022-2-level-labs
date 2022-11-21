@@ -961,10 +961,7 @@ class KeywordExtractionBenchmark:
         self._stop_words = stop_words
         self._punctuation = punctuation
         self._idf = idf
-        if 'benchmark_materials' in str(materials_path):
-            self._materials_path = materials_path
-        else:
-            self._materials_path = materials_path / 'benchmark_materials'
+        self._materials_path = materials_path
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self._themes_id = {'culture': 0, 'business': 1, 'crime': 2, 'fashion': 3, 'health': 4, 'politics': 5,
                            'science': 6, 'sports': 7, 'tech': 8}
@@ -983,7 +980,6 @@ class KeywordExtractionBenchmark:
         methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
         _keywords_dict = {}
         _texts_dict = {}
-        print(self._materials_path)
         for one_file in os.listdir(self._materials_path):
             way_to_file = os.path.join(self._materials_path, one_file)
             with open(way_to_file, encoding='UTF-8') as read_file:
@@ -991,7 +987,6 @@ class KeywordExtractionBenchmark:
             if 'keyword' in one_file:
                 file_idx = int(one_file[0])
                 _keywords_dict[file_idx] = readen_file.split()
-                print(_keywords_dict[file_idx])
             elif 'text' in one_file:
                 file_idx = int(one_file[0])
                 _texts_dict[file_idx] = readen_file
@@ -1017,9 +1012,7 @@ class KeywordExtractionBenchmark:
             tfidf_adapt = TFIDFAdapter(tokens, self._idf)
             rake_adapt = RAKEAdapter(_texts_dict[theme_index], self._stop_words)
 
-            target_keywords = _keywords_dict.get(theme_index)
-            if not target_keywords:
-                return None
+            target_keywords = tuple(_keywords_dict[theme_index])
 
             for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
                 if method.train():
@@ -1029,7 +1022,7 @@ class KeywordExtractionBenchmark:
                     return None
                 if method in (vanilla_graph, position_biased):
                     top_keywords = text_to_code.decode(top_keywords)
-                self.report[methods_names[idx]][theme] = calculate_recall(tuple(top_keywords), tuple(target_keywords))
+                self.report[methods_names[idx]][theme] = calculate_recall(tuple(top_keywords), target_keywords)
         return self.report
 
     # Step 12.4
