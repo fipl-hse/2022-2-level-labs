@@ -69,9 +69,9 @@ if __name__ == "__main__":
     benchmark_punctuation = tuple(i for i in punctuation)
 
     benchmark = KeywordExtractionBenchmark(eng_stop_words, benchmark_punctuation, idf, benchmark_materials)
-    benchmark.run()
+    report = benchmark.run()
     benchmark.save_to_csv(PROJECT_ROOT / 'report.csv')
 
-    RESULT = True
+    RESULT = report
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
