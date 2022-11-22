@@ -279,7 +279,6 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     all_pairs = None
     pairs_frequent = None
     pairs_frequent_stripped = None
-    frequent_pair_with_stop_words = None
     if candidate_keyword_phrases:
         all_pairs = collect_all_pairs(candidate_keyword_phrases)
     if all_pairs:
@@ -288,6 +287,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         pairs_frequent_stripped = trimm_empty_pairs(pairs_frequent)
     if pairs_frequent_stripped and phrases:
         frequent_pair_with_stop_words, full_phrase = add_the_inbetween_word(pairs_frequent_stripped, phrases)
+        frequent_pair_with_stop_words = count_phrases_with_inbetween_words(frequent_pair_with_stop_words,
+                                                                           full_phrase, phrases)
     if frequent_pair_with_stop_words:
         final_list_of_tuples = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
     return final_list_of_tuples
@@ -391,7 +392,7 @@ def add_the_inbetween_word(pairs_frequent_stripped: list,
     return frequent_pair_with_stop_words, full_phrase
 
 
-def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: dict,
+def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: str,
                                        phrases: Sequence[str]) -> dict:
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
