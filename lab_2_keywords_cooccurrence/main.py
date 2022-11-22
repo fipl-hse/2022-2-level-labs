@@ -6,7 +6,7 @@ import string
 import json
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
-from lab_1_keywords_tfidf.main import check_dict, check_list, clean_and_tokenize, calculate_frequencies
+from lab_1_keywords_tfidf.main import check_list, clean_and_tokenize, calculate_frequencies
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -164,14 +164,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    '''
-    if not check_dict(word_degrees, str, int, False) \
-            or not check_dict(word_frequencies, str, int, False):
-        return None
-    '''
-    if not isinstance(word_degrees, dict):
-        return None
-    if not isinstance(word_frequencies, dict):
+    if not isinstance(word_degrees, dict) or not isinstance(word_frequencies, dict):
         return None
     for word, degree in word_degrees.items():
         if not isinstance(word, str) or not isinstance(degree, int):
