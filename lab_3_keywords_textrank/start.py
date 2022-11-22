@@ -38,17 +38,18 @@ if __name__ == "__main__":
 
     graph = AdjacencyMatrixGraph()
     graph.fill_from_tokens(encoded, 3)
+
     #
-    print(graph.add_edge(1001, 1005))
-    print(graph.is_incidental(1001, 1005))
-    print(graph.calculate_inout_score(1001))
+    # print(graph.add_edge(1001, 1005))
+    # print(graph.is_incidental(1001, 1005))
+    # print(graph.calculate_inout_score(1001))
     vanilla_text_rank = VanillaTextRank(graph)
     # if encoded:
+    vanilla_text_rank.train()
     top_10 = vanilla_text_rank.get_top_keywords(10)
     top = encoder.decode(top_10)
-    print(top)
+    # print(top)
 
-
-    # RESULT = None
+    RESULT = top
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    # assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
