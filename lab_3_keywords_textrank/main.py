@@ -965,7 +965,7 @@ class KeywordExtractionBenchmark:
             for name, algorithm in algorithms.items():
                 algorithm.train()
                 predicted = algorithm.get_top_keywords(50)
-                if name == 'VanillaTextRank' or name == 'PositionBiasedTextRank':
+                if name in ('VanillaTextRank', 'PositionBiasedTextRank'):
                     predicted = encoder.decode(predicted)
                 self.report[name][theme] = calculate_recall(predicted, target)
         return self.report
