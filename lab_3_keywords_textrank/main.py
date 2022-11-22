@@ -204,6 +204,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or not isinstance(window_length, int) or window_length < 2:
         return None
     full_list = []
+    final_list = []
     for i in range(len(tokens)):
         window = tokens[i:window_length + i]   #creating windows
         pairs = list(combinations(window, 2))  #creating pairs
@@ -213,8 +214,10 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         reverse = pair[::-1]
         if reverse[0] == reverse[1] or reverse in full_list:
             full_list.remove(pair)
-    final = tuple(set(full_list))
-    return final
+    for i in full_list:
+        if i not in final_list:
+            full_list.append(i)
+    return tuple(final_list)
 
 
 class AdjacencyMatrixGraph:
