@@ -341,9 +341,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._matrix_vertex:
             return -1
-        for elem in self._matrix_vertex:
-            if elem == vertex:
-                return sum(self._matrix[self._matrix_vertex.index(elem)])
+        return sum(self._matrix[self._matrix_vertex.index(vertex)])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
