@@ -23,6 +23,7 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     RESULT = None
+    # в терминал для юнит тестов python -m pytest -m mark6
     punctuation = ('!', '"', '#', '$', '%', '&', '''''', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';',
                    '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~')
     raw_text = TextPreprocessor(stop_words=stop_words, punctuation=punctuation)

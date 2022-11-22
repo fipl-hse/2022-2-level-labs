@@ -278,55 +278,55 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if vertex1 in self._vertices:
-            if vertex2 in self._vertices:
-                vertex1_index = self._vertices.index(vertex1)
-                vertex2_index = self._vertices.index(vertex2)
-                lst = self._matrix[vertex1_index]
-                lst[vertex2_index] = 1
-                lst2 = self._matrix[vertex2_index]
-                lst2[vertex1_index] = 1
-            else:
-                self._vertices.append(vertex2)
-                vertex1_index = self._vertices.index(vertex1)
-                vertex2_index = self._vertices.index(vertex2)
-                for lst in self._matrix:
-                    if lst == self._matrix[vertex1_index]:
-                        lst.append(1)
-                    else:
-                        lst.append(0)
-                lst2 = []
-                for i in range(len(lst)):
-                    if i == vertex1_index:
-                        lst2.append(1)
-                    else:
-                        lst2.append(0)
-                self._matrix.append(lst2)
-
-        if vertex2 in self._vertices:
-            if vertex1 in self._vertices:
-                vertex2_index = self._vertices.index(vertex2)
-                vertex1_index = self._vertices.index(vertex1)
-                lst = self._matrix[vertex2_index]
-                lst[vertex1_index] = 1
-                lst2 = self._matrix[vertex1_index]
-                lst2[vertex2_index] = 1
-            else:
-                self._vertices.append(vertex1)
-                vertex2_index = self._vertices.index(vertex2)
-                vertex1_index = self._vertices.index(vertex1)
-                for lst in self._matrix:
-                    if lst == self._matrix[vertex2_index]:
-                        lst.append(1)
-                    else:
-                        lst.append(0)
-                lst2 = []
-                for i in range(len(lst)):
-                    if i == vertex2_index:
-                        lst2.append(1)
-                    else:
-                        lst2.append(0)
-                self._matrix.append(lst2)
+        vertex1_is_new = False
+        vertex2_is_new = False
+        if vertex1 not in self._vertices:
+            self._vertices.append(vertex1)
+            vertex1_is_new = True
+        if vertex2 not in self._vertices:
+            vertex2_is_new = True
+            self._vertices.append(vertex2)
+        vertex1_index = self._vertices.index(vertex1)
+        vertex2_index = self._vertices.index(vertex2)
+        # если количество списков в матрице меньше количества вершин,
+        # это значит, что добавляются новые вершины (а не связь между уже существующими)
+        if len(self._matrix) < len(self._vertices):
+            # если обе вершины новые, создаю заполненные нулями списки длиной в количество вершин,
+            # а потом обозначаю связь 1
+            if vertex1_is_new and vertex2_is_new:
+                vertex1_lst = []
+                vertex2_lst = []
+                for i in range(len(self._vertices)):
+                    vertex1_lst.append(0)
+                    vertex2_lst.append(0)
+                vertex1_lst[vertex2_index] = 1
+                vertex2_lst[vertex1_index] = 1
+                self._matrix.append(vertex1_lst)
+                self._matrix.append(vertex2_lst)
+            # если первая вершина новая
+            if vertex1_is_new and not vertex2_is_new:
+                vertex1_lst = []
+                for i in range(len(self._vertices)):
+                    vertex1_lst.append(0)
+                vertex1_lst[vertex2_index] = 1
+                self._matrix.append(vertex1_lst)
+                for row in self._matrix:
+                    row.append(0)
+                self._matrix[vertex2_index][vertex1_index] = 1
+            # если вторая вершина новая
+            if vertex2_is_new and not vertex1_is_new:
+                vertex2_lst = []
+                for i in range(len(self._vertices)):
+                    vertex2_lst.append(0)
+                vertex2_lst[vertex1_index] = 1
+                self._matrix.append(vertex2_lst)
+                for row in self._matrix:
+                    row.append(0)
+                self._matrix[vertex1_index][vertex2_index] = 1
+        else:
+            # добавляется связь между существующими вершинами. меняется список
+            self._matrix[vertex1_index][vertex2_index] = 1
+            self._matrix[vertex2_index][vertex1_index] = 1
         return 0
 
     # Step 4.3
@@ -612,6 +612,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
         pass
 
     # Step 5.2
