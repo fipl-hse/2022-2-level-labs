@@ -293,7 +293,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     return final_list_of_tuples
 
 
-def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[dict[KeyPhrase, float]]:
+def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[dict]:
     """
     collect all possible pairs by
     1) get every word+next word combo
@@ -310,7 +310,7 @@ def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[dict[Ke
     return all_pairs
 
 
-def collect_only_frequent_pairs(all_pairs: dict):
+def collect_only_frequent_pairs(all_pairs: dict) -> Sequence[list]:
     """
     if pair appeared more than 1 time - get it into the dictionary with frequent pairs
     """
@@ -327,7 +327,7 @@ def collect_only_frequent_pairs(all_pairs: dict):
     return pairs_frequent
 
 
-def trimm_empty_pairs(pairs_frequent: list):
+def trimm_empty_pairs(pairs_frequent: list) -> Sequence[list]:
     """
     PAIRS FREQUENT: [[], [['одной'], ['важнейших', 'задач']], [], [], [], [], [['ящик'], ['железа']], [], []]
     PAIRS TRIMMED: [[['одной'], ['важнейших', 'задач']], [['ящик'], ['железа']]]
