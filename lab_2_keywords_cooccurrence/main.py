@@ -399,7 +399,7 @@ def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full
     return frequent_pair_with_stop_words
 
 
-def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: dict):
+def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: dict) -> Optional[KeyPhrases]:
     """
     frequent_pair_with_stop_words {'одной из важнейших задач': 2, 'ящик для железа': 1, 'ящик из железа': 1}
     final_list_of_str ['одной из важнейших задач']
