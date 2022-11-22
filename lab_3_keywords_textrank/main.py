@@ -52,11 +52,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        clean_text = []
-        for symbol in text:
+        clean_text = ""
+        for symbol in text.lower():
             if symbol not in self._punctuation:
                 clean_text += symbol
-        tokens = tuple(" ".join(clean_text).lower().split())
+        tokens = tuple(clean_text.split())
         return tokens
 
     # Step 1.3
@@ -75,7 +75,7 @@ class TextPreprocessor:
         words = []
         for token in tokens:
             if token not in self._stop_words:
-                words += token
+                words.append(token)
         return tuple(words)
 
         # Step 1.4
