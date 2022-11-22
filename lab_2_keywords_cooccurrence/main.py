@@ -19,7 +19,7 @@ def type_check(data: bool, expected: str) -> bool:
     :param expected: A type we expect data to be
     :return: True if data has the expected type and not falsy, False otherwise
     """
-    return isinstance(data, expected) and not (expected == int and isinstance(data, bool)) and data
+    return isinstance(data, bool) and not (expected == int and isinstance(data, bool)) and data
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -68,15 +68,15 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     final_list = []
     final_list_tuples = []
     for phrase in phrases:
-        phrase = phrase.lower().split()
-        for word in phrase:
+        phrase_new = phrase.lower().split()
+        for word in phrase_new:
             if word in stop_words:
-                index = phrase.index(word)
-                phrase[index] = ','
-        phrase = " ".join(phrase)
-        phrase = phrase.split(',')
+                indexx = phrase_new.index(word)
+                phrase_new[indexx] = ','
+        phrase_new = " ".join(phrase_new)
+        phrase_new = phrase_new.split(',')
         # разделяет по запятым на элементы, далее работа со списком
-        for i in phrase:
+        for i in phrase_new:
             i = i.strip(',')
             # Метод strip() возвращает копию строки, удаляя как начальные, так и конечные символы
             # (в зависимости от переданного строкового аргумента).
@@ -164,9 +164,21 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
+    '''
     if not check_dict(word_degrees, str, int, False) \
             or not check_dict(word_frequencies, str, int, False):
         return None
+    '''
+    if not isinstance(word_degrees, dict):
+        return None
+    if not isinstance(word_frequencies, dict):
+        return None
+    for word, degree in word_degrees.items():
+        if not isinstance(word, str) or not isinstance(degree, int):
+            return None
+    for word, freq in word_frequencies.items():
+        if not isinstance(word, str) or not isinstance(freq, int):
+            return None
     if len(word_degrees) == 0 or len(word_frequencies) == 0:
         return None
     word_scores = {}
