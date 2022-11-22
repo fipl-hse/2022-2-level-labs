@@ -133,7 +133,6 @@ class TextEncoder:
         self._word2id = {token: id_n for (token, id_n) in zip(tokens, id_lst)}
         self._id2word = {id_n: token for (id_n, token) in zip(id_lst, tokens)}
 
-
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
         """
@@ -262,7 +261,6 @@ class AdjacencyMatrixGraph:
         self._position_weights = {}
         self._vertices = []
 
-
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
@@ -299,7 +297,6 @@ class AdjacencyMatrixGraph:
         self._matrix[index2][index1] = 1
         return 0
 
-
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
         """
@@ -320,9 +317,9 @@ class AdjacencyMatrixGraph:
             if vertex not in self._vertices:
                 return -1
 
-
-
-        return 1
+        index1 = self._vertices.index(vertex1)
+        index2 = self._vertices.index(vertex2)
+        return self._matrix[index1][index2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -333,7 +330,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -349,7 +346,16 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._vertices:
+            return -1
+
+        index = self._vertices.index(vertex)
+        counting = 0
+        for row in self._matrix:
+            if row[index] == 1:
+                counting += 1
+
+        return counting
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -363,7 +369,15 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        pairs = extract_pairs(tokens, window_length)
+
+        for pair in pairs:
+            for word in pair:
+                index = pair.index(word)
+                try:
+                    self.add_edge(word, pair[index + 1])
+                except IndexError:
+                    pass
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -575,7 +589,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -590,7 +608,15 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summ = 0
+
+        for incidental_vertex in incidental_vertices:
+            in_out_score = self._graph.calculate_inout_score(incidental_vertex)
+            var = 1 / abs(in_out_score) * scores[vertex]
+            summ += var
+
+        new_weight = summ * self._damping_factor + (1 - self._damping_factor)
+        self._scores[vertex] = new_weight
 
     # Step 5.3
     def train(self) -> None:
@@ -624,7 +650,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -635,7 +661,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
