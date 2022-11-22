@@ -267,7 +267,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    final_list_of_tuples = []
+    final_list_of_tuples = {}
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
     if not (check_list(phrases, str, False)) or not phrases:
@@ -276,29 +276,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     if phrases == ['']:
         return final_list_of_tuples
-    all_pairs = None
-    pairs_frequent = None
-    pairs_frequent_stripped = None
-    frequent_pair_with_stop_words = None
-    if candidate_keyword_phrases:
-        all_pairs = collect_all_pairs(candidate_keyword_phrases)
-    if all_pairs:
-        pairs_frequent = collect_only_frequent_pairs(all_pairs)
-    if pairs_frequent:
-        pairs_frequent_stripped = trimm_empty_pairs(pairs_frequent)
-    if pairs_frequent_stripped and phrases:
-        frequent_pair_with_stop_words = add_the_inbetween_word(pairs_frequent_stripped, phrases)
-    if frequent_pair_with_stop_words:
-        final_list_of_tuples = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
-    return final_list_of_tuples
 
-
-def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[KeyPhrases]:
-    """
-    collect all possible pairs by
-    1) get every word+next word combo
-    2) make a dictionary that count how many times some phrase appeared
-    """
     all_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
         # потому что дальше работа с индексами, а они с 0, а не с 1
@@ -307,13 +285,7 @@ def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[KeyPhra
             all_pairs[pair] = all_pairs.get(pair, 1)
         else:
             all_pairs[pair] += 1
-    return all_pairs
 
-
-def collect_only_frequent_pairs(all_pairs: dict) -> Optional[KeyPhrases]:
-    """
-    if pair appeared more than 1 time - get it into the dictionary with frequent pairs
-    """
     pairs_frequent = []
     for pair in all_pairs:
         pairs = []
@@ -324,26 +296,14 @@ def collect_only_frequent_pairs(all_pairs: dict) -> Optional[KeyPhrases]:
                     list_of_a_phrase.append(word)
                 pairs.append(list_of_a_phrase)
         pairs_frequent.append(pairs)
-    return pairs_frequent
 
-
-def trimm_empty_pairs(pairs_frequent: list) -> Optional[KeyPhrases]:
-    """
-    PAIRS FREQUENT: [[], [['одной'], ['важнейших', 'задач']], [], [], [], [], [['ящик'], ['железа']], [], []]
-    PAIRS TRIMMED: [[['одной'], ['важнейших', 'задач']], [['ящик'], ['железа']]]
-    """
     pairs_frequent_stripped = []
     for pair in pairs_frequent:
         if len(pair) != 0:
             pairs_frequent_stripped.append(pair)
-    return pairs_frequent_stripped
 
-
-def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]) -> dict:
-    """
-    literally adding the inbetween word (descriptions are line by line)
-    """
     frequent_pair_with_stop_words = {}
+    full_phrase = None
     for pair in pairs_frequent_stripped:
         first_part = pair[0][0].split()
         last_word_of_fisrt_part = first_part[-1]
@@ -386,25 +346,13 @@ def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]
                     phrase = phrase[index_of_stop_word:]
             if occurrence == 0:
                 break
-    return frequent_pair_with_stop_words
 
-
-def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: dict,
-                                       phrases: Sequence[str]) -> dict:
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
             if key in phrase:
                 frequent_pair_with_stop_words[full_phrase] = 0
                 frequent_pair_with_stop_words[full_phrase] += 1
-    return frequent_pair_with_stop_words
 
-
-def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: dict) -> Optional[KeyPhrases]:
-    """
-    frequent_pair_with_stop_words {'одной из важнейших задач': 2, 'ящик для железа': 1, 'ящик из железа': 1}
-    final_list_of_str ['одной из важнейших задач']
-    final_list_of_str [('одной', 'из', 'важнейших', 'задач')]
-    """
     final_list_of_str = []
     for key in frequent_pair_with_stop_words:
         if frequent_pair_with_stop_words[key] >= 2:
