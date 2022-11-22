@@ -5,7 +5,7 @@ TextRank keyword extraction starter
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, \
-                                         VanillaTextRank
+                                         VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
 
 
 if __name__ == "__main__":
@@ -24,21 +24,49 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    preprocessor = TextPreprocessor(stop_words, punctuation)
+    # step 3
+    preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     encoder = TextEncoder()
     tokens = encoder.encode(preprocessor.preprocess_text(text))
 
     if tokens:
         print(extract_pairs(tokens, 3))
 
+    # step 6
     adj_graph = AdjacencyMatrixGraph()
     if tokens:
         adj_graph.fill_from_tokens(tokens, 3)
+    vanilla_rank_adj = VanillaTextRank(adj_graph)
+    vanilla_rank_adj.train()
+    top_keywords_adj = vanilla_rank_adj.get_top_keywords(10)
+    print(encoder.decode(top_keywords_adj))
 
-    vanilla_rank = VanillaTextRank(adj_graph)
-    vanilla_rank.train()
-    top_keywords = vanilla_rank.get_top_keywords(10)
-    RESULT = encoder.decode(top_keywords)
+    # step 7.3
+    edg_graph = EdgeListGraph()
+    if tokens:
+        edg_graph.fill_from_tokens(tokens, 3)
+    vanilla_rank_edg = VanillaTextRank(edg_graph)
+    vanilla_rank_edg.train()
+    top_keywords_edg = vanilla_rank_edg.get_top_keywords(10)
+    RESULT = encoder.decode(top_keywords_edg)
+    print(RESULT)
+
+    # step 9.3
+    if tokens:
+        adj_graph.fill_positions(tokens)
+    adj_graph.calculate_position_weights()
+    adj_biased = PositionBiasedTextRank(adj_graph)
+    adj_biased.train()
+    top_keywords_biased_adj = adj_biased.get_top_keywords(10)
+    print(encoder.decode(top_keywords_biased_adj))
+
+    if tokens:
+        edg_graph.fill_positions(tokens)
+    edg_graph.calculate_position_weights()
+    edg_biased = PositionBiasedTextRank(edg_graph)
+    edg_biased.train()
+    top_keywords_biased_edg = edg_biased.get_top_keywords(10)
+    RESULT = encoder.decode(top_keywords_biased_edg)
     print(RESULT)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
