@@ -12,7 +12,7 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-def type_check(data, expected) -> bool:
+def type_check(data: bool, expected: str) -> bool:
     """
     Checks any type used in the program. And object's falsiness.
     :param data: An object which type is checked
@@ -288,14 +288,15 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     return final_list_of_tuples
 
 
-def collect_all_pairs(candidate_keyword_phrases: KeyPhrases):
+def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[dict[KeyPhrase, float]]:
     """
     collect all possible pairs by
     1) get every word+next word combo
     2) make a dictionary that count how many times some phrase appeared
     """
     all_pairs = {}
-    for i in range(len(candidate_keyword_phrases) - 1):  # потому что дальше работа с индексами, а они с 0, а не с 1
+    for i in range(len(candidate_keyword_phrases) - 1):
+        # потому что дальше работа с индексами, а они с 0, а не с 1
         pair = candidate_keyword_phrases[i], candidate_keyword_phrases[i + 1]
         if pair not in all_pairs:
             all_pairs[pair] = all_pairs.get(pair, 1)
