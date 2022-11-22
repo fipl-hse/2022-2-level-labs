@@ -132,11 +132,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     word_degrees_dict = {}
     for word in content_words:
         word_degrees_dict[word] = 0
-
-    for item in candidate_keyword_phrases:
-        for token in item:
-            if token in content_words:
-                word_degrees_dict[token] += len(item)
+        for phrase in candidate_keyword_phrases:
+            if word in phrase:
+                word_degrees_dict[word] += len(phrase)
     return word_degrees_dict
 
 
