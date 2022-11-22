@@ -176,9 +176,7 @@ class TextEncoder:
         for token in encoded_tokens:
             if token not in self._id2word:
                 return None
-            for key in self._id2word:
-                if token == key:
-                    words.append(self._id2word[key])
+            words.append(self._id2word[token])
         return tuple(words)
 
 
@@ -341,12 +339,11 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex in self._matrix_vertex:
-            for elem in self._matrix_vertex:
-                if elem == vertex:
-                    return sum(string for string in self._matrix[self._matrix_vertex.index(elem)])
-
-        return -1
+        if vertex not in self._matrix_vertex:
+            return -1
+        for elem in self._matrix_vertex:
+            if elem == vertex:
+                return sum(self._matrix[self._matrix_vertex.index(elem)])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -879,26 +876,26 @@ class RAKEAdapter:
                 0 if importance scores were calculated successfully, otherwise -1
         """
         phrases = extract_phrases(self._text)
-        if phrases:
-            candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
-        else:
+        if not phrases:
             return -1
-        if candidate_keyword_phrases:
-            frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-        else:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, list(self._stop_words))
+
+        if not candidate_keyword_phrases:
             return -1
-        if candidate_keyword_phrases and frequencies_for_content_words:
-            word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words.keys()))
-        else:
+        frequencies_for_content_words = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+
+        if not candidate_keyword_phrases or not frequencies_for_content_words:
             return -1
-        if word_degrees and frequencies_for_content_words:
-            word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
-        else:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies_for_content_words.keys()))
+
+        if not word_degrees or not frequencies_for_content_words:
             return -1
-        if word_scores:
-            self._scores |= word_scores
-        else:
+        word_scores = calculate_word_scores(word_degrees, frequencies_for_content_words)
+
+        if not word_scores:
             return -1
+        self._scores |= word_scores
+
         return 0
 
         # Step 11.3
