@@ -213,7 +213,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         reverse = pair[::-1]
         if reverse[0] == reverse[1] or reverse in full_list:
             full_list.remove(pair)
-    final = tuple(set(full_list))
+    final = tuple(list(dict.fromkeys(full_list)))
     return final
 
 
