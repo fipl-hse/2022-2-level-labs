@@ -791,10 +791,10 @@ class TFIDFAdapter:
         frequencies = calculate_frequencies(list(self._tokens))
         if not frequencies:
             return -1
-        tf = calculate_tf(frequencies)
-        if not tf:
+        term_frequency = calculate_tf(frequencies)
+        if not term_frequency:
             return -1
-        tfidf = calculate_tfidf(tf, self._idf)
+        tfidf = calculate_tfidf(term_frequency, self._idf)
         if not tfidf:
             return -1
         self._scores = tfidf
