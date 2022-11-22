@@ -219,6 +219,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not (tokens and isinstance(window_length, int) and window_length >= 2):
         return None
+
     window_tokens = tokens[:window_length]
     pairs = []
     start_slice = 0
@@ -226,11 +227,12 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         for window_word in window_tokens:
             if word == window_word:
                 continue
-            if word == window_word:
-                continue
+
             pair = tuple(sorted((word, window_word)))
+
             if pair in pairs:
                 continue
+
             pairs.append(pair)
         start_slice += 1
         end_slice = window_length + start_slice
@@ -280,7 +282,11 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        pass
+        self._matrix = []
+        self._positions = {}
+        self._position_weights = {}
+        self._vertices = []
+
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -301,7 +307,26 @@ class AdjacencyMatrixGraph:
 
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([0 for _ in range(len(self._vertices))])
+
+        max_len_of_element = len(max(self._matrix, key=len))
+
+        for element in self._matrix:
+            if len(element) < max_len_of_element:
+                element += [0] * (max_len_of_element - len(element))
+
+        index1 = self._vertices.index(vertex1)
+        index2 = self._vertices.index(vertex2)
+        self._matrix[index1][index2] = 1
+        self._matrix[index2][index1] = 1
+        return 0
+
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -322,7 +347,13 @@ class AdjacencyMatrixGraph:
 
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                return -1
+
+
+
+        return 1
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
