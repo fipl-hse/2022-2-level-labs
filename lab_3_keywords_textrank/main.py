@@ -197,18 +197,18 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         return None
     pairs = []
     windows = []
-    for count, value in enumerate(tokens):
+    for count in range(len(tokens)):
         window = tokens[count:window_length + count]
         windows.append(window)
     for window in windows:
         if len(window) != window_length:
             continue
         for i in range(len(window) - 1):
-            for n in range(window_length - 1):
+            for index in range(window_length - 1):
                 pair = []
-                if window[i + n - 1] != window[i]:
+                if window[i + index - 1] != window[i]:
                     pair.append(window[i])
-                    pair.append(window[i + n - 1])
+                    pair.append(window[i + index - 1])
                 if pair not in pairs and pair:
                     pair.sort()
                     pairs.append(tuple(pair))
@@ -381,7 +381,7 @@ class AdjacencyMatrixGraph:
         for k, val in self._positions.items():
             not_normalized[k] = sum(1 / i for i in val)
         sum_not_normalized = sum(not_normalized.values())
-        for key in not_normalized.keys():
+        for key in not_normalized:
             self._position_weights[key] = not_normalized[key] / sum_not_normalized
 
     # Step 8.4
@@ -548,7 +548,7 @@ class EdgeListGraph:
         for k, val in self._positions.items():
             not_normalized[k] = sum(1 / i for i in val)
         sum_not_normalized = sum(not_normalized.values())
-        for key in not_normalized.keys():
+        for key in not_normalized:
             self._position_weights[key] = not_normalized[key] / sum_not_normalized
 
     # Step 8.4
