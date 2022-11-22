@@ -267,7 +267,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    final_list_of_tuples = {}
+    final_emplty_list_of_tuples = []
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
     if not (check_list(phrases, str, False)) or not phrases:
@@ -275,7 +275,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if len(candidate_keyword_phrases) == 0:
         return None
     if phrases == ['']:
-        return final_list_of_tuples
+        return final_emplty_list_of_tuples
 
     all_pairs = {}
     for i in range(len(candidate_keyword_phrases) - 1):
@@ -302,6 +302,22 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         if len(pair) != 0:
             pairs_frequent_stripped.append(pair)
 
+    frequent_pair_with_stop_words = add_the_inbetween_word(pairs_frequent_stripped, phrases)
+
+    final_list_of_str = []
+    for key in frequent_pair_with_stop_words:
+        if frequent_pair_with_stop_words[key] >= 2:
+            final_list_of_str.append(key)
+    final_list_of_tuples = []
+    for key in final_list_of_str:
+        final_list_of_tuples.append(tuple(key.split()))
+    return final_list_of_tuples
+
+
+def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]) -> dict:
+    """
+    literally adding the inbetween word (descriptions are line by line)
+    """
     frequent_pair_with_stop_words = {}
     full_phrase = None
     for pair in pairs_frequent_stripped:
@@ -346,21 +362,13 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     phrase = phrase[index_of_stop_word:]
             if occurrence == 0:
                 break
-
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
             if key in phrase:
                 frequent_pair_with_stop_words[full_phrase] = 0
                 frequent_pair_with_stop_words[full_phrase] += 1
 
-    final_list_of_str = []
-    for key in frequent_pair_with_stop_words:
-        if frequent_pair_with_stop_words[key] >= 2:
-            final_list_of_str.append(key)
-    final_list_of_tuples = []
-    for key in final_list_of_str:
-        final_list_of_tuples.append(tuple(key.split()))
-    return final_list_of_tuples
+    return frequent_pair_with_stop_words
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
