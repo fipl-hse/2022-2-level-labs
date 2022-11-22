@@ -57,7 +57,7 @@ if __name__ == "__main__":
     # step 12
     BENCHMARK_PATH = ASSETS_PATH / 'benchmark_materials'
 
-    ENG_STOP_WORDS_PATH = BENCHMARK_PATH / 'stop_words.txt'
+    ENG_STOP_WORDS_PATH = BENCHMARK_PATH / 'eng_stop_words.txt'
     with open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         eng_stop_words = tuple(file.read().split('\n'))
 
