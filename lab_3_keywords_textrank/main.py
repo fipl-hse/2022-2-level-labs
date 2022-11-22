@@ -39,8 +39,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self.stop_words = stop_words
-        self.punctuation = punctuation
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -55,11 +55,10 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        for i in self.punctuation:
+        for i in self._punctuation:
             text = text.replace(i, '')
         tokens = text.lower().split()
         return tuple(tokens)
-
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -76,7 +75,7 @@ class TextPreprocessor:
         """
         new_tokens = []
         for i in tokens:
-            if i not in self.stop_words:
+            if i not in self._stop_words:
                 new_tokens.append(i)
         return tuple(new_tokens)
 
@@ -176,13 +175,13 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        for i in encoded_tokens:
-            if i not in self._id2word.keys():
-                return None
         words = []
         for i in encoded_tokens:
+            if i not in self._id2word:
+                return None
             words.append(self._id2word[i])
         return tuple(words)
+
 
 # Step 3
 def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
@@ -291,7 +290,6 @@ class AdjacencyMatrixGraph:
         self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] = 1
         return 0
 
-
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
         """
@@ -311,8 +309,9 @@ class AdjacencyMatrixGraph:
         for vertex in vertex1, vertex2:
             if vertex not in self._vertexes:
                 return -1
-        if self._matrix[self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1 and\
-            self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
+        if self._matrix[self._vertexes.index(vertex1)][self._vertexes.index(vertex2)] == 1:
+            return 1
+        if self._matrix[self._vertexes.index(vertex2)][self._vertexes.index(vertex1)] == 1:
             return 1
         if (vertex1 or vertex2) not in self._vertexes:
             return -1
@@ -450,7 +449,6 @@ class EdgeListGraph:
         vertices = self._edges.keys()
         return tuple(vertices)
 
-
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
@@ -476,7 +474,6 @@ class EdgeListGraph:
         self._edges[vertex2].append(vertex1)
         self._edges[vertex1].append(vertex2)
         return 0
-
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -616,7 +613,6 @@ class VanillaTextRank:
         self._convergence_threshold = 0.0001
         self._max_iter = 50
         self._scores = {}
-
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
