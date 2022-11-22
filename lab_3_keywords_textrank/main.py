@@ -256,6 +256,8 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
+        self._matrix = []
+        self._vertices = []
         pass
 
     # Step 4.2
@@ -274,7 +276,58 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+        if vertex1 in self._vertices:
+            if vertex2 in self._vertices:
+                vertex1_index = self._vertices.index(vertex1)
+                vertex2_index = self._vertices.index(vertex2)
+                lst = self._matrix[vertex1_index]
+                lst[vertex2_index] = 1
+                lst2 = self._matrix[vertex2_index]
+                lst2[vertex1_index] = 1
+            else:
+                self._vertices.append(vertex2)
+                vertex1_index = self._vertices.index(vertex1)
+                vertex2_index = self._vertices.index(vertex2)
+                for lst in self._matrix:
+                    if lst == self._matrix[vertex1_index]:
+                        lst.append(1)
+                    else:
+                        lst.append(0)
+                lst2 = []
+                for i in range(len(lst)):
+                    if i == vertex1_index:
+                        lst2.append(1)
+                    else:
+                        lst2.append(0)
+                self._matrix.append(lst2)
+
+        if vertex2 in self._vertices:
+            if vertex1 in self._vertices:
+                vertex2_index = self._vertices.index(vertex2)
+                vertex1_index = self._vertices.index(vertex1)
+                lst = self._matrix[vertex2_index]
+                lst[vertex1_index] = 1
+                lst2 = self._matrix[vertex1_index]
+                lst2[vertex2_index] = 1
+            else:
+                self._vertices.append(vertex1)
+                vertex2_index = self._vertices.index(vertex2)
+                vertex1_index = self._vertices.index(vertex1)
+                for lst in self._matrix:
+                    if lst == self._matrix[vertex2_index]:
+                        lst.append(1)
+                    else:
+                        lst.append(0)
+                lst2 = []
+                for i in range(len(lst)):
+                    if i == vertex2_index:
+                        lst2.append(1)
+                    else:
+                        lst2.append(0)
+                self._matrix.append(lst2)
+        return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -292,7 +345,14 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        if vertex1 not in self._vertices or vertex2 not in self._vertices:
+            return -1
+        vertex1_index = self._vertices.index(vertex1)
+        vertex2_index = self._vertices.index(vertex2)
+        lst = self._matrix[vertex1_index]
+        if lst[vertex2_index] == 1:
+            return 1
+        return 0
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -303,7 +363,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -319,7 +379,12 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._vertices:
+            return -1
+        vertex_index = self._vertices.index(vertex)
+        lst = self._matrix[vertex_index]
+        score = sum(lst)
+        return score
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -333,7 +398,9 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        tokens_pairs = extract_pairs(tokens, window_length)
+        for item in tokens_pairs:
+            self.add_edge(item[0], item[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
