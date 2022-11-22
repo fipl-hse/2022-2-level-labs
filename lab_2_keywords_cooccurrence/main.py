@@ -73,10 +73,10 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
             if word in stop_words:
                 indexx = phrase_new.index(word)
                 phrase_new[indexx] = ','
-        phrase_new = " ".join(phrase_new)
-        phrase_new = phrase_new.split(',')
+        phrase_new_new = " ".join(phrase_new)
+        phrase_new_new = phrase_new_new.split(',')
         # разделяет по запятым на элементы, далее работа со списком
-        for i in phrase_new:
+        for i in phrase_new_new:
             i = i.strip(',')
             # Метод strip() возвращает копию строки, удаляя как начальные, так и конечные символы
             # (в зависимости от переданного строкового аргумента).
@@ -293,7 +293,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     return final_list_of_tuples
 
 
-def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[dict]:
+def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[KeyPhrases]:
     """
     collect all possible pairs by
     1) get every word+next word combo
@@ -310,7 +310,7 @@ def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> Optional[dict]:
     return all_pairs
 
 
-def collect_only_frequent_pairs(all_pairs: dict) -> Sequence[list]:
+def collect_only_frequent_pairs(all_pairs: dict) -> Optional[KeyPhrases]:
     """
     if pair appeared more than 1 time - get it into the dictionary with frequent pairs
     """
@@ -327,7 +327,7 @@ def collect_only_frequent_pairs(all_pairs: dict) -> Sequence[list]:
     return pairs_frequent
 
 
-def trimm_empty_pairs(pairs_frequent: list) -> Sequence[list]:
+def trimm_empty_pairs(pairs_frequent: list) -> Optional[KeyPhrases]:
     """
     PAIRS FREQUENT: [[], [['одной'], ['важнейших', 'задач']], [], [], [], [], [['ящик'], ['железа']], [], []]
     PAIRS TRIMMED: [[['одной'], ['важнейших', 'задач']], [['ящик'], ['железа']]]
@@ -339,7 +339,7 @@ def trimm_empty_pairs(pairs_frequent: list) -> Sequence[list]:
     return pairs_frequent_stripped
 
 
-def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]) -> Optional[KeyPhrases]:
+def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]) -> dict:
     """
     literally adding the inbetween word (descriptions are line by line)
     """
@@ -390,7 +390,7 @@ def add_the_inbetween_word(pairs_frequent_stripped: list, phrases: Sequence[str]
 
 
 def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: dict,
-                                       phrases: Sequence[str]) -> Optional[KeyPhrases]:
+                                       phrases: Sequence[str]) -> dict:
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
             if key in phrase:
