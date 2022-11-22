@@ -1008,7 +1008,8 @@ class KeywordExtractionBenchmark:
                 text_to_int = TextEncoder()
                 tokens = text_to_int.encode(preprocessed_text)
                 graph = EdgeListGraph()
-                graph.fill_from_tokens(tuple(tokens), 3)
+                if tokens:
+                    graph.fill_from_tokens(tuple(tokens), 3)
 
                 vanilla_tr_kw = VanillaTextRank(graph)
                 vanilla_tr_kw.train()
@@ -1021,7 +1022,7 @@ class KeywordExtractionBenchmark:
                 position_biased_tr_kw = PositionBiasedTextRank(graph)
                 position_biased_tr_kw.train()
                 train4_result_decode = text_to_int.decode(position_biased_tr_kw.get_top_keywords(50))
-                position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
+                position_biased_tr_recall = calculate_recall(tuple(train4_result_decode), keywords)
                 self._report['PositionBiasedTextRank'][theme] = position_biased_tr_recall
             except TypeError:
                 return None
