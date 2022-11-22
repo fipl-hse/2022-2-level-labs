@@ -764,8 +764,10 @@ class TFIDFAdapter:
         frequencies = calculate_frequencies(list(self._tokens))
         tf_scores = calculate_tf(frequencies) if frequencies else None
         tfidf_scores = calculate_tfidf(tf_scores, self._idf) if tf_scores else None
-        self._scores = tfidf_scores if tfidf_scores else {}
-        return 0 if self._scores else -1
+        if not tfidf_scores:
+            return -1
+        self._scores = tfidf_scores
+        return 0
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
