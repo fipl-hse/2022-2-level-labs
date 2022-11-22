@@ -1008,15 +1008,15 @@ class KeywordExtractionBenchmark:
                 text_to_int = TextEncoder()
                 tokens = text_to_int.encode(preprocessed_text)
                 graph = EdgeListGraph()
-                graph.fill_from_tokens(tokens, 3)
+                graph.fill_from_tokens(tuple(tokens), 3)
 
                 vanilla_tr_kw = VanillaTextRank(graph)
                 vanilla_tr_kw.train()
                 train3_result_decode = text_to_int.decode(vanilla_tr_kw.get_top_keywords(50))
-                vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
+                vanilla_tr_recall = calculate_recall(tuple(train3_result_decode), keywords)
                 self._report['VanillaTextRank'][theme] = vanilla_tr_recall
 
-                graph.fill_positions(tokens)
+                graph.fill_positions(tuple(tokens))
                 graph.calculate_position_weights()
                 position_biased_tr_kw = PositionBiasedTextRank(graph)
                 position_biased_tr_kw.train()
