@@ -4,6 +4,7 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+import csv
 from lab_1_keywords_tfidf.main import check_positive_int, calculate_frequencies, calculate_tf, \
     calculate_tfidf, get_top_n
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
@@ -936,7 +937,38 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        self.report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TF-IDF': {}, 'RAKE': {}}
+        for index, theme in enumerate(self.themes):
+            with open(self._materials_path / f'{index}_text.txt', 'r', encoding='utf-8') as file:
+                text = file.read()
+            with open(self._materials_path / f'{index}_keywords.txt', 'r', encoding='utf-8') as file:
+                target = tuple(file.read().split())
+
+            preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+            preprocessed_text = preprocessor.preprocess_text(text)
+            encoder = TextEncoder()
+            tokens = encoder.encode(preprocessed_text)
+            if not tokens:
+                return None
+
+            graph = EdgeListGraph()
+            graph.fill_from_tokens(tokens, 3)
+            graph.fill_positions(tokens)
+            graph.calculate_position_weights()
+
+            vanilla = VanillaTextRank(graph)
+            position_biased = PositionBiasedTextRank(graph)
+            tfidf = TFIDFAdapter(preprocessed_text, self._idf)
+            rake = RAKEAdapter(text, self._stop_words)
+            algorithms = {'VanillaTextRank': vanilla, 'PositionBiasedTextRank': position_biased,
+                          'TF-IDF': tfidf, 'RAKE': rake}
+            for name, algorithm in algorithms.items():
+                algorithm.train()
+                predicted = algorithm.get_top_keywords(50)
+                if name == 'VanillaTextRank' or name == 'PositionBiasedTextRank':
+                    predicted = encoder.decode(predicted)
+                self.report[name][theme] = calculate_recall(predicted, target)
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -947,4 +979,8 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        with open(path, 'w', encoding='utf-8', newline='') as file:
+            csv_report = csv.writer(file)
+            csv_report.writerow(['name'] + list(self.themes))
+            for algorithm, result in self.report.items():
+                csv_report.writerow([algorithm] + list(result.values()))
