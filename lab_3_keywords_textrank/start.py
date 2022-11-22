@@ -31,14 +31,16 @@ if __name__ == "__main__":
     encoded_tokens = encoded_text.encode(tokens)
 
     text_graph1 = AdjacencyMatrixGraph()
-    text_graph1.fill_from_tokens(tuple(encoded_tokens), 5)
+    if encoded_tokens:
+        text_graph1.fill_from_tokens(encoded_tokens, 5)
     text_rank1 = VanillaTextRank(text_graph1)
     text_rank1.train()
     top1 = text_rank1.get_top_keywords(10)
     decoded_text1 = encoded_text.decode(top1)
     print(decoded_text1)
     text_graph2 = EdgeListGraph()
-    text_graph2.fill_from_tokens(tuple(encoded_tokens), 5)
+    if encoded_tokens:
+        text_graph2.fill_from_tokens(encoded_tokens, 5)
     text_rank1 = VanillaTextRank(text_graph2)
     text_rank1.train()
     top1 = text_rank1.get_top_keywords(10)
@@ -46,8 +48,10 @@ if __name__ == "__main__":
     print(decoded_text1)
 
     text_graph3 = AdjacencyMatrixGraph()
-    text_graph3.fill_from_tokens(tuple(encoded_tokens), 2)
-    text_graph3.fill_positions(tuple(encoded_tokens))
+    if encoded_tokens:
+        text_graph3.fill_from_tokens(encoded_tokens, 2)
+    if encoded_tokens:
+        text_graph3.fill_positions(encoded_tokens)
     text_graph3.calculate_position_weights()
     text_rank2 = PositionBiasedTextRank(text_graph3)
     text_rank2.train()
@@ -55,8 +59,10 @@ if __name__ == "__main__":
     decoded_text2 = encoded_text.decode(top2)
     print(decoded_text2)
     text_graph4 = EdgeListGraph()
-    text_graph4.fill_from_tokens(tuple(encoded_tokens), 3)
-    text_graph4.fill_positions(tuple(encoded_tokens))
+    if encoded_tokens:
+        text_graph4.fill_from_tokens(encoded_tokens, 3)
+    if encoded_tokens:
+        text_graph4.fill_positions(encoded_tokens)
     text_graph4.calculate_position_weights()
     text_rank2 = PositionBiasedTextRank(text_graph4)
     text_rank2.train()

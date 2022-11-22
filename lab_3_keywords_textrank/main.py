@@ -1016,18 +1016,18 @@ class KeywordExtractionBenchmark:
                 train3_result_decode = text_to_int.decode(vanilla_tr_kw.get_top_keywords(50))
                 if not train3_result_decode:
                     return None
-                vanilla_tr_recall = calculate_recall(tuple(train3_result_decode), keywords)
+                vanilla_tr_recall = calculate_recall(train3_result_decode, keywords)
                 self._report['VanillaTextRank'][theme] = vanilla_tr_recall
 
                 if tokens:
-                    graph.fill_positions(tuple(tokens))
+                    graph.fill_positions(tokens)
                 graph.calculate_position_weights()
                 position_biased_tr_kw = PositionBiasedTextRank(graph)
                 position_biased_tr_kw.train()
                 train4_result_decode = text_to_int.decode(position_biased_tr_kw.get_top_keywords(50))
                 if not train4_result_decode:
                     return None
-                position_biased_tr_recall = calculate_recall(tuple(train4_result_decode), keywords)
+                position_biased_tr_recall = calculate_recall(train4_result_decode, keywords)
                 self._report['PositionBiasedTextRank'][theme] = position_biased_tr_recall
             except TypeError:
                 return None
