@@ -134,9 +134,7 @@ class TextEncoder:
         """
         for idx, word in enumerate(tokens, 1001):
             self._word2id[word] = idx
-        # print(self._word2id)
         self._id2word = {id: word for word, id in self._word2id.items()}
-        # print(self._id2word)
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -255,7 +253,8 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
+        self._matrix = []
+        self._vertices = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -276,13 +275,14 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
         for vrtx in vertex1, vertex2:
-            if vrtx not in self._matrix[0]:
-                self._matrix[0].append(vrtx)
-                self._matrix.append([0 for _ in range(len(self._matrix[0]))])
-                for i in range(1, len(self._matrix[0])):
+            if vrtx not in self._vertices:
+                self._vertices.append(vrtx)
+                self._matrix.append([0 for _ in range(len(self._vertices))])
+                # while len(self._matrix[0]) < len(self._vertices):
+                for i in range(len(self._vertices) - 1):
                     self._matrix[i].append(0)
-        self._matrix[self._matrix[0].index(vertex1) + 1][self._matrix[0].index(vertex2)] = 1
-        self._matrix[self._matrix[0].index(vertex2) + 1][self._matrix[0].index(vertex1)] = 1
+        self._matrix[self._vertices.index(vertex1)][self._vertices.index(vertex2)] = 1
+        self._matrix[self._vertices.index(vertex2)][self._vertices.index(vertex1)] = 1
         return 0
 
     # Step 4.3
@@ -301,11 +301,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if not (vertex1 in self._matrix[0] and vertex2 in self._matrix[0]):
+        if not (vertex1 in self._vertices and vertex2 in self._vertices):
             return -1
-        idx_vrtx1 = self._matrix[0].index(vertex1)
-        idx_vrtx2 = self._matrix[0].index(vertex2)
-        if self._matrix[idx_vrtx1 + 1][idx_vrtx2] == 1:
+        idx_vrtx1 = self._vertices.index(vertex1)
+        idx_vrtx2 = self._vertices.index(vertex2)
+        if self._matrix[idx_vrtx1][idx_vrtx2] == 1:
             return 1
         return 0
 
@@ -318,7 +318,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._matrix[0])
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -334,16 +334,9 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._matrix[0]:
+        if vertex not in self._vertices:
             return -1
-        # count = []
-        number = [x[self._matrix[0].index(vertex)] for x in self._matrix]
-        # print(number)
-        # for rows in self._matrix:
-        #     for num in rows[1:][self._matrix[0].index(vertex)]:
-        #         if num == 1:
-        #             count.append(num)
-        return len(number[:1])
+        return sum([x[self._vertices.index(vertex)] for x in self._matrix])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -590,12 +583,9 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = 0.
-        for vrtx in incidental_vertices:
-            inout_score = 1 / self._graph.calculate_inout_score(vrtx) * scores[vrtx]
-            summa += inout_score
-            weight = summa * self._damping_factor + (1 - self._damping_factor)
-            self._scores[vrtx] = weight
+        inout_score = sum((1 / self._graph.calculate_inout_score(vrtx)) * scores[vrtx] for vrtx in incidental_vertices)
+        weight = (inout_score * self._damping_factor) + 1 - self._damping_factor
+        self._scores[vertex] = weight
 
     # Step 5.3
     def train(self) -> None:

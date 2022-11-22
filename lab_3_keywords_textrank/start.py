@@ -29,9 +29,9 @@ if __name__ == "__main__":
 
     encoder = TextEncoder()
     encoded = encoder.encode(tokens)
-    print(encoded)
+    # print(encoded)
     decoded = encoder.decode(encoded)
-    print(decoded)
+    # print(decoded)
 
     if encoded:
         pairs = extract_pairs(encoded, 3)
@@ -43,10 +43,11 @@ if __name__ == "__main__":
     print(graph.is_incidental(1001, 1005))
     print(graph.calculate_inout_score(1001))
     vanilla_text_rank = VanillaTextRank(graph)
-    if encoded:
-        top_10 = vanilla_text_rank.get_top_keywords(10)
-        top = encoder.decode(top_10)
-        print(top)
+    # if encoded:
+    top_10 = vanilla_text_rank.get_top_keywords(10)
+    top = encoder.decode(top_10)
+    print(top)
+
 
     # RESULT = None
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
