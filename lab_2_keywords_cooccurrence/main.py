@@ -287,7 +287,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     if pairs_frequent:
         pairs_frequent_stripped = trimm_empty_pairs(pairs_frequent)
     if pairs_frequent_stripped and phrases:
-        frequent_pair_with_stop_words = add_the_inbetween_word(pairs_frequent_stripped, phrases)
+        frequent_pair_with_stop_words, full_phrase = add_the_inbetween_word(pairs_frequent_stripped, phrases)
     if frequent_pair_with_stop_words:
         final_list_of_tuples = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
     return final_list_of_tuples
