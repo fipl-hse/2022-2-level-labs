@@ -4,7 +4,7 @@ TextRank keyword extraction starter
 import string
 from pathlib import Path
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, \
-    VanillaTextRank
+    VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -31,15 +31,26 @@ if __name__ == "__main__":
     encoded_tokens = encoder.encode(tokens)
 
     if encoded_tokens:
-        graph = AdjacencyMatrixGraph()
-        graph.fill_from_tokens(encoded_tokens, 3)
+        graph_matrix = AdjacencyMatrixGraph()
+        graph_edges = EdgeListGraph()
 
-        ranker = VanillaTextRank(graph)
-        ranker.train()
-        encoded_keywords = ranker.get_top_keywords(10)
+        for graph in (graph_matrix, graph_edges):
+            graph.fill_from_tokens(encoded_tokens, 3)
+            graph.fill_positions(encoded_tokens)
+            graph.calculate_position_weights()
 
-        keywords = encoder.decode(encoded_keywords)
-        print(keywords)
+        vanilla_text_ranker_matrix = VanillaTextRank(graph_matrix)
+        vanilla_text_ranker_edges = VanillaTextRank(graph_edges)
+        position_biased_text_ranker_matrix = PositionBiasedTextRank(graph_matrix)
+        position_biased_text_ranker_edges = PositionBiasedTextRank(graph_edges)
+
+        for ranker in (vanilla_text_ranker_edges, vanilla_text_ranker_matrix,
+                       position_biased_text_ranker_edges, position_biased_text_ranker_matrix):
+            ranker.train()
+            encoded_keywords = ranker.get_top_keywords(10)
+
+            keywords = encoder.decode(encoded_keywords)
+            print(ranker.__class__.__name__, graph.__class__.__name__, keywords)
 
     RESULT = keywords
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

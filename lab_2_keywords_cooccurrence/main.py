@@ -71,10 +71,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         for token in tokens:
             if token not in stop_words:
                 new_candidate.append(token)
-            else:
-                if new_candidate:
-                    candidate_keywords.append(tuple(new_candidate))
-                    new_candidate.clear()
+            elif new_candidate:
+                candidate_keywords.append(tuple(new_candidate))
+                new_candidate.clear()
         if new_candidate:
             candidate_keywords.append(tuple(new_candidate))
     return candidate_keywords
