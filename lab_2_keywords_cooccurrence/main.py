@@ -393,7 +393,7 @@ def add_the_inbetween_word(pairs_frequent_stripped: list,
     return frequent_pair_with_stop_words, full_phrase
 
 
-def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: str,
+def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: Optional[str],
                                        phrases: Sequence[str]) -> dict:
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
