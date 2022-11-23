@@ -55,11 +55,8 @@ class TextPreprocessor:
         no_punc_text = ''
         for letter in text:
             if letter not in self._punctuation:
-                letter += no_punc_text
+                no_punc_text += letter
         return tuple(no_punc_text.lower().split())
-
-
-
 
 
 
@@ -76,7 +73,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(token for token in tokens if token not in self._stop_words)
+        return tuple(word for word in tokens if word not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -114,12 +111,14 @@ class TextEncoder:
         Decodes input sequence of integer tokens to sequence of string tokens
     """
 
+
     # Step 2.1
     def __init__(self) -> None:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -130,7 +129,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        for idx, element in enumerate(tokens, 1000):
+            self._word2id[element] = idx
+            self._id2word[idx] = element
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -146,7 +147,14 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+
+        code = []
+        self._learn_indices(tokens)
+        for token in tokens:
+            code.append(self._word2id[token])
+        return tuple(code)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -162,7 +170,13 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        decoded = []
+        for token in encoded_tokens:
+            if token not in self._id2word:
+                return None
+            else:
+                decoded.append(self._id2word[token])
+        return tuple(decoded)
 
 
 # Step 3
@@ -183,7 +197,23 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not isinstance(window_length, int) or window_length < 2:
+        return None
+    if not tokens:
+        return None
+
+    extracted_pairs = []
+    for i in range(len(tokens) - window_length + 1):
+        window = tokens[i:i + window_length]
+        for j in window:
+            for k in window:
+                if j != k and (j, k) not in extracted_pairs:
+                    extracted_pairs.append((j, k))
+    return tuple(extracted_pairs)
+
+
+
+
 
 
 class AdjacencyMatrixGraph:
