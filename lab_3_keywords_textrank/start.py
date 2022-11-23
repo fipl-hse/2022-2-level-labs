@@ -36,5 +36,6 @@ if __name__ == "__main__":
     VANILLA.train()
     TOP_10 = VANILLA.get_top_keywords(10)
     TOP_WORDS = ENCODER.decode(TOP_10)
+    RESULT = TOP_WORDS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert TOP_WORDS, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
