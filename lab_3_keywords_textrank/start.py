@@ -1,11 +1,11 @@
 """
 TextRank keyword extraction starter
 """
-
+import json
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
+    VanillaTextRank, EdgeListGraph, PositionBiasedTextRank, KeywordExtractionBenchmark
 
 if __name__ == "__main__":
 
@@ -22,6 +22,17 @@ if __name__ == "__main__":
     STOP_WORDS_PATH = ASSETS_PATH / 'stop_words.txt'
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
+
+    BENCHMARK_MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
+
+    IDF_PATH = BENCHMARK_MATERIALS_PATH / 'IDF.json'
+    with open(IDF_PATH, 'r', encoding='utf-8') as file:
+        dict = json.load(file)
+
+    ENGLISH_STOP_WORDS_PATH = BENCHMARK_MATERIALS_PATH / 'eng_stop_words.txt'
+    with open(ENGLISH_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
+        eng_stop_words = tuple(file.read().split('\n'))
+
 
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     clean_tokens = preprocessor.preprocess_text(text)
@@ -61,6 +72,12 @@ if __name__ == "__main__":
         result_of_edge_graph = text_encoder.decode(top_biased_edge)
         print(result_of_edge_graph)
 
-    RESULT = DECODED_TOP_10_VANILLA
+    benchmark = KeywordExtractionBenchmark(eng_stop_words,tuple(punctuation),
+                                           dict, BENCHMARK_MATERIALS_PATH)
+    benchmark.run()
+    benchmark.save_to_csv(PROJECT_ROOT / 'report.csv')
+
+
+    RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
