@@ -416,7 +416,7 @@ def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: 
     final_list_of_str [('одной', 'из', 'важнейших', 'задач')]
     """
     final_list_of_str = []
-
+    final_list_of_tuples_type: KeyPhrases
     for key in frequent_pair_with_stop_words:
         if frequent_pair_with_stop_words[key] >= 2:
             final_list_of_str.append(key)
