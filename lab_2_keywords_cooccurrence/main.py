@@ -353,17 +353,17 @@ def add_the_inbetween_word(pairs_frequent_stripped: list,
         last_word_of_fisrt_part = first_part[-1]
         # gets the last word of the first part (['одной'], ['важнейших', 'задач']], [['ящик'], ['железа'] -> одной)
         for phrase in phrases:
-            phrase = phrase.lower().split()
+            phrase_new = phrase.lower().split()
             if last_word_of_fisrt_part not in phrase:
                 continue
-            occurrence = phrase.count(last_word_of_fisrt_part)
+            occurrence = phrase_new.count(last_word_of_fisrt_part)
             # it this word in the sentence once or more times
             if occurrence == 1:
-                index = phrase.index(last_word_of_fisrt_part)
-                if last_word_of_fisrt_part == phrase[-1]:
+                index = phrase_new.index(last_word_of_fisrt_part)
+                if last_word_of_fisrt_part == phrase_new[-1]:
                     # if this word is not the last one in the phrase
                     continue
-                stop_word_to_include = phrase[index + 1]
+                stop_word_to_include = phrase_new[index + 1]
                 # getting the next word, the inbetween one
                 # одной
                 # Во времена Советского Союза исследование космоса было одной из важнейших задач
