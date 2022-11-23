@@ -6,7 +6,8 @@ from pathlib import Path
 from main import (TextPreprocessor,
                   TextEncoder,
                   AdjacencyMatrixGraph,
-                  VanillaTextRank)
+                  VanillaTextRank,
+                  EdgeListGraph)
 
 if __name__ == "__main__":
 
@@ -39,6 +40,14 @@ if __name__ == "__main__":
     top = rank.get_top_keywords(10)
 
     decoded_words = encoding.decode(top)
+
+    edge = EdgeListGraph()
+    edge.fill_from_tokens(encoded_text, 10)
+
+    rank_edge = VanillaTextRank(edge)
+    rank_edge.train()
+    top_edge = rank_edge.get_top_keywords(10)
+
 
     RESULT = decoded_words
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

@@ -285,11 +285,11 @@ class AdjacencyMatrixGraph:
                 self._vertices.append(vertex)
                 self._matrix.append([0 for _ in range(len(self._vertices))])
 
-        max_len_of_element = len(max(self._matrix, key=len))
+        max_len_of_row = len(max(self._matrix, key=len))
 
-        for element in self._matrix:
-            if len(element) < max_len_of_element:
-                element += [0] * (max_len_of_element - len(element))
+        for row in self._matrix:
+            if len(row) < max_len_of_row:
+                row += [0] * (max_len_of_row - len(row))
 
         index1 = self._vertices.index(vertex1)
         index2 = self._vertices.index(vertex2)
@@ -441,7 +441,9 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -452,7 +454,7 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._edges.keys())
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -470,7 +472,16 @@ class EdgeListGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        pass
+        if vertex1 == vertex2:
+            return -1
+
+        for vertex in vertex1, vertex2:
+            if vertex not in self._edges.keys():
+                self._edges[vertex] = []
+
+        self._edges[vertex1].append(vertex2)
+        self._edges[vertex2].append(vertex1)
+        return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -488,7 +499,12 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        for vertex in vertex1, vertex2:
+            if vertex not in self._edges.keys():
+                return -1
+
+        if vertex2 in self._edges[vertex1]:
+            return 1
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -504,7 +520,10 @@ class EdgeListGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._edges:
+            return -1
+
+        return len(self._edges[vertex])
 
     # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -518,7 +537,15 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        pairs = extract_pairs(tokens, window_length)
+
+        for pair in pairs:
+            for word in pair:
+                index = pair.index(word)
+                try:
+                    self.add_edge(word, pair[index + 1])
+                except IndexError:
+                    pass
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
