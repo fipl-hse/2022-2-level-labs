@@ -23,19 +23,26 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     RESULT = None
-    # в терминал для юнит тестов python -m pytest -m mark6
+    # python -m pytest -m mark6
     punctuation = ('!', '"', '#', '$', '%', '&', '''''', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';',
                    '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~')
-    raw_text = TextPreprocessor(stop_words=stop_words, punctuation=punctuation)
-    preprocessed_text = raw_text.preprocess_text(text=text)
-    encode_text = TextEncoder()
-    coded_text = encode_text.encode(tokens=preprocessed_text)
-    decoded_text = encode_text.decode(encoded_tokens=coded_text)
-    pairs = extract_pairs(tokens=coded_text, window_length=3)
-    RESULT = pairs
-    print('tokens: ', preprocessed_text, '\n',
-          'coded tokens: ', coded_text, '\n',
-          'decoded tokens: ', decoded_text, '\n',
-          'pairs: ', pairs)
+    decoded = None
+    text_preprocessor = TextPreprocessor(stop_words=stop_words, punctuation=punctuation)
+    tokens = text_preprocessor.preprocess_text(text=text)
+
+    text_encoder = TextEncoder()
+    encoded_tokens = text_encoder.encode(tokens=tokens)
+
+    if encoded_tokens:
+        graph = AdjacencyMatrixGraph()
+        graph.fill_from_tokens(encoded_tokens, window_length=3)
+
+        vanilla = VanillaTextRank(graph)
+        vanilla.train()
+        keywords = vanilla.get_top_keywords(10)
+        decoded = text_encoder.decode(encoded_tokens=keywords)
+
+    RESULT = decoded
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
