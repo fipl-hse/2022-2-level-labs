@@ -129,7 +129,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        self._word2id = {token: 1000 + index for index, token in enumerate(tokens)}
+        self._word2id = {token: 1000 + index for index, token in enumerate(set(tokens))}
         for token in self._word2id:
             self._id2word[self._word2id[token]] = token
 
