@@ -8,8 +8,7 @@ from typing import Optional, Union
 
 from lab_1_keywords_tfidf.main import (calculate_frequencies,
                                        calculate_tf,
-                                       calculate_tfidf,
-                                       get_top_n)
+                                       calculate_tfidf)
 
 from lab_2_keywords_cooccurrence.main import (extract_phrases,
                                               extract_candidate_keyword_phrases,
