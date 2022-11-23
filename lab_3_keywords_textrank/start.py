@@ -24,11 +24,17 @@ if __name__ == "__main__":
 
     TOKENS = TextPreprocessor(stop_words=stop_words, punctuation=tuple(punctuation)).preprocess_text(text)
     ENCODED = TextEncoder().encode(TOKENS)
-    GRAPH = AdjacencyMatrixGraph()
-    GRAPH.fill_from_tokens(ENCODED, 5)
-    TEXT_RANK = VanillaTextRank(GRAPH)
-    TEXT_RANK.train()
-    TOP = TEXT_RANK.get_top_keywords(10)
-    RESULT = TextEncoder.decode(TOP)
+    punctuation = tuple(string.punctuation)
+    preprocessor = TextPreprocessor(stop_words, punctuation)
+    tokens = preprocessor.preprocess_text(text)
+    encoder = TextEncoder()
+    encoded = encoder.encode(tokens)
+    pairs = extract_pairs(encoded, 3)
+    graph = AdjacencyMatrixGraph()
+    graph.fill_from_tokens(encoded, 3)
+    vanilla_text_rank = VanillaTextRank(graph)
+    vanilla_text_rank.train()
+    top_10 = vanilla_text_rank.get_top_keywords(10)
+    top = encoder.decode(top_10)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Keywords are not extracted'
+    assert top, 'Keywords are not extracted'
