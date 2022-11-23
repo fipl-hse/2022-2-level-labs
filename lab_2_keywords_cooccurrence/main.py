@@ -280,6 +280,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     if phrases == ['']:
         return final_list_of_tuples
+    final_list_of_tuples_type: KeyPhrases = []
     all_pairs = None
     pairs_frequent = None
     pairs_frequent_stripped = None
@@ -294,8 +295,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         frequent_pair_with_stop_words = count_phrases_with_inbetween_words(frequent_pair_with_stop_words,
                                                                            full_phrase, phrases)
     if frequent_pair_with_stop_words:
-        final_list_of_tuples = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
-    return final_list_of_tuples
+        final_list_of_tuples_type: KeyPhrases
+        final_list_of_tuples_type = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
+    return final_list_of_tuples_type
 
 
 def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> dict:
@@ -415,12 +417,13 @@ def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: 
     final_list_of_str ['одной из важнейших задач']
     final_list_of_str [('одной', 'из', 'важнейших', 'задач')]
     """
+    # final_list_of_tuples_type: KeyPhrases
     final_list_of_str = []
-    final_list_of_tuples_types: KeyPhrases
     for key in frequent_pair_with_stop_words:
         if frequent_pair_with_stop_words[key] >= 2:
             final_list_of_str.append(key)
     final_list_of_tuples = []
+    # final_list_of_tuples_type: KeyPhrases
     for key in final_list_of_str:
         final_list_of_tuples.append(tuple(key.split()))
     final_list_of_tuples_type: KeyPhrases = copy.copy(final_list_of_tuples)
