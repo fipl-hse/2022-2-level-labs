@@ -294,8 +294,8 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         frequent_pair_with_stop_words = count_phrases_with_inbetween_words(frequent_pair_with_stop_words,
                                                                            full_phrase, phrases)
     if frequent_pair_with_stop_words:
-        final_list_of_tuples = make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
-    return final_list_of_tuples
+        return make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words)
+    return None
 
 
 def collect_all_pairs(candidate_keyword_phrases: KeyPhrases) -> dict:
@@ -485,7 +485,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     percentile_80 = freqs_sorted[round(len(freqs_sorted) / 100 * 80) - 1]
     stop_words = []
     for token in freqs.keys():
-        if isinstance(freqs[token], (int or float)):
+        if isinstance(freqs[token], (int, float)):
             if freqs[token] >= percentile_80 and len(token) <= max_length:
                 stop_words.append(token)
     return stop_words
