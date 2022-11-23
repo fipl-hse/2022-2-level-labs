@@ -27,7 +27,7 @@ if __name__ == "__main__":
 
     IDF_PATH = BENCHMARK_MATERIALS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
-        dict = json.load(file)
+        idf = json.load(file)
 
     ENGLISH_STOP_WORDS_PATH = BENCHMARK_MATERIALS_PATH / 'eng_stop_words.txt'
     with open(ENGLISH_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
@@ -73,7 +73,7 @@ if __name__ == "__main__":
         print(result_of_edge_graph)
 
     benchmark = KeywordExtractionBenchmark(eng_stop_words,tuple(punctuation),
-                                           dict, BENCHMARK_MATERIALS_PATH)
+                                           idf, BENCHMARK_MATERIALS_PATH)
     benchmark.run()
     benchmark.save_to_csv(PROJECT_ROOT / 'report.csv')
 
