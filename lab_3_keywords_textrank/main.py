@@ -196,7 +196,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         window = tokens[i: i + window_length]
         for token1 in window:
             for token2 in window:
-                if token1 != token2 and not (token1, token2) not in pairs and (token2, token1) not in pairs:
+                if token1 != token2 and (token1, token2) not in pairs and (token2, token1) not in pairs:
                     pairs.append((token1, token2))
     return tuple(pairs)
 
