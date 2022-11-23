@@ -819,8 +819,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        significant_keywords = get_top_n(self._scores, n_keywords)
-        return tuple(significant_keywords)
+        return tuple(sorted(self._scores.keys(), key=lambda key: self._scores[key], reverse=True)[:n_keywords])
 
 
 class RAKEAdapter:
