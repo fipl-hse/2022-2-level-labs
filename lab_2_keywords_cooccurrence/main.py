@@ -74,9 +74,9 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
                 indexx = phrase_new.index(word)
                 phrase_new[indexx] = ','
         phrase_new_new = " ".join(phrase_new)
-        phrase_new_new = phrase_new_new.split(',')
+        phrase_new_new_new = phrase_new_new.split(',')
         # разделяет по запятым на элементы, далее работа со списком
-        for i in phrase_new_new:
+        for i in phrase_new_new_new:
             i = i.strip(',')
             # Метод strip() возвращает копию строки, удаляя как начальные, так и конечные символы
             # (в зависимости от переданного строкового аргумента).
