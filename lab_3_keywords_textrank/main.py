@@ -311,7 +311,8 @@ class AdjacencyMatrixGraph:
                 vertex1_lst[vertex2_index] = 1
                 self._matrix.append(vertex1_lst)
                 for row in self._matrix:
-                    row.append(0)
+                    if len(row) < len(self._matrix):
+                        row.append(0)
                 self._matrix[vertex2_index][vertex1_index] = 1
             # если вторая вершина новая
             if vertex2_is_new and not vertex1_is_new:
@@ -321,7 +322,9 @@ class AdjacencyMatrixGraph:
                 vertex2_lst[vertex1_index] = 1
                 self._matrix.append(vertex2_lst)
                 for row in self._matrix:
-                    row.append(0)
+                    # vertex 1 or 2 index
+                    if len(row) < len(self._matrix):
+                        row.append(0)
                 self._matrix[vertex1_index][vertex2_index] = 1
         else:
             # добавляется связь между существующими вершинами. меняется список
@@ -632,7 +635,10 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        vertex_sum = 0
+        for incidental_vertex in incidental_vertices:
+            vertex_sum += 1/self._graph.calculate_inout_score(incidental_vertex) * scores[incidental_vertex]
+        self._scores[vertex] = self._damping_factor * vertex_sum + (1 - self._damping_factor)
 
     # Step 5.3
     def train(self) -> None:
@@ -666,7 +672,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -677,7 +683,16 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        # sort by key
+        sorted_keys = sorted((list(self._scores.keys())))
+        sorted_by_keys = {}
+        for key in sorted_keys:
+            sorted_by_keys[key] = self._scores[key]
+        # sort by value
+        sorted_d = {k: sorted_by_keys[k] for k in sorted(sorted_by_keys, key=sorted_by_keys.get, reverse=True)}
+        # make list of keys and get top n
+        top_keywords = list(sorted_d.keys())[:n_keywords]
+        return tuple(top_keywords)
 
 
 class PositionBiasedTextRank(VanillaTextRank):
