@@ -423,8 +423,7 @@ def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: 
     final_list_of_tuples = []
     for key in final_list_of_str:
         final_list_of_tuples.append(tuple(key.split()))
-    final_list_of_tuples_type: KeyPhrases = []
-    final_list_of_tuples_type = copy.copy(final_list_of_tuples)
+    final_list_of_tuples_type: KeyPhrases = copy.copy(final_list_of_tuples)
     return final_list_of_tuples_type
 
 
