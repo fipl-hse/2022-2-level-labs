@@ -235,10 +235,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
         return None
     if len(keyword_phrases_with_scores) == 0 or top_n <= 0 or max_length <= 0:
         return None
-    top_n_dict = {}
-    top_n_dict: dict
-    top_n_strings_list = []
-    top_n_strings_list: list
+    top_n_dict: dict[KeyPhrases, float] = {}
+    top_n_strings_list: list = []
 
     for key, value in keyword_phrases_with_scores.items():
         if len(key) <= max_length:
