@@ -268,6 +268,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     In case of corrupt input arguments, None is returned
     """
     final_list_of_tuples = []
+    frequent_pair_with_stop_words = {}
     if not (check_list(candidate_keyword_phrases, tuple, False)) or not candidate_keyword_phrases:
         return None
     if not (check_list(phrases, str, False)) or not phrases:
