@@ -224,15 +224,17 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not (tokens and check_content(tokens, int) and window_length > 2 and isinstance(window_length, int)):
         return None
     result = []
-    for token in tokens:
-        if len(tokens) - tokens.index(token) >= window_length - 1:
-            new = tokens[tokens.index(token):tokens.index(token) + window_length]
+    for t in range(len(tokens)):
+        if len(tokens) - t > window_length:
+            new = tokens[t: t + window_length]
+        elif len(tokens) - t == window_length:
+            new = tokens[t:]
         for i in range(len(new)):
-            for j in range(i+1, len(new)):
+            for j in range(i + 1, len(new)):
                 result.append((new[i], new[j]))
     results = []
     for res in result:
-        if res[0] != res[1] and tuple(set(res)) not in results:
+        if res[0] != res[1] and res not in results and res[::-1] not in results:
             results.append(res)
     return tuple(results)
 
@@ -296,10 +298,8 @@ class AdjacencyMatrixGraph:
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
         if vertex1 != vertex2:
-            lst = [vertex1, vertex2]
-            if lst not in self._matrix and lst[::-1] not in self._matrix:
-                self._matrix.append(lst)
-                return 0
+            self._matrix.append([vertex1, vertex2])
+            return 0
         else:
             return -1
 
@@ -651,10 +651,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        scores = {}
-        for k, v in self._scores.items():
-            scores[k] = v
-        return scores
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
