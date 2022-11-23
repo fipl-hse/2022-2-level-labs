@@ -4,6 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 import string
 import json
+import copy
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
 from lab_1_keywords_tfidf.main import check_list, clean_and_tokenize, calculate_frequencies
@@ -397,6 +398,9 @@ def add_the_inbetween_word(pairs_frequent_stripped: list,
 
 def count_phrases_with_inbetween_words(frequent_pair_with_stop_words: dict, full_phrase: Optional[str],
                                        phrases: Sequence[str]) -> dict:
+    """
+    Count how many times some full_phrase appeared after adding the inbetween words
+    """
     for key in frequent_pair_with_stop_words:
         for phrase in phrases:
             if key in phrase:
@@ -412,13 +416,16 @@ def make_a_dict_with_only_frequent_final_phrases(frequent_pair_with_stop_words: 
     final_list_of_str [('одной', 'из', 'важнейших', 'задач')]
     """
     final_list_of_str = []
+
     for key in frequent_pair_with_stop_words:
         if frequent_pair_with_stop_words[key] >= 2:
             final_list_of_str.append(key)
     final_list_of_tuples = []
     for key in final_list_of_str:
         final_list_of_tuples.append(tuple(key.split()))
-    return final_list_of_tuples
+    final_list_of_tuples_type: KeyPhrases = []
+    final_list_of_tuples_type = copy.copy(final_list_of_tuples)
+    return final_list_of_tuples_type
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
