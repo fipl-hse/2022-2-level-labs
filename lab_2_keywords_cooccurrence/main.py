@@ -243,8 +243,8 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
             top_n_dict[key] = value
     top_n_list = [key for (key, value) in sorted(top_n_dict.items(), key=lambda x: x[1], reverse=True)][:top_n]
     for keywords_tuple in top_n_list:
-        keywords_tuple = list(keywords_tuple)
-        top_n_strings_list.append(' '.join(keywords_tuple))
+        keywords_tuple_new = list(keywords_tuple)
+        top_n_strings_list.append(' '.join(keywords_tuple_new))
     return top_n_strings_list
 
 
