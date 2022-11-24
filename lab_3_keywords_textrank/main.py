@@ -130,8 +130,12 @@ class TextEncoder:
                 sequence of string tokens
         """
         id_lst = list(range(1000, len(tokens) + 1001))
-        self._word2id = {token: id_n for (token, id_n) in zip(tokens, id_lst)}
-        self._id2word = {id_n: token for (id_n, token) in zip(id_lst, tokens)}
+        # self._word2id = {token: id_n for (token, id_n) in zip(tokens, id_lst)}
+        for token, id_num in tokens, id_lst:
+            self._word2id[token] = id_num
+        # self._id2word = {id_n: token for (id_n, token) in zip(id_lst, tokens)}
+        for num_id, tokenn in id_lst, tokens:
+            self._id2word[num_id] = tokenn
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
