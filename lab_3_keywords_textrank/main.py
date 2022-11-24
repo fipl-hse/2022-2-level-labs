@@ -129,13 +129,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        id_lst = list(range(1000, len(tokens) + 1001))
-        self._word2id = {token: id_n for (token, id_n) in zip(tokens, id_lst)}
-        # for token, id_num in tokens, id_lst:
-        #     self._word2id[token] = id_num
-        self._id2word = {id_n: token for (id_n, token) in zip(id_lst, tokens)}
-        # for num_id, tokenn in id_lst, tokens:
-        #     self._id2word[num_id] = tokenn
+        for index, token in enumerate(tokens):
+            self._word2id[token] = 1000 + index
+            self._id2word[1000 + index] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -493,10 +489,12 @@ class EdgeListGraph:
             if vertex not in self._edges.keys():
                 self._edges[vertex] = []
 
-        if vertex2 not in self._edges[vertex1]:
-            self._edges[vertex1].append(vertex2)
-            self._edges[vertex2].append(vertex1)
-            return 0
+        if vertex2 in self._edges[vertex1]:
+            return -1
+
+        self._edges[vertex1].append(vertex2)
+        self._edges[vertex2].append(vertex1)
+        return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -764,8 +762,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        super().__init__(graph)
         self._position_weights = graph.get_position_weights()
+        super().__init__(graph)
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
