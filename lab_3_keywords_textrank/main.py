@@ -372,7 +372,7 @@ class AdjacencyMatrixGraph:
         # summa = 0.
         for vertex in self._positions:
             for position in self._positions[vertex]:
-                position_weight += 1 / position
+                position_weight += 1. / position
                 sum_positions[vertex] = position_weight
         for key in sum_positions:
             self._position_weights[key] = sum_positions[key] / sum(sum_positions.values())
