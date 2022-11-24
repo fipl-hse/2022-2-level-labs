@@ -203,7 +203,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not tokens or (not isinstance(window_length, int) or isinstance(window_length, bool)) or window_length < 2:
         return None
-    windows = [range(i, i+window_length-1) for i in range(len(tokens) - window_length)]
+    windows = [range(i, i + window_length - 1) for i in range(len(tokens) - window_length)]
     pairs = []
     for window in windows:
         window_pairs = [(tokens[one:one+two+1:two]) for one in window for two in range(1, window_length)]
@@ -279,8 +279,8 @@ class AdjacencyMatrixGraph:
             if vertex in self._vertices:
                 continue
             self._vertices.append(vertex)
-            for i in self._matrix:
-                i.append(0)
+            for row in self._matrix:
+                row.append(0)
             self._matrix.append([0 for _ in self._vertices])
         index1, index2 = self._vertices.index(vertex1), self._vertices.index(vertex2)
         self._matrix[index1][index2] = self._matrix[index2][index1] = 1
@@ -356,8 +356,8 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for count, item in enumerate(tokens):
-            self._positions[item] = self._positions.get(item, []) + [count + 1]
+        for count, vertex in enumerate(tokens):
+            self._positions[vertex] = self._positions.get(vertex, []) + [count + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -365,10 +365,10 @@ class AdjacencyMatrixGraph:
         Computes position weights for all tokens in text
         """
         non_normalized = {}
-        for key, positions in self._positions.items():
-            non_normalized[key] = sum(1 / position for position in positions)
+        for vertex, positions in self._positions.items():
+            non_normalized[vertex] = sum(1 / position for position in positions)
         non_normalized_sum = sum(non_normalized.values())
-        self._position_weights = {i: non_normalized[i] / non_normalized_sum for i in non_normalized}
+        self._position_weights = {vertex: non_normalized[vertex] / non_normalized_sum for vertex in non_normalized}
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -514,8 +514,8 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for count, item in enumerate(tokens):
-            self._positions[item] = self._positions.get(item, []) + [count + 1]
+        for count, vertex in enumerate(tokens):
+            self._positions[vertex] = self._positions.get(vertex, []) + [count + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -523,10 +523,10 @@ class EdgeListGraph:
         Computes position weights for all tokens in text
         """
         non_normalized = {}
-        for key, positions in self._positions.items():
-            non_normalized[key] = sum(1 / position for position in positions)
+        for vertex, positions in self._positions.items():
+            non_normalized[vertex] = sum(1 / position for position in positions)
         non_normalized_sum = sum(non_normalized.values())
-        self._position_weights = {i: non_normalized[i] / non_normalized_sum for i in non_normalized}
+        self._position_weights = {vertex: non_normalized[vertex] / non_normalized_sum for vertex in non_normalized}
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:

@@ -60,13 +60,11 @@ if __name__ == "__main__":
 
     # step 12
     benchmark_materials = ASSETS_PATH / 'benchmark_materials'
-    stop_words_path = benchmark_materials / 'eng_stop_words.txt'
-    file = open(stop_words_path, 'r', encoding='utf-8')
+    file = open(benchmark_materials / 'eng_stop_words.txt', 'r', encoding='utf-8')
     eng_stop_words = tuple(file.read().split('\n'))
-    idf_path = benchmark_materials / 'IDF.json'
-    file = open(idf_path, 'r', encoding='utf-8')
+    file = open(benchmark_materials / 'IDF.json', 'r', encoding='utf-8')
     idf = dict(json_load(file))
-    benchmark_punctuation = tuple(i for i in punctuation)
+    benchmark_punctuation = tuple(symbol for symbol in punctuation)
 
     benchmark = KeywordExtractionBenchmark(eng_stop_words, benchmark_punctuation, idf, benchmark_materials)
     report = benchmark.run()
