@@ -155,7 +155,7 @@ class TextEncoder:
             return None
 
         self._learn_indices(tokens)
-        int_words = tuple((self._word2id[word] for word in tokens))
+        int_words = tuple(self._word2id[word] for word in tokens)
         return int_words
 
     # Step 2.4
@@ -176,7 +176,7 @@ class TextEncoder:
             if word not in self._id2word.keys():
                 return None
 
-        str_words = tuple((self._id2word[id_n] for id_n in encoded_tokens))
+        str_words = tuple(self._id2word[id_n] for id_n in encoded_tokens)
         return str_words
 
 
@@ -354,12 +354,7 @@ class AdjacencyMatrixGraph:
             return -1
 
         index = self._vertices.index(vertex)
-        counting = 0
-        for row in self._matrix:
-            if row[index] == 1:
-                counting += 1
-
-        return counting
+        return sum(row[index] for row in self._matrix)
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -376,12 +371,7 @@ class AdjacencyMatrixGraph:
         pairs = extract_pairs(tokens, window_length)
 
         for pair in pairs:
-            for word in pair:
-                index = pair.index(word)
-                try:
-                    self.add_edge(word, pair[index + 1])
-                except IndexError:
-                    pass
+            self.add_edge(pair[0], pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -503,9 +493,10 @@ class EdgeListGraph:
             if vertex not in self._edges.keys():
                 self._edges[vertex] = []
 
-        self._edges[vertex1].append(vertex2)
-        self._edges[vertex2].append(vertex1)
-        return 0
+        if vertex2 not in self._edges[vertex1]:
+            self._edges[vertex1].append(vertex2)
+            self._edges[vertex2].append(vertex1)
+            return 0
 
     # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -566,12 +557,7 @@ class EdgeListGraph:
         pairs = extract_pairs(tokens, window_length)
 
         for pair in pairs:
-            for word in pair:
-                index = pair.index(word)
-                try:
-                    self.add_edge(word, pair[index + 1])
-                except IndexError:
-                    pass
+            self.add_edge(pair[0], pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -734,7 +720,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
+        return tuple(sorted(self._scores.keys(), key=lambda key: self._scores[key], reverse=True)[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
