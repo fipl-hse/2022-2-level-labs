@@ -437,7 +437,7 @@ class AdjacencyMatrixGraph:
         for key, value in self._positions.items():
             no_norm_weight = 0
             for item in value:
-                no_norm_weight += 1 / item
+                no_norm_weight += 1 / float(item)
             no_norm_dict[key] = no_norm_weight
         weight_sum = 0
         for weight in no_norm_dict.values():
@@ -694,7 +694,7 @@ class VanillaTextRank:
         """
         vertex_sum = 0
         for incidental_vertex in incidental_vertices:
-            vertex_sum += 1/self._graph.calculate_inout_score(incidental_vertex) * scores[incidental_vertex]
+            vertex_sum += 1/float(self._graph.calculate_inout_score(incidental_vertex)) * float(scores[incidental_vertex])
         self._scores[vertex] = self._damping_factor * vertex_sum + (1 - self._damping_factor)
 
     # Step 5.3
@@ -811,7 +811,7 @@ class PositionBiasedTextRank(VanillaTextRank):
         """
         vertex_sum = 0
         for incidental_vertex in incidental_vertices:
-            vertex_sum += 1 / self._graph.calculate_inout_score(incidental_vertex) * scores[incidental_vertex]
+            vertex_sum += 1 / float(self._graph.calculate_inout_score(incidental_vertex)) * scores[incidental_vertex]
         vertex_score = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * vertex_sum
         self._scores[vertex] = vertex_score
 
