@@ -256,7 +256,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        pass
+        self._matrix = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
