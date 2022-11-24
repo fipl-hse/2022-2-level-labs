@@ -4,11 +4,10 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (
-    extract_phrases, extract_candidate_keyword_phrases,
-    calculate_frequencies_for_content_words, calculate_word_degrees,
-    calculate_word_scores, calculate_cumulative_score_for_candidates, get_top_n,
-    extract_candidate_keyword_phrases_with_adjoining,
-    calculate_cumulative_score_for_candidates_with_stop_words)
+    process_text,
+    get_top_n,
+    load_stop_words
+)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -44,38 +43,31 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    RESULT = None
-    text = corpus ['gagarin']
+    GAGARIN_PROCESSED = process_text(corpus['gagarin'], stop_words)
+    if GAGARIN_PROCESSED:
+        print(get_top_n(GAGARIN_PROCESSED, 10, 5))
+    ALBATROSS_PROCESSED = process_text(corpus['albatross'], stop_words)
+    if ALBATROSS_PROCESSED:
+        print(get_top_n(ALBATROSS_PROCESSED, 10, 5))
+    GENOME_PROCESSED = process_text(corpus['genome_engineering'], stop_words)
+    if GENOME_PROCESSED:
+        print(get_top_n(GENOME_PROCESSED, 10, 5))
+    PAIN_PROCESSED = process_text(corpus['pain_detection'], stop_words)
+    if PAIN_PROCESSED:
+        print(get_top_n(PAIN_PROCESSED, 10, 5))
 
-    if text:
-        phrases = extract_phrases(text)
+    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-    if phrases and stop_words:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    POLISH_PROCESSED = None
+    if STOP_WORDS:
+        POLISH_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'polish.txt'), STOP_WORDS['pl'])
+    if POLISH_PROCESSED:
+        print(get_top_n(POLISH_PROCESSED, 10, 5))
 
-    if candidate_keyword_phrases:
-        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+    UNKNOWN_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'unknown.txt'), max_length=8)
+    if UNKNOWN_PROCESSED:
+        print(get_top_n(UNKNOWN_PROCESSED, 10, 5))  # эсперанто
 
-    if candidate_keyword_phrases and frequencies:
-        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys()))
+    RESULT = UNKNOWN_PROCESSED
 
-    if word_degrees and frequencies:
-        word_scores = calculate_word_scores(word_degrees, frequencies)
-
-    if candidate_keyword_phrases and word_scores:
-        cumulative_score_for_candidates = calculate_cumulative_score_for_candidates(candidate_keyword_phrases,
-                                                                                    word_scores)
-
-    if cumulative_score_for_candidates:
-        top_phrases = get_top_n(cumulative_score_for_candidates, 7, 5)
-
-    if candidate_keyword_phrases and phrases:
-        candidates_with_adjoining = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases,
-                                                                                     phrases)
-
-    if stop_words and candidates_with_adjoining and word_scores:
-        cumulative_score_for_candidates_stopw = calculate_cumulative_score_for_candidates_with_stop_words(
-            candidates_with_adjoining, word_scores, stop_words)
-    print()
-    RESULT = 'Done'
     assert RESULT, 'Keywords are not extracted'

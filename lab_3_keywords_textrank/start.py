@@ -24,6 +24,7 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     RESULT = None
+
     preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
     clean_tokens = preprocessor.preprocess_text(text)
 
