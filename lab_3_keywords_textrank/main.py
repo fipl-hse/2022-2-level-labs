@@ -437,16 +437,6 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
-    def add_vertex_to_dict(self, first_vertex: int, second_vertex: int) -> None:
-        """
-        Adds a vertex to the dict
-        """
-        if first_vertex not in self._edges:
-            self._edges[first_vertex] = [second_vertex]
-        else:
-            self._edges[first_vertex].append(second_vertex)
-
-
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
@@ -465,8 +455,9 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        self.add_vertex_to_dict(vertex1, vertex2)
-        self.add_vertex_to_dict(vertex2, vertex1)
+        if (vertex1 and vertex2) not in self._edges or vertex1 not in self._edges[vertex2]:
+            self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
+            self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
         return 0
 
     # Step 7.2
@@ -521,8 +512,9 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        for pair in extract_pairs(tokens, window_length):
-            self.add_edge(pair[0], pair[1])
+        pairs = extract_pairs(tokens, window_length)
+        for each_pair in pairs:
+            self.add_edge(each_pair[0], each_pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
