@@ -148,8 +148,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        encoded_tokens = tuple(self._word2id.values())
-        return encoded_tokens
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -166,12 +165,12 @@ class TextEncoder:
         In case of out-of-dictionary input data, None is returned
         """
         tokens = []
-        for token in encoded_tokens:
-            if token not in self._id2word:
+        if not encoded_tokens:
+            return None
+        for number in encoded_tokens:
+            if number not in self._id2word:
                 return None
-            for number in self._id2word:
-                if token == number:
-                    tokens.append(self._id2word[number])
+            tokens.append(self._id2word[number])
         return tuple(tokens)
 
 
