@@ -53,7 +53,7 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         for i in text.lower():
-            if i in self.punctuation:
+            if i in self._punctuation:
                 text = text.replace(i, '')
         return tuple(text.lower().split())
 
@@ -72,7 +72,7 @@ class TextPreprocessor:
         """
         prepared_text = []
         for word in tokens:
-            if word not in self.stop_words:
+            if word not in self._stop_words:
                 prepared_text.append(word)
         return tuple(prepared_text)
 
