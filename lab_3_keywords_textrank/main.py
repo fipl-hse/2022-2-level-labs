@@ -364,10 +364,11 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for index, token in enumerate(tokens):
-            if token not in self._positions:
-                self._positions[token] = []
-            self._positions[token].append(index + 1)
+        for ind, elem in enumerate(tokens):
+            if elem in self._positions:
+                self._positions[elem].append(ind + 1)
+            else:
+                self._positions[elem] = [ind + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
