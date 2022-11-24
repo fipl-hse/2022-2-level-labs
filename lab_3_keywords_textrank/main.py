@@ -519,8 +519,8 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for number, token in enumerate(tokens):
-            self._positions[token] = self._positions.get(token, []) + [number + 1]
+        for index, token in enumerate(tokens):
+            self._positions[token] = self._positions.get(token, []) + [index + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -530,8 +530,8 @@ class EdgeListGraph:
         all_weights = 0
         for key, value in self._positions.items():
             position_weight = 0
-            for one_token in value:
-                position_weight += 1 / one_token
+            for token in value:
+                position_weight += 1 / token
             self._position_weights[key] = position_weight
             all_weights += position_weight
         for key in self._positions:
@@ -717,15 +717,10 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        sign = 0
+        summa = 0.0
         for element in incidental_vertices:
-            inout_score = self._graph.calculate_inout_score(element)
-            if inout_score < 0:
-                sign -= 1
-            else:
-                sign += 1
-        self._scores[vertex] = (sign * self._damping_factor) +\
-                               (1 - self._damping_factor) * self._position_weights[vertex]
+            summa += 1 / abs(self._graph.calculate_inout_score(element)) * scores[element]
+        self._scores[vertex] = (summa * self._damping_factor) + (1 - self._damping_factor) * self._position_weights[vertex]
 
 
 class TFIDFAdapter:
