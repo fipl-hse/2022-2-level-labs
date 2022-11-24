@@ -30,40 +30,45 @@ if __name__ == "__main__":
     encoder = TextEncoder()
     encoded = encoder.encode(tokens)
     # print(encoded)
-    decoded = encoder.decode(encoded)
     # print(decoded)
 
     if encoded:
         pairs = extract_pairs(encoded, 3)
 
     graph = AdjacencyMatrixGraph()
-    graph.fill_from_tokens(encoded, 3)
-    graph.fill_positions(encoded)
+    if encoded:
+        graph.fill_from_tokens(encoded, 3)
+        graph.fill_positions(encoded)
+    graph.calculate_position_weights()
 
     vanilla_graph = VanillaTextRank(graph)
     # if encoded:
 
     vanilla_graph.train()
     top_vanilla_graph = vanilla_graph.get_top_keywords(10)
-    top_10_vanilla_graph = encoder.decode(top_vanilla_graph)
-    print(top_10_vanilla_graph)
+    if top_vanilla_graph:
+        top_10_vanilla_graph = encoder.decode(top_vanilla_graph)
+        print(top_10_vanilla_graph)
 
     edge_list_graph = EdgeListGraph()
-    edge_list_graph.fill_from_tokens(encoded, 3)
-    edge_list_graph.fill_positions(encoded)
+    if encoded:
+        edge_list_graph.fill_from_tokens(encoded, 3)
+        edge_list_graph.fill_positions(encoded)
     edge_list_graph.calculate_position_weights()
 
     vanilla_edge_graph = VanillaTextRank(edge_list_graph)
     vanilla_edge_graph.train()
     top_vanilla_edge_graph = vanilla_edge_graph.get_top_keywords(10)
-    top_10_vanilla_edge_graph = encoder.decode(top_vanilla_edge_graph)
-    print(top_10_vanilla_edge_graph)
+    if top_vanilla_edge_graph:
+        top_10_vanilla_edge_graph = encoder.decode(top_vanilla_edge_graph)
+        print(top_10_vanilla_edge_graph)
 
     biased_rank = PositionBiasedTextRank(graph)
     biased_rank.train()
     top_biased_rank = biased_rank.get_top_keywords(10)
-    top_10_biased_rank = encoder.decode(top_biased_rank)
-    print(top_10_biased_rank)
+    if top_biased_rank:
+        top_10_biased_rank = encoder.decode(top_biased_rank)
+        print(top_10_biased_rank)
 
     # RESULT = top_10_vanilla_edge_graph
     # # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
