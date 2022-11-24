@@ -40,12 +40,12 @@ if __name__ == "__main__":
         adjacency_matrix_graph.fill_positions(encoded_tokens)
         adjacency_matrix_graph.calculate_position_weights()
 
-    vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
-    vanilla_rank_edge = VanillaTextRank(edge_list_graph)
-    vanilla_text_rank.train()
-    top_10_vanilla = vanilla_text_rank.get_top_keywords(10)
-    DECODED_TOP_10_VANILLA = text_encoder.decode(top_10_vanilla)
-    print(DECODED_TOP_10_VANILLA)
+        vanilla_text_rank = VanillaTextRank(adjacency_matrix_graph)
+        vanilla_rank_edge = VanillaTextRank(edge_list_graph)
+        vanilla_text_rank.train()
+        top_10_vanilla = vanilla_text_rank.get_top_keywords(10)
+        DECODED_TOP_10_VANILLA = text_encoder.decode(top_10_vanilla)
+        print(DECODED_TOP_10_VANILLA)
 
     biased_rank = PositionBiasedTextRank(adjacency_matrix_graph)
     biased_rank.train()

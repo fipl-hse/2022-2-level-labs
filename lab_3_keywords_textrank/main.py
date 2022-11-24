@@ -271,17 +271,22 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
 
-        for vertex in vertex1, vertex2:
-            if vertex not in self._vertices:
-                self._vertices.append(vertex)
-                self._matrix.append([])
-        for i in self._matrix:
-            for _ in self._vertices:
-                if len(i) < len(self._vertices):
-                    i.append(0)
-            index1 = self._vertices.index(vertex1)
-            index2 = self._vertices.index(vertex2)
-            self._matrix[index1][index2] = self._matrix[index2][index1] = 1
+        for vert in vertex1, vertex2:
+            if vert not in self._vertices:
+                self._vertices.append(vert)
+                self._matrix.append([0 for _ in self._vertices])
+
+        maxi = len(max(self._matrix, key=len))
+
+        for element in self._matrix:
+            if len(element) < maxi:
+                element.extend([0 for _ in range(maxi - len(element))])
+
+        matrix_vertex_1 = self._vertices.index(vertex1)
+        matrix_vertex_2 = self._vertices.index(vertex2)
+
+        self._matrix[matrix_vertex_1][matrix_vertex_2] = 1
+        self._matrix[matrix_vertex_2][matrix_vertex_1] = 1
         return 0
 
     # Step 4.3
@@ -347,8 +352,9 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        for pair in extract_pairs(tokens, window_length):
-            self.add_edge(pair[0], pair[1])
+        edges = extract_pairs(tokens, window_length)
+        for elem in edges:
+            self.add_edge(elem[0], elem[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
