@@ -990,7 +990,7 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-
+        self.report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TF-IDF': {}, 'RAKE': {}}
         for index, theme in enumerate(self.themes):
             with open(self._materials_path / f'{index}_text.txt', 'r', encoding='utf-8') as file:
                 text = file.read()
@@ -1013,16 +1013,16 @@ class KeywordExtractionBenchmark:
             graph.calculate_position_weights()
             positional_rank = PositionBiasedTextRank(graph)
 
-
-            objects = {'TF-IDF': tfidf, 'RAKE': rake, 'VanillaTextRank': vanilla_text_rank,
-                      'PositionBiasedTextRank': positional_rank}
+            objects = {'VanillaTextRank': vanilla_text_rank, 'PositionBiasedTextRank': positional_rank,
+                          'TF-IDF': tfidf, 'RAKE': rake}
             for name, object in objects.items():
                 object.train()
                 top_keywords = object.get_top_keywords(50)
-                if theme in 'VanillaTextRank_PositionBiasedTextRank':
+                if name in ('VanillaTextRank', 'PositionBiasedTextRank'):
                     top_keywords = encoded_tokens.decode(top_keywords)
                 self.report[name][theme] = calculate_recall(top_keywords, result)
         return self.report
+
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
