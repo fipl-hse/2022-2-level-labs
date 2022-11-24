@@ -671,8 +671,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        srtd_by_key = sorted(self._scores)
-        return tuple(sorted(srtd_by_key, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -807,8 +807,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        srtd_by_key = sorted(self._scores)
-        return tuple(sorted(srtd_by_key, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
 class RAKEAdapter:
@@ -889,8 +889,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        srtd_by_key = sorted(self._scores)
-        return tuple(sorted(srtd_by_key, key=lambda score: self._scores[score], reverse=True)[:n_keywords])
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
 # Step 12.1
