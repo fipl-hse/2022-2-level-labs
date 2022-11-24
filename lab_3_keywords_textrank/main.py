@@ -129,7 +129,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        id_lst = [integer for integer in range(1000, len(tokens) + 1001)]
+        id_lst = list(range(1000, len(tokens) + 1001))
         self._word2id = {token: id_n for (token, id_n) in zip(tokens, id_lst)}
         self._id2word = {id_n: token for (id_n, token) in zip(id_lst, tokens)}
 
@@ -523,10 +523,10 @@ class EdgeListGraph:
             if vertex not in self._edges.keys():
                 return -1
 
-        if vertex2 in self._edges[vertex1]:
-            return 1
-        else:
+        if vertex2 not in self._edges[vertex1]:
             return 0
+
+        return 1
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
