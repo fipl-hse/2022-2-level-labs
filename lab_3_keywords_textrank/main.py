@@ -442,7 +442,7 @@ class AdjacencyMatrixGraph:
         weight_sum = 0
         for weight in no_norm_dict.values():
             weight_sum += weight
-        for key1 in self._positions.keys():
+        for key1 in self._positions:
             self._position_weights[key1] = no_norm_dict[key1] / weight_sum
 
     # Step 8.4
@@ -618,7 +618,7 @@ class EdgeListGraph:
         weight_sum = 0
         for weight in no_norm_dict.values():
             weight_sum += weight
-        for key1 in self._positions.keys():
+        for key1 in self._positions:
             self._position_weights[key1] = no_norm_dict[key1] / weight_sum
 
     # Step 8.4
