@@ -205,11 +205,11 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not(isinstance(window_length, int) and window_length >= 2 and tokens):
         return None
-    pairs = set()
+    pairs = []
     for idx1, token1 in enumerate(tokens):
-        for idx2, token2 in enumerate(tokens):
-            if token1 != token2 and abs(idx2 - idx1) < window_length:
-                pairs.add(tuple(sorted((token1, token2))))
+        for idx2, token2 in enumerate(tokens[idx1 + 1:idx1 + window_length]):
+            if token1 != token2:
+                pairs.append((token1, token2))
     return tuple(pairs)
 
 
