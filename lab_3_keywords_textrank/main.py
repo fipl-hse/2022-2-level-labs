@@ -174,10 +174,6 @@ class TextEncoder:
         return tuple(self._id2word[token] for token in encoded_tokens)
 
 
-
-
-
-
 # Step 3
 def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
     """
@@ -274,6 +270,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
+
         for vertex in vertex1, vertex2:
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
@@ -282,9 +279,10 @@ class AdjacencyMatrixGraph:
             for _ in self._vertices:
                 if len(i) < len(self._vertices):
                     i.append(0)
-        self._matrix[self._vertices.index(vertex1)][self._vertices.index(vertex2)] = 1
-        self._matrix[self._vertices.index(vertex2)][self._vertices.index(vertex1)] = 1
-        return 0
+            index1 = self._vertices.index(vertex1)
+            index2 = self._vertices.index(vertex2)
+            self._matrix[index1][index2] = self._matrix[index2][index1] = 1
+            return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -335,8 +333,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._vertices:
             return -1
-        else:
-            sum(self._matrix[self._vertices.index(vertex)])
+        return sum(self._matrix[self._vertices.index(vertex)])
+
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
         """
@@ -370,11 +368,12 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        positions = {}
-        for token in self._positions:
-            positions[token] = sum(1 / position for position in self._positions[token])
-        for token in self._positions:
-            self._position_weights[token] = positions[token] / sum(positions.values())
+        dictionary = {}
+        for vertex in self._positions:
+            dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
+        sum_dictionary = sum(dictionary.values())
+        for vertex in self._positions:
+            self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -425,7 +424,6 @@ class EdgeListGraph:
         self._positions = {}
         self._position_weights = {}
 
-
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
         """
@@ -436,6 +434,16 @@ class EdgeListGraph:
                 a sequence of vertices present in the graph
         """
         return tuple(self._edges.keys())
+
+    def check_vertex_in_edges(self, ver1: int, ver2: int) -> None:
+
+        """
+        The function checks if vertex is in self._edges
+        """
+        if ver1 not in self._edges:
+            self._edges[ver1] = [ver2]
+        else:
+            self._edges[ver1].append(ver2)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -455,9 +463,8 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if (vertex1 and vertex2) not in self._edges or vertex1 not in self._edges[vertex2]:
-            self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
-            self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
+        self.check_vertex_in_edges(vertex1, vertex2)
+        self.check_vertex_in_edges(vertex2, vertex1)
         return 0
 
     # Step 7.2
@@ -478,9 +485,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        if vertex1 in self._edges[vertex2]:
-            return 1
-        return 0
+        return int(vertex1 in self._edges[vertex2])
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -512,9 +517,9 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pairs = extract_pairs(tokens, window_length)
-        for each_pair in pairs:
-            self.add_edge(each_pair[0], each_pair[1])
+        edges = extract_pairs(tokens, window_length)
+        for elem in edges:
+            self.add_edge(elem[0], elem[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -524,11 +529,11 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for index, token in enumerate(tokens):
-            if token in self._positions:
-                self._positions[token] = [token] + [index + 1]
+        for ind, elem in enumerate(tokens):
+            if elem in self._positions:
+                self._positions[elem].append(ind + 1)
             else:
-                self._positions[token] = [index + 1]
+                self._positions[elem] = [ind + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -536,10 +541,15 @@ class EdgeListGraph:
         Computes position weights for all tokens in text
         """
         positions = {}
-        for token in self._positions:
-            positions[token] = sum(1 / position for position in self._positions[token])
-        for token in self._positions:
-            self._position_weights[token] = positions[token] / sum(positions.values())
+        for key in self._positions:
+            for elem in self._positions[key]:
+                if key in positions:
+                    positions[key] += 1 / elem
+                else:
+                    positions[key] = 1 / elem
+        for key in self._positions:
+            self._position_weights[key] = positions[key] / sum(positions.values())
+
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
         """
@@ -611,8 +621,11 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        self._scores[vertex] = (1 - self._damping_factor) + self._damping_factor * sum(
-            1 / self._graph.calculate_inout_score(elem) * scores[elem] for elem in incidental_vertices)
+        summa = 0.0
+        for elem in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(elem)
+            summa += 1 / abs(inout_score) * scores[elem]
+        self._scores[vertex] = (summa * self._damping_factor) + (1 - self._damping_factor)
 
     # Step 5.3
     def train(self) -> None:
@@ -657,8 +670,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_key = sorted(self._scores)
-        return tuple(sorted(sorted_key, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
+        return tuple(sorted(self._scores, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -718,8 +730,12 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        self._scores[vertex] = ((1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * sum(
-            1 / self._graph.calculate_inout_score(elem) * scores[elem] for elem in incidental_vertices))
+        summa = 0.0
+        for elem in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(elem)
+            summa += 1 / abs(inout_score) * inout_score
+        self._scores[vertex] = (summa * self._damping_factor) + \
+                               (1 - self._damping_factor) * self._position_weights[vertex]
 
 
 class TFIDFAdapter:
@@ -757,7 +773,6 @@ class TFIDFAdapter:
                 Inverse Document Frequency scores for tokens
         """
         pass
-
 
     # Step 10.2
     def train(self) -> int:
