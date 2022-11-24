@@ -7,7 +7,8 @@ from main import (TextPreprocessor,
                   TextEncoder,
                   AdjacencyMatrixGraph,
                   VanillaTextRank,
-                  EdgeListGraph)
+                  EdgeListGraph,
+                  PositionBiasedTextRank)
 
 if __name__ == "__main__":
 
@@ -48,6 +49,16 @@ if __name__ == "__main__":
     rank_edge.train()
     top_edge = rank_edge.get_top_keywords(10)
 
+    biased_rank_graph = PositionBiasedTextRank(graph)
+    biased_rank_graph.train()
+    top_biased_graph = biased_rank_graph.get_top_keywords(10)
+
+    biased_rank_edge = PositionBiasedTextRank(edge)
+    biased_rank_edge.train()
+    top_biased_edge = biased_rank_edge.get_top_keywords(10)
+
+    print(top_biased_graph)
+    print(top_biased_edge)
 
     RESULT = decoded_words
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

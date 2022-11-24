@@ -387,14 +387,34 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for token in tokens:
+            position = tokens.index(token) + 1
+
+            if token not in self._positions.keys():
+                self._positions[token] = []
+
+            self._positions[token].append(position)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        unnormalized_positional_weight = {}
+
+        for elements in self._positions.items():
+            unnormalized = 0
+
+            for element in elements[1]:
+                summ = 1 / element
+                unnormalized += summ
+
+            unnormalized_positional_weight[elements[0]] = unnormalized
+
+        unnormalized_values = sum(unnormalized_positional_weight.values())
+
+        for key, weight in unnormalized_positional_weight.items():
+            self._position_weights[key] = weight / unnormalized_values
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -405,7 +425,7 @@ class AdjacencyMatrixGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class EdgeListGraph:
@@ -505,6 +525,8 @@ class EdgeListGraph:
 
         if vertex2 in self._edges[vertex1]:
             return 1
+        else:
+            return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -555,14 +577,34 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        pass
+        for token in tokens:
+            position = tokens.index(token) + 1
+
+            if token not in self._positions.keys():
+                self._positions[token] = []
+
+            self._positions[token].append(position)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        pass
+        unnormalized_positional_weight = {}
+
+        for elements in self._positions.items():
+            unnormalized = 0
+
+            for element in elements[1]:
+                summ = 1 / element
+                unnormalized += summ
+
+            unnormalized_positional_weight[elements[0]] = unnormalized
+
+        unnormalized_values = sum(unnormalized_positional_weight.values())
+
+        for key, weight in unnormalized_positional_weight.items():
+            self._position_weights[key] = weight / unnormalized_values
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -573,7 +615,7 @@ class EdgeListGraph:
             dict[int, float]
                 position weights for all vertices in the graph
         """
-        pass
+        return self._position_weights
 
 
 class VanillaTextRank:
@@ -732,7 +774,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -747,7 +790,15 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summ = 0
+
+        for incidental_vertex in incidental_vertices:
+            in_out_score = self._graph.calculate_inout_score(incidental_vertex)
+            var = 1 / abs(in_out_score) * scores[vertex]
+            summ += var
+
+        new_weight = summ * self._damping_factor + (1 - self._damping_factor) * self._position_weights[vertex]
+        self._scores[vertex] = new_weight
 
 
 class TFIDFAdapter:
