@@ -24,6 +24,7 @@ def check_content(massive, type_name) -> Optional[bool]:
         return None
     return True
 
+
 class TextPreprocessor:
     """
     A class to preprocess raw text
@@ -90,11 +91,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        tokens_lst = list(tokens)
-        for el in self._stop_words:
-            while el in tokens_lst:
-                tokens_lst.remove(el)
-        return tuple(tokens_lst)
+        return tuple(el for el in tokens if el not in self._stop_words)
+
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
         """
@@ -111,7 +109,6 @@ class TextPreprocessor:
         tokens = self._clean_and_tokenize(text)
         clean_tokens = self._remove_stop_words(tokens)
         return clean_tokens
-
 
 
 class TextEncoder:
@@ -160,6 +157,7 @@ class TextEncoder:
             self._id2word[id] = words[list(numbers).index(id)]
         for key, val in self._id2word.items():
             self._word2id[val] = key
+
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
         """
@@ -279,7 +277,6 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = []
-        self._position = {}
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -297,11 +294,10 @@ class AdjacencyMatrixGraph:
                 0 if edge was added successfully, otherwise -1
         In case of vertex1 being equal to vertex2, -1 is returned as loops are prohibited
         """
-        if vertex1 != vertex2:
-            self._matrix.append([vertex1, vertex2])
-            return 0
-        else:
+        if vertex1 == vertex2:
             return -1
+        self._matrix.append([vertex1, vertex2])
+        return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -319,17 +315,14 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        lst = []
+        lst = self.get_vertices()
         for pair in self._matrix:
-            if pair[0] not in lst and pair[1] not in lst:
-                lst.extend(pair)
-            if vertex1 in pair and vertex2 in pair:
+            if vertex1 in pair and vertex2 in pair and vertex1 != vertex2:
                 return 1
         if vertex1 not in lst or vertex2 not in lst:
             return -1
         else:
             return 0
-
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -368,7 +361,6 @@ class AdjacencyMatrixGraph:
             if vertex in pair:
                 count += 1
         return count
-
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -663,15 +655,7 @@ class VanillaTextRank:
                 top n most important tokens in the encoded text
         """
         scores = self.get_scores()
-        values = sorted(scores.values(), reverse=True)[:n_keywords]
-        result = []
-        for el in values:
-            for k, v in sorted(scores.items()):
-                if v == el and k not in result and len(result) != n_keywords:
-                    result.append(k)
-        return tuple(result)
-
-
+        return tuple(sorted(scores.keys(), key=lambda key: scores[key], reverse=True)[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
