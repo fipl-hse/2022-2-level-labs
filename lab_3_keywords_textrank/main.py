@@ -544,8 +544,11 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for index, word in enumerate(tokens):
-            self._positions[word] = self._positions.get(word, []) + [index + 1]
+        for index, token in enumerate(tokens):
+            if token not in self._positions:
+                self._positions[token] = [index + 1]
+            else:
+                self._positions[token].append(index + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
