@@ -439,7 +439,7 @@ class AdjacencyMatrixGraph:
             for item in value:
                 no_norm_weight += 1 / float(item)
             no_norm_dict[key] = no_norm_weight
-        weight_sum = 0
+        weight_sum = 0.0
         for weight in no_norm_dict.values():
             weight_sum += weight
         for key1 in self._positions:
@@ -747,7 +747,13 @@ class VanillaTextRank:
         for key in sorted_keys:
             sorted_by_keys[key] = self._scores[key]
         # sort by value
-        sorted_d = {k: sorted_by_keys[k] for k in sorted(sorted_by_keys, key=sorted_by_keys.get, reverse=True)}
+        #sorted_d = {k: sorted_by_keys[k] for k in sorted(sorted_by_keys, key=sorted_by_keys.get, reverse=True)}
+        sorted_d = {}
+        sorted_values = sorted(sorted_by_keys.values(), reverse=True)
+        for sort_value in sorted_values:
+            for key1, value1 in sorted_by_keys.items():
+                if sort_value == value1:
+                    sorted_d[key1] = value1
         # make list of keys and get top n
         top_keywords = list(sorted_d.keys())[:n_keywords]
         return tuple(top_keywords)
