@@ -36,8 +36,8 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self.stop_words = stop_words
-        self.punctuation = punctuation
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -275,8 +275,7 @@ class AdjacencyMatrixGraph:
         if vertex1 == vertex2:
             return -1
 
-        vertexes = (vertex1, vertex2)
-        for vertex in vertexes:
+        for vertex in vertex1, vertex2:
             if vertex not in self._matrix[0]:
                 self._matrix[0].append(vertex)
                 self._matrix.append([vertex] + [0 for _ in range(len(self._matrix[0]))])
