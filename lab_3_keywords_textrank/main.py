@@ -37,7 +37,7 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        self._stop_words = stop_words
+        self._stop_words = stop_words  # сохраняем аргументы в атрибуты класса
         self._punctuation = punctuation
 
     # Step 1.2
@@ -57,8 +57,7 @@ class TextPreprocessor:
         for symbol in text.lower():
             if symbol not in self._punctuation:
                 clean_text += symbol
-        tokens = tuple(clean_text.split())
-        return tokens
+        return tuple(clean_text.split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -73,11 +72,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        words = []
-        for token in tokens:
-            if token not in self._stop_words:
-                words.append(token)
-        return tuple(words)
+        return tuple(token for token in tokens if token not in self._stop_words)
 
         # Step 1.4
 
@@ -93,7 +88,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        tokens = self._clean_and_tokenize(text)
+        tokens = self._clean_and_tokenize(text)  # обращаемся к методам класса
         return self._remove_stop_words(tokens)
 
 
@@ -122,7 +117,7 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        self._word2id = {}
+        self._word2id = {}  # создаем два атрибута
         self._id2word = {}
 
     # Step 2.2
@@ -158,7 +153,7 @@ class TextEncoder:
         """
         if not tokens:
             return None
-        self._learn_indices(tokens)
+        self._learn_indices(tokens)  # вызов метода
         return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
@@ -287,6 +282,7 @@ class AdjacencyMatrixGraph:
         self._matrix[index1][index2] = 1
         self._matrix[index2][index1] = 1
         return 0
+
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
         """
@@ -585,7 +581,7 @@ class VanillaTextRank:
         """
         summary = 0
         for vertice in incidental_vertices:
-            inout_score = scores[vertice]/self._graph.calculate_inout_score(vertice)
+            inout_score = scores[vertice] / self._graph.calculate_inout_score(vertice)
             summary += inout_score
         weight = (1 - self._damping_factor) + self._damping_factor * summary
         self._scores[vertex] = weight
@@ -635,6 +631,7 @@ class VanillaTextRank:
         """
         top_keywords = sorted(self._scores, reverse=True, key=lambda vertex: self._scores[vertex])[:n_keywords]
         return tuple(top_keywords)
+
 
 class PositionBiasedTextRank(VanillaTextRank):
     """
