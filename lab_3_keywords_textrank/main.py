@@ -278,7 +278,6 @@ class AdjacencyMatrixGraph:
             if vrtx not in self._vertices:
                 self._vertices.append(vrtx)
                 self._matrix.append([0 for _ in range(len(self._vertices))])
-                # while len(self._matrix[0]) < len(self._vertices):
                 for i in range(len(self._vertices) - 1):
                     self._matrix[i].append(0)
         self._matrix[self._vertices.index(vertex1)][self._vertices.index(vertex2)] = 1
@@ -456,10 +455,9 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        for vrtx in vertex1, vertex2:
-            if vrtx not in self._edges.keys():
-                self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
-                self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
+        if vertex1 not in self._edges.get(vertex2, []):
+            self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
+            self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
         return 0
 
     # Step 7.2
@@ -536,11 +534,10 @@ class EdgeListGraph:
         """
         sum_positions = {}
         position_weight = 0
-        # summa = 0.
         for vertex in self._positions:
             for position in self._positions[vertex]:
                 position_weight += 1 / position
-                sum_positions[vertex] = position_weight
+            sum_positions[vertex] = position_weight
         for key in sum_positions:
             self._position_weights[key] = sum_positions[key] / sum(sum_positions.values())
 
@@ -662,7 +659,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(sorted(self._scores), key=lambda x: self._scores[x], reverse=True))[:n_keywords]
+        return tuple(sorted(self._scores.keys(), key=lambda x: self._scores[x], reverse=True))[:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -706,7 +703,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -721,7 +719,9 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summa = sum((1 / self._graph.calculate_inout_score(vrtx) * self._scores[vrtx]) for vrtx in incidental_vertices)
+        weight = (summa * self._damping_factor) + (1 - self._damping_factor) * self._position_weights[vertex]
+        self._scores[vertex] = weight
 
 
 class TFIDFAdapter:
