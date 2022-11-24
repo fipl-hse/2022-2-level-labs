@@ -3,7 +3,8 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from lab_3_keywords_textrank.main import *
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, \
+    AdjacencyMatrixGraph, EdgeListGraph, VanillaTextRank, PositionBiasedTextRank
 
 
 if __name__ == "__main__":
@@ -26,10 +27,10 @@ if __name__ == "__main__":
     # python -m pytest -m mark8
     punctuation = ('!', '"', '#', '$', '%', '&', '''''', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';',
                    '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~')
-    decoded = None
-    decoded_dict = None
-    decoded_position_biased_adjacency = None
-    decoded_position_biased_edge = None
+    DECODED = None
+    DECODED_DICT = None
+    DECODED_POSITION_BIASED_ADJACENCY = None
+    DECODED_POSITION_BIASED_EDGE = None
 
     text_preprocessor = TextPreprocessor(stop_words=stop_words, punctuation=punctuation)
     tokens = text_preprocessor.preprocess_text(text=text)
@@ -51,27 +52,27 @@ if __name__ == "__main__":
         vanilla = VanillaTextRank(graph)
         vanilla.train()
         keywords = vanilla.get_top_keywords(10)
-        decoded = text_encoder.decode(encoded_tokens=keywords)
+        DECODED = text_encoder.decode(encoded_tokens=keywords)
 
         vanilla_dict = VanillaTextRank(graph_dict)
         vanilla_dict.train()
         keywords_dict = vanilla_dict.get_top_keywords(10)
-        decoded_dict = text_encoder.decode(encoded_tokens=keywords_dict)
+        DECODED_DICT = text_encoder.decode(encoded_tokens=keywords_dict)
 
         position_biased_textrank_adjacency = PositionBiasedTextRank(graph)
         position_biased_textrank_adjacency.train()
         keywords_position_biased_adjacency = position_biased_textrank_adjacency.get_top_keywords(10)
-        decoded_position_biased_adjacency = text_encoder.decode(encoded_tokens=keywords_position_biased_adjacency)
+        DECODED_POSITION_BIASED_ADJACENCY = text_encoder.decode(encoded_tokens=keywords_position_biased_adjacency)
 
         position_biased_textrank_edge = PositionBiasedTextRank(graph_dict)
         position_biased_textrank_edge.train()
         keywords_position_biased_edge = position_biased_textrank_edge.get_top_keywords(10)
         decoded_position_biased_edge = text_encoder.decode(encoded_tokens=keywords_position_biased_edge)
 
-    RESULT = decoded
-    print('keywords with AdjacencyMatrixGraph: ', decoded, '\n',
-          'keywords with EdgeListGraph: ', decoded_dict, '\n',
-          'keywords with AdjacencyMatrixGraph PositionBiasedTextRank', decoded_position_biased_adjacency, '\n',
-          'keywords with EdgeListGraph PositionBiasedTextRank', decoded_position_biased_edge)
+    RESULT = DECODED
+    print('keywords with AdjacencyMatrixGraph: ', DECODED, '\n',
+          'keywords with EdgeListGraph: ', DECODED_DICT, '\n',
+          'keywords with AdjacencyMatrixGraph PositionBiasedTextRank', DECODED_POSITION_BIASED_ADJACENCY, '\n',
+          'keywords with EdgeListGraph PositionBiasedTextRank', DECODED_POSITION_BIASED_EDGE)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
