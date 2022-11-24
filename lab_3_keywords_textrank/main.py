@@ -608,14 +608,10 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        sign = 0
+        summa = 0.0
         for element in incidental_vertices:
-            inout_score = self._graph.calculate_inout_score(element)
-            if inout_score < 0:
-                sign -= 1
-            else:
-                sign += 1
-        self._scores[vertex] = (sign * self._damping_factor) + (1 - self._damping_factor)
+            summa += 1 / abs(self._graph.calculate_inout_score(element)) * scores[element]
+        self._scores[vertex] = (summa * self._damping_factor) + (1 - self._damping_factor)
 
     # Step 5.3
     def train(self) -> None:
