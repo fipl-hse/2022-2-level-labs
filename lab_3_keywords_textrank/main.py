@@ -1017,7 +1017,7 @@ class KeywordExtractionBenchmark:
                           'TF-IDF': tfidf, 'RAKE': rake}
             for name, exemplary in exemplares.items():
                 exemplary.train()
-                top_keywords = object.get_top_keywords(50)
+                top_keywords = exemplary.get_top_keywords(50)
                 if name in ('VanillaTextRank', 'PositionBiasedTextRank'):
                     top_keywords = encoded_tokens.decode(top_keywords)
                 self.report[name][theme] = calculate_recall(top_keywords, result)
