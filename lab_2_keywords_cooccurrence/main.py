@@ -270,3 +270,4 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
         return {**keyword_phrases_with_scores, **cumulative_score_with_stop_words}
     return None
+    
