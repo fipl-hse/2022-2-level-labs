@@ -694,7 +694,8 @@ class VanillaTextRank:
         """
         vertex_sum = 0
         for incidental_vertex in incidental_vertices:
-            vertex_sum += 1/float(self._graph.calculate_inout_score(incidental_vertex)) * float(scores[incidental_vertex])
+            vertex_sum += 1/float(self._graph.calculate_inout_score(incidental_vertex)) * \
+                          float(scores[incidental_vertex])
         self._scores[vertex] = self._damping_factor * vertex_sum + (1 - self._damping_factor)
 
     # Step 5.3
