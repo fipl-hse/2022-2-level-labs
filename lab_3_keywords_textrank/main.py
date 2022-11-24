@@ -208,8 +208,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
             for two_token in window_step:
                 if one_token < two_token and (one_token, two_token) not in pairs_of_nums:
                     pairs_of_nums.append((one_token, two_token))
-    pairs_words = tuple(pairs_of_nums)
-    return pairs_words
+    pairs_of_words = tuple(pairs_of_nums)
+    return pairs_of_words
 
 
 class AdjacencyMatrixGraph:
