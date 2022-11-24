@@ -5,7 +5,6 @@ Extract keywords based on TextRank algorithm
 import csv
 from pathlib import Path
 from typing import Optional, Union
-import operator
 
 from lab_1_keywords_tfidf.main import (calculate_frequencies,
                                        calculate_tf,
