@@ -300,9 +300,10 @@ class AdjacencyMatrixGraph:
             if vertex1_is_new and vertex2_is_new:
                 vertex1_lst = []
                 vertex2_lst = []
-                for i in range(len(self._vertices)):
-                    vertex1_lst.append(0)
-                    vertex2_lst.append(0)
+                length = len(self._vertices)
+                appended_lst = [0] * length
+                vertex1_lst.extend(appended_lst)
+                vertex2_lst.extend(appended_lst)
                 vertex1_lst[vertex2_index] = 1
                 vertex2_lst[vertex1_index] = 1
                 self._matrix.append(vertex1_lst)
@@ -419,7 +420,8 @@ class AdjacencyMatrixGraph:
         """
         for token in tokens:
             position_list = []
-            for i in range(len(tokens)):
+            length = len(tokens)
+            for i in range(length):
                 if token == tokens[i]:
                     position_list.append(i+1)
             self._positions[token] = position_list
@@ -594,7 +596,8 @@ class EdgeListGraph:
         """
         for token in tokens:
             position_list = []
-            for i in range(len(tokens)):
+            length = len(tokens)
+            for i in range(length):
                 if token == tokens[i]:
                     position_list.append(i+1)
             self._positions[token] = position_list
