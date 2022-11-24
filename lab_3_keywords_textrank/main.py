@@ -282,7 +282,7 @@ class AdjacencyMatrixGraph:
             index1 = self._vertices.index(vertex1)
             index2 = self._vertices.index(vertex2)
             self._matrix[index1][index2] = self._matrix[index2][index1] = 1
-            return 0
+        return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
