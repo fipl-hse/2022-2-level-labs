@@ -888,7 +888,7 @@ class RAKEAdapter:
 
         if not word_scores:
             return -1
-        self._scores = word_scores
+        self._scores = dict(word_scores)
         return 0
 
     # Step 11.3
