@@ -3,7 +3,7 @@ Lab 3
 Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
-from typing import Optional, Union, Tuple
+from typing import Optional, Union
 
 
 class TextPreprocessor:
@@ -277,12 +277,14 @@ class AdjacencyMatrixGraph:
         for vertex in vertex1, vertex2:
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
-            for i in self._matrix:
-                i.append(0)
-            self._matrix.append([0 for _ in self._vertices])
-        index1 = self._vertices.index(vertex1)
-        index2 = self._vertices.index(vertex2)
-        self._matrix[index1][index2] = self._matrix[index2][index1] = 1
+                self._matrix.append([])
+        for i in self._matrix:
+            for _ in self._vertices:
+                if len(i) < len(self._vertices):
+                    i.append(0)
+        self._matrix[self._vertices.index(vertex1)][self._vertices.index(vertex2)] = 1
+        self._matrix[self._vertices.index(vertex2)][self._vertices.index(vertex1)] = 1
+        return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -333,7 +335,8 @@ class AdjacencyMatrixGraph:
         """
         if vertex not in self._vertices:
             return -1
-        return sum(self._matrix[self._vertices.index(vertex)])
+        else:
+            sum(self._matrix[self._vertices.index(vertex)])
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
         """
@@ -369,9 +372,9 @@ class AdjacencyMatrixGraph:
         """
         positions = {}
         for token in self._positions:
-            positions[token] = sum(1 / i for i in self._positions[token])
-            sum_positions = sum(positions.values())
-            self._position_weights[token] = positions[token] / sum_positions
+            positions[token] = sum(1 / position for position in self._positions[token])
+        for token in self._positions:
+            self._position_weights[token] = positions[token] / sum(positions.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -424,7 +427,7 @@ class EdgeListGraph:
 
 
     # Step 7.2
-    def get_vertices(self) -> tuple[str, ...]:
+    def get_vertices(self) -> tuple[int, ...]:
         """
         Returns a sequence of all vertices present in the graph
         Returns
@@ -432,7 +435,16 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._edges)
+        return tuple(self._edges.keys())
+
+    def add_vertex_to_dict(self, first_vertex: int, second_vertex: int) -> None:
+        """
+        Adds a vertex to the dict
+        """
+        if first_vertex not in self._edges:
+            self._edges[first_vertex] = [second_vertex]
+        else:
+            self._edges[first_vertex].append(second_vertex)
 
 
     # Step 7.2
@@ -453,15 +465,8 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-
-        for vertex in [vertex1, vertex2]:
-            if vertex not in self._edges:
-                self._edges[vertex] = []
-
-        if vertex1 not in self._edges[vertex2]:
-            self._edges[vertex2].append(vertex1)
-        if vertex2 not in self._edges[vertex1]:
-            self._edges[vertex1].append(vertex2)
+        self.add_vertex_to_dict(vertex1, vertex2)
+        self.add_vertex_to_dict(vertex2, vertex1)
         return 0
 
     # Step 7.2
@@ -480,9 +485,9 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._edges and vertex2 not in self._edges:
+        if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        if vertex2 in self._edges[vertex1]:
+        if vertex1 in self._edges[vertex2]:
             return 1
         return 0
 
@@ -517,7 +522,7 @@ class EdgeListGraph:
                 if they appear in the same window of this length
         """
         for pair in extract_pairs(tokens, window_length):
-            self.add_edge(*pair)
+            self.add_edge(pair[0], pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -527,8 +532,11 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for index, word in enumerate(tokens):
-            self._positions[word] = self._positions.get(word, []) + [index + 1]
+        for index, token in enumerate(tokens):
+            if token in self._positions:
+                self._positions[token] = [token] + [index + 1]
+            else:
+                self._positions[token] = [index + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
@@ -537,9 +545,9 @@ class EdgeListGraph:
         """
         positions = {}
         for token in self._positions:
-            positions[token] = sum(1 / i for i in self._positions[token])
-            sum_positions = sum(positions.values())
-            self._position_weights[token] = positions[token] / sum_positions
+            positions[token] = sum(1 / position for position in self._positions[token])
+        for token in self._positions:
+            self._position_weights[token] = positions[token] / sum(positions.values())
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
         """
