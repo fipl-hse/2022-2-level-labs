@@ -311,8 +311,9 @@ class AdjacencyMatrixGraph:
             # если первая вершина новая
             if vertex1_is_new and not vertex2_is_new:
                 vertex1_lst = []
-                for i in range(len(self._vertices)):
-                    vertex1_lst.append(0)
+                vertex1_list_len = len(self._vertices)
+                extended_list1 = [0]*vertex1_list_len
+                vertex1_lst.extend(extended_list1)
                 vertex1_lst[vertex2_index] = 1
                 self._matrix.append(vertex1_lst)
                 for row in self._matrix:
@@ -322,8 +323,9 @@ class AdjacencyMatrixGraph:
             # если вторая вершина новая
             if vertex2_is_new and not vertex1_is_new:
                 vertex2_lst = []
-                for i in range(len(self._vertices)):
-                    vertex2_lst.append(0)
+                vertex2_list_len = len(self._vertices)
+                extended_list2 = [0] * vertex2_list_len
+                vertex2_lst.extend(extended_list2)
                 vertex2_lst[vertex1_index] = 1
                 self._matrix.append(vertex2_lst)
                 for row in self._matrix:
@@ -440,7 +442,7 @@ class AdjacencyMatrixGraph:
         weight_sum = 0
         for weight in no_norm_dict.values():
             weight_sum += weight
-        for key1, value1 in self._positions.items():
+        for key1 in self._positions.keys():
             self._position_weights[key1] = no_norm_dict[key1] / weight_sum
 
     # Step 8.4
@@ -616,7 +618,7 @@ class EdgeListGraph:
         weight_sum = 0
         for weight in no_norm_dict.values():
             weight_sum += weight
-        for key1, value1 in self._positions.items():
+        for key1 in self._positions.keys():
             self._position_weights[key1] = no_norm_dict[key1] / weight_sum
 
     # Step 8.4
