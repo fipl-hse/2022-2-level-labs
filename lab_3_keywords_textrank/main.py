@@ -57,8 +57,7 @@ class TextPreprocessor:
             if item not in self.punctuation:
                 text_without_punctuation += item
         lowercase_text = text_without_punctuation.lower()
-        tokens = tuple(lowercase_text.split())
-        return tokens
+        return tuple(lowercase_text.split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -74,6 +73,7 @@ class TextPreprocessor:
                 tokens without stop-words
         """
         result = []
+        # one line
         for item in tokens:
             if item not in self.stop_words:
                 result.append(item)
@@ -158,6 +158,7 @@ class TextEncoder:
         if not tokens:
             return None
         integer_tokens = []
+        # one line
         for item in tokens:
             integer_tokens.append(self._word2id[item])
         return tuple(integer_tokens)
@@ -211,8 +212,10 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     pairs = []
     for item in range(len(tokens) - window_length + 1):
         for i in range(window_length):
-            if tokens[item] != tokens[item + i]:
-                pair = (tokens[item], tokens[item + i])
+            word = tokens[item]
+            other_word = tokens[item + i]
+            if word != other_word:
+                pair = (word, other_word)
                 pairs.append(pair)
     return tuple(pairs)
 
@@ -517,13 +520,11 @@ class EdgeListGraph:
         if vertex1 == vertex2:
             return -1
         if vertex1 not in self._edges:
-            self._edges[vertex1] = [vertex2]
+            self._edges[vertex1] = []
         if vertex2 not in self._edges:
-            self._edges[vertex2] = [vertex1]
-        if vertex1 in self._edges and vertex2 not in self._edges[vertex1]:
-            self._edges[vertex1].append(vertex2)
-        if vertex2 in self._edges and vertex1 not in self._edges[vertex2]:
-            self._edges[vertex2].append(vertex1)
+            self._edges[vertex2] = []
+        self._edges[vertex1].append(vertex2)
+        self._edges[vertex2].append(vertex1)
         return 0
 
     # Step 7.2
