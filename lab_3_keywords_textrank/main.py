@@ -1013,10 +1013,10 @@ class KeywordExtractionBenchmark:
             graph.calculate_position_weights()
             positional_rank = PositionBiasedTextRank(graph)
 
-            objects = {'VanillaTextRank': vanilla_text_rank, 'PositionBiasedTextRank': positional_rank,
+            exemplares = {'VanillaTextRank': vanilla_text_rank, 'PositionBiasedTextRank': positional_rank,
                           'TF-IDF': tfidf, 'RAKE': rake}
-            for name, object in objects.items():
-                object.train()
+            for name, exemplary in exemplares.items():
+                exemplary.train()
                 top_keywords = object.get_top_keywords(50)
                 if name in ('VanillaTextRank', 'PositionBiasedTextRank'):
                     top_keywords = encoded_tokens.decode(top_keywords)
