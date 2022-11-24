@@ -720,7 +720,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         summa = 0.0
         for element in incidental_vertices:
             summa += 1 / abs(self._graph.calculate_inout_score(element)) * scores[element]
-        self._scores[vertex] = (summa * self._damping_factor) + (1 - self._damping_factor) * self._position_weights[vertex]
+        self._scores[vertex] = (summa * self._damping_factor) +\
+                               (1 - self._damping_factor) * self._position_weights[vertex]
 
 
 class TFIDFAdapter:
