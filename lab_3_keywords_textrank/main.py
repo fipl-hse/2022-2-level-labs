@@ -5,6 +5,7 @@ Extract keywords based on TextRank algorithm
 import csv
 from pathlib import Path
 from typing import Optional, Union
+import operator
 
 from lab_1_keywords_tfidf.main import (calculate_frequencies,
                                        calculate_tf,
@@ -676,8 +677,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        sorted_by_key = sorted(self._scores)
-        return tuple(sorted(sorted_by_key, reverse=True, key=lambda key: self._scores[key])[:n_keywords])
+        return tuple(sorted(self._scores, key=lambda x: (-self._scores[x], x))[:n_keywords])
+
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -877,18 +878,18 @@ class RAKEAdapter:
             return -1
         content_word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
 
-        if not (candidate_keyword_phrases and content_word_frequencies):
+        if not content_word_frequencies:
             return -1
         list_content_word_frequincies = list(content_word_frequencies)
         word_degrees = calculate_word_degrees(candidate_keyword_phrases, list_content_word_frequincies)
 
-        if not (word_degrees and list_content_word_frequincies):
+        if not word_degrees:
             return -1
         word_scores = calculate_word_scores(word_degrees, content_word_frequencies)
 
         if not word_scores:
             return -1
-        self._scores = dict(word_scores)
+        self._scores = word_scores
         return 0
 
     # Step 11.3
@@ -989,57 +990,38 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        term_freq = {}
-        rake = {}
-        vanilla = {}
-        biased = {}
 
         for index, theme in enumerate(self.themes):
             with open(self._materials_path / f'{index}_text.txt', 'r', encoding='utf-8') as file:
                 text = file.read()
             with open(self._materials_path / f'{index}_keywords.txt', 'r', encoding='utf-8') as file:
-                keywords = tuple(file.read().split())
+                result = tuple(file.read().split())
 
             preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
             clean_tokens = preprocessor.preprocess_text(text)
+            tfidf = TFIDFAdapter(clean_tokens, self._idf)
             encoded_tokens = TextEncoder()
             tokens = encoded_tokens.encode(clean_tokens)
+            rake = RAKEAdapter(text, self._stop_words)
+            graph = EdgeListGraph()
             if not tokens:
                 return None
 
-            tfidf_adapter = TFIDFAdapter(clean_tokens, self._idf)
-            tfidf_adapter.train()
-            term_freq[theme] = calculate_recall(tfidf_adapter.get_top_keywords(50), keywords)
-
-
-            rake_adapter = RAKEAdapter(text, self._stop_words)
-            rake_adapter.train()
-            rake[theme] = calculate_recall(rake_adapter.get_top_keywords(50), keywords)
-
-
-            graph = EdgeListGraph()
             graph.fill_from_tokens(tokens, 3)
+            vanilla_text_rank = VanillaTextRank(graph)
             graph.fill_positions(tokens)
             graph.calculate_position_weights()
+            positional_rank = PositionBiasedTextRank(graph)
 
-            vanilla_text_rank = VanillaTextRank(graph)
-            vanilla_text_rank.train()
-            decode_text_vanilla = encoded_tokens.decode(vanilla_text_rank.get_top_keywords(50))
-            if not decode_text_vanilla:
-                return None
-            vanilla[theme] = calculate_recall(decode_text_vanilla, keywords)
 
-            position_biased_text_rank = PositionBiasedTextRank(graph)
-            position_biased_text_rank.train()
-            decode_text_biased = encoded_tokens.decode(position_biased_text_rank.get_top_keywords(50))
-            if not decode_text_biased:
-                return None
-            biased[theme] = calculate_recall(decode_text_biased, keywords)
-
-        self.report['VanillaTextRank'] = vanilla
-        self.report['PositionBiasedTextRank'] = biased
-        self.report['TF-IDF'] = term_freq
-        self.report['RAKE'] = rake
+            objects = {'TF-IDF': tfidf, 'RAKE': rake, 'VanillaTextRank': vanilla_text_rank,
+                      'PositionBiasedTextRank': positional_rank}
+            for name, object in objects.items():
+                object.train()
+                top_keywords = object.get_top_keywords(50)
+                if theme in 'VanillaTextRank_PositionBiasedTextRank':
+                    top_keywords = encoded_tokens.decode(top_keywords)
+                self.report[name][theme] = calculate_recall(top_keywords, result)
         return self.report
 
     # Step 12.4
