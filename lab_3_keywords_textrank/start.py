@@ -3,12 +3,14 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from main import (TextPreprocessor,
-                  TextEncoder,
-                  AdjacencyMatrixGraph,
-                  VanillaTextRank,
-                  EdgeListGraph,
-                  PositionBiasedTextRank)
+from main import (
+    TextPreprocessor,
+    TextEncoder,
+    AdjacencyMatrixGraph,
+    VanillaTextRank,
+    EdgeListGraph,
+    PositionBiasedTextRank
+)
 
 if __name__ == "__main__":
 
@@ -33,33 +35,34 @@ if __name__ == "__main__":
     encoding = TextEncoder()
     encoded_text = encoding.encode(preprocessed_text)
 
-    graph = AdjacencyMatrixGraph()
-    graph.fill_from_tokens(encoded_text, 10)
+    graph1 = AdjacencyMatrixGraph()
+    graph1.fill_from_tokens(encoded_text, 10)
+    rank1 = VanillaTextRank(graph1)
+    rank1.train()
+    top1 = encoding.decode(rank1.get_top_keywords(10))
+    print(top1)
 
-    rank = VanillaTextRank(graph)
-    rank.train()
-    top = rank.get_top_keywords(10)
+    edge1 = EdgeListGraph()
+    edge1.fill_from_tokens(encoded_text, 10)
+    rank_edge1 = VanillaTextRank(edge1)
+    rank_edge1.train()
+    top_edge1 = encoding.decode(rank_edge1.get_top_keywords(10))
+    print(top_edge1)
 
-    decoded_words = encoding.decode(top)
+    graph2 = AdjacencyMatrixGraph()
+    graph2.fill_from_tokens(encoded_text, 10)
+    biased_rank_graph2 = PositionBiasedTextRank(graph2)
+    biased_rank_graph2.train()
+    top_biased_graph2 = encoding.decode(biased_rank_graph2.get_top_keywords(10))
+    print(top_biased_graph2)
 
-    edge = EdgeListGraph()
-    edge.fill_from_tokens(encoded_text, 10)
+    edge2 = EdgeListGraph()
+    edge2.fill_from_tokens(encoded_text, 10)
+    biased_rank_edge2 = PositionBiasedTextRank(edge2)
+    biased_rank_edge2.train()
+    top_biased_edge2 = encoding.decode(biased_rank_edge2.get_top_keywords(10))
+    print(top_biased_edge2)
 
-    rank_edge = VanillaTextRank(edge)
-    rank_edge.train()
-    top_edge = rank_edge.get_top_keywords(10)
-
-    biased_rank_graph = PositionBiasedTextRank(graph)
-    biased_rank_graph.train()
-    top_biased_graph = biased_rank_graph.get_top_keywords(10)
-
-    biased_rank_edge = PositionBiasedTextRank(edge)
-    biased_rank_edge.train()
-    top_biased_edge = biased_rank_edge.get_top_keywords(10)
-
-    print(top_biased_graph)
-    print(top_biased_edge)
-
-    RESULT = decoded_words
+    RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

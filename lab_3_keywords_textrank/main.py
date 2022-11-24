@@ -25,6 +25,7 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
+
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -53,7 +54,7 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         for sign in self._punctuation:
-            text = text.replace(sign, '')
+            text = text.replace(sign, "")
         return tuple(text.lower().split())
 
     # Step 1.3
@@ -584,8 +585,7 @@ class EdgeListGraph:
             unnormalized = 0
 
             for element in elements[1]:
-                summ = 1 / element
-                unnormalized += summ
+                unnormalized += 1 / element
 
             unnormalized_positional_weight[elements[0]] = unnormalized
 
@@ -633,7 +633,7 @@ class VanillaTextRank:
         Retrieves importance scores of all tokens in the encoded text
      get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
         Retrieves top n most important tokens in the encoded text
-     """
+    """
 
     _scores: dict[int, float]
 
@@ -665,11 +665,11 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summ = 0
+        summ = 0.0
 
         for incidental_vertex in incidental_vertices:
             in_out_score = self._graph.calculate_inout_score(incidental_vertex)
-            var = 1 / abs(in_out_score) * scores[vertex]
+            var = scores[vertex] / abs(in_out_score)
             summ += var
 
         new_weight = summ * self._damping_factor + (1 - self._damping_factor)
@@ -691,8 +691,9 @@ class VanillaTextRank:
         for _ in range(0, self._max_iter):
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
-                incidental_vertices = [vertex for vertex in vertices
-                                       if self._graph.is_incidental(scored_vertex, vertex) == 1]
+                incidental_vertices = [
+                    vertex for vertex in vertices if self._graph.is_incidental(scored_vertex, vertex) == 1
+                ]
                 self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
             if sum(abs_score_diff) <= self._convergence_threshold:
@@ -778,11 +779,11 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summ = 0
+        summ = 0.0
 
         for incidental_vertex in incidental_vertices:
             in_out_score = self._graph.calculate_inout_score(incidental_vertex)
-            var = 1 / abs(in_out_score) * scores[vertex]
+            var = scores[vertex] / abs(in_out_score)
             summ += var
 
         new_weight = summ * self._damping_factor + (1 - self._damping_factor) * self._position_weights[vertex]
@@ -960,8 +961,9 @@ class KeywordExtractionBenchmark:
     """
 
     # Step 12.2
-    def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...],
-                 idf: dict[str, float], materials_path: Path) -> None:
+    def __init__(
+        self, stop_words: tuple[str, ...], punctuation: tuple[str, ...], idf: dict[str, float], materials_path: Path
+    ) -> None:
         """
         Constructs all the necessary attributes for the Benchmark instance
         Parameters
