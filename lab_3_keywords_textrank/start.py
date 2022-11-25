@@ -9,7 +9,7 @@ from main import (
     AdjacencyMatrixGraph,
     VanillaTextRank,
     EdgeListGraph,
-    PositionBiasedTextRank
+    PositionBiasedTextRank,
 )
 
 if __name__ == "__main__":
@@ -29,39 +29,42 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     punctuation = ('.', ',', ':', '-', '?', '!', '...', ';')
-    preprocessing = TextPreprocessor(stop_words, punctuation)
-    preprocessed_text = preprocessing.preprocess_text(text)
 
+    preprocessing = TextPreprocessor(stop_words, punctuation).preprocess_text(text)
     encoding = TextEncoder()
-    encoded_text = encoding.encode(preprocessed_text)
+    tokens = encoding.encode(preprocessing)
 
-    graph1 = AdjacencyMatrixGraph()
-    graph1.fill_from_tokens(encoded_text, 10)
-    rank1 = VanillaTextRank(graph1)
-    rank1.train()
-    top1 = encoding.decode(rank1.get_top_keywords(10))
-    print(top1)
+    graph = AdjacencyMatrixGraph()
+    if tokens:
+        graph.fill_from_tokens(tokens, 3)
+        graph.fill_positions(tokens)
+        graph.calculate_position_weights()
 
-    edge1 = EdgeListGraph()
-    edge1.fill_from_tokens(encoded_text, 10)
-    rank_edge1 = VanillaTextRank(edge1)
-    rank_edge1.train()
-    top_edge1 = encoding.decode(rank_edge1.get_top_keywords(10))
-    print(top_edge1)
+    vanilla_rank = VanillaTextRank(graph)
+    vanilla_rank.train()
+    top_vanilla_rank = vanilla_rank.get_top_keywords(10)
+    print(encoding.decode(top_vanilla_rank))
 
-    graph2 = AdjacencyMatrixGraph()
-    graph2.fill_from_tokens(encoded_text, 10)
-    biased_rank_graph2 = PositionBiasedTextRank(graph2)
-    biased_rank_graph2.train()
-    top_biased_graph2 = encoding.decode(biased_rank_graph2.get_top_keywords(10))
-    print(top_biased_graph2)
+    edge = EdgeListGraph()
+    if tokens:
+        edge.fill_from_tokens(tokens, 3)
+        edge.fill_positions(tokens)
+        edge.calculate_position_weights()
 
-    edge2 = EdgeListGraph()
-    edge2.fill_from_tokens(encoded_text, 10)
-    biased_rank_edge2 = PositionBiasedTextRank(edge2)
-    biased_rank_edge2.train()
-    top_biased_edge2 = encoding.decode(biased_rank_edge2.get_top_keywords(10))
-    print(top_biased_edge2)
+    vanilla_rank = VanillaTextRank(edge)
+    vanilla_rank.train()
+    top_vanilla_edge = vanilla_rank.get_top_keywords(10)
+    print(encoding.decode(top_vanilla_edge))
+
+    biased_rank_edge = PositionBiasedTextRank(edge)
+    biased_rank_edge.train()
+    top_biased_edge = biased_rank_edge.get_top_keywords(10)
+    print(encoding.decode(top_biased_edge))
+
+    biased_rank_adj = PositionBiasedTextRank(graph)
+    biased_rank_adj.train()
+    top_biased_graph = biased_rank_adj.get_top_keywords(10)
+    print(encoding.decode(top_biased_graph))
 
     RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
