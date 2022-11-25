@@ -440,17 +440,8 @@ class EdgeListGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._edges.keys())
+        return tuple(self._edges)
 
-    def check_vertex_in_edges(self, ver1: int, ver2: int) -> None:
-
-        """
-        The function checks if vertex is in self._edges
-        """
-        if ver1 not in self._edges:
-            self._edges[ver1] = [ver2]
-        else:
-            self._edges[ver1].append(ver2)
 
     # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -470,8 +461,15 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        self.check_vertex_in_edges(vertex1, vertex2)
-        self.check_vertex_in_edges(vertex2, vertex1)
+
+        for vertex in [vertex1, vertex2]:
+            if vertex not in self._edges:
+                self._edges[vertex] = []
+
+        if vertex1 not in self._edges[vertex2]:
+            self._edges[vertex2].append(vertex1)
+        if vertex2 not in self._edges[vertex1]:
+            self._edges[vertex1].append(vertex2)
         return 0
 
     # Step 7.2
@@ -490,9 +488,11 @@ class EdgeListGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._edges or vertex2 not in self._edges:
+        if not (vertex1 in self._edges and vertex2 in self._edges):
             return -1
-        return int(vertex1 in self._edges[vertex2])
+        if vertex2 in self._edges[vertex1]:
+            return 1
+        return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -524,9 +524,8 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        edges = extract_pairs(tokens, window_length)
-        for elem in edges:
-            self.add_edge(elem[0], elem[1])
+        for pair in extract_pairs(tokens, window_length):
+            self.add_edge(*pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -536,26 +535,23 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for ind, elem in enumerate(tokens):
-            if elem in self._positions:
-                self._positions[elem].append(ind + 1)
+        for index, token in enumerate(tokens):
+            if token not in self._positions:
+                self._positions[token] = [index + 1]
             else:
-                self._positions[elem] = [ind + 1]
+                self._positions[token].append(index + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        positions = {}
-        for key in self._positions:
-            for elem in self._positions[key]:
-                if key in positions:
-                    positions[key] += 1 / elem
-                else:
-                    positions[key] = 1 / elem
-        for key in self._positions:
-            self._position_weights[key] = positions[key] / sum(positions.values())
+        dictionary = {}
+        for vertex in self._positions:
+            dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
+        sum_dictionary = sum(dictionary.values())
+        for vertex in self._positions:
+            self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
