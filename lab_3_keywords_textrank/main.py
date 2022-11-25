@@ -53,9 +53,9 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         clean_text = ''
-        for el in text:
-            if el not in self._punctuation:
-                clean_text += el
+        for elem in text:
+            if elem not in self._punctuation:
+                clean_text += elem
         clean_text = clean_text.lower()
         return tuple(clean_text.split())
 
@@ -624,8 +624,8 @@ class VanillaTextRank:
                 scores of all vertices in the graph
         """
         val_sum = 0.0
-        for el in incidental_vertices:
-            val_sum += (1 / self._graph.calculate_inout_score(el)) * scores.get(el, 0)
+        for elem in incidental_vertices:
+            val_sum += (1 / self._graph.calculate_inout_score(elem)) * scores.get(elem, 0)
         self._scores[vertex] = (1 + self._damping_factor) + val_sum * self._damping_factor
 
     # Step 5.3
