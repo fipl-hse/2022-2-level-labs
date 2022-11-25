@@ -275,13 +275,11 @@ class AdjacencyMatrixGraph:
         for vert in vertex1, vertex2:
             if vert not in self._matrix_vertex:
                 self._matrix_vertex.append(vert)
-                self._matrix.append([0 for _ in self._matrix_vertex])
-
-        maxi = len(max(self._matrix, key=len))
+                self._matrix.append([])
 
         for element in self._matrix:
-            if len(element) < maxi:
-                element.extend([0 for _ in range(maxi - len(element))])
+            if len(element) < len(self._matrix_vertex):
+                element.extend([0 for _ in range(len(self._matrix_vertex) - len(element))])
 
         matrix_vertex_1 = self._matrix_vertex.index(vertex1)
         matrix_vertex_2 = self._matrix_vertex.index(vertex2)
@@ -336,7 +334,7 @@ class AdjacencyMatrixGraph:
         Returns
         -------
             int
-                number of incidental vertices
+                number of incidental verticesя
         If vertex is not present in the graph, -1 is returned
         """
         if vertex not in self._matrix_vertex:
