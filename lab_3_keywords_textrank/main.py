@@ -269,6 +269,7 @@ class AdjacencyMatrixGraph:
         for i in range(self._id_vertex):
             self._matrix[i].append(0)
         self._id_vertex += 1
+        return None
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
