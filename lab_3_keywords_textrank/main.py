@@ -533,7 +533,7 @@ class EdgeListGraph:
         Computes position weights for all tokens in text
         """
         sum_positions = {}
-        position_weight = 0
+        position_weight = 0.
         for vertex in self._positions:
             for position in self._positions[vertex]:
                 position_weight += 1 / position
@@ -720,7 +720,7 @@ class PositionBiasedTextRank(VanillaTextRank):
                 scores of all vertices in the graph
         """
         summa = sum((1 / self._graph.calculate_inout_score(vrtx) * self._scores[vrtx]) for vrtx in incidental_vertices)
-        weight = (summa * self._damping_factor) + (1 - self._damping_factor) * self._position_weights[vertex]
+        weight = summa * self._damping_factor + (1 - self._damping_factor) * self._position_weights[vertex]
         self._scores[vertex] = weight
 
 
