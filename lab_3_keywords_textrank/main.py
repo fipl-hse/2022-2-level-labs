@@ -262,12 +262,13 @@ class AdjacencyMatrixGraph:
             vertex : int
                 the vertex for which the matrix need to be filled
         """
-        if vertex not in self._vertexes:
-            self._vertexes[vertex] = self._id_vertex
-            self._matrix.append([0 for i in range(self._id_vertex + 1)])
-            for i in range(self._id_vertex):
-                self._matrix[i].append(0)
-            self._id_vertex += 1
+        if vertex in self._vertexes:
+            return None
+        self._vertexes[vertex] = self._id_vertex
+        self._matrix.append([0 for _ in range(self._id_vertex + 1)])
+        for i in range(self._id_vertex):
+            self._matrix[i].append(0)
+        self._id_vertex += 1
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
