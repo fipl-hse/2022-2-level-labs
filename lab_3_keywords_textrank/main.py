@@ -265,6 +265,23 @@ class AdjacencyMatrixGraph:
         self._position_weights = {}
 
     # Step 4.2
+    def add_edge_help(self, vertex: int, other_vertex: int) -> None:
+        """
+        adds edge if one of vertices is new
+        """
+        vertex_index = self._vertices.index(vertex)
+        other_vertex_index = self._vertices.index(other_vertex)
+        vertex_lst = []
+        vertex_list_len = len(self._vertices)
+        extended_list = [0] * vertex_list_len
+        vertex_lst.extend(extended_list)
+        vertex_lst[other_vertex_index] = 1
+        self._matrix.append(vertex_lst)
+        for row in self._matrix:
+            if len(row) < len(self._matrix):
+                row.append(0)
+        self._matrix[other_vertex_index][vertex_index] = 1
+
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
         Adds or overwrites an edge in the graph between the specified vertices
@@ -310,29 +327,10 @@ class AdjacencyMatrixGraph:
                 self._matrix.append(vertex2_lst)
             # если первая вершина новая
             if vertex1_is_new and not vertex2_is_new:
-                vertex1_lst = []
-                vertex1_list_len = len(self._vertices)
-                extended_list1 = [0]*vertex1_list_len
-                vertex1_lst.extend(extended_list1)
-                vertex1_lst[vertex2_index] = 1
-                self._matrix.append(vertex1_lst)
-                for row in self._matrix:
-                    if len(row) < len(self._matrix):
-                        row.append(0)
-                self._matrix[vertex2_index][vertex1_index] = 1
+                self.add_edge_help(vertex1, vertex2)
             # если вторая вершина новая
             if vertex2_is_new and not vertex1_is_new:
-                vertex2_lst = []
-                vertex2_list_len = len(self._vertices)
-                extended_list2 = [0] * vertex2_list_len
-                vertex2_lst.extend(extended_list2)
-                vertex2_lst[vertex1_index] = 1
-                self._matrix.append(vertex2_lst)
-                for row in self._matrix:
-                    # vertex 1 or 2 index
-                    if len(row) < len(self._matrix):
-                        row.append(0)
-                self._matrix[vertex1_index][vertex2_index] = 1
+                self.add_edge_help(vertex2, vertex1)
         else:
             # добавляется связь между существующими вершинами. меняется список
             self._matrix[vertex1_index][vertex2_index] = 1

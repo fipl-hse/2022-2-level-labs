@@ -67,7 +67,7 @@ if __name__ == "__main__":
         position_biased_textrank_edge = PositionBiasedTextRank(graph_dict)
         position_biased_textrank_edge.train()
         keywords_position_biased_edge = position_biased_textrank_edge.get_top_keywords(10)
-        decoded_position_biased_edge = text_encoder.decode(encoded_tokens=keywords_position_biased_edge)
+        DECODED_POSITION_BIASED_EDGE = text_encoder.decode(encoded_tokens=keywords_position_biased_edge)
 
     RESULT = DECODED
     print('keywords with AdjacencyMatrixGraph: ', DECODED, '\n',
