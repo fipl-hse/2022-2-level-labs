@@ -394,7 +394,7 @@ class AdjacencyMatrixGraph:
         unnormalized_positional_weight = {}
 
         for elements in self._positions.items():
-            unnormalized = 0
+            unnormalized = 0.0
 
             for element in elements[1]:
                 summ = 1 / element

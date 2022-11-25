@@ -3,14 +3,9 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from main import (
-    TextPreprocessor,
-    TextEncoder,
-    AdjacencyMatrixGraph,
-    VanillaTextRank,
-    EdgeListGraph,
-    PositionBiasedTextRank,
-)
+from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, AdjacencyMatrixGraph,
+                                          EdgeListGraph, VanillaTextRank, PositionBiasedTextRank,
+                                          )
 
 if __name__ == "__main__":
 
