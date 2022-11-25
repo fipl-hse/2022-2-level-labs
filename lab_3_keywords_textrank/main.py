@@ -29,6 +29,7 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
+
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -198,9 +199,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not tokens or not isinstance(window_length, int) or window_length < 2:
         return None
     final = []
-    tokens_list = list(tokens)
     for i in range(len(tokens)):
-        window_tokens = tokens_list[i:window_length + i]
+        window_tokens = tokens[i:window_length + i]
         for j in window_tokens:
             for k in window_tokens:
                 if (j, k) in final or (k, j) in final:
@@ -629,18 +629,19 @@ class VanillaTextRank:
             dict[int, float]:
                 scores for all vertices present in the graph
         """
-        vertices = self._graph.get_vertices()
-        for vertex in vertices:
-            self._scores[vertex] = 1.0
+        vertices = self._graph.get_vertices()  # получаем вершины
+        for vertex in vertices:  # циклом проходимся по каждой вершине
+            self._scores[vertex] = 1.0  # присваиваем каждой вершине значение 1.0
 
+        # цикл, который идет до максимально допустимого количества итераций обновления весов
         for _ in range(0, self._max_iter):
-            prev_score = self._scores.copy()
-            for scored_vertex in vertices:
+            prev_score = self._scores.copy()  # копируем старые значения
+            for scored_vertex in vertices:  # проходимся по вершинам
                 incidental_vertices = [vertex for vertex in vertices
-                                       if self._graph.is_incidental(scored_vertex, vertex) == 1]
-                self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
-            abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
-            if sum(abs_score_diff) <= self._convergence_threshold:
+                                       if self._graph.is_incidental(scored_vertex, vertex) == 1] # получаем инцидентные вершины
+                self.update_vertex_score(scored_vertex, incidental_vertices, prev_score) # обновляем веса(оценки) вершин, с помощью формулы в функции
+            abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())] # разница веса между двумя словарями
+            if sum(abs_score_diff) <= self._convergence_threshold: # если сумма разниц весов меньше или равна конст значению, то выходим из цикла
                 break
 
     # Step 5.4
