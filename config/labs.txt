@@ -1,3 +1,4 @@
 lab_1_keywords_tfidf
 lab_2_keywords_cooccurrence
 lab_3_keywords_textrank
+lab_4_summarization_textrank
