@@ -16,7 +16,7 @@ class Sentence:
     An abstraction over the real-world sentences
     """
 
-    def __init__(self, text: str, position: int):
+    def __init__(self, text: str, position: int) -> None:
         """
         Constructs all the necessary attributes
         """
@@ -80,7 +80,7 @@ class SentencePreprocessor(TextPreprocessor):
     Class for sentence preprocessing
     """
 
-    def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]):
+    def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
         Constructs all the necessary attributes
         """
