@@ -16,7 +16,7 @@ from lab_4_summarization_textrank.main import (Buddy,
                                                SentencePreprocessor,
                                                Sentence,
                                                IncorrectQuery,
-                                               NoRelevantTexts)
+                                               NoRelevantTextsException)
 
 
 class BuddyTest(unittest.TestCase):
@@ -110,7 +110,7 @@ class BuddyTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_texts_close_to_keywords_error(self):
         keywords = ('sdgarg', 'aljals', '13[120kdla')
-        self.assertRaises(NoRelevantTexts, self.buddy._find_texts_close_to_keywords, keywords, 10)
+        self.assertRaises(NoRelevantTextsException, self.buddy._find_texts_close_to_keywords, keywords, 10)
 
 
     @pytest.mark.lab_4_summarization_textrank
