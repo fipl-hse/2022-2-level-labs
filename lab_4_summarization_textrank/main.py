@@ -235,7 +235,21 @@ class TextRankSummarizer:
         """
         Iteratively computes significance scores for vertices
         """
-        pass
+        vertices = self._graph.get_vertices()
+        for vertex in vertices:
+            self._scores[vertex] = 1.0
+
+        for iteration in range(self._max_iter):
+            prev_score = self._scores.copy()
+            for scored_vertex in vertices:
+                similar_vertices = [vertex for vertex in vertices
+                                    if self._graph.get_similarity_score(scored_vertex, vertex) > 0]
+                self.update_vertex_score(scored_vertex, similar_vertices, prev_score)
+            abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
+
+            if sum(abs_score_diff) <= self._convergence_threshold:  # convergence condition
+                print("Converging at iteration " + str(iteration) + "...")
+                break
 
     def get_top_sentences(self, n_sentences: int) -> tuple[Sentence, ...]:
         """
