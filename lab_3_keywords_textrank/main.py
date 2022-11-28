@@ -367,15 +367,21 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        sum_positions = {}
-        position_weight = 0.
-        # summa = 0.
+        # sum_positions = {}
+        # position_weight = 0.
+        # # summa = 0.
+        # for vertex in self._positions:
+        #     for position in self._positions[vertex]:
+        #         position_weight += 1 / position
+        #         sum_positions[vertex] = position_weight
+        # for key in sum_positions:
+        #     self._position_weights[key] = sum_positions[key] / sum(sum_positions.values())
+        dictionary = {}
         for vertex in self._positions:
-            for position in self._positions[vertex]:
-                position_weight += 1 / position
-                sum_positions[vertex] = position_weight
-        for key in sum_positions:
-            self._position_weights[key] = sum_positions[key] / sum(sum_positions.values())
+            dictionary[vertex] = sum(1 / i for i in self._positions[vertex])
+        sum_dictionary = sum(dictionary.values())
+        for vertex in self._positions:
+            self._position_weights[vertex] = dictionary[vertex] / sum_dictionary
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
