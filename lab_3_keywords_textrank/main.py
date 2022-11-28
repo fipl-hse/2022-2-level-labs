@@ -124,7 +124,6 @@ class TextEncoder:
         Decodes input sequence of integer tokens to sequence of string tokens
     """
 
-
     # Step 2.1
     def __init__(self) -> None:
         """
