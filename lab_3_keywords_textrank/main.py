@@ -200,16 +200,6 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                 if pair[0] != pair[1]:
                     pairs.append(pair)
     return tuple(pairs)
-    # pairs = []
-    # for idx, token in enumerate(tokens):
-    #     for i in range(1, window_length):
-    #         try:
-    #             pair = tokens[idx], tokens[idx + i]
-    #             if pair[0] != pair[1]:
-    #                 pairs.append(pair)
-    #         except IndexError:
-    #             pass
-    # return tuple(pairs)
 
 
 class AdjacencyMatrixGraph:
