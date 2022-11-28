@@ -3,12 +3,20 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from string import punctuation
-import time
+from time import process_time
 import json
-from lab_3_keywords_textrank.main import extract_pairs, TextEncoder, \
-    TextPreprocessor, VanillaTextRank, AdjacencyMatrixGraph, \
-    PositionBiasedTextRank, EdgeListGraph, KeywordExtractionBenchmark
+
+from lab_3_keywords_textrank.main import (
+    TextPreprocessor,
+    TextEncoder,
+    extract_pairs,
+    AdjacencyMatrixGraph,
+    VanillaTextRank,
+    EdgeListGraph,
+    PositionBiasedTextRank,
+    KeywordExtractionBenchmark
+)
+
 
 if __name__ == "__main__":
 
@@ -26,75 +34,52 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    # text preprocessing and pairs extraction
-    PROCESSOR = TextPreprocessor(stop_words, tuple(punctuation))
+    PREPROCESSOR = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
+    TOKENS = PREPROCESSOR.preprocess_text(text)
+
     ENCODER = TextEncoder()
-    TOKENS = ENCODER.encode(PROCESSOR.preprocess_text(text))
-    if TOKENS:
-        print(extract_pairs(TOKENS, 5))
-        print()
+    ENCODED_TOKENS = ENCODER.encode(TOKENS)
 
-    # extract key phrases with adjacency matrix graph
-    ADJACENCY_GRAPH = AdjacencyMatrixGraph()
-    if TOKENS:
-        ADJACENCY_GRAPH.fill_from_tokens(TOKENS, 5)
-    ADJACENCY_UNBIASED_RANKING = VanillaTextRank(ADJACENCY_GRAPH)
-    START_TIME = time.time()
-    ADJACENCY_UNBIASED_RANKING.train()
-    FINISH_TIME = time.time()
-    print(ENCODER.decode(ADJACENCY_UNBIASED_RANKING.get_top_keywords(10)))
-    print(f'trained in {FINISH_TIME - START_TIME:.2f} seconds')
-    print()
+    # step 3
+    if ENCODED_TOKENS:
+        print(f'Extracted pairs: {extract_pairs(ENCODED_TOKENS, 3)}\n')
 
-    # extract key phrases with list of edges graph
-    EDGE_GRAPH = EdgeListGraph()
-    if TOKENS:
-        EDGE_GRAPH.fill_from_tokens(TOKENS, 5)
-    EDGE_UNBIASED_RANKING = VanillaTextRank(EDGE_GRAPH)
-    START_TIME = time.time()
-    EDGE_UNBIASED_RANKING.train()
-    FINISH_TIME = time.time()
-    print(ENCODER.decode(EDGE_UNBIASED_RANKING.get_top_keywords(10)))
-    print(f'trained in {FINISH_TIME - START_TIME:.2f} seconds')
-    print()
+    # steps 6, 7.2, 9.3
+    ADJ_GRAPH = AdjacencyMatrixGraph()
+    EDJ_GRAPH = EdgeListGraph()
+    for GRAPH in ADJ_GRAPH, EDJ_GRAPH:
+        GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
+        GRAPH.fill_positions(ENCODED_TOKENS)
+        GRAPH.calculate_position_weights()
 
-    #  extract positionally biased key phrases with adjacency matrix graph
-    if TOKENS:
-        ADJACENCY_GRAPH.fill_positions(TOKENS)
-    ADJACENCY_GRAPH.calculate_position_weights()
-    ADJACENCY_POSITIONAL_RANKING = PositionBiasedTextRank(ADJACENCY_GRAPH)
-    START_TIME = time.time()
-    ADJACENCY_POSITIONAL_RANKING.train()
-    FINISH_TIME = time.time()
-    print(ENCODER.decode(ADJACENCY_POSITIONAL_RANKING.get_top_keywords(10)))
-    print(f'trained in {FINISH_TIME - START_TIME:.2f} seconds')
-    print()
+    for TEXTRANK in (VanillaTextRank(ADJ_GRAPH), VanillaTextRank(EDJ_GRAPH),
+                     PositionBiasedTextRank(ADJ_GRAPH), PositionBiasedTextRank(EDJ_GRAPH)):
+        print('The textrank algorithm is', TEXTRANK.__class__.__name__, end='. ')
+        print('The graph is', TEXTRANK.__getattribute__('_graph').__class__.__name__, end='. ')
 
-    # extract positionally biased key phrases with list of edges graph
-    if TOKENS:
-        EDGE_GRAPH.fill_positions(TOKENS)
-    EDGE_GRAPH.calculate_position_weights()
-    EDGE_POSITIONAL_RANKING = PositionBiasedTextRank(EDGE_GRAPH)
-    START_TIME = time.time()
-    EDGE_POSITIONAL_RANKING.train()
-    FINISH_TIME = time.time()
-    print(ENCODER.decode(EDGE_POSITIONAL_RANKING.get_top_keywords(10)))
-    print(f'trained in {FINISH_TIME - START_TIME:.2f} seconds')
-    print()
+        time_start = process_time()
+        TEXTRANK.train()
+        TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
+        TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
+        time_stop = process_time()
 
-    ENGLISH_STOP_WORDS_PATH = ASSETS_PATH / 'benchmark_materials' / 'eng_stop_words.txt'
-    with open(ENGLISH_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
-        ENGLISH_STOP_WORDS = tuple(file.read().split('\n'))
+        print(f'Elapsed in {time_stop - time_start} seconds.')
+        print(f'Top tokens: {TOP_DECODED_TOKENS}\n')
 
-    IDF_PATH = ASSETS_PATH / 'benchmark_materials' / 'IDF.json'
-    with open(IDF_PATH, 'r', encoding='utf-8') as file:
-        IDF = json.load(file)
+    # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
 
     MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
-    BENCH = KeywordExtractionBenchmark(ENGLISH_STOP_WORDS, tuple(punctuation), IDF, MATERIALS_PATH)
-    BENCH.run()
-    BENCH.save_to_csv(PROJECT_ROOT / 'report.csv')
+    ENG_STOP_WORDS_PATH = MATERIALS_PATH / 'eng_stop_words.txt'
+    IDF_PATH = MATERIALS_PATH / 'IDF.json'
+    with (open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as stop_words_to_read,
+          open(IDF_PATH, 'r', encoding='utf-8') as idf_to_read):
+        eng_stop_words = tuple(stop_words_to_read.read().split('\n'))
+        idf = json.load(idf_to_read)
 
-    RESULT = BENCH.report
+    BENCHMARK = KeywordExtractionBenchmark(eng_stop_words, tuple('.,!?-:;()&'), idf, MATERIALS_PATH)
+    BENCHMARK.run()
+    BENCHMARK.save_to_csv(MATERIALS_PATH)
+
+    RESULT = TOP_DECODED_TOKENS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
