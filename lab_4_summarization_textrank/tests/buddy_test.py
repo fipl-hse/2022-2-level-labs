@@ -14,10 +14,11 @@ from lab_3_keywords_textrank.main import TextPreprocessor
 from lab_4_summarization_textrank.main import (Buddy,
                                                SentenceEncoder,
                                                SentencePreprocessor,
-                                               Sentence,
-                                               IncorrectQuery,
-                                               NoRelevantTextsException)
-
+                                               Sentence)
+try:
+    from lab_4_summarization_textrank.main import IncorrectQueryError, NoRelevantTextsError
+except ImportError:
+    print('Unable to import non-existent exceptions. Implement them first')
 
 class BuddyTest(unittest.TestCase):
     """
@@ -110,7 +111,7 @@ class BuddyTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_find_texts_close_to_keywords_error(self):
         keywords = ('sdgarg', 'aljals', '13[120kdla')
-        self.assertRaises(NoRelevantTextsException, self.buddy._find_texts_close_to_keywords, keywords, 10)
+        self.assertRaises(NoRelevantTextsError, self.buddy._find_texts_close_to_keywords, keywords, 10)
 
 
     @pytest.mark.lab_4_summarization_textrank
@@ -140,5 +141,5 @@ class BuddyTest(unittest.TestCase):
     def test_reply_invalid_input(self):
         invalid_inputs = [['e'], '', (False, False), 3.45, {1: 5}]
         for invalid_input in invalid_inputs:
-            self.assertRaises(IncorrectQuery, self.buddy.reply, invalid_input)
+            self.assertRaises(IncorrectQueryError, self.buddy.reply, invalid_input)
             self.assertRaises(ValueError, self.buddy.reply, 'как звали первого космонавта?', invalid_input)
