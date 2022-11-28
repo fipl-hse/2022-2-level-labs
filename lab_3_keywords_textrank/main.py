@@ -10,6 +10,22 @@ from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calcu
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
+import csv
+
+from lab_1_keywords_tfidf.main import (
+    calculate_frequencies,
+    calculate_tf,
+    calculate_tfidf
+)
+
+from lab_2_keywords_cooccurrence.main import (
+    extract_phrases,
+    extract_candidate_keyword_phrases,
+    calculate_frequencies_for_content_words,
+    calculate_word_degrees,
+    calculate_word_scores,
+)
+
 
 class TextPreprocessor:
     """
@@ -57,10 +73,10 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        cleaned = text
-        for marks in self._punctuation:
-            cleaned = cleaned.replace(marks, '')
-        return tuple(cleaned.lower().split())
+        if self._punctuation:
+            for punc in self._punctuation:
+                text = text.replace(punc, '')
+        return tuple(text.lower().split())
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -75,7 +91,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(word for word in tokens if word not in self._stop_words)
+        return tuple(token for token in tokens if token not in self._stop_words)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -90,8 +106,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        tokenized = self._clean_and_tokenize(text)
-        return self._remove_stop_words(tokenized)
+        return self._remove_stop_words(self._clean_and_tokenize(text))
 
 
 class TextEncoder:
@@ -131,13 +146,11 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        id_min = 1000
-        for word in tokens:
-            if word in self._word2id:
-                continue
-            self._word2id[word] = id_min
-            self._id2word[id_min] = word
-            id_min += 1
+        for token, idx in zip(tokens, range(1001 + len(tokens), 1001, -1)):
+            self._word2id[token] = idx
+
+        for token, idx in self._word2id.items():
+            self._id2word[idx] = token
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -156,7 +169,7 @@ class TextEncoder:
         if not tokens:
             return None
         self._learn_indices(tokens)
-        return tuple(self._word2id[i] for i in tokens)
+        return tuple(self._word2id[token] for token in tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -172,12 +185,9 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        decoded_tokens = []
-        for one_token in list(encoded_tokens):
-            if one_token not in self._id2word:
-                return None
-            decoded_tokens.append(self._id2word[one_token])
-        return tuple(decoded_tokens)
+        if not (encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
+            return None
+        return tuple(self._id2word[encoded_token] for encoded_token in encoded_tokens)
 
 
 # Step 3
@@ -198,15 +208,14 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    if not tokens or not isinstance(window_length, int) or window_length < 2:
+    if not(isinstance(window_length, int) and window_length >= 2 and tokens):
         return None
-    extracted = []
-    for idx in range(len(tokens) - window_length + 1):
-        for j in range(1, window_length):
-            if tokens[idx] == tokens[idx + j]:
-                continue
-            extracted.append(tuple([tokens[idx], tokens[idx + j]]))
-    return tuple(extracted)
+    pairs = []
+    for idx1, token1 in enumerate(tokens):
+        for token2 in tokens[idx1 + 1:idx1 + window_length]:
+            if token1 != token2:
+                pairs.append((token1, token2))
+    return tuple(pairs)
 
 
 class AdjacencyMatrixGraph:
@@ -249,27 +258,9 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = []
-        self._vertexes = {}
-        self._id_vertex = 0
+        self._vertices = []
         self._positions = {}
         self._position_weights = {}
-
-    def fill_matrix(self, vertex: int) -> None:
-        """
-        Fills the matrix with a sufficient number of zeros
-        Parameters:
-        -----------
-            vertex : int
-                the vertex for which the matrix need to be filled
-        """
-        if vertex in self._vertexes:
-            return None
-        self._vertexes[vertex] = self._id_vertex
-        self._matrix.append([0 for _ in range(self._id_vertex + 1)])
-        for i in range(self._id_vertex):
-            self._matrix[i].append(0)
-        self._id_vertex += 1
-        return None
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -289,10 +280,19 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        for one_vert in vertex1, vertex2:
-            self.fill_matrix(one_vert)
-        self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]] = 1
-        self._matrix[self._vertexes[vertex2]][self._vertexes[vertex1]] = 1
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
+
+        for edges_list in self._matrix:
+            if len(edges_list) < len(self._vertices):
+                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
+
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        self._matrix[idx1][idx2] = 1
+        self._matrix[idx2][idx1] = 1
         return 0
 
     # Step 4.3
@@ -311,10 +311,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._vertexes or vertex2 not in self._vertexes:
+        if vertex1 not in self._vertices or vertex2 not in self._vertices:
             return -1
-        answer = int(self._matrix[self._vertexes[vertex1]][self._vertexes[vertex2]])
-        return answer
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        return self._matrix[idx1][idx2]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -325,7 +326,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._vertexes.keys())
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -341,10 +342,10 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        if vertex not in self._vertexes:
+        if vertex not in self._vertices:
             return -1
-        place = self._vertexes[vertex]
-        return sum(self._matrix[place])
+        idx = self._vertices.index(vertex)
+        return sum(self._matrix[idx])
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -358,9 +359,8 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pairs = extract_pairs(tokens, window_length)
-        for each_pair in pairs:
-            self.add_edge(*each_pair)
+        for pair in extract_pairs(tokens, window_length):
+            self.add_edge(*pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -370,23 +370,24 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for idx, word in enumerate(tokens):
-            self._positions[word] = self._positions.get(word, []) + [idx+1]
+        for idx, token in enumerate(tokens):
+            if token not in self._positions:
+                self._positions[token] = []
+            self._positions[token].append(idx + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        all_weights = 0.0
-        for key, value in self._positions.items():
-            position_weight = 0.0
-            for one_token in value:
-                position_weight += 1/one_token
-            self._position_weights[key] = position_weight
-            all_weights += position_weight
-        for key in self._positions:
-            self._position_weights[key] = self._position_weights[key]/all_weights
+        non_norm_total_weight = 0.0
+        for vertex in self._positions:
+            for position in self._positions[vertex]:
+                self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) + 1 / position
+            non_norm_total_weight += self._position_weights[vertex]
+
+        for vertex in self._position_weights:
+            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -466,9 +467,14 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if (vertex1 and vertex2) not in self._edges or vertex1 not in self._edges[vertex2]:
-            self._edges[vertex1] = self._edges.get(vertex1, []) + [vertex2]
-            self._edges[vertex2] = self._edges.get(vertex2, []) + [vertex1]
+        for vertex in vertex1, vertex2:
+            if vertex not in self._edges:
+                self._edges[vertex] = []
+
+        if vertex1 not in self._edges[vertex2]:
+            self._edges[vertex2].append(vertex1)
+        if vertex2 not in self._edges[vertex1]:
+            self._edges[vertex1].append(vertex2)
         return 0
 
     # Step 7.2
@@ -489,9 +495,7 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        if vertex2 in self._edges[vertex1]:
-            return 1
-        return 0
+        return int(vertex1 in self._edges.get(vertex2, 0))
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -523,9 +527,8 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pairs = extract_pairs(tokens, window_length)
-        for each_pair in pairs:
-            self.add_edge(each_pair[0], each_pair[1])
+        for pair in extract_pairs(tokens, window_length):
+            self.add_edge(*pair)
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -535,23 +538,24 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for idx, word in enumerate(tokens):
-            self._positions[word] = self._positions.get(word, []) + [idx+1]
+        for idx, token in enumerate(tokens):
+            if token not in self._positions:
+                self._positions[token] = []
+            self._positions[token] += [idx + 1]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        all_weights = 0
-        for key, value in self._positions.items():
-            position_weight = 0
-            for one_token in value:
-                position_weight += 1 / one_token
-            self._position_weights[key] = position_weight
-            all_weights += position_weight
-        for key in self._positions:
-            self._position_weights[key] = self._position_weights[key] / all_weights
+        non_norm_total_weight = 0.0
+        for vertex in self._positions:
+            for position in self._positions[vertex]:
+                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
+            non_norm_total_weight += self._position_weights[vertex]
+
+        for vertex in self._position_weights:
+            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -624,12 +628,10 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        inout_weight_sum = 0.0
-        for vertices in incidental_vertices:
-            new_score = scores[vertices]/self._graph.calculate_inout_score(vertices)
-            inout_weight_sum += new_score
-        weight = (1 - self._damping_factor) + self._damping_factor * inout_weight_sum
-        self._scores[vertex] = weight
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
+        pass
 
     # Step 5.3
     def train(self) -> None:
@@ -674,8 +676,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        top_keywords = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
-        return tuple(top_keywords)
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -735,12 +737,11 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        inout_weight_sum = 0.0
-        for vertices in incidental_vertices:
-            new_score = scores[vertices] / self._graph.calculate_inout_score(vertices)
-            inout_weight_sum += new_score
-        weight = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * inout_weight_sum
-        self._scores[vertex] = weight
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = (summa * self._damping_factor +
+                                (1 - self._damping_factor) * self._position_weights[vertex])
+
 
 class TFIDFAdapter:
     """
@@ -789,17 +790,13 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        frequency_dict = calculate_frequencies(list(self._tokens))
-        if not frequency_dict:
+        if not(freq_dict := calculate_frequencies(list(self._tokens))):
             return -1
-        tf_dict = calculate_tf(frequency_dict)
-        if not tf_dict:
+        if not(tf_dict := calculate_tf(freq_dict)):
             return -1
-        tfidf_values = calculate_tfidf(tf_dict, self._idf)
-        if not tfidf_values:
+        if not(tfidf_dict := calculate_tfidf(tf_dict, self._idf)):
             return -1
-        for key in tfidf_values:
-            self._scores[key] = tfidf_values[key]
+        self._scores = tfidf_dict
         return 0
 
     # Step 10.3
@@ -815,8 +812,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        top_keywords = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
-        return tuple(top_keywords)
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
 class RAKEAdapter:
@@ -866,24 +863,22 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        extracted_phr = extract_phrases(self._text)
-        if not extracted_phr:
+        phrases = extract_phrases(self._text)
+        if not phrases:
             return -1
-        keyword_phrases = extract_candidate_keyword_phrases(extracted_phr, list(self._stop_words))
-        if not keyword_phrases:
+        key_phrases = extract_candidate_keyword_phrases(list(phrases), list(self._stop_words))
+        if not key_phrases:
             return -1
-        frequencies_for_content = calculate_frequencies_for_content_words(keyword_phrases)
-        if not frequencies_for_content:
+        freq_dict = calculate_frequencies_for_content_words(key_phrases)
+        if not freq_dict:
             return -1
-        content_words = list(frequencies_for_content.keys())
-        word_degrees = calculate_word_degrees(keyword_phrases, content_words)
-        if not word_degrees:
+        degree_dict = calculate_word_degrees(key_phrases, list(freq_dict.keys()))
+        if not degree_dict:
             return -1
-        word_scores = calculate_word_scores(word_degrees, frequencies_for_content)
-        if not word_scores:
+        score_dict = calculate_word_scores(degree_dict, freq_dict)
+        if not score_dict:
             return -1
-        for one_word in word_scores.keys():
-            self._scores[one_word] = word_scores[one_word]
+        self._scores = dict(score_dict)
         return 0
 
     # Step 11.3
@@ -899,12 +894,8 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        sorted_keys = sorted(self._scores.keys())
-        sorted_dict = {}
-        for key in sorted_keys:
-            sorted_dict[key] = self._scores[key]
-        top_keywords = sorted(sorted_dict, key=lambda x: sorted_dict[x], reverse=True)[:n_keywords]
-        return tuple(top_keywords)
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
 # Step 12.1
@@ -922,10 +913,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_positive = len([word for word in predicted if word in target])
-    false_negative = len([word for word in target if word not in predicted])
-    recall = true_positive/(true_positive+false_negative)
-    return recall
+    true_pos = len(set(predicted) & set(target))
+    false_neg = len(set(target) - set(predicted))
+    return true_pos / (true_pos + false_neg)
 
 
 class KeywordExtractionBenchmark:
@@ -953,7 +943,6 @@ class KeywordExtractionBenchmark:
     save_to_csv(self, path: Path) -> None:
         saves the report in the .csv format
     """
-
     # Step 12.2
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...],
                  idf: dict[str, float], materials_path: Path) -> None:
@@ -975,8 +964,6 @@ class KeywordExtractionBenchmark:
         self._idf = idf
         self._materials_path = materials_path
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
-        self._themes_id = {'culture': 0, 'business': 1, 'crime': 2, 'fashion': 3, 'health': 4, 'politics': 5,
-                           'science': 6, 'sports': 7, 'tech': 8}
         self.report = {}
 
     # Step 12.3
@@ -989,53 +976,45 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        methods_names = ['TF-IDF', 'RAKE', 'VanillaTextRank', 'PositionBiasedTextRank']
-        _keywords_dict = {}
-        _texts_dict = {}
-        for one_file in os.listdir(self._materials_path):
-            way_to_file = os.path.join(self._materials_path, one_file)
-            with open(way_to_file, encoding='UTF-8') as read_file:
-                readen_file = read_file.read().strip()
-            if 'keyword' in one_file:
-                file_idx = int(one_file[0])
-                _keywords_dict[file_idx] = readen_file.split()
-            elif 'text' in one_file:
-                file_idx = int(one_file[0])
-                _texts_dict[file_idx] = readen_file
-        for one_method in methods_names:
-            self.report[one_method] = {}
+        rank_dict = {}
         for theme in self.themes:
-            preprocessed_text = TextPreprocessor(self._stop_words, self._punctuation)
-            theme_index = self._themes_id[theme]
-            tokens = preprocessed_text.preprocess_text(_texts_dict[theme_index])
-            text_to_code = TextEncoder()
-            encoded_txt = text_to_code.encode(tokens)
 
-            if not encoded_txt:
-                return None
+            text_path = self._materials_path / f'{self.themes.index(theme)}_text.txt'
+            keywords_path = self._materials_path / f'{self.themes.index(theme)}_keywords.txt'
 
-            edge_graph = EdgeListGraph()
-            edge_graph.fill_from_tokens(encoded_txt, 5)
-            edge_graph.fill_positions(encoded_txt)
-            edge_graph.calculate_position_weights()
+            with (open(text_path, 'r', encoding='utf-8') as text_to_read,
+                    open(keywords_path, 'r', encoding='utf-8') as keywords_to_read):
+                text = text_to_read.read()
+                keywords = tuple(keywords_to_read.read().split('\n'))
 
-            vanilla_graph = VanillaTextRank(edge_graph)
-            position_biased = PositionBiasedTextRank(edge_graph)
-            tfidf_adapt = TFIDFAdapter(tokens, self._idf)
-            rake_adapt = RAKEAdapter(_texts_dict[theme_index], self._stop_words)
+                preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+                tokens = preprocessor.preprocess_text(text)
+                encoder = TextEncoder()
+                encoded_tokens = encoder.encode(tokens)
 
-            target_keywords = tuple(_keywords_dict[theme_index])
+                graph = EdgeListGraph()
+                if encoded_tokens:
+                    graph.fill_from_tokens(encoded_tokens, 3)
+                    graph.fill_positions(encoded_tokens)
+                    graph.calculate_position_weights()
 
-            for idx, method in enumerate((tfidf_adapt, rake_adapt, vanilla_graph, position_biased)):
-                if method.train():
-                    return None
-                top_keywords = method.get_top_keywords(50)
-                if not top_keywords:
-                    return None
-                if method in (vanilla_graph, position_biased):
-                    top_keywords = text_to_code.decode(top_keywords)
-                self.report[methods_names[idx]][theme] = calculate_recall(tuple(top_keywords), target_keywords)
-        return self.report
+                for algorithm in (VanillaTextRank(graph),
+                                  PositionBiasedTextRank(graph),
+                                  TFIDFAdapter(tokens, self._idf),
+                                  RAKEAdapter(text, self._stop_words)):
+                    algorithm.train()
+                    top_tokens = algorithm.get_top_keywords(50)
+                    if algorithm.__class__.__name__ in ('VanillaTextRank', 'PositionBiasedTextRank'):
+                        top_tokens = encoder.decode(top_tokens)
+                    score = calculate_recall(top_tokens, keywords)
+
+                    inner_dict = {theme: score}
+                    # rank_dict[algorithm.__class__.__name__] = rank_dict.get(algorithm.__class__.__name__, {})
+                    if algorithm.__class__.__name__ not in rank_dict:
+                        rank_dict[algorithm.__class__.__name__] = {}
+                    rank_dict[algorithm.__class__.__name__].update(inner_dict)
+        self.report = rank_dict
+        return rank_dict
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1046,12 +1025,10 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        themes_list = ['name'] + list(self.themes)
-        with open(path, 'w') as csvfile:
-            file_writer = csv.writer(csvfile, delimiter=',')
-            file_writer.writerow(themes_list)
-            for name in self.report:
-                list_to_write = [name]
-                for one_theme in self.report[name]:
-                    list_to_write.append(self.report[name][one_theme])
-                file_writer.writerow(list_to_write)
+        report_path = path / 'report.csv'
+        with open(report_path, 'w') as csv_file:
+            writer = csv.writer(csv_file)
+            headers = 'name', *self.themes
+            writer.writerow(headers)
+            for algorithm in self.report:
+                writer.writerow((algorithm, *self.report[algorithm].values()))
