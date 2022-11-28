@@ -81,6 +81,6 @@ fi
 
 DIFF=$(git diff --name-only HEAD@{0} HEAD@{1})
 
-echo ::set-output name=files_diff::"${DIFF}"
+echo "files_diff=${DIFF}" >> $GITHUB_OUTPUT
 
 git push fork HEAD:main

@@ -3,8 +3,19 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, \
-    AdjacencyMatrixGraph, EdgeListGraph, VanillaTextRank, PositionBiasedTextRank
+from time import process_time
+import json
+
+from lab_3_keywords_textrank.main import (
+    TextPreprocessor,
+    TextEncoder,
+    extract_pairs,
+    AdjacencyMatrixGraph,
+    VanillaTextRank,
+    EdgeListGraph,
+    PositionBiasedTextRank,
+    KeywordExtractionBenchmark
+)
 
 
 if __name__ == "__main__":
@@ -23,56 +34,52 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    RESULT = None
-    # python -m pytest -m mark8
-    punctuation = ('!', '"', '#', '$', '%', '&', '''''', '(', ')', '*', '+', ',', '-', '.', '/', ':', ';',
-                   '<', '=', '>', '?', '@', '[', '\\', ']', '^', '_', '`', '{', '|', '}', '~')
-    DECODED = None
-    DECODED_DICT = None
-    DECODED_POSITION_BIASED_ADJACENCY = None
-    DECODED_POSITION_BIASED_EDGE = None
+    PREPROCESSOR = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
+    TOKENS = PREPROCESSOR.preprocess_text(text)
 
-    text_preprocessor = TextPreprocessor(stop_words=stop_words, punctuation=punctuation)
-    tokens = text_preprocessor.preprocess_text(text=text)
+    ENCODER = TextEncoder()
+    ENCODED_TOKENS = ENCODER.encode(TOKENS)
 
-    text_encoder = TextEncoder()
-    encoded_tokens = text_encoder.encode(tokens=tokens)
+    # step 3
+    if ENCODED_TOKENS:
+        print(f'Extracted pairs: {extract_pairs(ENCODED_TOKENS, 3)}\n')
 
-    if encoded_tokens:
-        graph = AdjacencyMatrixGraph()
-        graph.fill_from_tokens(encoded_tokens, window_length=3)
-        graph.fill_positions(encoded_tokens)
-        graph.calculate_position_weights()
+    # steps 6, 7.2, 9.3
+    ADJ_GRAPH = AdjacencyMatrixGraph()
+    EDJ_GRAPH = EdgeListGraph()
+    for GRAPH in ADJ_GRAPH, EDJ_GRAPH:
+        GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
+        GRAPH.fill_positions(ENCODED_TOKENS)
+        GRAPH.calculate_position_weights()
 
-        graph_dict = EdgeListGraph()
-        graph_dict.fill_from_tokens(encoded_tokens, window_length=3)
-        graph_dict.fill_positions(encoded_tokens)
-        graph_dict.calculate_position_weights()
+    for TEXTRANK in (VanillaTextRank(ADJ_GRAPH), VanillaTextRank(EDJ_GRAPH),
+                     PositionBiasedTextRank(ADJ_GRAPH), PositionBiasedTextRank(EDJ_GRAPH)):
+        print('The textrank algorithm is', TEXTRANK.__class__.__name__, end='. ')
+        print('The graph is', TEXTRANK.__getattribute__('_graph').__class__.__name__, end='. ')
 
-        vanilla = VanillaTextRank(graph)
-        vanilla.train()
-        keywords = vanilla.get_top_keywords(10)
-        DECODED = text_encoder.decode(encoded_tokens=keywords)
+        time_start = process_time()
+        TEXTRANK.train()
+        TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
+        TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
+        time_stop = process_time()
 
-        vanilla_dict = VanillaTextRank(graph_dict)
-        vanilla_dict.train()
-        keywords_dict = vanilla_dict.get_top_keywords(10)
-        DECODED_DICT = text_encoder.decode(encoded_tokens=keywords_dict)
+        print(f'Elapsed in {time_stop - time_start} seconds.')
+        print(f'Top tokens: {TOP_DECODED_TOKENS}\n')
 
-        position_biased_textrank_adjacency = PositionBiasedTextRank(graph)
-        position_biased_textrank_adjacency.train()
-        keywords_position_biased_adjacency = position_biased_textrank_adjacency.get_top_keywords(10)
-        DECODED_POSITION_BIASED_ADJACENCY = text_encoder.decode(encoded_tokens=keywords_position_biased_adjacency)
+    # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
 
-        position_biased_textrank_edge = PositionBiasedTextRank(graph_dict)
-        position_biased_textrank_edge.train()
-        keywords_position_biased_edge = position_biased_textrank_edge.get_top_keywords(10)
-        DECODED_POSITION_BIASED_EDGE = text_encoder.decode(encoded_tokens=keywords_position_biased_edge)
+    MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
+    ENG_STOP_WORDS_PATH = MATERIALS_PATH / 'eng_stop_words.txt'
+    IDF_PATH = MATERIALS_PATH / 'IDF.json'
+    with (open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as stop_words_to_read,
+          open(IDF_PATH, 'r', encoding='utf-8') as idf_to_read):
+        eng_stop_words = tuple(stop_words_to_read.read().split('\n'))
+        idf = json.load(idf_to_read)
 
-    RESULT = DECODED
-    print('keywords with AdjacencyMatrixGraph: ', DECODED, '\n',
-          'keywords with EdgeListGraph: ', DECODED_DICT, '\n',
-          'keywords with AdjacencyMatrixGraph PositionBiasedTextRank', DECODED_POSITION_BIASED_ADJACENCY, '\n',
-          'keywords with EdgeListGraph PositionBiasedTextRank', DECODED_POSITION_BIASED_EDGE)
+    BENCHMARK = KeywordExtractionBenchmark(eng_stop_words, tuple('.,!?-:;()&'), idf, MATERIALS_PATH)
+    BENCHMARK.run()
+    BENCHMARK.save_to_csv(MATERIALS_PATH)
+
+    RESULT = TOP_DECODED_TOKENS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
