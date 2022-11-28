@@ -3,14 +3,20 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from string import punctuation
-from lab_3_keywords_textrank.main import (TextPreprocessor,
-                                          TextEncoder,
-                                          extract_pairs,
-                                          AdjacencyMatrixGraph,
-                                          VanillaTextRank,
-                                          EdgeListGraph,
-                                          PositionBiasedTextRank)
+from time import process_time
+import json
+
+from lab_3_keywords_textrank.main import (
+    TextPreprocessor,
+    TextEncoder,
+    extract_pairs,
+    AdjacencyMatrixGraph,
+    VanillaTextRank,
+    EdgeListGraph,
+    PositionBiasedTextRank,
+    KeywordExtractionBenchmark
+)
+
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -27,52 +33,52 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
-    tokens = preprocessor.preprocess_text(text)
-    encoder = TextEncoder()
-    encoded_tokens = encoder.encode(tokens)
-    if encoded_tokens:
-        print(extract_pairs(encoded_tokens, 3))
+    PREPROCESSOR = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
+    TOKENS = PREPROCESSOR.preprocess_text(text)
 
-    adjacency_matrix_graph = AdjacencyMatrixGraph()
-    if encoded_tokens:
-        adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
-        adjacency_matrix_graph.fill_positions(encoded_tokens)
-    adjacency_matrix_graph.calculate_position_weights()
+    ENCODER = TextEncoder()
+    ENCODED_TOKENS = ENCODER.encode(TOKENS)
 
-    vanilla_matrix = VanillaTextRank(adjacency_matrix_graph)
-    vanilla_matrix.train()
-    top_vanilla_matrix = vanilla_matrix.get_top_keywords(10)
-    if top_vanilla_matrix:
-        top_words = encoder.decode(top_vanilla_matrix)
-        print(top_words)
+    # step 3
+    if ENCODED_TOKENS:
+        print(f'Extracted pairs: {extract_pairs(ENCODED_TOKENS, 3)}\n')
 
-    edge_list = EdgeListGraph()
-    if encoded_tokens:
-        edge_list.fill_from_tokens(encoded_tokens, 3)
-        edge_list.fill_positions(encoded_tokens)
-    edge_list.calculate_position_weights()
+    # steps 6, 7.2, 9.3
+    ADJ_GRAPH = AdjacencyMatrixGraph()
+    EDJ_GRAPH = EdgeListGraph()
+    for GRAPH in ADJ_GRAPH, EDJ_GRAPH:
+        GRAPH.fill_from_tokens(ENCODED_TOKENS, 3)
+        GRAPH.fill_positions(ENCODED_TOKENS)
+        GRAPH.calculate_position_weights()
 
-    vanilla_rank = VanillaTextRank(edge_list)
-    vanilla_rank.train()
-    top_vanilla_edge = vanilla_rank.get_top_keywords(10)
-    if top_vanilla_edge:
-        top_words2 = encoder.decode(top_vanilla_edge)
-        print(top_words2)
+    for TEXTRANK in (VanillaTextRank(ADJ_GRAPH), VanillaTextRank(EDJ_GRAPH),
+                     PositionBiasedTextRank(ADJ_GRAPH), PositionBiasedTextRank(EDJ_GRAPH)):
+        print('The textrank algorithm is', TEXTRANK.__class__.__name__, end='. ')
+        print('The graph is', TEXTRANK.__getattribute__('_graph').__class__.__name__, end='. ')
 
-    biased_matrix = PositionBiasedTextRank(adjacency_matrix_graph)
-    biased_matrix.train()
-    top_biased_matrix = biased_matrix.get_top_keywords(10)
-    if top_biased_matrix:
-        top_words3 = encoder.decode(top_biased_matrix)
-        print(top_words3)
+        time_start = process_time()
+        TEXTRANK.train()
+        TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
+        TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
+        time_stop = process_time()
 
-    biased_edge = PositionBiasedTextRank(edge_list)
-    biased_edge.train()
-    top_biased_edge = biased_edge.get_top_keywords(10)
-    top_biased_decoded_edge = encoder.decode(top_biased_edge)
-    print(top_biased_decoded_edge)
+        print(f'Elapsed in {time_stop - time_start} seconds.')
+        print(f'Top tokens: {TOP_DECODED_TOKENS}\n')
 
-    RESULT = top_biased_decoded_edge
+    # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
+
+    MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
+    ENG_STOP_WORDS_PATH = MATERIALS_PATH / 'eng_stop_words.txt'
+    IDF_PATH = MATERIALS_PATH / 'IDF.json'
+    with (open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as stop_words_to_read,
+          open(IDF_PATH, 'r', encoding='utf-8') as idf_to_read):
+        eng_stop_words = tuple(stop_words_to_read.read().split('\n'))
+        idf = json.load(idf_to_read)
+
+    BENCHMARK = KeywordExtractionBenchmark(eng_stop_words, tuple('.,!?-:;()&'), idf, MATERIALS_PATH)
+    BENCHMARK.run()
+    BENCHMARK.save_to_csv(MATERIALS_PATH)
+
+    RESULT = TOP_DECODED_TOKENS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
