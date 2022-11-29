@@ -782,7 +782,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        return tuple(get_top_n(self._scores, n_keywords)) if self._scores else ()
+        return tuple(get_top_n(self._scores, n_keywords))
 
 
 class RAKEAdapter:
