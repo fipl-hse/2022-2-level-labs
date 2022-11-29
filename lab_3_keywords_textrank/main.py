@@ -386,7 +386,7 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for token, index in enumerate(tokens, 1):
+        for index, token in enumerate(tokens, 1):
             if token in self._positions:
                 self._positions[token] = [token] + [index]
             else:
@@ -557,7 +557,7 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for token, index in enumerate(tokens, 1):
+        for index, token in enumerate(tokens, 1):
             if token in self._positions:
                 self._positions[token] = [token] + [index]
             else:
@@ -829,7 +829,8 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-
+        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
+        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 class RAKEAdapter:
     """
