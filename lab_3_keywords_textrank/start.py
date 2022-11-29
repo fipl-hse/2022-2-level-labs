@@ -10,8 +10,7 @@ from lab_3_keywords_textrank.main import (extract_pairs,
                                           VanillaTextRank,
                                           AdjacencyMatrixGraph,
                                           EdgeListGraph,
-                                          PositionBiasedTextRank,
-                                          KeywordExtractionBenchmark)
+                                          PositionBiasedTextRank)
 
 if __name__ == "__main__":
 
@@ -61,4 +60,3 @@ if __name__ == "__main__":
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
-

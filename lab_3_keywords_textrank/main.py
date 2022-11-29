@@ -86,7 +86,7 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        tokens_no_sw = tuple([token for token in tokens if token not in self._stop_words])
+        tokens_no_sw = tuple(token for token in tokens if token not in self._stop_words)
         return tokens_no_sw
 
     # Step 1.4
@@ -169,7 +169,7 @@ class TextEncoder:
         encoded_tokens = []
         self._learn_indices(tokens)
         for token in tokens:
-                encoded_tokens.append(self._word2id[token])
+            encoded_tokens.append(self._word2id[token])
         return tuple(encoded_tokens)
 
     # Step 2.4
@@ -218,7 +218,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     if not isinstance(window_length, int) or window_length < 2:
         return None
     pairs = []
-    for index in range(len(tokens)):
+    for index, token in enumerate(tokens, 1):
         for i in range(1, window_length):
             if index <= len(tokens) - window_length:
                 pair = tokens[index], tokens[index + i]
@@ -266,7 +266,6 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        
         self._matrix = [[]]
         self._positions = {}
         self._position_weights = {}
@@ -295,8 +294,8 @@ class AdjacencyMatrixGraph:
             if vertex in self._vertices:
                 continue
             self._vertices.append(vertex)
-            for el in self._matrix:
-                el.append(0)
+            for element in self._matrix:
+                element.append(0)
             self._matrix.append([0 for _ in self._vertices])
 
         index1 = self._vertices.index(vertex1)
@@ -370,7 +369,6 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        
         pairs = extract_pairs(tokens, window_length)
         for pair in pairs:
             self.add_edge(pair[0], pair[1])
