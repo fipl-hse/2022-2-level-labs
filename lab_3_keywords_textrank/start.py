@@ -13,6 +13,7 @@ from lab_3_keywords_textrank.main import (extract_pairs,
                                           PositionBiasedTextRank,
                                           KeywordExtractionBenchmark)
 
+
 if __name__ == "__main__":
 
     # finding paths to the necessary utils
@@ -50,6 +51,7 @@ if __name__ == "__main__":
     print(encoded_text.decode(vanilla_text_rank_elg.get_top_keywords(10)))
 
     RESULT = None
+
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
 
