@@ -214,9 +214,9 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
 
     if not tokens:
-        return None # если токены пустой то идет в пизду
+        return None
     if not isinstance(window_length, int) or window_length < 2:
-        return None # если длина отрезка токенов меньше 2 то идет на хуй
+        return None
 
     pairs = []
     for index in range(len(tokens)):
@@ -386,24 +386,22 @@ class AdjacencyMatrixGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for idx, token in enumerate(tokens):
-            if token not in self._positions:
-                self._positions[token] = []
-            self._positions[token].append(idx + 1)
+        for index, token in enumerate(tokens, 1):
+            if token in self._positions:
+                self._positions[token] = [token] + [index]
+            else:
+                self._positions[token] = [index]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0.0
-        for vertex in self._positions:
-            for position in self._positions[vertex]:
-                self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) + 1 / position
-            non_norm_total_weight += self._position_weights[vertex]
-
-        for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
+        position_weights = {}
+        for token in self._positions:
+            position_weights[token] = sum(1 / position for position in self._positions[token])
+        for token in self._positions:
+            self._position_weights[token] = position_weights[token] / sum(position_weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
