@@ -649,8 +649,13 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores, key=lambda x: self._scores[x],
-                            reverse=True)[:n_keywords])
+        sorted_list = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)
+        for idx, token in enumerate(sorted_list[:-1]):
+            token2 = sorted_list[idx + 1]
+            if self._scores[token] == self._scores[token2] and token > token2:
+                sorted_list[idx] = token2
+                sorted_list[idx + 1] = token
+        return tuple(sorted_list[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
