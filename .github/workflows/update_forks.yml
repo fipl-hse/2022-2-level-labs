@@ -14,18 +14,18 @@ jobs:
     steps:
       - name: Fetch remote URL
         id: fetch_remote_url
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
             const { issue, repository } = context.payload;
             const [ owner, repo ] = repository.full_name.split('/');
-            const { data: pullRequest } = await github.pulls.get({
+            const { data: pullRequest } = await github.rest.pulls.get({
               owner,
               repo,
               pull_number: issue.number
             });
             const { clone_url: prRemoteUrl } = pullRequest.head.repo;
-            console.log(`##[set-output name=pr_remote_url;]${prRemoteUrl}`);
+            core.setOutput('pr_remote_url', prRemoteUrl)
       - uses: actions/checkout@v2
       - name: Merge upstream
         env:
@@ -44,10 +44,10 @@ jobs:
           fi
           bash config/github/update_fork.sh --URL ${{ steps.fetch_remote_url.outputs.pr_remote_url }} --USER WhiteJaeger --STRATEGY $STRATEGY --AUTH "$AUTH_TOKEN"
       - name: Report on update
-        uses: actions/github-script@v3
+        uses: actions/github-script@v6
         with:
           script: |
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
