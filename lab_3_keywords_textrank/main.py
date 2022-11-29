@@ -271,7 +271,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = [[]]
+        self._matrix = []
         self._positions = {}
         self._position_weights = {}
         self._vertices = []
@@ -329,7 +329,6 @@ class AdjacencyMatrixGraph:
 
         incidental_vertex = self._matrix[self._vertices.index(vertex1)][self._vertices.index(vertex2)]
         return incidental_vertex
-
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -483,7 +482,7 @@ class EdgeListGraph:
             return -1
 
         for vertex in vertex1, vertex2:
-            if vertex not in self._edges:
+            if vertex not in self._edges.keys():
                 self._edges[vertex] = []
 
         self._edges[vertex1].append(vertex2)

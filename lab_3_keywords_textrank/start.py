@@ -37,6 +37,8 @@ if __name__ == "__main__":
     adjacency_matrix_graph = AdjacencyMatrixGraph()
     if encoded_tokens:
         adjacency_matrix_graph.fill_from_tokens(encoded_tokens, 3)
+        adjacency_matrix_graph.fill_positions(encoded_tokens)
+        adjacency_matrix_graph.calculate_position_weights()
     vanilla_text_rank_amg = VanillaTextRank(adjacency_matrix_graph)
     vanilla_text_rank_amg.train()
     print(encoded_text.decode(vanilla_text_rank_amg.get_top_keywords(10)))
@@ -44,6 +46,8 @@ if __name__ == "__main__":
     edge_list_graph = EdgeListGraph()
     if encoded_tokens:
         edge_list_graph.fill_from_tokens(encoded_tokens, 3)
+        edge_list_graph.fill_positions(encoded_tokens)
+        edge_list_graph.calculate_position_weights()
     vanilla_text_rank_elg = VanillaTextRank(edge_list_graph)
     vanilla_text_rank_elg.train()
     print(encoded_text.decode(vanilla_text_rank_elg.get_top_keywords(10)))
