@@ -693,7 +693,7 @@ class VanillaTextRank:
         """
 
         sorted_scores_dict = sorted(self._scores, key = lambda x: self._scores[x], reverse=True)[:n_keywords]
-        return sorted_scores_dict
+        return tuple(sorted_scores_dict)
 
 
 class PositionBiasedTextRank(VanillaTextRank):
