@@ -117,7 +117,6 @@ class TextEncoder:
         self._word2id = {}
         self._id2word = {}
 
-
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
