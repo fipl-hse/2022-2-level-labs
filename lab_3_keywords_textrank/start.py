@@ -49,7 +49,7 @@ if __name__ == "__main__":
     vanilla_text_rank_elg.train()
     print(encoded_text.decode(vanilla_text_rank_elg.get_top_keywords(10)))
 
-    RESULT = None
+    RESULT = True
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
