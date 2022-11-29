@@ -448,6 +448,8 @@ class EdgeListGraph:
         Constructs all the necessary attributes for the edge list graph object
         """
         self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -554,24 +556,22 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
-        for idx, token in enumerate(tokens):
-            if token not in self._positions:
-                self._positions[token] = []
-            self._positions[token] += [idx + 1]
+        for index, token in enumerate(tokens, 1):
+            if token in self._positions:
+                self._positions[token] = [token] + [index]
+            else:
+                self._positions[token] = [index]
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0.0
-        for vertex in self._positions:
-            for position in self._positions[vertex]:
-                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
-            non_norm_total_weight += self._position_weights[vertex]
-
-        for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
+        position_weights = {}
+        for token in self._positions:
+            position_weights[token] = sum(1 / position for position in self._positions[token])
+        for token in self._positions:
+            self._position_weights[token] = position_weights[token] / sum(position_weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -737,6 +737,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
+        super().__init__(graph)
+        self._position_weights = graph.get_position_weights()
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -751,10 +753,9 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
-                    for inc_vertex in incidental_vertices)
-        self._scores[vertex] = (summa * self._damping_factor +
-                                (1 - self._damping_factor) * self._position_weights[vertex])
+        self._scores[vertex] = (1 - self._damping_factor) * self._position_weights[vertex] + self._damping_factor * \
+                               sum(scores[incidental_vertex] / self._graph.calculate_inout_score(incidental_vertex)
+                                   for incidental_vertex in incidental_vertices)
 
 
 class TFIDFAdapter:

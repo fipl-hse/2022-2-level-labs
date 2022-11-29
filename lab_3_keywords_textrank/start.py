@@ -49,6 +49,14 @@ if __name__ == "__main__":
     vanilla_text_rank_elg.train()
     print(encoded_text.decode(vanilla_text_rank_elg.get_top_keywords(10)))
 
+    position_text_rank_amg = PositionBiasedTextRank(adjacency_matrix_graph)
+    position_text_rank_amg.train()
+    print(encoded_text.decode(position_text_rank_amg.get_top_keywords(10)))
+
+    position_text_rank_elg = PositionBiasedTextRank(edge_list_graph)
+    position_text_rank_elg.train()
+    print(encoded_text.decode(position_text_rank_elg.get_top_keywords(10)))
+
     RESULT = True
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
