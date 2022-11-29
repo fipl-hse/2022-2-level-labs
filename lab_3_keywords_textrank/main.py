@@ -214,16 +214,21 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
 
     if not tokens:
-        return None
+        return None # если токены пустой то идет в пизду
     if not isinstance(window_length, int) or window_length < 2:
-        return None
+        return None # если длина отрезка токенов меньше 2 то идет на хуй
+
     pairs = []
-    for index, token in enumerate(tokens, 1):
-        for i in range(1, window_length):
-            if index <= len(tokens) - window_length:
-                pair = tokens[index], tokens[index + i]
-                if pair[0] != pair[1]:
+    for index in range(len(tokens)):
+        tokens_in_window = tokens[index:window_length + index]
+        for token1 in tokens_in_window:
+            for token2 in tokens_in_window:
+                if (token1, token2) in pairs or (token2, token1) in pairs:
+                    continue
+                if token1 != token2:
+                    pair = (token1, token2)
                     pairs.append(pair)
+
     return tuple(pairs)
 
 
