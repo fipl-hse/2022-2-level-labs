@@ -1062,4 +1062,4 @@ class KeywordExtractionBenchmark:
             csv_report = csv.writer(file)
             csv_report.writerow(['name'] + list(self.themes))
             for algorithm in self.report:
-                    csv_report.writerow([algorithm] + [self.report[algorithm][theme] for theme in self.themes])
+                csv_report.writerow([algorithm] + [self.report[algorithm][theme] for theme in self.themes])

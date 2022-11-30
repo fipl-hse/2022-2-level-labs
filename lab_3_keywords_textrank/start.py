@@ -10,7 +10,8 @@ from lab_3_keywords_textrank.main import (extract_pairs,
                                           VanillaTextRank,
                                           AdjacencyMatrixGraph,
                                           EdgeListGraph,
-                                          PositionBiasedTextRank)
+                                          PositionBiasedTextRank,
+                                          KeywordExtractionBenchmark)
 
 if __name__ == "__main__":
 
@@ -61,6 +62,21 @@ if __name__ == "__main__":
     position_text_rank_elg = PositionBiasedTextRank(edge_list_graph)
     position_text_rank_elg.train()
     print(encoded_text.decode(position_text_rank_elg.get_top_keywords(10)))
+
+    BENCHMARK_MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
+
+    ENG_STOP_WORDS_PATH = BENCHMARK_MATERIALS_PATH / 'eng_stop_words.txt'
+    with open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
+        eng_stop_words = tuple(file.read().split('\n'))
+
+    IDF_PATH = BENCHMARK_MATERIALS_PATH / 'IDF.json'
+    with open(IDF_PATH, 'r', encoding='utf-8') as file:
+        idf = json.load(file)
+
+    keyword_extraction_benchmark = KeywordExtractionBenchmark(eng_stop_words, tuple(punctuation),
+                                                              idf, BENCHMARK_MATERIALS_PATH)
+    keyword_extraction_benchmark.run()
+    keyword_extraction_benchmark.save_to_csv(PROJECT_ROOT / 'report.csv')
 
     RESULT = True
 
