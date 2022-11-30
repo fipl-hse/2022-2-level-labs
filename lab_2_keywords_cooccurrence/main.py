@@ -22,7 +22,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     punctuation = '''.,;:¡!¿?…⋯‹›«»"“”\\[]()⟨⟩}{&]|[-–~—]'''
     for symbol in text:
         if symbol in punctuation:
-            text = text.replace(symbol, '.')
+            text = text.replace(symbol, ',')
     phrases_list = text.split('.')
     return [phrase.strip() for phrase in phrases_list if phrase.strip()]
 
