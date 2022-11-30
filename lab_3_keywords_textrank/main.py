@@ -806,13 +806,12 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        if not(freq_dict := calculate_frequencies(list(self._tokens))):
+        frequencies = calculate_frequencies(list(self._tokens))
+        tf_scores = calculate_tf(frequencies) if frequencies else None
+        tfidf_scores = calculate_tfidf(tf_scores, self._idf) if tf_scores else None
+        if not tfidf_scores:
             return -1
-        if not(tf_dict := calculate_tf(freq_dict)):
-            return -1
-        if not(tfidf_dict := calculate_tfidf(tf_dict, self._idf)):
-            return -1
-        self._scores = tfidf_dict
+        self._scores = tfidf_scores
         return 0
 
     # Step 10.3
@@ -828,8 +827,9 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
+        sorted_scores_dict = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
+        return tuple(sorted_scores_dict)
+
 
 class RAKEAdapter:
     """
@@ -881,19 +881,19 @@ class RAKEAdapter:
         phrases = extract_phrases(self._text)
         if not phrases:
             return -1
-        key_phrases = extract_candidate_keyword_phrases(list(phrases), list(self._stop_words))
-        if not key_phrases:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(list(phrases), list(self._stop_words))
+        if not candidate_keyword_phrases:
             return -1
-        freq_dict = calculate_frequencies_for_content_words(key_phrases)
-        if not freq_dict:
+        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+        if not frequencies:
             return -1
-        degree_dict = calculate_word_degrees(key_phrases, list(freq_dict.keys()))
-        if not degree_dict:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys()))
+        if not word_degrees:
             return -1
-        score_dict = calculate_word_scores(degree_dict, freq_dict)
-        if not score_dict:
+        word_scores = calculate_word_scores(word_degrees, frequencies)
+        if not word_scores:
             return -1
-        self._scores = dict(score_dict)
+        self._scores = dict(word_scores)
         return 0
 
     # Step 11.3
@@ -909,8 +909,9 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
+        sorted_scores = sorted(self._scores)
+        sorted_scores_dict = sorted(sorted_scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
+        return tuple(sorted_scores_dict)
 
 
 # Step 12.1
@@ -928,9 +929,18 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_pos = len(set(predicted) & set(target))
-    false_neg = len(set(target) - set(predicted))
-    return true_pos / (true_pos + false_neg)
+    true_positive = 0
+    false_negative = 0
+
+    for keyword in predicted:
+        if keyword in target:
+            true_positive += 1
+        else:
+            false_negative +=1
+
+    recall = true_positive/(true_positive + false_negative)
+
+    return recall
 
 
 class KeywordExtractionBenchmark:
@@ -991,45 +1001,8 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        rank_dict = {}
-        for theme in self.themes:
 
-            text_path = self._materials_path / f'{self.themes.index(theme)}_text.txt'
-            keywords_path = self._materials_path / f'{self.themes.index(theme)}_keywords.txt'
 
-            with (open(text_path, 'r', encoding='utf-8') as text_to_read,
-                    open(keywords_path, 'r', encoding='utf-8') as keywords_to_read):
-                text = text_to_read.read()
-                keywords = tuple(keywords_to_read.read().split('\n'))
-
-                preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
-                tokens = preprocessor.preprocess_text(text)
-                encoder = TextEncoder()
-                encoded_tokens = encoder.encode(tokens)
-
-                graph = EdgeListGraph()
-                if encoded_tokens:
-                    graph.fill_from_tokens(encoded_tokens, 3)
-                    graph.fill_positions(encoded_tokens)
-                    graph.calculate_position_weights()
-
-                for algorithm in (VanillaTextRank(graph),
-                                  PositionBiasedTextRank(graph),
-                                  TFIDFAdapter(tokens, self._idf),
-                                  RAKEAdapter(text, self._stop_words)):
-                    algorithm.train()
-                    top_tokens = algorithm.get_top_keywords(50)
-                    if algorithm.__class__.__name__ in ('VanillaTextRank', 'PositionBiasedTextRank'):
-                        top_tokens = encoder.decode(top_tokens)
-                    score = calculate_recall(top_tokens, keywords)
-
-                    inner_dict = {theme: score}
-                    # rank_dict[algorithm.__class__.__name__] = rank_dict.get(algorithm.__class__.__name__, {})
-                    if algorithm.__class__.__name__ not in rank_dict:
-                        rank_dict[algorithm.__class__.__name__] = {}
-                    rank_dict[algorithm.__class__.__name__].update(inner_dict)
-        self.report = rank_dict
-        return rank_dict
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1040,10 +1013,4 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        report_path = path / 'report.csv'
-        with open(report_path, 'w') as csv_file:
-            writer = csv.writer(csv_file)
-            headers = 'name', *self.themes
-            writer.writerow(headers)
-            for algorithm in self.report:
-                writer.writerow((algorithm, *self.report[algorithm].values()))
+
