@@ -4,6 +4,7 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 
 
 class TextPreprocessor:
@@ -743,7 +744,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
-        pass
+        self._tokens = tokens
+        self._idf = idf
+        self._scores = {}
 
     # Step 10.2
     def train(self) -> int:
@@ -754,7 +757,13 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        frequencies = calculate_frequencies(list(self._tokens))
+        tf_scores = calculate_tf(frequencies)
+        tfidf = calculate_tfidf(tf_scores, self._idf)
+        if not (frequencies and tf_scores and tfidf):
+            return -1
+        self._scores = tfidf
+        return 0
 
     # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -769,7 +778,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        return tuple(sorted(self._scores.keys(), key=lambda x: self._scores[x], reverse=True))[:n_keywords]
 
 
 class RAKEAdapter:
