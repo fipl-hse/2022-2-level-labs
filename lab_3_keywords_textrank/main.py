@@ -1002,7 +1002,52 @@ class KeywordExtractionBenchmark:
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
 
+        self.report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TF-IDF': {}, 'RAKE': {}}
+        preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        encoder = TextEncoder()
+        for index, theme in enumerate(self.themes):
+            with open(self._materials_path / f'{index}_text.txt', 'r', encoding='utf-8') as file:
+                text = file.read()
+            with open(self._materials_path / f'{index}_keywords.txt', 'r', encoding='utf-8') as file:
+                keywords = tuple(file.read().split())
 
+            preprocessed_text = preprocessor.preprocess_text(text)
+            encoded_text = encoder.encode(preprocessed_text)
+            if not encoded_text:
+                return None
+
+            edge_list_graph = EdgeListGraph()
+            edge_list_graph.fill_from_tokens(encoded_text, 3)
+            edge_list_graph.fill_positions(encoded_text)
+            edge_list_graph.calculate_position_weights()
+
+            tfidf = TFIDFAdapter(preprocessed_text, self._idf)
+            tfidf.train()
+            tfidf_top = tfidf.get_top_keywords(50)
+            self.report['TF-IDF'][theme] = calculate_recall(tfidf_top, keywords)
+
+            rake = RAKEAdapter(text, self._stop_words)
+            rake.train()
+            rake_top = rake.get_top_keywords(50)
+            self.report['RAKE'][theme] = calculate_recall(rake_top, keywords)
+
+            vanilla_text_rank = VanillaTextRank(edge_list_graph)
+            vanilla_text_rank.train()
+            vanilla_top = vanilla_text_rank.get_top_keywords(50)
+            decoded_vanilla_top = encoder.decode(vanilla_top)
+            if not decoded_vanilla_top:
+                return None
+            self.report['VanillaTextRank'][theme] = calculate_recall(decoded_vanilla_top, keywords)
+
+            position_biased_text_rank = PositionBiasedTextRank(edge_list_graph)
+            position_biased_text_rank.train()
+            position_rank_top = position_biased_text_rank.get_top_keywords(50)
+            decoded_position_rank_top = encoder.decode(position_rank_top)
+            if not decoded_position_rank_top:
+                return None
+            self.report['PositionBiasedTextRank'][theme] = calculate_recall(decoded_position_rank_top, keywords)
+
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1013,4 +1058,8 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-
+        with open(path, 'w', encoding='utf-8') as file:
+            csv_report = csv.writer(file)
+            csv_report.writerow(['name'] + list(self.themes))
+            for algorithm in self.report:
+                    csv_report.writerow([algorithm] + [self.report[algorithm][theme] for theme in self.themes])
