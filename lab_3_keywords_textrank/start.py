@@ -4,6 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
+import json
 from lab_3_keywords_textrank.main import (extract_pairs,
                                           TextPreprocessor,
                                           TextEncoder,
