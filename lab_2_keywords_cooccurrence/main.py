@@ -137,9 +137,9 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    if not (word_scores or isinstance(word_scores,dict):
+    if not (word_scores or isinstance(word_scores,dict)):
         return None
-    if not (candidate_keyword_phrases or isinstance(candidate_keyword_phrases, list):
+    if not (candidate_keyword_phrases or isinstance(candidate_keyword_phrases, list)):
         return None
 
 
