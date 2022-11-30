@@ -32,6 +32,15 @@ if __name__ == "__main__":
         if tokens:
             print(extract_pairs(tokens, 3))
 
-    RESULT = tokens
+    adj_graph = AdjacencyMatrixGraph()
+    if tokens:
+        adj_graph.fill_from_tokens(tokens, 5)
+    adj_text_rank = VanillaTextRank(adj_graph)
+    adj_text_rank.train()
+    adj_top_keywords = adj_text_rank.get_top_keywords(10)
+    encoded_adj_top = encoder.decode(adj_top_keywords)
+    print(encoded_adj_top)
+
+    RESULT = encoded_adj_top
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
