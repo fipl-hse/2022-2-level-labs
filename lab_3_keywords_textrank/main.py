@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Optional, Union
 import csv
 from lab_1_keywords_tfidf.main import check_positive_int, calculate_frequencies, calculate_tf, \
-    calculate_tfidf, get_top_n
+    calculate_tfidf
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
@@ -789,7 +789,7 @@ class TFIDFAdapter:
         """
         if not self._scores:
             return ()
-        return tuple(get_top_n(self._scores, n_keywords))
+        return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_keywords])
 
 
 class RAKEAdapter:
