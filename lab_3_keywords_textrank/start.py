@@ -27,7 +27,7 @@ if __name__ == "__main__":
         stop_words = tuple(file.read().split('\n'))
 
     if text:
-        preprocessor = TextPreprocessor(stop_words, punctuation)
+        preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
         encoder = TextEncoder()
         tokens = encoder.encode(preprocessor.preprocess_text(text))
         if tokens:
