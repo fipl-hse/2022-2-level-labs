@@ -5,7 +5,10 @@ Extract keywords based on TextRank algorithm
 from pathlib import Path
 from typing import Optional, Union
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
-
+from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
+                                              calculate_frequencies_for_content_words,
+                                              calculate_word_degrees,
+                                              calculate_word_scores)
 
 class TextPreprocessor:
     """
@@ -758,8 +761,8 @@ class TFIDFAdapter:
                 0 if importance scores were calculated successfully, otherwise -1
         """
         frequencies = calculate_frequencies(list(self._tokens))
-        tf_scores = calculate_tf(frequencies)
-        tfidf = calculate_tfidf(tf_scores, self._idf)
+        tf_scores = calculate_tf(frequencies) if frequencies else None
+        tfidf = calculate_tfidf(tf_scores, self._idf) if tf_scores else None
         if not (frequencies and tf_scores and tfidf):
             return -1
         self._scores = tfidf
@@ -815,7 +818,9 @@ class RAKEAdapter:
             stop_words: tuple[str, ...]
                 a sequence of stop-words
         """
-        pass
+        self._text = text
+        self._stop_words = stop_words
+        self._scores = {}
 
     # Step 11.2
     def train(self) -> int:
@@ -826,7 +831,15 @@ class RAKEAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        pass
+        phrases = extract_phrases(self._text)
+        candidates = extract_candidate_keyword_phrases(phrases, list(self._stop_words)) if phrases else None
+        frequencies = calculate_frequencies_for_content_words(candidates) if candidates else None
+        word_degrees = calculate_word_degrees(candidates, list(frequencies)) if candidates and frequencies else None
+        word_scores = calculate_word_scores(word_degrees, frequencies) if word_degrees and frequencies else None
+        if not (phrases and candidates and frequencies and word_degrees and word_scores):
+            return -1
+        self._scores = dict(word_scores)
+        return 0
 
     # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
@@ -841,7 +854,9 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        pass
+        sorted_keys = sorted(self._scores)
+        top_words = sorted(sorted_keys, key=lambda x: self._scores[x], reverse=True)[:n_keywords]
+        return tuple(top_words)
 
 
 # Step 12.1
@@ -859,7 +874,12 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    pass
+    true_positive, false_negative = 0, 0
+    for word in target:
+        if word in predicted:
+            true_positive += 1
+        false_negative += 1
+    return true_positive / (true_positive + false_negative)
 
 
 class KeywordExtractionBenchmark:
