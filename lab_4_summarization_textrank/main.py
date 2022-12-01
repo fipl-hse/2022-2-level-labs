@@ -27,7 +27,8 @@ class IncorrectQueryError(Exception):
     pass
 
 
-def arg_check(*args: tuple[Any, Type] | tuple[Any, Type, ...] | tuple[Any, Type, ..., ...] | tuple[Any, Type, ..., None]) -> bool:
+def arg_check(*args: tuple[Any, Type] | tuple[Any, Type, ...]
+                     | tuple[Any, Type, ..., ...] | tuple[Any, Type, ..., None]) -> bool:
     """
     Excepts tuples with objects and expected types.
     Raises a ValueError if any object is empty when it should not be or has the wrong type.
@@ -41,8 +42,9 @@ def arg_check(*args: tuple[Any, Type] | tuple[Any, Type, ...] | tuple[Any, Type,
     """
     for i in args:
         if (not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool)) \
-                or (type(i[0]) in (bool, list, tuple, dict) and None not in i and not i[0]) \
-                or (type(i[0]) in (list, tuple, dict) and i[2] and not all(arg_check((item, i[2])) for item in i[0])) \
+                or (isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]):
+            raise ValueError
+        if (isinstance(i[0], (list, tuple, dict)) and i[2] and not all(arg_check((item, i[2])) for item in i[0])) \
                 or (type(i[1]) == dict and not all(arg_check((value, i[3])) for value in i[0].values())):
             raise ValueError
     return True
@@ -139,8 +141,8 @@ class SentencePreprocessor(TextPreprocessor):
         """
         arg_check((text, str))
         # sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я0-9])', text) – how it's supposed to be according to instruction
-        text = text.replace('\n', ' ')              # how it's supposed to be
-        sentences = re.split(r'(?<=[.!?])', text)   # in order to pass unit-tests
+        text = text.replace('\n', ' ')  # how it's supposed to be
+        sentences = re.split(r'(?<=[.!?])', text)  # in order to pass unit-tests
         return tuple(Sentence(sentence.strip(), count) for count, sentence in enumerate(sentences) if sentence)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
