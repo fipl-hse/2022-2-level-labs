@@ -4,8 +4,8 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank
+from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, extract_pairs, AdjacencyMatrixGraph, \
+                                         VanillaTextRank
 
 
 if __name__ == "__main__":
@@ -21,22 +21,22 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    PREPROCESSOR = TextPreprocessor(stop_words, tuple(punctuation))
-    TOKENS = PREPROCESSOR.preprocess_text(text)
+    preprocessor = TextPreprocessor(stop_words, punctuation)
+    encoder = TextEncoder()
+    tokens = encoder.encode(preprocessor.preprocess_text(text))
 
-    ENCODER = TextEncoder()
-    ENCODED_TOKENS = ENCODER.encode(TOKENS)
-    if ENCODED_TOKENS:
-        print(extract_pairs(ENCODED_TOKENS, 3))
+    if tokens:
+        print(extract_pairs(tokens, 3))
 
-    adjacency_matrix_graph = AdjacencyMatrixGraph()
-    if ENCODED_TOKENS:
-        adjacency_matrix_graph.fill_from_tokens(ENCODED_TOKENS, 3)
-    vanilla_text_rank_amg = VanillaTextRank(adjacency_matrix_graph)
-    vanilla_text_rank_amg.train()
-    print(ENCODED_TOKENS.decode(vanilla_text_rank_amg.get_top_keywords(10)))
+    adj_graph = AdjacencyMatrixGraph()
+    if tokens:
+        adj_graph.fill_from_tokens(tokens, 3)
 
-    RESULT = True
+    vanilla_rank = VanillaTextRank(adj_graph)
+    vanilla_rank.train()
+    top_keywords = vanilla_rank.get_top_keywords(10)
+    RESULT = encoder.decode(top_keywords)
+    print(RESULT)
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
