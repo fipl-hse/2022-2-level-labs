@@ -39,8 +39,6 @@ class TextPreprocessor:
         """
         self._stop_words = stop_words
         self._punctuation = punctuation
-
-
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -140,10 +138,9 @@ class TextEncoder:
         min_integer = 1000
         for line in tokens:
             if line not in self._word2id:
-                min_integer += 1
                 self._word2id[line] = min_integer
-            if line not in self._id2word.values():
-                self._id2word[min_integer + tokens.index(line)] = line
+                self._id2word[min_integer] = line
+                min_integer += 1
 
 
     # Step 2.3
@@ -184,10 +181,9 @@ class TextEncoder:
         """
         decoded_tokens = []
         for encoded_token in encoded_tokens:
-            if encoded_token in self._id2word:
-                decoded_tokens.append(self._id2word[encoded_token])
-            else:
+            if encoded_token not in self._id2word:
                 return None
+            decoded_tokens.append(self._id2word[encoded_token])
         return tuple(decoded_tokens)
 
 
@@ -209,7 +205,23 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    pass
+    if not tokens:
+        return None
+    if not isinstance(window_length, int) or window_length < 2:
+        return None
+    pairs = []
+    for token in tokens:
+        index = tokens.index(token)
+        index_max = index + window_length - 1
+        while (index_max > index) and (len(tokens) > index_max):
+            pair = [token, tokens[index_max]]
+            pairs.append(tuple(pair))
+            index_max += -1
+    pairs_no_dups = []
+    for elem in pairs:
+        if elem not in pairs_no_dups and not (elem[0] == elem[1]):
+            pairs_no_dups.append(elem)
+    return tuple(pairs_no_dups)
 
 
 class AdjacencyMatrixGraph:
