@@ -2,6 +2,7 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+
 from pathlib import Path
 from typing import Optional, Union
 
@@ -36,7 +37,9 @@ class TextPreprocessor:
             punctuation : tuple[str, ...]
                 punctuation symbols to remove during text cleaning
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+
 
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
@@ -51,7 +54,13 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        pass
+        tokenized = ''
+        for i in text.lower().strip().replace('\n', ' '):
+            if i not in self._punctuation:
+                tokenized += i
+        tokens = tuple(''.join(tokenized).lower().split())
+        return tokens
+
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -66,7 +75,12 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        pass
+        tokens_no_sw = []
+        for i in tokens:
+            if i not in self._stop_words:
+                tokens_no_sw.append(i)
+        tokens_no_sw_tuple = tuple(tokens_no_sw)
+        return tokens_no_sw_tuple
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -81,7 +95,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens with no stop-words
         """
-        pass
+        tokens = self._clean_and_tokenize(text)
+        tokenized_removed_sw = self._remove_stop_words(tokens)
+        return tokenized_removed_sw
 
 
 class TextEncoder:
@@ -109,7 +125,8 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        pass
+        self._word2id = {}
+        self._id2word = {}
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -120,7 +137,14 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        pass
+        min_integer = 1000
+        for line in tokens:
+            if line not in self._word2id:
+                min_integer += 1
+                self._word2id[line] = min_integer
+            if line not in self._id2word.values():
+                self._id2word[min_integer + tokens.index(line)] = line
+
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -136,7 +160,13 @@ class TextEncoder:
                 sequence of integer tokens
         In case of empty tokens input data, None is returned
         """
-        pass
+        if not tokens:
+            return None
+        self._learn_indices(tokens)
+        encoded_tokens = []
+        for token in tokens:
+            encoded_tokens.append(self._word2id[token])
+        return tuple(encoded_tokens)
 
     # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
@@ -152,7 +182,13 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        pass
+        decoded_tokens = []
+        for encoded_token in encoded_tokens:
+            if encoded_token in self._id2word:
+                decoded_tokens.append(self._id2word[encoded_token])
+            else:
+                return None
+        return tuple(decoded_tokens)
 
 
 # Step 3
