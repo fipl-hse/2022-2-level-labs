@@ -41,11 +41,12 @@ def arg_check(*args: tuple[Any, Type] | tuple[Any, Type, ...]
     None in tuple = allowed to be falsy
     """
     for i in args:
-        if (not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool)) \
-                or (isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]):
+        if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
+            raise ValueError
+        if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
             raise ValueError
         if (isinstance(i[0], (list, tuple, dict)) and i[2] and not all(arg_check((item, i[2])) for item in i[0])) \
-                or (type(i[1]) == dict and not all(arg_check((value, i[3])) for value in i[0].values())):
+                or (isinstance(i[1], dict) and not all(arg_check((value, i[3])) for value in i[0].values())):
             raise ValueError
     return True
 
