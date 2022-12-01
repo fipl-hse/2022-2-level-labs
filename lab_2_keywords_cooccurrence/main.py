@@ -288,8 +288,8 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     frequencies_sorted = sorted(frequencies.values())
     percentile_80 = frequencies_sorted[round(len(frequencies_sorted) / 100 * 80) - 1]
     stop_words = []
-    for token in frequencies:
-        if frequencies[token] >= percentile_80 and len(token) <= max_length:
+    for token, freq in frequencies.items():
+        if freq >= percentile_80 and len(token) <= max_length:
             stop_words.append(token)
     return stop_words
 
