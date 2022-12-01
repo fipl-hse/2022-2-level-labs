@@ -1,7 +1,7 @@
 """
 Programming 2022
-Seminar 5
-Introduction into classes, incupsulation
+Seminar 6
+Introduction into classes, encapsulation
 """
 class Student:
 
