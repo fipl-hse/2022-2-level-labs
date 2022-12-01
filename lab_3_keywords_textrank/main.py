@@ -987,7 +987,7 @@ class KeywordExtractionBenchmark:
         """
         with open(path, 'w', encoding='utf-8', newline='') as file:
             csv_file = csv.writer(file)
-            header = ['name'] + list(self.themes)
-            csv_file.writerow(header)
+            # header =
+            csv_file.writerow(['name'] + list(self.themes))
             for key, res in self.report.items():
                 csv_file.writerow([key] + list(res.values()))
