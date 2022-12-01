@@ -22,6 +22,7 @@ class Sentence:
         """
         pass
 
+
     def get_position(self) -> int:
         """
         Returns the attribute
