@@ -237,9 +237,9 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                     if adjoined_phrase in phrase:
                         adjoined_phrases.append(tuple(adjoined_phrase.split()))
     clean_adjoined_phrases = []
-    for phrase in set(adjoined_phrases):
-        if adjoined_phrases.count(phrase) > 1:
-            clean_adjoined_phrases.append(phrase)
+    for adj_phrase in set(adjoined_phrases):
+        if adjoined_phrases.count(adj_phrase) > 1:
+            clean_adjoined_phrases.append(adj_phrase)
     return clean_adjoined_phrases
 
 
@@ -263,7 +263,7 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
         return None
     cumulative_score = {}
     for phrase in candidate_keyword_phrases:
-        score = 0
+        score = 0.0
         for word in phrase:
             if word not in stop_words:
                 score += word_scores[word]
@@ -288,7 +288,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     frequencies_sorted = sorted(frequencies.values())
     percentile_80 = frequencies_sorted[round(len(frequencies_sorted) / 100 * 80) - 1]
     stop_words = []
-    for token in frequencies.keys():
+    for token in frequencies:
         if frequencies[token] >= percentile_80 and len(token) <= max_length:
             stop_words.append(token)
     return stop_words
@@ -307,29 +307,30 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     return stop_words
 
 
-def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
-        -> Optional[Mapping[KeyPhrase, float]]:
+def process_text(text: str, stop_words: Optional[Sequence[str]] = None) -> None:
     """
-    Uses previous functions to process a text and extract key phrases.
-    Accepts raw text and stop words list (or maximum length of a stop word if they have to be generated
-    from the text).
-    Returns extracted key phrases or None if something goes wrong.
+    Preprocesses text.
     """
+    candidate_keyword_phrases, frequencies, word_degrees, word_scores, \
+    cumulative_score, candidate_with_stop_words, cumulative_with_stop_words = [None for _ in range(7)]
     phrases = extract_phrases(text)
-    candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words) if phrases else None
-    frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases) if candidate_keyword_phrases \
-        else None
-    word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys())) \
-        if candidate_keyword_phrases and frequencies else None
-    word_scores = calculate_word_scores(word_degrees, frequencies) if frequencies and word_degrees else None
-    cumulative_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores) \
-        if candidate_keyword_phrases and word_scores else None
+    if phrases:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    if candidate_keyword_phrases:
+        frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+    if candidate_keyword_phrases and frequencies:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(frequencies.keys()))
+    if frequencies and word_degrees:
+        word_scores = calculate_word_scores(word_degrees, frequencies)
+    if candidate_keyword_phrases and word_scores:
+        cumulative_score = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
     if cumulative_score:
         print('Top without stop words:', get_top_n(cumulative_score, 10, 5))
-    candidate_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases) \
-        if phrases and candidate_keyword_phrases else None
-    cumulative_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
-        candidate_with_stop_words, word_scores, stop_words) \
-        if candidate_with_stop_words and word_scores and stop_words else None
+    if phrases and candidate_keyword_phrases:
+        candidate_with_stop_words = extract_candidate_keyword_phrases_with_adjoining(
+            candidate_keyword_phrases, phrases)
+    if candidate_with_stop_words and word_scores and stop_words:
+        cumulative_with_stop_words = calculate_cumulative_score_for_candidates_with_stop_words(
+            candidate_with_stop_words, word_scores, stop_words)
     if cumulative_with_stop_words:
         print('Top with stop words:', get_top_n(cumulative_with_stop_words, 10, 5))
