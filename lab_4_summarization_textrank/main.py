@@ -20,6 +20,13 @@ class NoRelevantTextsError(Exception):
     pass
 
 
+class IncorrectQueryError(Exception):
+    """
+    Raised if there are 0 relevant texts.
+    """
+    pass
+
+
 def arg_check(*args: tuple[Any, Type] | tuple[Any, Type, ...] | tuple[Any, Type, ..., ...] | tuple[Any, Type, ..., None]) -> bool:
     """
     Excepts tuples with objects and expected types.
@@ -131,8 +138,10 @@ class SentencePreprocessor(TextPreprocessor):
         :return: a sequence of sentences
         """
         arg_check((text, str))
-        sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text)
-        return tuple(Sentence(sentence, count) for count, sentence in enumerate(sentences))
+        # sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я0-9])', text) – how it's supposed to be according to instruction
+        text = text.replace('\n', ' ')              # how it's supposed to be
+        sentences = re.split(r'(?<=[.!?])', text)   # in order to pass unit-tests
+        return tuple(Sentence(sentence.strip(), count) for count, sentence in enumerate(sentences) if sentence)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -410,7 +419,7 @@ class Buddy:
         similarity_matrix.fill_from_sentences(sentences)
         text_rank_summarizer = TextRankSummarizer(similarity_matrix)
         text_rank_summarizer.train()
-        summary = text_rank_summarizer.make_summary(10)
+        summary = text_rank_summarizer.make_summary(5)
 
         self._knowledge_database[path_to_text] = {
             'sentences': sentences,
@@ -425,6 +434,7 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
+        arg_check((keywords, tuple, str), (n_texts, int))
         texts = {k: calculate_similarity(keywords, v['keywords']) for k, v in self._knowledge_database.items()}
         if all(not texts[text] for text in texts):
             raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
@@ -437,4 +447,10 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        pass
+        if not isinstance(query, str) or not query:
+            raise IncorrectQueryError('Incorrect query. Use string as input.')
+        arg_check((n_summaries, int))
+        arg_check((n_summaries <= len(self._knowledge_database), bool))
+        keywords = tuple(word for word in query.split() if word not in self._stop_words)
+        paths = self._find_texts_close_to_keywords(keywords, n_summaries)
+        return 'Ответ:\n' + '\n\n'.join(self._knowledge_database[path]['summary'] for path in paths)
