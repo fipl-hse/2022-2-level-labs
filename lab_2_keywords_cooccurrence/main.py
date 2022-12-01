@@ -307,7 +307,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     return stop_words
 
 
-def process_text(text: str, stop_words: Optional[Sequence[str]] = None) -> None:
+def process_text(text: str, stop_words: Sequence[str]) -> None:
     """
     Preprocesses text.
     """
