@@ -3,7 +3,6 @@ TextRank keyword extraction starter
 """
 import json
 from pathlib import Path
-from string import punctuation
 from lab_3_keywords_textrank.main import (TextPreprocessor, TextEncoder, extract_pairs,
                                           AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph,
                                           PositionBiasedTextRank, KeywordExtractionBenchmark)
@@ -70,17 +69,20 @@ if __name__ == "__main__":
 
     materials_path = ASSETS_PATH / 'benchmark_materials'
 
-    stop_words_path = materials_path / 'eng_stop_words.txt'
-    with open(stop_words_path, 'r', encoding='utf-8') as file:
+    eng_stop_words_path = materials_path / 'eng_stop_words.txt'
+    with open(eng_stop_words_path, 'r', encoding='utf-8') as file:
         stop_words1 = tuple(file.read().split('\n'))
 
     idf_path = materials_path / 'IDF.json'
     with open(idf_path, 'r', encoding='utf-8') as file:
         idf = dict(json.load(file))
 
-    benchmark = KeywordExtractionBenchmark(stop_words1, tuple(punctuation), idf, materials_path)
+    benchmark = KeywordExtractionBenchmark(stop_words1, tuple(('!', ',', '(', ')', ':', '/', '-', '.')),
+                                           idf, materials_path)
     benchmark.run()
-    benchmark.save_to_csv(materials_path)
+
+    path_to_report = PROJECT_ROOT / 'report.csv'
+    benchmark.save_to_csv(path_to_report)
 
     RESULT = top_10_vanilla_edge_graph
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
