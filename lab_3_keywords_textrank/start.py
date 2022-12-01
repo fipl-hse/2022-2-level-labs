@@ -4,7 +4,7 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
-from main import TextPreprocessor, TextEncoder, extract_pairs
+from main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, VanillaTextRank
 
 
 if __name__ == "__main__":
@@ -25,6 +25,11 @@ if __name__ == "__main__":
 
     TOKENS = TextPreprocessor(stop_words=stop_words, punctuation=tuple(punctuation)).preprocess_text(text)
     ENCODED = TextEncoder().encode(TOKENS)
-    RESULT = extract_pairs(ENCODED, 3)
+    GRAPH = AdjacencyMatrixGraph()
+    GRAPH.fill_from_tokens(ENCODED, 5)
+    TEXT_RANK = VanillaTextRank(GRAPH)
+    TEXT_RANK.train()
+    TOP = TEXT_RANK.get_top_keywords(10)
+    RESULT = TextEncoder.decode(TOP)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
