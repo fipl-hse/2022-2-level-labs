@@ -4,6 +4,7 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+import csv
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
                                               calculate_frequencies_for_content_words,
@@ -924,7 +925,12 @@ class KeywordExtractionBenchmark:
             materials_path: Path
                 a path to materials to use for comparison
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf = idf
+        self._materials_path = materials_path
+        self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
+        self.report = {}
 
     # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
@@ -936,7 +942,39 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        pass
+        self.report = {'VanillaTextRank': {}, 'PositionBiasedTextRank': {}, 'TF-IDF': {}, 'RAKE': {}}
+        # functions = {}
+        for idx, theme in enumerate(self.themes):
+            with open(self._materials_path / f'{idx}_text.txt', encoding='utf-8') as file:
+                text = file.read()
+            with open(self._materials_path / f'{idx}_keywords.txt', encoding='utf-8') as file:
+                target = tuple(file.read().split('\n'))
+
+            preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+            tokens = preprocessor.preprocess_text(text)
+            encoder = TextEncoder()
+            encoded = encoder.encode(tokens)
+
+            edge_list_graph = EdgeListGraph()
+            if not encoded:
+                return None
+            edge_list_graph.fill_from_tokens(encoded, 3)
+            edge_list_graph.fill_positions(encoded)
+            edge_list_graph.calculate_position_weights()
+
+            vanilla_edge_graph = VanillaTextRank(edge_list_graph)
+            biased_rank = PositionBiasedTextRank(edge_list_graph)
+            tfidf_adapter = TFIDFAdapter(tokens, self._idf)
+            rake_adapter = RAKEAdapter(text, self._stop_words)
+            functions = {'VanillaTextRank': vanilla_edge_graph, 'PositionBiasedTextRank': biased_rank,
+                         'TF-IDF': tfidf_adapter, 'RAKE': rake_adapter}
+            for key, func in functions.items():
+                func.train()
+                top_50 = func.get_top_keywords(50)
+                if key in ('VanillaTextRank', 'PositionBiasedTextRank'):
+                    top_50 = encoder.decode(top_50)
+                self.report[key][theme] = calculate_recall(top_50, target)
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -947,4 +985,9 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        with open(path, 'w', encoding='utf-8') as file:
+            csv_file = csv.writer(file)
+            header = ['name'] + list(self.themes)
+            csv_file.writerow(header)
+            for key, res in self.report.items():
+                csv_file.writerow([key] + list(res.values()))
