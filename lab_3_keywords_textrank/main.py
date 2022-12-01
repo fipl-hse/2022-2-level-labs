@@ -985,7 +985,7 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        with open(path, 'w', encoding='utf-8') as file:
+        with open(path, 'w', encoding='utf-8', newline='') as file:
             csv_file = csv.writer(file)
             header = ['name'] + list(self.themes)
             csv_file.writerow(header)
