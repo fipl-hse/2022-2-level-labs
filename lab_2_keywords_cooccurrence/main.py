@@ -4,9 +4,9 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any
-from lab_1_keywords_tfidf.main import check_positive_int, clean_and_tokenize, calculate_frequencies
 from itertools import pairwise
 import json
+from lab_1_keywords_tfidf.main import check_positive_int, clean_and_tokenize, calculate_frequencies
 
 
 KeyPhrase = tuple[str, ...]
@@ -37,7 +37,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not check_type(text, str):
         return None
-    punctuation = """.,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]"""
+    punctuation = r""".,;:¡!¿?…⋯‹›«»\\"“”\[\]()⟨⟩}{&]|[-–~—]"""
     for token in text:
         if token in punctuation:
             text = text.replace(token, ',')
@@ -228,12 +228,14 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
             for part1, part2 in pairwise(pair):
                 part1_str = ' '.join(part1)
                 part2_str = ' '.join(part2)
-                if part1_str in phrase and part2_str in phrase:
-                    for index in range(len(phrase_list) - 2):
-                        if phrase_list[index] == part1[-1] and phrase_list[index + 2] == part2[0]:
-                            adjoined_phrase = f'{part1_str} {phrase_list[index + 1]} {part2_str}'
-                            if adjoined_phrase in phrase:
-                                adjoined_phrases.append(tuple(adjoined_phrase.split()))
+                if part1_str not in phrase or part2_str not in phrase:
+                    continue
+                for index in range(len(phrase_list) - 2):
+                    if phrase_list[index] != part1[-1] or phrase_list[index + 2] != part2[0]:
+                        continue
+                    adjoined_phrase = f'{part1_str} {phrase_list[index + 1]} {part2_str}'
+                    if adjoined_phrase in phrase:
+                        adjoined_phrases.append(tuple(adjoined_phrase.split()))
     clean_adjoined_phrases = []
     for phrase in set(adjoined_phrases):
         if adjoined_phrases.count(phrase) > 1:
@@ -302,7 +304,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return None
     with open(path, 'r', encoding='utf-8') as file:
         stop_words = dict(json.load(file))
-        return stop_words
+    return stop_words
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
@@ -331,4 +333,3 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
         if candidate_with_stop_words and word_scores and stop_words else None
     if cumulative_with_stop_words:
         print('Top with stop words:', get_top_n(cumulative_with_stop_words, 10, 5))
-    return None
