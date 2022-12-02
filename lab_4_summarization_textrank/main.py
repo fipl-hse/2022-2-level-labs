@@ -22,7 +22,7 @@ class NoRelevantTextsError(Exception):
 
 class IncorrectQueryError(Exception):
     """
-    Raised if there are 0 relevant texts.
+    Raised if the query is incorrect.
     """
     pass
 
@@ -141,9 +141,8 @@ class SentencePreprocessor(TextPreprocessor):
         :return: a sequence of sentences
         """
         arg_check((text, str))
-        # sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я0-9])', text) – how it's supposed to be according to instruction
-        text = text.replace('\n', ' ')  # how it's supposed to be
-        sentences = re.split(r'(?<=[.!?])', text)  # in order to pass unit-tests
+        text = text.replace('\n', ' ').replace('  ', ' ')
+        sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text)
         return tuple(Sentence(sentence.strip(), count) for count, sentence in enumerate(sentences) if sentence)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -178,6 +177,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
+        self.last_id = 999
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -186,10 +186,10 @@ class SentenceEncoder(TextEncoder):
         :return:
         """
         arg_check((tokens, tuple, str, None))
-        start = 1000 if not self._id2word else max(self._id2word) + 1
-        for count, new_token in enumerate((token for token in tokens if token not in self._word2id), start):
+        for count, new_token in enumerate((token for token in tokens if token not in self._word2id), self.last_id + 1):
             self._word2id[new_token] = count
             self._id2word[count] = new_token
+        self.last_id = max(self._id2word)
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
