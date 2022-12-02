@@ -235,7 +235,9 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     for token in tokens:
         index = tokens.index(token)
         index_max = index + window_length - 1
-        while (index_max > index) and (len(tokens) > index_max):
+        if not index_max > index:
+            return None
+        while len(tokens) > index_max:
             pair = [token, tokens[index_max]]
             pairs.append(tuple(pair))
             index_max += -1
@@ -669,9 +671,9 @@ class VanillaTextRank:
                 scores of all vertices in the graph
         """
         summ = 0.0
-        for vertex in incidental_vertices:
-            inout_score = self._graph.calculate_inout_score(vertex)
-            summ += 1 / inout_score * self._scores[vertex]
+        for ver in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(ver)
+            summ += 1 / inout_score * self._scores[ver]
         weight = summ * self._damping_factor + 1 - self._damping_factor
         self._scores[vertex] = weight
 
