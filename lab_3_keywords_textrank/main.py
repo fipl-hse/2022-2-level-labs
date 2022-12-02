@@ -665,7 +665,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -676,7 +676,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        pass
+        return tuple(sorted(self._scores, key=lambda key: self._scores[key], reverse=True)[:n_keywords])
 
 
 class PositionBiasedTextRank(VanillaTextRank):
