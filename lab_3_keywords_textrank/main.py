@@ -56,7 +56,6 @@ class TextPreprocessor:
         self._stop_words = stop_words
         self._punctuation = punctuation
 
-
     # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
         """
@@ -77,10 +76,8 @@ class TextPreprocessor:
                 tokenized += i
         tokens = tuple(''.join(tokenized).lower().split())
         return tokens
-
-
-
     # Step 1.3
+
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
         """
         Filters tokens, removing stop words
@@ -100,9 +97,8 @@ class TextPreprocessor:
                 tokens_no_sw.append(i)
         tokens_no_sw_tuple = tuple(tokens_no_sw)
         return tokens_no_sw_tuple
+# Step 1.4
 
-
-    # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
         """
         Produces filtered clean lowercase tokens from raw text
@@ -119,7 +115,6 @@ class TextPreprocessor:
         tokens = self._clean_and_tokenize(text)
         tokenized_removed_sw = self._remove_stop_words(tokens)
         return tokenized_removed_sw
-
 
 
 class TextEncoder:
@@ -166,10 +161,8 @@ class TextEncoder:
                 self._word2id[line] = min_integer
                 self._id2word[min_integer] = line
                 min_integer += 1
+# Step 2.3
 
-
-
-    # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
         """
         Encodes input sequence of string tokens to sequence of integer tokens
@@ -191,9 +184,8 @@ class TextEncoder:
         for token in tokens:
             encoded_tokens.append(self._word2id[token])
         return tuple(encoded_tokens)
+# Step 2.4
 
-
-    # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
         """
         Decodes input sequence of integer tokens to sequence of string tokens
@@ -214,10 +206,9 @@ class TextEncoder:
                 return None
             decoded_tokens.append(self._id2word[encoded_token])
         return tuple(decoded_tokens)
-
-
-
 # Step 3
+
+
 def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
     """
     Retrieves all pairs of co-occurring words in the token sequence
@@ -250,10 +241,11 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
             index_max += -1
     pairs_no_dups = []
     for elem in pairs:
-        if elem not in pairs_no_dups and not (elem[0] == elem[1]):
+        if elem[0] == elem[1]:
+            return None
+        if elem not in pairs_no_dups:
             pairs_no_dups.append(elem)
     return tuple(pairs_no_dups)
-
 
 
 class AdjacencyMatrixGraph:
@@ -297,10 +289,8 @@ class AdjacencyMatrixGraph:
         """
         self._matrix = []
         self._vertices = []
+# Step 4.2
 
-
-
-    # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
         Adds or overwrites an edge in the graph between the specified vertices
@@ -318,8 +308,6 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-
-
         for vertex in [vertex1, vertex2]:
             if vertex in self._vertices:
                 continue
@@ -359,9 +347,8 @@ class AdjacencyMatrixGraph:
         # есть ли ребро 2
         return self._matrix[index1][index2]
     # берем индекс от индекса в листе матрицы
+# Step 4.4
 
-
-    # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
         """
         Returns a sequence of all vertices present in the graph
@@ -391,9 +378,8 @@ class AdjacencyMatrixGraph:
         index = self._vertices.index(vertex)
         inout_score = sum(self._matrix[index])
         return inout_score
+# Step 4.6
 
-
-    # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
         """
         Updates graph instance with vertices and edges extracted from tokenized text
@@ -516,8 +502,6 @@ class EdgeListGraph:
         """
         if vertex1 == vertex2:
             return -1
-
-
         for vertex in [vertex1, vertex2]:
             if vertex not in self._edges:
                 self._edges[vertex] = []
@@ -549,9 +533,8 @@ class EdgeListGraph:
         if vertex2 in self._edges[vertex1]:
             return 1
         return 0
+# Step 7.2
 
-
-    # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
         """
         Retrieves a number of incidental vertices to a specified vertex
@@ -585,9 +568,8 @@ class EdgeListGraph:
         pairs = extract_pairs(tokens, window_length)
         for pair in pairs:
             self.add_edge(pair[0], pair[1])
+# Step 8.2
 
-
-    # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
         """
         Saves information on all positions of each vertex in the token sequence
