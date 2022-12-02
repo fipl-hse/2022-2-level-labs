@@ -595,22 +595,25 @@ class EdgeListGraph:
             tokens : tuple[int, ...]
                 sequence of tokens
         """
+        for idx, element in enumerate(tokens):
+            if element not in self._positions:
+                self._positions[element] = []
+            self._positions[element].append(idx + 1)
 
-
-
-    # Step 8.3
+        # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0.0
+        collection_of_weights = {}
         for vertex in self._positions:
+            summary = 0.0
             for position in self._positions[vertex]:
-                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
-            non_norm_total_weight += self._position_weights[vertex]
-
-        for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
+                summary += 1 / position
+            collection_of_weights[vertex] = summary
+        summ = sum(collection_of_weights.values())
+        for element in collection_of_weights:
+            self._position_weights[element] = collection_of_weights[element] / summ
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -813,10 +816,12 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
-                    for inc_vertex in incidental_vertices)
-        self._scores[vertex] = (summa * self._damping_factor +
-                                (1 - self._damping_factor) * self._position_weights[vertex])
+        summary = 0.0
+        for vertice in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(vertice)
+            summary += 1 / inout_score * self._scores[vertice]
+        weight = summary * self._damping_factor + (1 - self._damping_factor) * self._position_weights[vertex]
+        self._scores[vertex] = weight
 
 
 class TFIDFAdapter:
@@ -853,9 +858,9 @@ class TFIDFAdapter:
             idf: dict[str, float]
                 Inverse Document Frequency scores for tokens
         """
+        self._scores = {}
         self._tokens = tokens
         self._idf = idf
-        self._scores = {}
 
     # Step 10.2
     def train(self) -> int:
@@ -866,11 +871,14 @@ class TFIDFAdapter:
             int:
                 0 if importance scores were calculated successfully, otherwise -1
         """
-        if not(freq_dict := calculate_frequencies(list(self._tokens))):
+        frequencies = calculate_frequencies(list(self._tokens))
+        if not frequencies:
             return -1
-        if not(tf_dict := calculate_tf(freq_dict)):
+        term_freq = calculate_tf(frequencies)
+        if not term_freq:
             return -1
-        if not(tfidf_dict := calculate_tfidf(tf_dict, self._idf)):
+        tfidf_dict = calculate_tfidf(term_freq, self._idf)
+        if not tfidf_dict:
             return -1
         self._scores = tfidf_dict
         return 0
@@ -888,8 +896,7 @@ class TFIDFAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
+        return tuple(sorted(self._scores.keys(), key=lambda key: self._scores[key], reverse=True)[:n_keywords])
 
 
 class RAKEAdapter:
@@ -970,8 +977,12 @@ class RAKEAdapter:
             tuple[str, ...]:
                 a requested number tokens with the highest importance scores
         """
-        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
+        sorted_keys = sorted(self._scores.keys())
+        sorted_dict = {}
+        for key in sorted_keys:
+            sorted_dict[key] = self._scores[key]
+        top_keywords = sorted(sorted_dict, key=lambda x: sorted_dict[x], reverse=True)[:n_keywords]
+        return tuple(top_keywords)
 
 
 # Step 12.1
@@ -989,9 +1000,9 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
         float:
             recall value
     """
-    true_pos = len(set(predicted) & set(target))
-    false_neg = len(set(target) - set(predicted))
-    return true_pos / (true_pos + false_neg)
+    true_positive = len(set(predicted) & set(target))
+    false_negative = len(set(target) - set(predicted))
+    return true_positive / (true_positive + false_negative)
 
 
 class KeywordExtractionBenchmark:
@@ -1052,45 +1063,38 @@ class KeywordExtractionBenchmark:
                 comparison report
         In case it is impossible to extract keywords due to corrupt inputs, None is returned
         """
-        rank_dict = {}
-        for theme in self.themes:
+        self.report = {'TF-IDF': {}, 'RAKE': {}, 'VanillaTextRank': {}, 'PositionBiasedTextRank': {}}
+        preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        encoder = TextEncoder()
+        for ind, theme in enumerate(self.themes):
+            with open(self._materials_path / f'{ind}_text.txt', 'r', encoding='utf-8') as file:
+                text = file.read()
+            with open(self._materials_path / f'{ind}_keywords.txt', 'r', encoding='utf-8') as file:
+                keywords = tuple(file.read().split())
+            tokens = preprocessor.preprocess_text(text)
+            encoded_tokens = encoder.encode(tokens)
+            if not encoded_tokens:
+                return None
+            edge_graph = EdgeListGraph()
+            edge_graph.fill_from_tokens(encoded_tokens, 5)
+            edge_graph.fill_positions(encoded_tokens)
+            edge_graph.calculate_position_weights()
+            tfidf = TFIDFAdapter(tokens, self._idf)
+            rake = RAKEAdapter(text, self._stop_words)
+            text_rank = VanillaTextRank(edge_graph)
+            text_rank_bias = PositionBiasedTextRank(edge_graph)
+            for method in tfidf, rake, text_rank, text_rank_bias:
+                method.train()
+            keywords_tfidf = tfidf.get_top_keywords(50)
+            keywords_rake = rake.get_top_keywords(50)
+            keywords_text_rank = encoder.decode(text_rank.get_top_keywords(50))
+            keywords_bias = encoder.decode(text_rank_bias.get_top_keywords(50))
 
-            text_path = self._materials_path / f'{self.themes.index(theme)}_text.txt'
-            keywords_path = self._materials_path / f'{self.themes.index(theme)}_keywords.txt'
-
-            with (open(text_path, 'r', encoding='utf-8') as text_to_read,
-                    open(keywords_path, 'r', encoding='utf-8') as keywords_to_read):
-                text = text_to_read.read()
-                keywords = tuple(keywords_to_read.read().split('\n'))
-
-                preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
-                tokens = preprocessor.preprocess_text(text)
-                encoder = TextEncoder()
-                encoded_tokens = encoder.encode(tokens)
-
-                graph = EdgeListGraph()
-                if encoded_tokens:
-                    graph.fill_from_tokens(encoded_tokens, 3)
-                    graph.fill_positions(encoded_tokens)
-                    graph.calculate_position_weights()
-
-                for algorithm in (VanillaTextRank(graph),
-                                  PositionBiasedTextRank(graph),
-                                  TFIDFAdapter(tokens, self._idf),
-                                  RAKEAdapter(text, self._stop_words)):
-                    algorithm.train()
-                    top_tokens = algorithm.get_top_keywords(50)
-                    if algorithm.__class__.__name__ in ('VanillaTextRank', 'PositionBiasedTextRank'):
-                        top_tokens = encoder.decode(top_tokens)
-                    score = calculate_recall(top_tokens, keywords)
-
-                    inner_dict = {theme: score}
-                    # rank_dict[algorithm.__class__.__name__] = rank_dict.get(algorithm.__class__.__name__, {})
-                    if algorithm.__class__.__name__ not in rank_dict:
-                        rank_dict[algorithm.__class__.__name__] = {}
-                    rank_dict[algorithm.__class__.__name__].update(inner_dict)
-        self.report = rank_dict
-        return rank_dict
+            for method in self.report:
+                for keywords_method in keywords_tfidf, keywords_rake, keywords_text_rank, keywords_bias:
+                    if keywords_method:
+                        self.report[method][theme] = calculate_recall(keywords_method, keywords)
+        return self.report
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1101,10 +1105,12 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        report_path = path / 'report.csv'
-        with open(report_path, 'w') as csv_file:
-            writer = csv.writer(csv_file)
-            headers = 'name', *self.themes
-            writer.writerow(headers)
-            for algorithm in self.report:
-                writer.writerow((algorithm, *self.report[algorithm].values()))
+        themes_list = ['name'] + list(self.themes)
+        with open(path, 'w') as csvfile:
+            file_writer = csv.writer(csvfile, delimiter=',')
+            file_writer.writerow(themes_list)
+            for name in self.report:
+                list_to_write = [name]
+                for one_theme in self.report[name]:
+                    list_to_write.append(self.report[name][one_theme])
+                file_writer.writerow(list_to_write)
