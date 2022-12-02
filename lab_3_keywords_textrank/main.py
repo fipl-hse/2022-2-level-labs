@@ -380,7 +380,8 @@ class AdjacencyMatrixGraph:
         """
         pass
 
-    # Step 8.3
+    # Step 8
+    # .3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
