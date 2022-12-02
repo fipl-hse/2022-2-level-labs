@@ -20,6 +20,7 @@ try:
 except ImportError:
     print('Unable to import non-existent exceptions. Implement them first')
 
+
 class BuddyTest(unittest.TestCase):
     """
     Tests Buddy
@@ -81,9 +82,9 @@ class BuddyTest(unittest.TestCase):
             self.assertTrue(text_properties['summary'])
             self.assertIsInstance(text_properties['summary'], str)
 
-        self.assertGreaterEqual(texts, 1622)
-        self.assertGreaterEqual(preprocessed, 1609)
-        self.assertGreaterEqual(encoded, 1609)
+        self.assertGreaterEqual(texts, 1382)
+        self.assertGreaterEqual(preprocessed, 1381)
+        self.assertGreaterEqual(encoded, 1381)
 
     @pytest.mark.lab_4_summarization_textrank
     @pytest.mark.mark10
