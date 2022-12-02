@@ -68,17 +68,18 @@ if __name__ == "__main__":
 
     # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
 
-    MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
-    ENG_STOP_WORDS_PATH = ASSETS_PATH / 'eng_stop_words.txt'
-    IDF_PATH = MATERIALS_PATH / 'IDF.json'
+    material_path = ASSETS_PATH / 'benchmark_materials'
+    ENG_STOP_WORDS_PATH = ASSETS_PATH / 'benchmark_materials/eng_stop_words.txt'
+    IDF_PATH = ASSETS_PATH / 'benchmark_materials/IDF.json'
     with (open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as stop_words_to_read,
           open(IDF_PATH, 'r', encoding='utf-8') as idf_to_read):
         eng_stop_words = tuple(stop_words_to_read.read().split('\n'))
         idf = json.load(idf_to_read)
-
-    BENCHMARK = KeywordExtractionBenchmark(eng_stop_words, tuple('.,!?-:;()&'), idf, MATERIALS_PATH)
-    BENCHMARK.run()
-    BENCHMARK.save_to_csv(MATERIALS_PATH)
+    report = KeywordExtractionBenchmark(eng_stop_words, tuple('.,!?-:;()&'),
+                                        idf, material_path)
+    report_dict = report.run()
+    REPORT_CSV = ASSETS_PATH / 'report.csv'
+    report.save_to_csv(REPORT_CSV)
 
     RESULT = TOP_DECODED_TOKENS
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
