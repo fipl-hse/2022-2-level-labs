@@ -240,31 +240,6 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
                     pair = tuple([index1, index2])
                     all_pairs.append(pair)
     return tuple(all_pairs)
-'''
-    if not tokens:
-        return None
-    if not isinstance(window_length, int) or window_length < 2:
-        return None
-    pairs = []
-    for token in tokens:
-        window_length = 3
-        index = tokens.index(token)
-        while window_length > 0:
-            try:
-                pair = [token, tokens[index + window_length - 1]]
-            except:
-                IndexError
-            pairs.append(tuple(pair))
-            window_length += -1
-    pairs_no_dups = []
-    for elem in pairs:
-        if elem[0] == elem[1]:
-            return None
-        else:
-            if elem not in pairs_no_dups:
-                pairs_no_dups.append(elem)
-    return tuple(pairs_no_dups)
-'''
 
 
 class AdjacencyMatrixGraph:
