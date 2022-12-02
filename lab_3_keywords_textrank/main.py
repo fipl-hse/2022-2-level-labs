@@ -982,4 +982,3 @@ class KeywordExtractionBenchmark:
             writer.writerow(("name", *self.themes,))
             for i in self.report:
                 writer.writerow((i, *self.report[i].values()))
-                
