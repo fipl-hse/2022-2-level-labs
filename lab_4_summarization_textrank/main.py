@@ -27,8 +27,8 @@ class IncorrectQueryError(Exception):
     pass
 
 
-def arg_check(*args: tuple[Any, Type] | tuple[Any, Type, ...]
-                     | tuple[Any, Type, ..., ...] | tuple[Any, Type, ..., None]) -> bool:
+def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, ...], tuple[Any, tuple[Type, ...], ...],
+                           tuple[Any, Type, Type, Type], tuple[Any, Type, ..., None]]) -> bool:
     """
     Excepts tuples with objects and expected types.
     Raises a ValueError if any object is empty when it should not be or has the wrong type.
@@ -210,7 +210,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    arg_check((sequence, Union[list, tuple], None), (other_sequence, Union[list, tuple], None))
+    arg_check((sequence, (list, tuple), None), (other_sequence, (list, tuple), None))
     try:
         return sum(1 for i in sequence if i in other_sequence) / len(set(chain(sequence, other_sequence)))
     except ZeroDivisionError:
