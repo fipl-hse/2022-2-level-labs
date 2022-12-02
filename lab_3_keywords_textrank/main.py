@@ -264,6 +264,7 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = []
+        self._vertices = []
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
@@ -283,20 +284,21 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        if vertex1 not in self._vertices:
-            self._vertices.append(vertex1)
-            self._matrix.append([])
 
-        if vertex2 not in self._vertices:
-            self._vertices.append(vertex2)
-            self._matrix.append([])
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
 
-        for line in self._matrix:
-            if len(line) < len(self._vertices):
-                line.extend([0 for _ in range(len(self._vertices) - len(line))])
+        for i in self._matrix:
+            for _ in self._vertices:
+                if len(i) < len(self._vertices):
+                    i.append(0)
 
-        idx1 = self._vertices.index(vertex1)
-        idx2 = self._vertices.index(vertex2)
+        index1 = self._vertices.index(vertex1)
+        index2 = self._vertices.index(vertex2)
+        self._matrix[index1][index2] = self._matrix[index2][index1] = 1
+        return 0
 
     # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
@@ -314,7 +316,14 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        pass
+        if vertex1 not in self._vertices or vertex2 not in self._vertices:
+            return -1
+        index1 = self._vertices.index(vertex1)
+        # есть ли ребро 1
+        index2 = self._vertices.index(vertex2)
+        # есть ли ребро 2
+        return self._matrix[index1][index2]
+    # берем индекс от индекса в листе матрицы
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -325,7 +334,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        pass
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -341,7 +350,14 @@ class AdjacencyMatrixGraph:
                 number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
-        pass
+        if vertex not in self._vertices:
+            return -1
+        score = 0
+        vertex_index = self._vertices.index(vertex)
+        for line in self._matrix:
+            if line[vertex_index] == 1:
+                score += 1
+        return score
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -355,7 +371,9 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        pass
+        pairs = extract_pairs(tokens, window_length)
+        for pair in pairs:
+            self.add_edge(pair[0], pair[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -419,7 +437,9 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
@@ -567,7 +587,11 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -582,7 +606,12 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        pass
+        summ = 0.0
+        for vertex in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(vertex)
+            summ += 1 / inout_score * self._scores[vertex]
+        weight = summ * self._damping_factor + 1 - self._damping_factor
+        self._scores[vertex] = weight
 
     # Step 5.3
     def train(self) -> None:
@@ -594,18 +623,38 @@ class VanillaTextRank:
                 scores for all vertices present in the graph
         """
         vertices = self._graph.get_vertices()
+        # Получение информации обо всех вершинах
         for vertex in vertices:
             self._scores[vertex] = 1.0
+            # для каждой вершины в вершинах присваиваем ей значение веса 1.0
+            # веса вершин, здесь ключами являются вершины, а значениями их вес, отражающий их важность;
 
         for _ in range(0, self._max_iter):
+            # _ используется для того, ... чтобы не писать vertex снова(?)
+            # проходимся по максимальному допустимому количеству итераций обновления весов:
+            # теоретически на вход может прийти очень сложный граф, в котором
+            # невозможно подобрать стабильные веса, и чтобы не попасть в бесконечный цикл,
+            # мы ограничиваем максимальное количество итераций; установите значение данного атрибута как 50
             prev_score = self._scores.copy()
+            # делаем копию переменной веса, присваиваем в словарь с весами вершин после предыдущей итерации обновления
             for scored_vertex in vertices:
+                # проходимся по всем вершинам с обозначенным значением веса
                 incidental_vertices = [vertex for vertex in vertices
                                        if self._graph.is_incidental(scored_vertex, vertex) == 1]
+                # incidental_vertices: list[int]
+                # создаем лист со смежными вершинами, проходясь по всем вершинам и добавляя их в лист, если
+                # в графе при получении веса ребра между вершиной с присовенным весом и вершиной получилось,
+                # что эти вершины инцидентны (значение 1)
                 self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
+                # Метод принимает на вход вершину, вес которой необходимо пересчитать,
+                # список инцидентных с ней вершин и словарь с весами вершин после предыдущей итерации обновления
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
+            # смотрим на абсолютное различие в полученных значений веса между знаечниями веса
+            # вершин после предыдущей итерации обновлени и значенями вершин пересчитанными значениями
             if sum(abs_score_diff) <= self._convergence_threshold:
                 break
+                # если полученное суммарное значение различия превышает максимально допустимую разницу между весами
+                # до и после обновления, то прекращаем работу(?)
 
     # Step 5.4
     def get_scores(self) -> dict[int, float]:
