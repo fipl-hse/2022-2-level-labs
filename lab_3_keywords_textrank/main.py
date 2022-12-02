@@ -10,7 +10,7 @@ from lab_1_keywords_tfidf.main import calculate_frequencies, \
 from lab_2_keywords_cooccurrence.main import extract_phrases,\
     extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
-#@
+
 
 class TextPreprocessor:
     """
@@ -945,27 +945,27 @@ class KeywordExtractionBenchmark:
             text_path = self._materials_path / f'{num}_text.txt'
             with open(text_path, encoding='utf8') as file:
                 text = file.read()
-        preprocessor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
-        tfidf = TFIDFAdapter(preprocessor.preprocess_text(text), self._idf)
-        encoder = TextEncoder()
-        tokens = encoder.encode(preprocessor.preprocess_text(text))
-        rake = RAKEAdapter(text, self._stop_words)
-        graph = EdgeListGraph()
-        if not tokens:
-            return None
-        graph.fill_from_tokens(tokens, 5)
-        vanilla_text_rank = VanillaTextRank(graph)
-        graph.fill_positions(tokens)
-        graph.calculate_position_weights()
-        positional_rank = PositionBiasedTextRank(graph)
-        models = {"TF-IDF": tfidf, "RAKE": rake, "VanillaTextRank": vanilla_text_rank,
-                  "PositionBiasedTextRank": positional_rank}
-        for name, model in models.items():
-            model.train()
-            keywords = model.get_top_keywords(50)
-            if name in "VanillaTextRank_PositionBiasedTextRank":
-                keywords = encoder.decode(keywords)
-            self.report.setdefault(name, {})[topic] = calculate_recall(keywords, target_keywords)
+            preprocessor = TextPreprocessor(self._stop_words, tuple(self._punctuation))
+            tfidf = TFIDFAdapter(preprocessor.preprocess_text(text), self._idf)
+            encoder = TextEncoder()
+            tokens = encoder.encode(preprocessor.preprocess_text(text))
+            rake = RAKEAdapter(text, self._stop_words)
+            graph = EdgeListGraph()
+            if not tokens:
+                return None
+            graph.fill_from_tokens(tokens, 5)
+            vanilla_text_rank = VanillaTextRank(graph)
+            graph.fill_positions(tokens)
+            graph.calculate_position_weights()
+            positional_rank = PositionBiasedTextRank(graph)
+            models = {"TF-IDF": tfidf, "RAKE": rake, "VanillaTextRank": vanilla_text_rank,
+                      "PositionBiasedTextRank": positional_rank}
+            for name, model in models.items():
+                model.train()
+                keywords = model.get_top_keywords(50)
+                if name in "VanillaTextRank_PositionBiasedTextRank":
+                    keywords = encoder.decode(keywords)
+                self.report.setdefault(name, {})[topic] = calculate_recall(keywords, target_keywords)
         return self.report
 
     # Step 12.4
