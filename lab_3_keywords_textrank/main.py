@@ -57,6 +57,7 @@ class TextPreprocessor:
         cleaned_text = [i.strip() for i in split_text]
         return tuple(cleaned_text)
     # Step 1.3
+
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
         """
         Filters tokens, removing stop words
@@ -193,7 +194,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     """
     if not (tokens and isinstance(window_length, int)) or window_length < 2:
         return None
-    pairs = []
+    pairs = set()
     for count, token in enumerate(tokens):
         if count < len(tokens) - window_length + 1:
             for i in range(1, window_length):
@@ -203,7 +204,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
             for i in range(len(tokens) - count):
                 if token != tokens[count + i]:
                     pairs.append(tuple([token, tokens[count + i]]))
-    return tuple(set(pairs))
+    return tuple(pairs)
 
 class AdjacencyMatrixGraph:
     """
@@ -602,7 +603,7 @@ class VanillaTextRank:
         """
         self._graph = graph
         self._damping_factor = 0.85
-        self._convergence_threshold = 0.0001
+        self._convergence_threshold = 0.0001 #сумма разниц в весах не должна быть больше этого значения
         self._max_iter = 50
         self._scores = {}
 
@@ -635,15 +636,16 @@ class VanillaTextRank:
             dict[int, float]:
                 scores for all vertices present in the graph
         """
-        vertices = self._graph.get_vertices()
+        vertices = self._graph.get_vertices()   #получили кортеж всех вершин, которые есть графе
         for vertex in vertices:
             self._scores[vertex] = 1.0
-
-        for _ in range(0, self._max_iter):
+        for _ in range(0, self._max_iter):  #обычный цикл, _ используется чтобы показать, что переменную потом не use
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
+# создаем список, в котором хранятся вершины, инцидентные scored_vertex
                 incidental_vertices = [vertex for vertex in vertices
                                        if self._graph.is_incidental(scored_vertex, vertex) == 1]
+# записываю в словарь вершину, инцидентные с ней вершины и скоры беру из копии
                 self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
             if sum(abs_score_diff) <= self._convergence_threshold:
@@ -669,7 +671,6 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        # исправить сортировку
         return tuple(k for k, v in sorted(self._scores.items(), key=lambda item: (item[1], -item[0]),
                                           reverse=True)[:n_keywords])
 
