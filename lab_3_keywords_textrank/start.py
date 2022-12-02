@@ -3,7 +3,6 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
-from time import process_time
 import json
 
 from lab_3_keywords_textrank.main import (
@@ -49,16 +48,13 @@ if __name__ == "__main__":
 
     for TEXTRANK in (VanillaTextRank(ADJ_GRAPH), VanillaTextRank(EDJ_GRAPH),
                      PositionBiasedTextRank(ADJ_GRAPH), PositionBiasedTextRank(EDJ_GRAPH)):
-        print('The textrank algorithm is', TEXTRANK.__class__.__name__, end='. ')
-        print('The graph is', TEXTRANK.__getattribute__('_graph').__class__.__name__, end='. ')
+        print(TEXTRANK.__class__.__name__, end='. ')
+        print(TEXTRANK.__getattribute__('_graph').__class__.__name__, end='. ')
 
-        time_start = process_time()
         TEXTRANK.train()
         TOP_ENCODED_TOKENS = TEXTRANK.get_top_keywords(10)
         TOP_DECODED_TOKENS = ENCODER.decode(TOP_ENCODED_TOKENS)
-        time_stop = process_time()
 
-        print(f'Elapsed in {time_stop - time_start} seconds.')
         print(f'Top tokens: {TOP_DECODED_TOKENS}\n')
 
     # PositionBiasedTextRank is lower than VanillaTextRank. Both types extract different top tokens
