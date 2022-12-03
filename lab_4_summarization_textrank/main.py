@@ -77,7 +77,7 @@ def two_check(*args: Union[tuple[Any, Type, Type], tuple[Any, Type, Type, None]]
             raise ValueError
         if isinstance(i[0], (list, tuple, dict)):
             for item in i[0]:
-                arg_check((item, i[2]))
+                one_check((item, i[2]))
     return True
 
 
@@ -92,10 +92,10 @@ def three_check(*args: Union[tuple[Any, Type, Type, Type]]) -> bool:
             raise ValueError
         if isinstance(i[0], (list, tuple, dict)):
             for item in i[0]:
-                arg_check((item, i[2]))
+                one_check((item, i[2]))
         if isinstance(i[1], dict):
             for value in i[0].values():
-                arg_check((value, i[3]))
+                one_check((value, i[3]))
     return True
 
 
