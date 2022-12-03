@@ -45,15 +45,12 @@ def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, Type], tuple[Any, 
             raise ValueError
         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
             raise ValueError
-        try:
-            if isinstance(i[0], (list, tuple, dict)) and i[2]:
-                for item in i[0]:
-                    arg_check((item, i[2]))
-            if isinstance(i[1], dict) and i[3]:
-                for value in i[0].values():
-                    arg_check((value, i[3]))
-        except KeyError:
-            pass
+        if isinstance(i[0], (list, tuple, dict)) and len(i) - int(None in i) > 2:
+            for item in i[0]:
+                arg_check((item, i[2]))
+        if isinstance(i[1], dict) and len(i) - int(None in i) > 3:
+            for value in i[0].values():
+                arg_check((value, i[3]))
     return True
 
 
