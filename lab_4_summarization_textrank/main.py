@@ -54,6 +54,51 @@ def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, Type], tuple[Any, 
     return True
 
 
+def one_check(*args: Union[tuple[Any, Type], tuple[Any, tuple[Type, Type], None], tuple[Any, Type, None]]) -> bool:
+    """
+
+    """
+    for i in args:
+        if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
+            raise ValueError
+        if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
+            raise ValueError
+    return True
+
+
+def two_check(*args: Union[tuple[Any, Type, Type], tuple[Any, Type, Type, None]]) -> bool:
+    """
+
+    """
+    for i in args:
+        if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
+            raise ValueError
+        if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
+            raise ValueError
+        if isinstance(i[0], (list, tuple, dict)):
+            for item in i[0]:
+                arg_check((item, i[2]))
+    return True
+
+
+def three_check(*args: Union[tuple[Any, Type, Type, Type]]) -> bool:
+    """
+
+    """
+    for i in args:
+        if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
+            raise ValueError
+        if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
+            raise ValueError
+        if isinstance(i[0], (list, tuple, dict)):
+            for item in i[0]:
+                arg_check((item, i[2]))
+        if isinstance(i[1], dict):
+            for value in i[0].values():
+                arg_check((value, i[3]))
+    return True
+
+
 class Sentence:
     """
     An abstraction over the real-world sentences
@@ -63,7 +108,7 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        arg_check((text, str), (position, int))
+        one_check((text, str), (position, int))
         self._text = text
         self._position = position
         self._preprocessed: tuple[str, ...] = ('', )
@@ -82,7 +127,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        arg_check((text, str))
+        one_check((text, str))
         self._text = text
 
     def get_text(self) -> str:
@@ -98,7 +143,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        arg_check((preprocessed_sentence, tuple, str, None))
+        two_check((preprocessed_sentence, tuple, str, None))
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -114,7 +159,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        arg_check((encoded_sentence, tuple, int, None))
+        two_check((encoded_sentence, tuple, int, None))
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -134,7 +179,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        arg_check((stop_words, tuple, str, None), (punctuation, tuple, str, None))
+        two_check((stop_words, tuple, str, None), (punctuation, tuple, str, None))
         super().__init__(stop_words, punctuation)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
@@ -143,7 +188,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        arg_check((text, str))
+        one_check((text, str))
         text = text.replace('\n', ' ').replace('  ', ' ')
         sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text)
         return tuple(Sentence(sentence.strip(), count) for count, sentence in enumerate(sentences) if sentence)
@@ -154,7 +199,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        arg_check((sentences, tuple, Sentence))
+        two_check((sentences, tuple, Sentence))
         for sent in sentences:
             sent.set_preprocessed(super().preprocess_text(sent.get_text()))
 
@@ -164,7 +209,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        arg_check((text, str))
+        one_check((text, str))
         sentences = self._split_by_sentence(text)
         self._preprocess_sentences(sentences)
         return sentences
@@ -188,7 +233,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        arg_check((tokens, tuple, str, None))
+        two_check((tokens, tuple, str, None))
         for count, new_token in enumerate((token for token in tokens if token not in self._word2id), self.last_id + 1):
             self._word2id[new_token] = count
             self._id2word[count] = new_token
@@ -200,7 +245,7 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        arg_check((sentences, tuple, Sentence))
+        two_check((sentences, tuple, Sentence))
         for sentence, preprocessed in [(sent, sent.get_preprocessed()) for sent in sentences]:
             self._learn_indices(preprocessed)
             sentence.set_encoded(tuple(self._word2id[token] for token in preprocessed))
@@ -213,7 +258,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    arg_check((sequence, (list, tuple), None), (other_sequence, (list, tuple), None))
+    one_check((sequence, (list, tuple), None), (other_sequence, (list, tuple), None))
     try:
         return sum(1 for i in sequence if i in other_sequence) / len(set(chain(sequence, other_sequence)))
     except ZeroDivisionError:
@@ -248,9 +293,9 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        arg_check((vertex, Sentence))
+        one_check((vertex, Sentence))
         encoded = vertex.get_encoded()
-        arg_check((encoded in self._encoded, bool))
+        one_check((encoded in self._encoded, bool))
         return sum(1 for i in self._matrix[self._encoded.index(encoded)] if i > 0)
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
@@ -260,9 +305,9 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        arg_check((vertex1, Sentence), (vertex2, Sentence))
+        one_check((vertex1, Sentence), (vertex2, Sentence))
         encoded = (vertex1.get_encoded(), vertex2.get_encoded())
-        arg_check((encoded[0] != encoded[1], bool))
+        one_check((encoded[0] != encoded[1], bool))
         for vertex in (vertex1, encoded[0]), (vertex2, encoded[1]):
             if vertex[1] not in self._encoded:
                 self._encoded.append(vertex[1])
@@ -281,9 +326,9 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        arg_check((sentence, Sentence), (other_sentence, Sentence))
+        one_check((sentence, Sentence), (other_sentence, Sentence))
         encoded = (sentence.get_encoded(), other_sentence.get_encoded())
-        arg_check((encoded[0] in self._encoded, bool), (encoded[1] in self._encoded, bool))
+        one_check((encoded[0] in self._encoded, bool), (encoded[1] in self._encoded, bool))
         return self._matrix[self._encoded.index(encoded[0])][self._encoded.index(encoded[1])]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -292,7 +337,7 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        arg_check((sentences, tuple, Sentence))
+        two_check((sentences, tuple, Sentence))
         for pair in combinations(sentences, 2):
             if pair[0].get_encoded() != pair[1].get_encoded():
                 self.add_edge(pair[0], pair[1])
@@ -311,7 +356,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        arg_check((graph, SimilarityMatrix))
+        one_check((graph, SimilarityMatrix))
         self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
@@ -328,7 +373,9 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        arg_check((vertex, Sentence), (incidental_vertices, list, Sentence, None), (scores, dict, Sentence, float))
+        one_check((vertex, Sentence))
+        two_check((incidental_vertices, list, Sentence, None))
+        three_check((scores, dict, Sentence, float))
         multiplier = sum(scores[i] / self._graph.calculate_inout_score(i) for i in incidental_vertices) - 1
         self._scores[vertex] = 1 + self._damping_factor * multiplier
 
@@ -358,7 +405,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        arg_check((n_sentences, int))
+        one_check((n_sentences, int))
         return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
@@ -367,7 +414,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        arg_check((n_sentences, int))
+        one_check((n_sentences, int))
         sentences_sorted = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
         return '\n'.join(i.get_text() for i in sentences_sorted)
 
@@ -391,8 +438,8 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        arg_check((paths_to_texts, list, str), (stop_words, tuple, str),
-                  (punctuation, tuple, str), (idf_values, dict, str, float))
+        two_check((paths_to_texts, list, str), (stop_words, tuple, str), (punctuation, tuple, str))
+        three_check((idf_values, dict, str, float))
         self._stop_words = stop_words
         self._punctuation = punctuation
         self._idf_values = idf_values
@@ -410,7 +457,7 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        arg_check((path_to_text, str))
+        one_check((path_to_text, str))
         file = open(path_to_text, 'r', encoding='utf-8')
         text = file.read()
 
@@ -440,7 +487,8 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        arg_check((keywords, tuple, str), (n_texts, int))
+        one_check((n_texts, int))
+        two_check((keywords, tuple, str))
         texts = {k: calculate_similarity(keywords, v['keywords']) for k, v in self._knowledge_database.items()}
         if all(not texts[text] for text in texts):
             raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
@@ -455,8 +503,8 @@ class Buddy:
         """
         if not isinstance(query, str) or not query:
             raise IncorrectQueryError('Incorrect query. Use string as input.')
-        arg_check((n_summaries, int))
-        arg_check((n_summaries <= len(self._knowledge_database), bool))
+        one_check((n_summaries, int))
+        one_check((n_summaries <= len(self._knowledge_database), bool))
         keywords = tuple(word for word in query.split() if word not in self._stop_words)
         paths = self._find_texts_close_to_keywords(keywords, n_summaries)
         return 'Ответ:\n' + '\n\n'.join(self._knowledge_database[path]['summary'] for path in paths)
