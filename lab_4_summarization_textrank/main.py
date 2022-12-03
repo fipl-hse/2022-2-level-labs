@@ -27,7 +27,7 @@ class IncorrectQueryError(Exception):
     pass
 
 
-def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, ...], tuple[Any, tuple[Type, ...], ...],
+def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, ...], tuple[Any, tuple[Type, Type], ...],
                            tuple[Any, Type, Type, Type], tuple[Any, Type, Type, None]]) -> bool:
     """
     Excepts tuples with objects and expected types.
@@ -45,7 +45,9 @@ def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, ...], tuple[Any, t
             raise ValueError
         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
             raise ValueError
-        if (isinstance(i[0], (list, tuple, dict)) and len(i) > 2 and not all(arg_check((item, i[2])) for item in i[0]))\
+        if len(i) < 3:
+            continue
+        if (isinstance(i[0], (list, tuple, dict)) and i[2] and not all(arg_check((item, i[2])) for item in i[0])) \
                 or (isinstance(i[1], dict) and not all(arg_check((value, i[3])) for value in i[0].values())):
             raise ValueError
     return True
@@ -63,8 +65,8 @@ class Sentence:
         arg_check((text, str), (position, int))
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str] = ('', )
+        self._encoded: tuple[int] = (0, )
 
     def get_position(self) -> int:
         """
