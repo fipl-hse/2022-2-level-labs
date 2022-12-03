@@ -28,7 +28,7 @@ class IncorrectQueryError(Exception):
 
 
 # def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, Type], tuple[Any, tuple[Type, Type], None],
-#                            tuple[Any, Type, Type, Type], tuple[Any, Type, Type, None], tuple[Any, Type, None]]) -> bool:
+#                        tuple[Any, Type, Type, Type], tuple[Any, Type, Type, None], tuple[Any, Type, None]]) -> bool:
 #     """
 #     Excepts tuples with objects and expected types.
 #     Raises a ValueError if any object is empty when it should not be or has the wrong type.
