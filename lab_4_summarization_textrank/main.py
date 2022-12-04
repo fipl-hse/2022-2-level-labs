@@ -92,10 +92,6 @@ class Sentence:
         """
         return self._encoded
 
-    @property
-    def preprocessed(self):
-        return self._preprocessed
-
 
 class SentencePreprocessor(TextPreprocessor):
     """
