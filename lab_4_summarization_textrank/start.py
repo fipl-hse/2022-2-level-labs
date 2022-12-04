@@ -3,6 +3,15 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
+import string
+from lab_4_summarization_textrank.main import (
+    SentencePreprocessor,
+    SentenceEncoder,
+    SimilarityMatrix,
+    TextRankSummarizer,
+    Buddy,
+    NoRelevantTextsError
+)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -27,6 +36,36 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    RESULT = None
+    punctuation = tuple(i for i in string.punctuation)
+    preprocessor = SentencePreprocessor(stop_words, punctuation)
+    encoder = SentenceEncoder()
+
+    # step 5
+    sentences = preprocessor.get_sentences(text)
+    encoder.encode_sentences(sentences)
+    for i in sentences:
+        print(i.get_encoded())
+
+    # step 9
+    matrix = SimilarityMatrix()
+    matrix.fill_from_sentences(sentences)
+    text_rank_summarizer = TextRankSummarizer(matrix)
+    text_rank_summarizer.train()
+    summaries = text_rank_summarizer.make_summary(10)
+    print(summaries)
+
+    # step 11
+    buddy = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    print('\nПомощник готов к работе!\n')
+    while True:
+        query = input('Input your query or q to quit: ')
+        if query == 'q':
+            break
+        try:
+            print(buddy.reply(query), '\n')
+        except NoRelevantTextsError:
+            print('Nothing found, try once more.')
+
+    RESULT = summaries
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

@@ -27,36 +27,15 @@ class IncorrectQueryError(Exception):
     pass
 
 
-# def arg_check(*args: Union[tuple[Any, Type], tuple[Any, Type, Type], tuple[Any, tuple[Type, Type], None],
-#                        tuple[Any, Type, Type, Type], tuple[Any, Type, Type, None], tuple[Any, Type, None]]) -> bool:
-#     """
-#     Excepts tuples with objects and expected types.
-#     Raises a ValueError if any object is empty when it should not be or has the wrong type.
-#     Returns True if everything is okay.
-#     Positions in tuples:
-#     0 = data
-#     1 = expected type of data
-#     2 = expected type of (1) content if data is a list or a tuple, (2) keys if data is a dict
-#     3 = expected type of values if data is a dict
-#     None in tuple = allowed to be falsy
-#     """
-#     for i in args:
-#         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
-#             raise ValueError
-#         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
-#             raise ValueError
-#         if isinstance(i[0], (list, tuple, dict)) and len(i) - int(None in i) > 2:
-#             for item in i[0]:
-#                 arg_check((item, i[2]))
-#         if isinstance(i[1], dict) and len(i) - int(None in i) > 3:
-#             for value in i[0].values():
-#                 arg_check((value, i[3]))
-#     return True
-
-
 def one_check(*args: Union[tuple[Any, Type], tuple[Any, tuple[Type, Type], None], tuple[Any, Type, None]]) -> bool:
     """
-
+    Excepts tuples with objects and expected types.
+    Raises a ValueError if any object is empty when it should not be or has the wrong type.
+    Returns True if everything is okay.
+    Positions in tuples:
+    0 = data
+    1 = expected type of data
+    None in tuple = allowed to be falsy
     """
     for i in args:
         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
@@ -68,7 +47,14 @@ def one_check(*args: Union[tuple[Any, Type], tuple[Any, tuple[Type, Type], None]
 
 def two_check(*args: Union[tuple[Any, Type, Type], tuple[Any, Type, Type, None]]) -> bool:
     """
-
+    Excepts tuples with objects and expected types.
+    Raises a ValueError if any object is empty when it should not be or has the wrong type.
+    Returns True if everything is okay.
+    Positions in tuples:
+    0 = data
+    1 = expected type of data
+    2 = expected type of a list or a tuple content
+    None in tuple = allowed to be falsy
     """
     for i in args:
         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
@@ -83,7 +69,15 @@ def two_check(*args: Union[tuple[Any, Type, Type], tuple[Any, Type, Type, None]]
 
 def three_check(*args: Union[tuple[Any, Type, Type, Type]]) -> bool:
     """
-
+    Excepts tuples with objects and expected types.
+    Raises a ValueError if any object is empty when it should not be or has the wrong type.
+    Returns True if everything is okay.
+    Positions in tuples:
+    0 = data
+    1 = expected type of data
+    2 = expected type of keys if data is a dict
+    3 = expected type of values if data is a dict
+    None in tuple = allowed to be falsy
     """
     for i in args:
         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
