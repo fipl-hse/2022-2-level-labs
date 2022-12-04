@@ -272,8 +272,8 @@ class SimilarityMatrix:
 
         idx1 = self._vertices.index(vertex1)
         idx2 = self._vertices.index(vertex2)
-        self._matrix[idx1][idx2] = calculate_similarity(vertex1.preprocessed, vertex2.preprocessed)
-        self._matrix[idx2][idx1] = calculate_similarity(vertex2.preprocessed, vertex1.preprocessed)
+        self._matrix[idx1][idx2] = calculate_similarity(vertex1._preprocessed, vertex2._preprocessed)
+        self._matrix[idx2][idx1] = calculate_similarity(vertex2._preprocessed, vertex1._preprocessed)
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
