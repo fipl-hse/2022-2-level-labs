@@ -2,7 +2,6 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-import re
 from typing import Union
 
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -125,7 +124,7 @@ class SentencePreprocessor(TextPreprocessor):
         start = 0
         flag = 0
         for ind, char in enumerate(text):
-            if not flag and char in '.?!' :
+            if not flag and char in '.?!':
                 flag = ind
             if flag and char.isupper() and text[ind-1].isspace():
                 sentences.append(Sentence(text[start: ind].strip(), count))
@@ -163,12 +162,6 @@ class SentenceEncoder(TextEncoder):
     """
     A class to encode string sequence into matching integer sequence
     """
-
-    def __init__(self) -> None:
-        """
-        Constructs all the necessary attributes
-        """
-        super().__init__()
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
