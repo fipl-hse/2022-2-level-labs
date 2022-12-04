@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any, Type
+from typing import Union, Any, Type, Iterable
 
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor, TFIDFAdapter
@@ -11,11 +11,20 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(variable: Any, expected_value: Type) -> bool:
+def check_type(variable: Any, possible_types) -> bool:
     """
     Checks type of variable
     """
-    return isinstance(variable, expected_value) and not isinstance(variable, bool)
+    checks = []
+    for t in possible_types:
+        check = not isinstance(variable, t) \
+                or (isinstance(variable, int) and isinstance(variable, bool))
+        checks.append(check)
+    if all(checks):
+        raise ValueError
+    # if not (isinstance(variable, possible_types) and not isinstance(variable, bool)):
+    #     raise ValueError
+    return True
 
 
 def check_iterable(container: Any, container_type: Type, elements_type: Type) -> bool:
@@ -24,7 +33,7 @@ def check_iterable(container: Any, container_type: Type, elements_type: Type) ->
     """
     if not isinstance(container, container_type):
         return False
-    return all(check_type(i, elements_type) for i in container)
+    return all(check_type(i, [elements_type]) for i in container)
 
 
 class Sentence:
@@ -39,9 +48,9 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        if not check_type(text, str):
+        if not check_type(text, [str]):
             raise ValueError
-        if not check_type(position, int):
+        if not check_type(position, [int]):
             raise ValueError
         self._text = text
         self._position = position
@@ -61,7 +70,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        if not check_type(text, str):
+        if not check_type(text, [str]):
             raise ValueError
         self._text = text
 
@@ -130,7 +139,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        if not check_type(text, str):
+        if not check_type(text, [str]):
             raise ValueError
         text = text.replace('\n', ' ').replace('  ', ' ')
         sentences = []
@@ -210,9 +219,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not check_type(sequence, list) and not check_type(sequence, tuple) or not check_type(other_sequence, list) \
-            and not check_type(other_sequence, tuple):
-        raise ValueError
+    check_type(sequence, [list, tuple])
+    check_type(other_sequence, [list, tuple])
+    # if not check_type(sequence, list) and not check_type(sequence, tuple) or not check_type(other_sequence, list) \
+    #         and not check_type(other_sequence, tuple):
+    #     raise ValueError
     sequence_set, other_sequence_set = set(sequence), set(other_sequence)
     if not sequence_set or not other_sequence_set:
         return 0
@@ -284,7 +295,7 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        if not sentences or not check_type(sentences, tuple):
+        if not sentences or not check_type(sentences, [tuple]):
             raise ValueError
         for ind1, one_sent in enumerate(sentences):
             for ind2, another_sent in enumerate(sentences):
@@ -306,7 +317,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        if not check_type(graph, SimilarityMatrix):
+        if not check_type(graph, [SimilarityMatrix]):
             raise ValueError
         self._graph = graph
         self._damping_factor = 0.85
@@ -324,7 +335,7 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not check_type(vertex, Sentence):
+        if not check_type(vertex, [Sentence]):
             raise ValueError
         sum_ = sum((1 / (1 + self._graph.calculate_inout_score(inc))) * scores[inc] for inc in incidental_vertices)
         self._scores[vertex] = self._damping_factor * (sum_ - 1) + 1
@@ -355,7 +366,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        if not check_type(n_sentences, int):
+        if not check_type(n_sentences, [int]):
             raise ValueError
         return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_sentences])
 
@@ -365,7 +376,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        if not check_type(n_sentences, int):
+        if not check_type(n_sentences, [int]):
             raise ValueError
         top_sentences = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
         return '\n'.join([i.get_text() for i in top_sentences])
@@ -416,7 +427,7 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        if not check_type(path_to_text, str):
+        if not check_type(path_to_text, [str]):
             raise ValueError
         with open(path_to_text, encoding='utf-8') as file:
             text = file.read()
@@ -444,7 +455,7 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        if not check_iterable(keywords, tuple, str) or not check_type(n_texts, int):
+        if not check_iterable(keywords, tuple, str) or not check_type(n_texts, [int]):
             raise ValueError
         scores = {}
         for path_to_text in self._knowledge_database:
@@ -461,9 +472,14 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        if not query or not check_type(query, str):
+        if not query:
             raise IncorrectQueryError('Incorrect query. Use string as input.')
-        if not check_type(n_summaries, int):
+        try:
+            check_type(query, [str])
+        except ValueError:
+            raise IncorrectQueryError()
+
+        if not check_type(n_summaries, [int]):
             raise ValueError
         if len(self._knowledge_database) < n_summaries:
             raise ValueError
