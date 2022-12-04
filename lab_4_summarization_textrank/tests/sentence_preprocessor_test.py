@@ -21,7 +21,7 @@ class SentencePreprocessorTest(unittest.TestCase):
            "exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure " \
            "dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. " \
            "Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit " \
-           "anim id est laborum. ”"
+           "anim id est laborum."
 
     sentences = ["Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut "
                  "labore et dolore magna aliqua.",
@@ -75,7 +75,7 @@ class SentencePreprocessorTest(unittest.TestCase):
     @pytest.mark.mark8
     @pytest.mark.mark10
     def test_split_by_sentence_ideal(self):
-        preprocessor = SentencePreprocessor((), tuple(string.punctuation + '”'))
+        preprocessor = SentencePreprocessor((), tuple(string.punctuation))
         output = preprocessor._split_by_sentence(self.text)
         for index, sentence in enumerate(output):
             self.assertEqual(self.sentences[index], sentence.get_text())
@@ -97,7 +97,7 @@ class SentencePreprocessorTest(unittest.TestCase):
     @pytest.mark.mark10
     def test_get_sentences_ideal(self):
         stop_words = ('sed', 'ex', 'ut', 'est', 'non', 'in', 'qui', 'esse', 'ea', 'et', 'do')
-        preprocessor = SentencePreprocessor(stop_words, tuple(string.punctuation))
+        preprocessor = SentencePreprocessor(stop_words, tuple(string.punctuation) + tuple('”',))
         output = preprocessor.get_sentences(self.text)
         for index, sentence in enumerate(output):
             self.assertEqual(self.preprocessed_sentences[index], sentence.get_preprocessed())
