@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any, Type, Iterable
+from typing import Union, Any, Type
 
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor, TFIDFAdapter
@@ -24,10 +24,12 @@ def check_type(variable: Any, possible_types) -> None:
         raise ValueError
 
 
-def check_iterable(container: Any, container_type: Iterable, elements_type: Iterable) -> None:
+def check_iterable(container: Any, container_type: list, elements_type: list) -> None:
     """
     Checks type of variables in iterable and raise ValueError if incorrect
     """
+    if not container:
+        raise ValueError
     check_type(container, container_type)
     for i in container:
         check_type(i, elements_type)
@@ -134,16 +136,21 @@ class SentencePreprocessor(TextPreprocessor):
         sentences = []
         count = 0
         start = 0
-        flag = 0
-        for ind, char in enumerate(text):
-            if not flag and char in '.?!':
-                flag = ind
-            if flag and char.isupper() and text[ind-1].isspace():
-                sentences.append(Sentence(text[start: ind].strip(), count))
+        punctuation_index = 0
+        space_flag = False
+        for index, el in enumerate(text):
+            if el in '.!?':
+                punctuation_index = index
+            elif el.isspace():
+                space_flag = True
+            elif el.isupper() and space_flag and punctuation_index:
+                sentences.append(Sentence(text[start: index].strip(), count))
+                start = index
                 count += 1
-                start = ind
-            if not char.isspace() and char not in '.?!':
-                flag = 0
+            if not el.isspace():
+                space_flag = False
+                if el not in '.!?':
+                    punctuation_index = 0
         sentences.append(Sentence(text[start:], count))
         return tuple(sentences)
 
@@ -182,7 +189,7 @@ class SentenceEncoder(TextEncoder):
         """
         check_iterable(tokens, [tuple], [str])
         new_tokens = (i for i in tokens if i not in self._word2id)
-        for index, token in enumerate(new_tokens, start=max(1001, 1001 + len(self._word2id))):
+        for index, token in enumerate(new_tokens, start=max(1000, 1000 + len(self._word2id))):
             self._word2id[token] = index
             self._id2word[index] = token
 
@@ -207,9 +214,9 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     """
     check_type(sequence, [list, tuple])
     check_type(other_sequence, [list, tuple])
-    sequence_set, other_sequence_set = set(sequence), set(other_sequence)
-    if not sequence_set or not other_sequence_set:
+    if not sequence or not sequence:
         return 0
+    sequence_set, other_sequence_set = set(sequence), set(other_sequence)
     return len(sequence_set & other_sequence_set) / len(sequence_set | other_sequence_set)
 
 
@@ -240,6 +247,7 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
+        check_type(vertex, [Sentence])
         return sum(i > 0 for i in self._matrix[self._vertices_list.index(vertex)]) - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
@@ -252,6 +260,7 @@ class SimilarityMatrix:
         if vertex1 == vertex2:
             raise ValueError
         for vertex in vertex1, vertex2:
+            check_type(vertex, [Sentence])
             if vertex not in self._vertices_list:
                 self._vertices_list.append(vertex)
                 new_row = [calculate_similarity(vertex.get_encoded(), other.get_encoded())
@@ -267,6 +276,8 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
+        check_type(sentence, [Sentence])
+        check_type(other_sentence, [Sentence])
         if sentence not in self._vertices_list or other_sentence not in self._vertices_list:
             raise ValueError
         ind1, ind2 = self._vertices_list.index(sentence), self._vertices_list.index(other_sentence)
@@ -278,6 +289,7 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
+        check_iterable(sentences, [tuple], [Sentence])
         if not sentences:
             raise ValueError
         check_type(sentences, [tuple])
@@ -319,6 +331,7 @@ class TextRankSummarizer:
         :return:
         """
         check_type(vertex, [Sentence])
+        check_type(scores, [dict])
         sum_ = sum((1 / (1 + self._graph.calculate_inout_score(inc))) * scores[inc] for inc in incidental_vertices)
         self._scores[vertex] = self._damping_factor * (sum_ - 1) + 1
 
