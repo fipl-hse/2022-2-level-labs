@@ -10,7 +10,8 @@ from lab_4_summarization_textrank.main import (
     SimilarityMatrix,
     TextRankSummarizer,
     Buddy,
-    NoRelevantTextsError
+    NoRelevantTextsError,
+    IncorrectQueryError
 )
 
 if __name__ == "__main__":
@@ -64,11 +65,15 @@ if __name__ == "__main__":
     #         break
     #     try:
     #         print(buddy.reply(query), '\n')
+    #     except IncorrectQueryError:
+    #         print('Do not try to break me')
     #     except NoRelevantTextsError:
     #         print('Nothing found, try once more.')
     QUERY = 'Юрий Алексеевич Гагарин'
     try:
         print(buddy.reply(QUERY), '\n')
+    except IncorrectQueryError:
+        print('Do not try to break me')
     except NoRelevantTextsError:
         print('Fail :(')
 
