@@ -11,20 +11,22 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(variable: Any, possible_types: list) -> None:
+def check_type(variable: Any, possible_types: list[Type]) -> None:
     """
     Checks type of variable and raise ValueError if incorrect
     """
     checks = []
-    for t in possible_types:
-        check = not isinstance(variable, t) \
+    for type_ in possible_types:
+        check = not isinstance(variable, type_) \
                 or (isinstance(variable, int) and isinstance(variable, bool))
         checks.append(check)
     if all(checks):
         raise ValueError
 
 
-def check_iterable(container: Any, container_type: list, elements_type: list) -> None:
+def check_iterable(
+        container: Any, container_type: list[Type], elements_type: list[Type]
+) -> None:
     """
     Checks type of variables in iterable and raise ValueError if incorrect
     """
@@ -136,18 +138,18 @@ class SentencePreprocessor(TextPreprocessor):
         start = 0
         punctuation_index = 0
         space_flag = False
-        for index, el in enumerate(text):
-            if el in '.!?':
+        for index, elem in enumerate(text):
+            if elem in '.!?':
                 punctuation_index = index
-            elif el.isspace():
+            elif elem.isspace():
                 space_flag = True
-            elif el.isupper() and space_flag and punctuation_index:
+            elif elem.isupper() and space_flag and punctuation_index:
                 sentences.append(Sentence(text[start: punctuation_index + 1], count))
                 start = index
                 count += 1
-            if not el.isspace():
+            if not elem.isspace():
                 space_flag = False
-                if el not in '.!?':
+                if elem not in '.!?':
                     punctuation_index = 0
         sentences.append(Sentence(text[start:], count))
         return tuple(sentences)
@@ -448,9 +450,8 @@ class Buddy:
         check_iterable(keywords, [tuple], [str])
         check_type(n_texts, [int])
         scores = {}
-        for path_to_text in self._knowledge_database:
-            scores[path_to_text] = \
-                calculate_similarity(self._knowledge_database[path_to_text]['keywords'], keywords)
+        for path_to_text, data in self._knowledge_database.items():
+            scores[path_to_text] = calculate_similarity(data['keywords'], keywords)
         if not any(scores.values()):
             raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
         return tuple(sorted(scores, key=lambda x: (scores[x], x), reverse=True)[:n_texts])
@@ -466,8 +467,8 @@ class Buddy:
             raise IncorrectQueryError('Incorrect query. Use string as input.')
         try:
             check_type(query, [str])
-        except ValueError:
-            raise IncorrectQueryError(('Incorrect query. Use string as input.'))
+        except ValueError as exc:
+            raise IncorrectQueryError('Incorrect query. Use string as input.') from exc
         check_type(n_summaries, [int])
         if len(self._knowledge_database) < n_summaries:
             raise ValueError
