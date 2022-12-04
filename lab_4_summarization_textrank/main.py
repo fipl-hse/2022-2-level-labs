@@ -499,6 +499,6 @@ class Buddy:
             raise IncorrectQueryError('Incorrect query. Use string as input.')
         one_check((n_summaries, int))
         one_check((n_summaries <= len(self._knowledge_database), bool))
-        keywords = tuple(word for word in query.split() if word not in self._stop_words)
+        keywords = tuple(word for word in query.lower().split() if word not in self._stop_words)
         paths = self._find_texts_close_to_keywords(keywords, n_summaries)
         return 'Ответ:\n' + '\n\n'.join(self._knowledge_database[path]['summary'] for path in paths)

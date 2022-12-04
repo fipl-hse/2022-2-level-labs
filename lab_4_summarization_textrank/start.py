@@ -51,8 +51,8 @@ if __name__ == "__main__":
     matrix.fill_from_sentences(SENTENCES)
     text_rank_summarizer = TextRankSummarizer(matrix)
     text_rank_summarizer.train()
-    summaries = text_rank_summarizer.make_summary(10)
-    print(summaries)
+    SUMMARIES = text_rank_summarizer.make_summary(10)
+    print(SUMMARIES)
 
     # step 11
     buddy = Buddy(paths_to_texts, stop_words, punctuation, idf)
@@ -66,9 +66,12 @@ if __name__ == "__main__":
     #         print(buddy.reply(query), '\n')
     #     except NoRelevantTextsError:
     #         print('Nothing found, try once more.')
-    query = 'Юрий Алексеевич Гагарин'
-    print(buddy.reply(query), '\n')
+    QUERY = 'Юрий Алексеевич Гагарин'
+    try:
+        print(buddy.reply(QUERY), '\n')
+    except NoRelevantTextsError:
+        print('Fail :(')
 
-    RESULT = summaries
+    RESULT = SUMMARIES
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
