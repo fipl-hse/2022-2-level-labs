@@ -125,6 +125,11 @@ class SentencePreprocessor(TextPreprocessor):
         self._punctuation = punctuation
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
+        """
+        Splits the provided text by sentence
+        :param text: the raw text
+        :return: a sequence of sentences
+        """
         if not check_type(text, str):
             raise ValueError
         text = text.replace('\n', ' ').replace('  ', ' ')
