@@ -31,26 +31,27 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    PUNCTUATION = tuple(string.punctuation)
-    PREPROCESSOR = SentencePreprocessor(stop_words, PUNCTUATION)
-    sentences = PREPROCESSOR.get_sentences(text)
+    punctuation = tuple(string.punctuation)
+    PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
+    SENTENCES = PREPROCESSOR.get_sentences(text)
     ENCODER = SentenceEncoder()
-    ENCODER.encode_sentences(sentences)
-    print('Encoded:', *(sentence.get_encoded() for sentence in sentences))
+    ENCODER.encode_sentences(SENTENCES)
+    print('Encoded:', *(sentence.get_encoded() for sentence in SENTENCES))
     MATRIX = SimilarityMatrix()
-    MATRIX.fill_from_sentences(sentences)
+    MATRIX.fill_from_sentences(SENTENCES)
     RANKING = TextRankSummarizer(MATRIX)
     RANKING.train()
-    print('Summary:\n', RANKING.make_summary(5))
+    SUMMARY = RANKING.make_summary(5)
+    print('Summary:\n', SUMMARY)
 
-    BUDDY = Buddy(paths_to_texts, stop_words, PUNCTUATION, idf)
-    quires = ['Когда родился Гагарин?', 'Кто такой Ленин?', 'Где работает Демидовский?']
-    for quire in quires:
+    BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    QUIRES = ['Когда родился Гагарин?', 'Кто такой Ленин?', 'Где работает Демидовский?']
+    for QUIRE in QUIRES:
         try:
-            print(BUDDY.reply(quire))
+            print(BUDDY.reply(QUIRE))
         except NoRelevantTextsError:
             print('Try another query')
 
-    RESULT = RANKING.make_summary(5)
+    RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

@@ -11,7 +11,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(variable: Any, possible_types) -> None:
+def check_type(variable: Any, possible_types: list) -> None:
     """
     Checks type of variable and raise ValueError if incorrect
     """
@@ -28,8 +28,6 @@ def check_iterable(container: Any, container_type: list, elements_type: list) ->
     """
     Checks type of variables in iterable and raise ValueError if incorrect
     """
-    if not container:
-        raise ValueError
     check_type(container, container_type)
     for i in container:
         check_type(i, elements_type)
@@ -144,7 +142,7 @@ class SentencePreprocessor(TextPreprocessor):
             elif el.isspace():
                 space_flag = True
             elif el.isupper() and space_flag and punctuation_index:
-                sentences.append(Sentence(text[start: index].strip(), count))
+                sentences.append(Sentence(text[start: punctuation_index + 1], count))
                 start = index
                 count += 1
             if not el.isspace():
@@ -469,8 +467,7 @@ class Buddy:
         try:
             check_type(query, [str])
         except ValueError:
-            raise IncorrectQueryError()
-
+            raise IncorrectQueryError(('Incorrect query. Use string as input.'))
         check_type(n_summaries, [int])
         if len(self._knowledge_database) < n_summaries:
             raise ValueError
