@@ -41,14 +41,14 @@ if __name__ == "__main__":
     encoder = SentenceEncoder()
 
     # step 5
-    sentences = preprocessor.get_sentences(text)
-    encoder.encode_sentences(sentences)
-    for i in sentences:
-        print(i.get_encoded())
+    SENTENCES = preprocessor.get_sentences(text)
+    encoder.encode_sentences(SENTENCES)
+    for sentence in SENTENCES:
+        print(sentence.get_encoded())
 
     # step 9
     matrix = SimilarityMatrix()
-    matrix.fill_from_sentences(sentences)
+    matrix.fill_from_sentences(SENTENCES)
     text_rank_summarizer = TextRankSummarizer(matrix)
     text_rank_summarizer.train()
     summaries = text_rank_summarizer.make_summary(10)
@@ -56,15 +56,18 @@ if __name__ == "__main__":
 
     # step 11
     buddy = Buddy(paths_to_texts, stop_words, punctuation, idf)
-    print('\nПомощник готов к работе!\n')
-    while True:
-        query = input('Input your query or q to quit: ')
-        if query == 'q':
-            break
-        try:
-            print(buddy.reply(query), '\n')
-        except NoRelevantTextsError:
-            print('Nothing found, try once more.')
+    print('\nBuddy is ready!\n')
+    # This code works perfectly fine if used by a human. Unfortunately, for CI check I should keep it simple.
+    # while True:
+    #     query = input('Input your query or q to quit: ')
+    #     if query == 'q':
+    #         break
+    #     try:
+    #         print(buddy.reply(query), '\n')
+    #     except NoRelevantTextsError:
+    #         print('Nothing found, try once more.')
+    query = 'Юрий Алексеевич Гагарин'
+    print(buddy.reply(query), '\n')
 
     RESULT = summaries
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
