@@ -2,13 +2,24 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
+import re
 from typing import Union
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+    TextPreprocessor, TFIDFAdapter
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
+
+
+def check_type(variable, expected_value):
+    return isinstance(variable, expected_value) and not isinstance(variable, bool)
+
+
+def check_elements(container, container_type, elements_type):
+    if not isinstance(container, container_type):
+        return False
+    return all(check_type(i, elements_type) for i in container)
 
 
 class Sentence:
@@ -20,14 +31,21 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        pass
+        if not check_type(text, str):
+            raise ValueError
+        if not check_type(position, int):
+            raise ValueError
+        self._text = text
+        self._position = position
+        self._preprocessed = ()
+        self._encoded = ()
 
     def get_position(self) -> int:
         """
         Returns the attribute
         :return: the position of the sentence in the text
         """
-        pass
+        return self._position
 
     def set_text(self, text: str) -> None:
         """
@@ -35,14 +53,16 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        pass
+        if not check_type(text, str):
+            raise ValueError
+        self._text = text
 
     def get_text(self) -> str:
         """
         Returns the attribute
         :return: the text
         """
-        pass
+        return self._text
 
     def set_preprocessed(self, preprocessed_sentence: PreprocessedSentence) -> None:
         """
@@ -50,14 +70,16 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        pass
+        if not check_elements(preprocessed_sentence, tuple, str):
+            raise ValueError
+        self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
         """
         Returns the attribute
         :return: the preprocessed sentence (a sequence of tokens)
         """
-        pass
+        return self._preprocessed
 
     def set_encoded(self, encoded_sentence: EncodedSentence) -> None:
         """
@@ -65,14 +87,16 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        pass
+        if not check_elements(encoded_sentence, tuple, int):
+            raise ValueError
+        self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
         """
         Returns the attribute
         :return: the encoded sentence (a sequence of numbers)
         """
-        pass
+        return self._encoded
 
 
 class SentencePreprocessor(TextPreprocessor):
@@ -84,15 +108,33 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__(stop_words, punctuation)
+        if not check_elements(stop_words, tuple, str):
+            raise ValueError
+        self._stop_words = stop_words
+        if not check_elements(punctuation, tuple, str):
+            raise ValueError
+        self._punctuation = punctuation
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
-        """
-        Splits the provided text by sentence
-        :param text: the raw text
-        :return: a sequence of sentences
-        """
-        pass
+        if not check_type(text, str):
+            raise ValueError
+        text = text.replace('\n', ' ').replace('  ', ' ')
+        sentences = []
+        count = 0
+        start = 0
+        flag = 0
+        for ind, char in enumerate(text):
+            if not flag and char in '.?!' :
+                flag = ind
+            if flag and char.isupper() and text[ind-1].isspace():
+                sentences.append(Sentence(text[start: ind].strip(), count))
+                count += 1
+                start = ind
+            if not char.isspace() and char not in '.?!':
+                flag = 0
+        sentences.append(Sentence(text[start:], count))
+        return tuple(sentences)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -100,7 +142,11 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+        if not check_elements(sentences, tuple, Sentence):
+            raise ValueError
+        for sentence in sentences:
+            preprocessed = self.preprocess_text(sentence.get_text())
+            sentence.set_preprocessed(preprocessed)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -108,7 +154,9 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
+        sentences = self._split_by_sentence(text)
+        self._preprocess_sentences(sentences)
+        return sentences
 
 
 class SentenceEncoder(TextEncoder):
@@ -120,7 +168,7 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__()
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -128,7 +176,12 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        if not check_elements(tokens, tuple, str):
+            raise ValueError
+        new_tokens = (i for i in tokens if i not in self._word2id)
+        for index, token in enumerate(new_tokens, start=max(1001, 1001 + len(self._word2id))):
+            self._word2id[token] = index
+            self._id2word[index] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -136,7 +189,11 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        if not check_elements(sentences, tuple, Sentence):
+            raise ValueError
+        for sentence in sentences:
+            self._learn_indices(sentence.get_preprocessed())
+            sentence.set_encoded(tuple(self._word2id[word] for word in sentence.get_preprocessed()))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
@@ -146,7 +203,13 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    if not check_type(sequence, list) and not check_type(sequence, tuple) or not check_type(other_sequence, list) \
+            and not check_type(other_sequence, tuple):
+        raise ValueError
+    sequence, other_sequence = set(sequence), set(other_sequence)
+    if not sequence or not other_sequence:
+        return 0
+    return len(sequence & other_sequence) / len(sequence | other_sequence)
 
 
 class SimilarityMatrix:
@@ -160,14 +223,15 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+        self._matrix = []
+        self._vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -175,7 +239,7 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        return sum(i > 0 for i in self._matrix[self._vertices.index(vertex)]) - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -184,7 +248,16 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        if vertex1 == vertex2:
+            raise ValueError
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                new_row = [calculate_similarity(vertex.get_encoded(), other.get_encoded())
+                           for other in self._vertices]
+                self._matrix.append(new_row)
+                for i in range(len(self._matrix) - 1):
+                    self._matrix[i].append(self._matrix[-1][i])
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -193,7 +266,10 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        ind1, ind2 = self._vertices.index(sentence), self._vertices.index(other_sentence)
+        return self._matrix[ind1][ind2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -201,7 +277,13 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        if not sentences or not check_type(sentences, tuple):
+            raise ValueError
+        for ind1, one_sent in enumerate(sentences):
+            for ind2, another_sent in enumerate(sentences):
+                if ind2 == ind1:
+                    break
+                self.add_edge(one_sent, another_sent)
 
 
 class TextRankSummarizer:
@@ -217,7 +299,13 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        if not check_type(graph, SimilarityMatrix):
+            raise ValueError
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -229,7 +317,10 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        if not check_type(vertex, Sentence):
+            raise ValueError
+        sum_ = sum((1 / (1 + self._graph.calculate_inout_score(inc))) * scores[inc] for inc in incidental_vertices)
+        self._scores[vertex] = self._damping_factor * (sum_ - 1) + 1
 
     def train(self) -> None:
         """
@@ -257,7 +348,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        if not check_type(n_sentences, int):
+            raise ValueError
+        return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -265,7 +358,18 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        if not check_type(n_sentences, int):
+            raise ValueError
+        top_sentences = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        return '\n'.join([i.get_text() for i in top_sentences])
+
+
+class NoRelevantTextsError(Exception):
+    pass
+
+
+class IncorrectQueryError(Exception):
+    pass
 
 
 class Buddy:
@@ -287,7 +391,17 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf_values = idf_values
+        self._text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        self._sentence_encoder = SentenceEncoder()
+        self._sentence_preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        self._paths_to_texts = paths_to_texts
+        self._knowledge_database = {}
+
+        for path in paths_to_texts:
+            self.add_text_to_database(path)
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """
@@ -295,7 +409,26 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        pass
+        if not check_type(path_to_text, str):
+            raise ValueError
+        with open(path_to_text, encoding='utf-8') as file:
+            text = file.read()
+        preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        sentences = preprocessor.get_sentences(text)
+        self._sentence_encoder.encode_sentences(sentences)
+        preprocessed_text = self._text_preprocessor.preprocess_text(text)
+        tf_idf = TFIDFAdapter(preprocessed_text, self._idf_values)
+        tf_idf.train()
+        number_of_keywords = 100
+        keywords = tf_idf.get_top_keywords(number_of_keywords)
+        similarity_matrix = SimilarityMatrix()
+        similarity_matrix.fill_from_sentences(sentences)
+        summarizer = TextRankSummarizer(similarity_matrix)
+        summarizer.train()
+        summary = '\n'.join([i.get_text() for i in sorted(summarizer.get_top_sentences(5),
+                                                          key=lambda x: x.get_position())])
+        key = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
+        self._knowledge_database[path_to_text] = key
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
@@ -304,7 +437,15 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        pass
+        if not check_elements(keywords, tuple, str) or not check_type(n_texts, int):
+            raise ValueError
+        scores = {}
+        for path_to_text in self._knowledge_database:
+            scores[path_to_text] = \
+                calculate_similarity(self._knowledge_database[path_to_text]['keywords'], keywords)
+        if not any(scores.values()):
+            raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
+        return tuple(sorted(scores, key=lambda x: (scores[x], x), reverse=True)[:n_texts])
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
@@ -313,4 +454,15 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        pass
+        if not query or not check_type(query, str):
+            raise IncorrectQueryError('Incorrect query. Use string as input.')
+        if not check_type(n_summaries, int):
+            raise ValueError
+        if len(self._knowledge_database) < n_summaries:
+            raise ValueError
+        user_keywords = self._text_preprocessor.preprocess_text(query)
+        texts = self._find_texts_close_to_keywords(user_keywords, n_summaries)[:5]
+        repl = []
+        for text in texts:
+            repl.append(self._knowledge_database[text]["summary"])
+        return 'Ответ:\n' + '\n\n'.join(repl)
