@@ -109,8 +109,13 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        sentences = tuple(re.split(r'[?!.]\s[А-Я]', text))
-        return sentences
+        sentences = re.split(r'[?!.]\s[А-Я]', text)
+        tuple_with_sent = []
+        for count, value in enumerate(sentences):
+            sent = Sentence(value, count )
+            tuple_with_sent.append(sent)
+        return tuple(tuple_with_sent)
+
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -120,7 +125,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         for sentence in sentences:
             text = sentence.get_text()
-            new_sentence = super.preprocess_text(text)
+            new_sentence = super().preprocess_text(text)
             sentence.set_preprocessed(new_sentence)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
@@ -131,7 +136,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         sentences = self._split_by_sentence(text)
         self._preprocess_sentences(sentences)
-        #что ретернить не понимаю
+        return sentences
 
 class SentenceEncoder(TextEncoder):
     """
@@ -162,10 +167,12 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
+        #я запуталась здесь
         for sentence in sentences:
             prepr = sentence.get_preprocessed()
-            encoded_sent = self._learn_indices(prepr)
-            sentence.set_encoded(encoded_sent)
+            self._learn_indices(prepr)
+
+            sentence.set_encoded()
 
 
 
@@ -198,13 +205,14 @@ class SimilarityMatrix:
         Constructs necessary attributes
         """
         self._matrix = []
+        self.vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-
+        return tuple(self.vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -221,9 +229,22 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        for vertex in vertex1, vertex2:
-            if not vertex in
+        if vertex1 == vertex2:
+            raise ValueError
+        v1 = vertex1.get_encoded()
+        v2 = vertex2.get_encoded()
+        for vertex in v1, v2:
+            if vertex not in self.vertices:
+                self.vertices.append(vertex)
+                self._matrix.append([0])
+        for i in range(len(self._matrix)):
+            while len(self._matrix[i]) != len(self.vertices):
+                self._matrix.append(0)
+        v1_index = self.vertices.index(v1)
+        v2_index = self.vertices.index(v2)
 
+        self._matrix[v1_index][v2_index] = calculate_similarity(v1, v2)
+        self._matrix[v2_index][v1_index] = calculate_similarity(v1, v2)
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
         Gets the similarity score for two sentences from the matrix
