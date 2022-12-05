@@ -44,6 +44,6 @@ LENGTH = 0
 print(f'The length of {ARRAY} is {LENGTH}')
 
 # Task 4
-# MyList is a specific implementation of list class - you can't usethe builtin function len.
+# MyList is a specific implementation of list class - you can't use the builtin function len.
 # Implement a method of finfing length of the MyList using the check_index_of_array function
 # Use try except aproach (with specified Exception type) to find the length
