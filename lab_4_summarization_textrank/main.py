@@ -81,7 +81,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_collection(preprocessed_sentence, PreprocessedSentence, str)
+        check_collection(preprocessed_sentence, tuple, str)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -97,7 +97,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_collection(encoded_sentence, EncodedSentence, int)
+        check_collection(encoded_sentence, tuple, int)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
