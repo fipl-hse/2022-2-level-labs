@@ -1020,7 +1020,6 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-
         report_path = path / 'report.csv'
         with open(report_path, 'w') as csv_file:
             writer = csv.writer(csv_file)
