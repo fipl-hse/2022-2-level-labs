@@ -6,11 +6,11 @@ Introduction into exceptions
 from random import randint
 
 # Define functions that can raise an error
-def bad_function(*args, **kwargs):
+def bad_function(*args, **kwargs) -> None:
     # Any exception
     raise Exception(f'Exception from bad_function with arguments {args}, {kwargs}')
 
-def div(numerator: float, denominator: float):
+def div(numerator: float, denominator: float) -> None:
     # raises ZeroDivisionError
     return numerator / denominator
 
