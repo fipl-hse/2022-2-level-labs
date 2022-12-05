@@ -130,7 +130,7 @@ class SentencePreprocessor(TextPreprocessor):
         :return: a sequence of sentences
         """
         check_type(text, str)
-        split_text = re.split(r'[.!?]\s(?=[A-ZА-Я])', text.replace('\n', ' ').replace('  ', ' '))
+        split_text = re.split(r'(?<=[.!?])\s(?=[A-ZА-Я])', text.replace('\n', ' ').replace('  ', ' '))
         sentences_list = []
         for i, sentence in enumerate(split_text):
             my_sentence = Sentence(sentence, i)
