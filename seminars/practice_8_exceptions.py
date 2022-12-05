@@ -1,3 +1,10 @@
+"""
+Programming 2022
+Seminar 8
+Working with exceptions
+"""
+
+
 #                                         BaseException
 #             ^                                       ^                       ^
 #             |                                       |                       |
@@ -17,22 +24,25 @@
 
 def compare_lbyl_vs_eafp():
     # LBYL style
-    b = []
-    if 100 < len(b) - 1:
-        print(b[100])
+    dummy_b = []
+    if len(dummy_b) - 1 > 100:
+        print(dummy_b[100])
     else:
         print('No')
 
     # EAFP
     try:
-        a = {}
-        b = []
-        print(b[12])
-        print(a['key'])
+        dummy_a = {}
+        dummy_b = []
+        print(dummy_b[12])
+        print(dummy_a['key'])
+    # pylint: disable=unused-variable
     except (KeyError, IndexError) as my_error:
         print('Error!!')
+    # pylint: disable=duplicate-except
     except IndexError:
         print('IndexError!!')
+    # pylint: disable=bare-except
     except:  # ~ except BaseException
         print('General error!!')
     else:
@@ -83,38 +93,38 @@ def check_exception_raise():
 
     # Nested functions only to separate topics from lecture.
     # Do not nest functions in your code!
-    def f(a, b):
-        return a / b
+    def dummy_f(first, second):
+        return first / second
 
-    def g(a, b):
-        c = f(a, b)
-        print(c)
-        return c
+    def dummy_g(first, second):
+        res = dummy_f(first, second)
+        print(res)
+        return res
 
     try:
-        c = g(1, 0)
+        res = dummy_g(1, 0)
     except ZeroDivisionError:
         print('Error')
     else:
-        print(c)
+        print(res)
 
 
 def propagate_error_without_exceptions():
-    def f(a, b):
-        if b == 0:
+    def dummy_f(first, second):
+        if second == 0:
             return -1
-        return a / b
+        return first / second
 
-    def g(a, b):
-        c = f(a, b)
-        if c == -1:
+    def dummy_g(first, second):
+        res = dummy_f(first, second)
+        if res == -1:
             return None
-        print(c)
-        return c
+        print(res)
+        return res
 
-    d = g(1, 0)
-    if d is not None:
-        print(f'Success: {d}')
+    res = dummy_g(1, 0)
+    if res is not None:
+        print(f'Success: {res}')
 
 
 def main():
