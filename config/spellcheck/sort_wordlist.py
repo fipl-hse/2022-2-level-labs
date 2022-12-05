@@ -6,7 +6,7 @@ import re
 from pathlib import Path
 
 
-def check_wordlist(wordlist_path):
+def check_wordlist(wordlist_path: Path) -> None:
     with open(wordlist_path, encoding='utf-8') as f:
         original_text = f.read()
         words = [i.strip().lower() for i in original_text.split('\n') if i.strip()]
@@ -27,7 +27,7 @@ def check_wordlist(wordlist_path):
         f.write(new_content)
 
 
-def main():
+def main() -> None:
     russian_wordlist_path = Path(__file__).parent / '.wordlist.txt'
     english_wordlist_path = Path(__file__).parent / '.wordlist_en.txt'
     check_wordlist(russian_wordlist_path)

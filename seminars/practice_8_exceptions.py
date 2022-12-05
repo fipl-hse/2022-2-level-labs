@@ -3,6 +3,7 @@ Programming 2022
 Seminar 8
 Working with exceptions
 """
+from typing import Optional, Union
 
 
 #                                         BaseException
@@ -22,7 +23,7 @@ Working with exceptions
 # race conditions              +                  -
 # number of checks (few/many)  +/-                -/+
 
-def compare_lbyl_vs_eafp():
+def compare_lbyl_vs_eafp() -> None:
     # LBYL style
     dummy_b = []
     if len(dummy_b) - 1 > 100:
@@ -51,7 +52,7 @@ def compare_lbyl_vs_eafp():
         print('Always!!')
 
 
-def check_exception_raise():
+def check_exception_raise() -> None:
     # 0: __main__
     # 1: main()->__main__
     # 2: g()->main()->__main__
@@ -93,10 +94,10 @@ def check_exception_raise():
 
     # Nested functions only to separate topics from lecture.
     # Do not nest functions in your code!
-    def dummy_f(first, second):
+    def dummy_f(first: int, second: int) -> float | int:
         return first / second
 
-    def dummy_g(first, second):
+    def dummy_g(first: int, second: int) -> float | int:
         res = dummy_f(first, second)
         print(res)
         return res
@@ -109,13 +110,13 @@ def check_exception_raise():
         print(res)
 
 
-def propagate_error_without_exceptions():
-    def dummy_f(first, second):
+def propagate_error_without_exceptions() -> None:
+    def dummy_f(first: int, second: int) -> float | int:
         if second == 0:
             return -1
         return first / second
 
-    def dummy_g(first, second):
+    def dummy_g(first: int, second: int) -> Optional[Union[float, int]]:
         res = dummy_f(first, second)
         if res == -1:
             return None
@@ -127,7 +128,7 @@ def propagate_error_without_exceptions():
         print(f'Success: {res}')
 
 
-def main():
+def main() -> None:
     compare_lbyl_vs_eafp()
     check_exception_raise()
     propagate_error_without_exceptions()
