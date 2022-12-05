@@ -1,7 +1,7 @@
 """
 TextRank keyword extraction starter
 """
-import string
+
 from pathlib import Path
 from time import process_time
 import json
@@ -19,6 +19,7 @@ from lab_3_keywords_textrank.main import (
 
 
 if __name__ == "__main__":
+
     # finding paths to the necessary utils
     PROJECT_ROOT = Path(__file__).parent
     ASSETS_PATH = PROJECT_ROOT / 'assets'

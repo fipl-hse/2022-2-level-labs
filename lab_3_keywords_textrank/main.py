@@ -4,9 +4,6 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calculate_tfidf
-from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
-    calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
 import csv
 
@@ -44,7 +41,6 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
-
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -614,6 +610,7 @@ class VanillaTextRank:
         self._max_iter = 50
         self._scores = {}
 
+    # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
         """
         Changes vertex significance score using algorithm-specific formula
@@ -722,6 +719,7 @@ class PositionBiasedTextRank(VanillaTextRank):
         super().__init__(graph)
         self._position_weights = graph.get_position_weights()
 
+    # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
         """
         Changes vertex significance score using algorithm-specific formula
