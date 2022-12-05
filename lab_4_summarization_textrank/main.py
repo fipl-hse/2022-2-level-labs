@@ -177,11 +177,10 @@ class SentenceEncoder(TextEncoder):
         :return:
         """
         check_collection(tokens, tuple, str)
-        for token, idx in zip(tokens, range(1001 + len(tokens), 1001, -1)):
-            self._word2id[token] = idx
-
-        for token, idx in self._word2id.items():
-            self._id2word[idx] = token
+        my_tokens = (token for token in tokens if token not in self._word2id)
+        for ind, token in enumerate(my_tokens, start=1000 + len(self._word2id)):
+            self._word2id[token] = ind
+            self._id2word[ind] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
