@@ -231,8 +231,8 @@ class SimilarityMatrix:
         """
         if vertex1 == vertex2:
             raise ValueError
-        v1 = vertex1.get_encoded()
-        v2 = vertex2.get_encoded()
+        v1 = vertex1.get_position()
+        v2 = vertex2.get_position()
         for vertex in v1, v2:
             if vertex not in self.vertices:
                 self.vertices.append(vertex)
@@ -252,7 +252,7 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        return
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
