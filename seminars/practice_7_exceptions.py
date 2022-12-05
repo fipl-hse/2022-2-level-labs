@@ -38,15 +38,10 @@ class MyList(list):
 
 
 ARRAY = MyList((0 for _ in range(randint(0, 4))))
-MAX_INDEX = 0
-while True:
-    try:
-        check_index_at_array(ARRAY, MAX_INDEX)
-    except IndexError:
-        break
-    MAX_INDEX += 1
 
-print(f'The length of {ARRAY} is {MAX_INDEX}')
+LENGTH = 0
+
+print(f'The length of {ARRAY} is {LENGTH}')
 
 # Task 4
 # MyList is a specific implementation of list class - you can't usethe builtin function len.
