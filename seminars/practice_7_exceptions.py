@@ -8,7 +8,7 @@ from random import randint
 # Define functions that can raise an error
 def bad_function() -> None:
     # Any exception
-    raise Exception(f'Exception from bad_function')
+    raise Exception('Exception from bad_function')
 
 def div(numerator: float, denominator: float) -> float:
     # raises ZeroDivisionError
