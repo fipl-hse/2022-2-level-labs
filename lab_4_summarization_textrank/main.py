@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Tuple
+from typing import Union
 import re
 
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -58,12 +58,12 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not isinstance(preprocessed_sentence, Tuple):
-            raise ValueError
-        for word in preprocessed_sentence:
-            if not isinstance(word, str):
-                raise ValueError
-        self._preprocessed = preprocessed_sentence
+        if isinstance(preprocessed_sentence, tuple):
+            for word in preprocessed_sentence:
+                if not isinstance(word, str):
+                    raise ValueError
+            self._encoded = preprocessed_sentence
+        raise ValueError
 
     def get_preprocessed(self) -> PreprocessedSentence:
         """
@@ -78,12 +78,12 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        if not isinstance(encoded_sentence, tuple):
-            raise ValueError
-        for number in encoded_sentence:
-            if not isinstance(number, int):
-                raise ValueError
-        self._encoded = encoded_sentence
+        if isinstance(encoded_sentence, tuple):
+            for number in encoded_sentence:
+                if not isinstance(number, int):
+                    raise ValueError
+            self._encoded = encoded_sentence
+        raise ValueError
 
     def get_encoded(self) -> EncodedSentence:
         """
