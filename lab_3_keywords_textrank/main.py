@@ -68,9 +68,8 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        if self._punctuation:
-            for punc in self._punctuation:
-                text = text.replace(punc, '')
+        for token in self._punctuation:
+            text = text.replace(token, '')
         return tuple(text.lower().split())
 
     # Step 1.3
@@ -86,7 +85,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(token for token in tokens if token not in self._stop_words)
+        clean_tokens = []
+        for token in tokens:
+            if token not in self._stop_words:
+                clean_tokens.append(token)
+        return tuple(clean_tokens)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
@@ -141,9 +144,8 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for token, idx in zip(tokens, range(1001 + len(tokens), 1001, -1)):
-            self._word2id[token] = idx
-
+        for idx, token in enumerate(tokens):
+            self._word2id[token] = 1000 + idx
         for token, idx in self._word2id.items():
             self._id2word[idx] = token
 
@@ -180,9 +182,10 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        if not (encoded_tokens and all(encoded_token in self._id2word for encoded_token in encoded_tokens)):
-            return None
-        return tuple(self._id2word[encoded_token] for encoded_token in encoded_tokens)
+        for token in encoded_tokens:
+            if token not in self._id2word:
+                return None
+        return tuple(self._id2word[token] for token in encoded_tokens)
 
 
 # Step 3
@@ -203,7 +206,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    if not(isinstance(window_length, int) and window_length >= 2 and tokens):
+    if not tokens or not isinstance(window_length, int) or window_length < 2:
         return None
     pairs = []
     for idx1, token1 in enumerate(tokens):
