@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union
+from typing import Union, Tuple
 import re
 
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -58,7 +58,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not isinstance(preprocessed_sentence, tuple):
+        if not isinstance(preprocessed_sentence, Tuple):
             raise ValueError
         for word in preprocessed_sentence:
             if not isinstance(word, str):
