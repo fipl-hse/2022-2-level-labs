@@ -212,7 +212,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         for elem in sequence:
             if elem in other_sequence:
                 similar += 1
-        jaccard_index = similar / (len(set(sequence + other_sequence)))
+        jaccard_index = similar / (len(set(sequence) | set(other_sequence)))
         return jaccard_index
     except ZeroDivisionError:
         return 0
