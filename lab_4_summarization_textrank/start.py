@@ -3,7 +3,8 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
-from lab_4_summarization_textrank.main import Sentence, SentencePreprocessor, SentenceEncoder
+from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, \
+    SimilarityMatrix, TextRankSummarizer
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -31,6 +32,13 @@ if __name__ == "__main__":
     sentence_encoder = SentenceEncoder()
     sentence_encoder.encode_sentences(sentences)
 
+    matrix = SimilarityMatrix()
+    matrix.fill_from_sentences(sentences)
+
+    text_rank = TextRankSummarizer(matrix)
+    text_rank.train()
+    summary = text_rank.make_summary(10)
     RESULT = None
+
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    # assert RESULT, 'Summaries are not extracted'
+    assert RESULT, 'Summaries are not extracted'
