@@ -27,18 +27,18 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
-    sentence_preprocessor = SentencePreprocessor(stop_words, tuple('.,!?-:;()&'))
-    sentences = sentence_preprocessor.get_sentences(text)
-    sentence_encoder = SentenceEncoder()
-    sentence_encoder.encode_sentences(sentences)
+    SENTENCE_PREPROCESSOR = SentencePreprocessor(stop_words, tuple('.,!?-:;()&'))
+    SENTENCES = SENTENCE_PREPROCESSOR.get_sentences(text)
+    SENTENCE_ENCODER = SentenceEncoder()
+    SENTENCE_ENCODER.encode_sentences(SENTENCES)
 
-    matrix = SimilarityMatrix()
-    matrix.fill_from_sentences(sentences)
+    MATRIX = SimilarityMatrix()
+    MATRIX.fill_from_sentences(SENTENCES)
 
-    text_rank = TextRankSummarizer(matrix)
-    text_rank.train()
-    summary = text_rank.make_summary(10)
-    RESULT = None
+    TEXT_RANK = TextRankSummarizer(MATRIX)
+    TEXT_RANK.train()
+    SUMMARY = TEXT_RANK.make_summary(10)
 
+    RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
