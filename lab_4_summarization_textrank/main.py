@@ -13,7 +13,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def sequence_check(seq, seq_type, el_type) -> bool:
+def check_sequence(seq, seq_type, el_type) -> bool:
     if isinstance(seq, seq_type) and all(isinstance(el, el_type) for el in seq):
         return True
     return False
@@ -66,7 +66,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not sequence_check(preprocessed_sentence, tuple, str):
+        if not check_sequence(preprocessed_sentence, tuple, str):
             raise ValueError
         self._preprocessed = preprocessed_sentence
 
@@ -83,7 +83,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        if not sequence_check(encoded_sentence, tuple, int):
+        if not check_sequence(encoded_sentence, tuple, int):
             raise ValueError
         self._encoded = encoded_sentence
 
@@ -104,7 +104,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        if not(sequence_check(stop_words, tuple, str) and punctuation and sequence_check(punctuation, tuple, str)):
+        if not(check_sequence(stop_words, tuple, str) and punctuation and check_sequence(punctuation, tuple, str)):
             raise ValueError
         super().__init__(stop_words, punctuation)
 
@@ -139,7 +139,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        if not(sentences and sequence_check(sentences, tuple, Sentence)):
+        if not(sentences and check_sequence(sentences, tuple, Sentence)):
             raise ValueError
         for sentence in sentences:
             preprocessed_sentence = self.preprocess_text(sentence.get_text())
@@ -177,7 +177,14 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        if not check_sequence(tokens, tuple, str):
+            raise ValueError
+
+        for token, idx in zip(tokens, range(1000, 1000 + len(tokens))):
+            self._word2id[token] = idx
+
+        for token, idx in self._word2id.items():
+            self._id2word[idx] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -185,7 +192,20 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        if not check_sequence(sentences, tuple, Sentence):
+            raise ValueError
+
+        all_tokens = tuple([tokens for sentence in sentences for tokens in sentence.get_preprocessed()])
+        self._learn_indices(all_tokens)
+
+        for sentence in sentences:
+            tokens = sentence.get_preprocessed()
+            encoded_sentence = []
+
+            for token in tokens:
+                encoded_sentence.append(self._word2id.get(token))
+
+            sentence.set_encoded(tuple(encoded_sentence))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
@@ -195,7 +215,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    if not(isinstance(sequence, (list, tuple)) and isinstance(other_sequence, (list, tuple))):
+        raise ValueError
+    if not(sequence or other_sequence):
+        return 0.0
+    return len(set(sequence) & set(other_sequence)) / len(set(sequence) | set(other_sequence))
 
 
 class SimilarityMatrix:

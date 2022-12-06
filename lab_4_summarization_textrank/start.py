@@ -1,6 +1,11 @@
 """
 TextRank summarizer starter
 """
+from lab_4_summarization_textrank.main import (Sentence,
+                                               SentencePreprocessor,
+                                               SentenceEncoder)
+
+
 from pathlib import Path
 import json
 
@@ -26,6 +31,12 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+
+    PREPROCESSOR = SentencePreprocessor()
+    PREPROCESSED_SENTENCES = PREPROCESSOR.get_sentences(text)
+
+    ENCODER = SentenceEncoder()
+    ENCODED_SENTENCES = ENCODER.encode_sentences(PREPROCESSED_SENTENCES)
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
