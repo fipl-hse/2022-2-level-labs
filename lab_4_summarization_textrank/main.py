@@ -208,7 +208,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, Union[list, tuple]) or not isinstance(other_sequence, Union[list, tuple]):
+    if not isinstance(sequence, list | tuple) or not isinstance(other_sequence, list | tuple):
         raise ValueError
     try:
         similar = 0
