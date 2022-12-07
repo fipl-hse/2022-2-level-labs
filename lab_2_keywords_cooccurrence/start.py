@@ -45,16 +45,16 @@ if __name__ == "__main__":
     for text in corpus:
         processed_text = process_text(text, stop_words)
         if text:
-            print(f'text', get_top_n(processed_text, 10, 4), "\n")
+            print('text', get_top_n(processed_text, 10, 4), "\n")
 
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
     stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')
     if stop_words:
-        print(print(f'polish_text', get_top_n(process_text(polish_text), 10, 4), "\n"))
+        print(print('polish_text', get_top_n(process_text(polish_text), 10, 4), "\n"))
 
     unknown_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     if stop_words:
-        print(print(f'polish_text', get_top_n(process_text(unknown_text), 10, 4), "\n"))
+        print(print('polish_text', get_top_n(process_text(unknown_text), 10, 4), "\n"))
 
 RESULT = True
 

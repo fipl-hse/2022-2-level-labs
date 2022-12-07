@@ -14,6 +14,9 @@ KeyPhrases = Sequence[KeyPhrase]
 
 
 def is_not_empty_or_bad(user_input: Any, element_type: Any, token_type: Any = None) -> bool:
+    """
+    checks whether the variable is empty or of the wrong type
+    """
     if not user_input:
         return False
     if not isinstance(user_input, element_type):
