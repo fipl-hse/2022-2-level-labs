@@ -3,10 +3,26 @@ Lab 2
 Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
-from typing import Optional, Sequence, Mapping
+from typing import Optional, Sequence, Mapping, Any
+import re
+from itertools import pairwise
+import json
+from lab_1_keywords_tfidf.main import check_positive_int
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
+
+
+def is_not_empty_or_bad(user_input: Any, element_type: Any, token_type: Any = None) -> bool:
+    if not user_input:
+        return False
+    if not isinstance(user_input, element_type):
+        return False
+    if token_type:
+        for token in user_input:
+            if not isinstance(token, token_type):
+                return False
+    return True
 
 
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
@@ -17,7 +33,12 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(text, str):
+        return None
+    last = re.split(re.compile(re.compile(r"(?<=^)[^\s\w]+"r"|(?<=\s)[^\s\w]+"r"|[^\s\w]+(?=\s)"r"|[^\s\w]+(?=$)")
+                               ), text.strip().replace("\n", ""))
+    phrases = [i.strip() for i in last if i.strip()]
+    return phrases
 
 
 def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequence[str]) -> Optional[KeyPhrases]:
@@ -29,7 +50,27 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(phrases, list) or not is_not_empty_or_bad(stop_words, list):
+        return None
+    phrase_list = []
+    tuple_list = []
+    candidate_keyword_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower()
+        phrase_list.append(phrase.split())
+    for phrase in phrase_list:
+        for word in phrase:
+            if word not in stop_words:
+                tuple_list.append(word)
+                continue
+            phrase_tuple = tuple(tuple_list)
+            if phrase_tuple:
+                candidate_keyword_phrases.append(phrase_tuple)
+                tuple_list.clear()
+        if tuple_list:
+            candidate_keyword_phrases.append(tuple(tuple_list))
+            tuple_list.clear()
+    return candidate_keyword_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -40,7 +81,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(candidate_keyword_phrases, list, tuple):
+        return None
+    content_words_list = [item for every_tuple in candidate_keyword_phrases for item in every_tuple]
+    content_words_freqs = {}
+    for index, word in enumerate(content_words_list):
+        content_words_freqs.update({content_words_list[index]: content_words_list.count(word)})
+    return content_words_freqs
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -55,7 +102,16 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(candidate_keyword_phrases, list, tuple) \
+            or not is_not_empty_or_bad(content_words, list):
+        return None
+    word_degrees = {}
+    for word in content_words:
+        fuck = [item for item in candidate_keyword_phrases if word in item]
+        fuck_squared = [item for every_tuple in fuck for item in every_tuple]
+        word_deg_num = len(fuck_squared)
+        word_degrees[word] = word_deg_num
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -69,7 +125,13 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(word_degrees, dict) or not is_not_empty_or_bad(word_frequencies, dict)\
+            or not all(word_frequencies.get(token, False) for token in word_degrees):
+        return None
+    key_for_word_score = list(word_degrees.keys())
+    val_for_word_score = [a / b for a, b in zip(word_degrees.values(), word_frequencies.values())]
+    word_scores = {key_for_word_score[i]: val_for_word_score[i] for i in range(len(key_for_word_score))}
+    return word_scores
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -84,7 +146,21 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(candidate_keyword_phrases, list, tuple) or not is_not_empty_or_bad(word_scores, dict):
+        return None
+    for tuple_phrase in candidate_keyword_phrases:
+        for word in tuple_phrase:
+            if word not in word_scores.keys():
+                return None
+    keyword_phrases_with_scores = dict.fromkeys(candidate_keyword_phrases)
+    pure_score = 0
+    for key in keyword_phrases_with_scores:
+        for word in key:
+            if word in word_scores:
+                pure_score += word_scores.get(word)
+        keyword_phrases_with_scores[key] = pure_score
+        pure_score = 0
+    return keyword_phrases_with_scores
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -100,7 +176,15 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(keyword_phrases_with_scores, dict) \
+            or not check_positive_int(top_n) or not check_positive_int(max_length):
+        return None
+    for phrase in keyword_phrases_with_scores:
+        if not is_not_empty_or_bad(phrase, tuple):
+            return None
+    top_phrases = sorted([" ".join(phrase) for phrase in keyword_phrases_with_scores if len(phrase) <= max_length],
+                         key=lambda phrase: keyword_phrases_with_scores[tuple(phrase.split())], reverse=True)[:top_n]
+    return top_phrases
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
@@ -123,7 +207,28 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(candidate_keyword_phrases, list, tuple) or not is_not_empty_or_bad(phrases, list):
+        return None
+    keyword_pairs = list(pairwise(candidate_keyword_phrases))
+    good_keyword_pairs = [keyword_pair for keyword_pair in set(keyword_pairs)
+                           if keyword_pairs.count(keyword_pair) >= 2]
+    adjoined_phrases = []
+    for phrase in phrases:
+        phrase = phrase.lower()
+        phrase_list = phrase.split()
+        for keyword_pair in good_keyword_pairs:
+            for part_1, part_2 in pairwise(keyword_pair):
+                part_1_str, part_2_str = ' '.join(part_1), ' '.join(part_2)
+                if part_1_str not in phrase or part_2_str not in phrase:
+                    continue
+                for index in range(len(phrase_list) - 2):
+                    if phrase_list[index] == part_1[-1] and phrase_list[index + 2] == part_2[0]:
+                        adjoined_phrase = f"{part_1_str} {phrase_list[index + 1]} {part_2_str}".split()
+                        if ' '.join(adjoined_phrase) in phrase:
+                            adjoined_phrases.append(tuple(adjoined_phrase))
+    good_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
+                              if adjoined_phrases.count(adjoined_phrase) >= 2]
+    return good_adjoined_phrases
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
@@ -141,7 +246,14 @@ def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_
 
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not is_not_empty_or_bad(candidate_keyword_phrases, list, tuple) \
+            or not is_not_empty_or_bad(word_scores, dict) \
+            or not is_not_empty_or_bad(stop_words, list):
+        return None
+    all_phrases_scores = {}
+    for phrase in candidate_keyword_phrases:
+        all_phrases_scores[phrase] = sum(word_scores[word] for word in phrase if word not in stop_words)
+    return all_phrases_scores
 
 
 def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
@@ -152,7 +264,24 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not is_not_empty_or_bad(text, str) or not check_positive_int(max_length):
+        return None
+    text_no_commas = re.split(r'[!"#$%&\'()*+,-./:;<=>?@\[\]^_`{|}~]+\B', text.strip().replace("\n", ""))
+    all_words = []
+    for token in text_no_commas:
+        word_list = token.strip().split(" ")
+        all_words += word_list
+    all_words_final = [word for word in all_words if not len(word) > max_length]
+    all_words_freqs = {}
+    for index, word in enumerate(all_words_final):
+        all_words_freqs.update({all_words_final[index]: all_words_final.count(word)})
+    percent_80 = sorted(all_words_freqs.values(), reverse=True)[int(len(all_words_freqs) * 0.2)]
+    stop_words = []
+    for key, value in all_words_freqs.items():
+        if value >= percent_80:
+            stop_words.append(key)
+    return stop_words
+
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     """
@@ -160,7 +289,11 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not is_not_empty_or_bad(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as f:
+        array = json.load(f)
+    return array
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
@@ -171,4 +304,33 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     from the text).
     Returns extracted key phrases or None if something goes wrong.
     """
-    pass
+    candidate_keyword_phrases, content_words_freqs, word_degrees, word_scores, keyword_phrases_with_scores, \
+    good_adjoined_phrases, all_phrases_scores = [None for _ in range(7)]
+
+    phrases = extract_phrases(text)
+
+    if not stop_words and not max_length:
+        stop_words = generate_stop_words(text, max_length)
+
+    if phrases and stop_words:
+        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
+    if candidate_keyword_phrases:
+        content_words_freqs = calculate_frequencies_for_content_words(candidate_keyword_phrases)
+    if candidate_keyword_phrases and content_words_freqs:
+        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(content_words_freqs))
+    if word_degrees and content_words_freqs:
+        word_scores = calculate_word_scores(word_degrees, content_words_freqs)
+    if candidate_keyword_phrases and word_scores:
+        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
+    if candidate_keyword_phrases and phrases:
+        good_adjoined_phrases = (
+            extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases))
+    if good_adjoined_phrases and word_scores and stop_words:
+        all_phrases_scores = (
+            calculate_cumulative_score_for_candidates_with_stop_words(good_adjoined_phrases, word_scores, stop_words))
+    else:
+        all_phrases_scores = {}
+    if keyword_phrases_with_scores and all_phrases_scores is not None:
+        return {**keyword_phrases_with_scores, **all_phrases_scores}
+
+    return None
