@@ -24,13 +24,14 @@ def check_type(user_var: Any, expected_type: Type) -> None:
 
 
 def check_collection(user_var: Any,
-                     expected_elements_type: Union[None, Type] = None,
-                     *expected_collection_type: Type) -> None:
+                     expected_elements_type: Union[None, Type],
+                     *expected_collection_type: Type,
+                     can_be_empty: bool = False) -> None:
     """
     Checks whether type of user_var is at least one of expected_collection_type,
     checks whether type of elements in user_var are expected_elements_type,
     if not - raises ValueError
-    if expected_elements_type is not defined by user, doesn't check elements
+    if expected_elements_type is None, doesn't check elements
     """
     num_errors = 0
     for i in expected_collection_type:
@@ -41,6 +42,8 @@ def check_collection(user_var: Any,
     if num_errors == len(expected_collection_type):
         raise ValueError
     if expected_elements_type is not None:
+        if not user_var:
+            raise ValueError
         for i in user_var:
             check_type(i, expected_elements_type)
 
@@ -204,8 +207,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_collection(sequence, tuple, list)
-    check_collection(other_sequence, tuple, list)
+    check_collection(sequence, None, tuple, list)
+    check_collection(other_sequence, None, tuple, list)
     if not sequence or not other_sequence:
         return 0.
     set_sequence = set(sequence)
