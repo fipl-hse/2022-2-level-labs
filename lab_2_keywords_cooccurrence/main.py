@@ -61,7 +61,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     for phrase in phrases:
         phrase = phrase.lower()
         phrase_list.append(phrase.split())
-    for phrase in phrase_list:  # Incompatible types in assignment (expression has type "List[str]", variable has type "str")  [assignment]
+    for phrase in phrase_list:  # Incompatible types in assignment (expression has type "List[str]",э
+        # variable has type "str")  [assignment]
         for word in phrase:
             if word not in stop_words:
                 tuple_list.append(word)
@@ -163,7 +164,8 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
                 pure_score += word_scores.get(word)  # Unsupported operand types for + ("int" and "None")  [operator]
         keyword_phrases_with_scores[key] = pure_score
         pure_score = 0.0
-    return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...], Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
+    return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...],
+    # Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -296,7 +298,8 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return None
     with open(path, 'r', encoding='utf-8') as f:
         array = json.load(f)
-    return array  # Returning Any from function declared to return "Optional[Mapping[str, Sequence[str]]]"  [no-any-return]
+    return array  # Returning Any from function declared to return
+    # "Optional[Mapping[str, Sequence[str]]]"  [no-any-return]
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
@@ -313,7 +316,8 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     phrases = extract_phrases(text)
 
     if not stop_words and not max_length:
-        stop_words = generate_stop_words(text, max_length)  # error: Argument 2 to "generate_stop_words" has incompatible type "Optional[int]"; expected "int"  [arg-type]
+        stop_words = generate_stop_words(text, max_length)  # error: Argument 2 to "generate_stop_words"
+        # has incompatible type "Optional[int]"; expected "int"  [arg-type]
 
     if phrases and stop_words:
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
