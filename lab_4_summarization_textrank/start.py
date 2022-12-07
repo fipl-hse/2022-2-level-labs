@@ -5,7 +5,9 @@ from pathlib import Path
 import json
 from string import punctuation
 from lab_4_summarization_textrank.main import (SentenceEncoder,
-                                               SentencePreprocessor)
+                                               SentencePreprocessor,
+                                               SimilarityMatrix,
+                                               TextRankSummarizer)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -31,7 +33,7 @@ if __name__ == "__main__":
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
     punctuation = tuple(punctuation)
-    preprocessor = SentencePreprocessor(punctuation, stop_words)
+    preprocessor = SentencePreprocessor(stop_words, punctuation)
     encoder = SentenceEncoder()
 
     # for mark 6
@@ -40,6 +42,13 @@ if __name__ == "__main__":
     for sentence in sentences:
         print(sentence.get_encoded())
 
-    RESULT = 'Hi'
+    # for mark 8
+    matrix = SimilarityMatrix()
+    matrix.fill_from_sentences(sentences)
+    summarizer = TextRankSummarizer(matrix)
+    summarizer.train()
+
+    RESULT = summarizer.make_summary(3)
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

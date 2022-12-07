@@ -4,6 +4,7 @@ Summarize text using TextRank algorithm
 """
 import re
 from typing import Union, Any, Type
+from itertools import combinations
 
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
@@ -40,7 +41,7 @@ def check_collection(user_var: Any,
             num_errors += 1
     if num_errors == len(expected_collection_type):
         raise ValueError
-    if not (expected_elements_type is None):
+    if expected_elements_type is not None:
         for i in user_var:
             check_type(i, expected_elements_type)
 
@@ -173,12 +174,6 @@ class SentenceEncoder(TextEncoder):
     A class to encode string sequence into matching integer sequence
     """
 
-    def __init__(self) -> None:
-        """
-        Constructs all the necessary attributes
-        """
-        super().__init__()
-
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other
@@ -263,6 +258,7 @@ class SimilarityMatrix:
         if vertex1 == vertex2:
             raise ValueError
         for vertex in vertex1, vertex2:
+            check_type(vertex, Sentence)
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
                 self._matrix.append([])
@@ -297,13 +293,10 @@ class SimilarityMatrix:
         :return:
         """
         check_collection(sentences, tuple, Sentence)
-        encoded_sentences = []
         for sentence1 in sentences:
-            if encoded_sentence1 := sentence1.get_encoded() not in encoded_sentences:
-                encoded_sentences.append(encoded_sentence1)
-                for sentence2 in sentences:
-                    if encoded_sentence1 != sentence2.get_encoded():
-                        self.add_edge(sentence1, sentence2)
+            for sentence2 in sentences:
+                if sentence1.get_encoded() != sentence2.get_encoded():
+                    self.add_edge(sentence1, sentence2)
 
 
 class TextRankSummarizer:
@@ -319,7 +312,11 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -331,7 +328,9 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -359,7 +358,8 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        check_type(n_sentences, int)
+        return tuple(sorted(self._scores, key=lambda sent: self._scores[sent], reverse=True))[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -367,7 +367,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        check_type(n_sentences, int)
+        sorted_sent = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        return '\n'.join(sent.get_text() for sent in sorted_sent)
 
 
 class Buddy:
