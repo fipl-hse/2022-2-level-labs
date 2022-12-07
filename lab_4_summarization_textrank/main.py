@@ -4,7 +4,6 @@ Summarize text using TextRank algorithm
 """
 import re
 from typing import Union, Any, Type
-from itertools import combinations
 
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
@@ -25,8 +24,8 @@ def check_type(user_var: Any, expected_type: Type) -> None:
 
 
 def check_collection(user_var: Any,
-                     *expected_collection_type: Type,
-                     expected_elements_type: Union[None, Type] = None) -> None:
+                     expected_elements_type: Union[None, Type] = None,
+                     *expected_collection_type: Type) -> None:
     """
     Checks whether type of user_var is at least one of expected_collection_type,
     checks whether type of elements in user_var are expected_elements_type,
@@ -91,7 +90,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_collection(preprocessed_sentence, tuple, str)
+        check_collection(preprocessed_sentence, str, tuple)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -107,7 +106,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_collection(encoded_sentence, tuple, int)
+        check_collection(encoded_sentence, int, tuple)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -127,8 +126,8 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        check_collection(stop_words, tuple, str)
-        check_collection(punctuation, tuple, str)
+        check_collection(stop_words, str, tuple)
+        check_collection(punctuation, str, tuple)
         super().__init__(stop_words, punctuation)
         self._stop_words = stop_words
         self._punctuation = punctuation
@@ -153,7 +152,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        check_collection(sentences, tuple, Sentence)
+        check_collection(sentences, Sentence, tuple)
         for sentence in sentences:
             preprocessed = self.preprocess_text(sentence.get_text())
             sentence.set_preprocessed(preprocessed)
@@ -180,7 +179,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_collection(tokens, tuple, str)
+        check_collection(tokens, str, tuple)
         my_tokens = (token for token in tokens if token not in self._word2id)
         for ind, token in enumerate(my_tokens, start=1000 + len(self._word2id)):
             self._word2id[token] = ind
@@ -192,7 +191,7 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        check_collection(sentences, tuple, Sentence)
+        check_collection(sentences, Sentence, tuple)
         for sentence in sentences:
             self._learn_indices(sentence.get_preprocessed())
             sentence.set_encoded(tuple(self._word2id[word] for word in sentence.get_preprocessed()))
@@ -205,8 +204,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_collection(sequence, list, tuple)
-    check_collection(other_sequence, list, tuple)
+    check_collection(sequence, tuple, list)
+    check_collection(other_sequence, tuple, list)
     if not sequence or not other_sequence:
         return 0.
     set_sequence = set(sequence)
@@ -292,7 +291,7 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        check_collection(sentences, tuple, Sentence)
+        check_collection(sentences, Sentence, tuple)
         for sentence1 in sentences:
             for sentence2 in sentences:
                 if sentence1.get_encoded() != sentence2.get_encoded():
