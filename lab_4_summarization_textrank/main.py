@@ -24,16 +24,25 @@ def check_type(user_var: Any, expected_type: Type) -> None:
 
 
 def check_collection(user_var: Any,
-                     expected_collection_type: Type,
-                     expected_elements_type: Type) -> None:
+                     *expected_collection_type: Type,
+                     expected_elements_type: Union[None, Type] = None) -> None:
     """
-    Checks whether type of user_var is expected_collection_type,
-    checks whether type of elements in user_var are expected_elements_type
+    Checks whether type of user_var is at least one of expected_collection_type,
+    checks whether type of elements in user_var are expected_elements_type,
     if not - raises ValueError
+    if expected_elements_type is not defined by user, doesn't check elements
     """
-    check_type(user_var, expected_collection_type)
-    for i in user_var:
-        check_type(i, expected_elements_type)
+    num_errors = 0
+    for i in expected_collection_type:
+        try:
+            check_type(user_var, i)
+        except ValueError:
+            num_errors += 1
+    if num_errors == len(expected_collection_type):
+        raise ValueError
+    if not (expected_elements_type is None):
+        for i in user_var:
+            check_type(i, expected_elements_type)
 
 
 class Sentence:
@@ -201,7 +210,15 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    check_collection(sequence, list, tuple)
+    check_collection(other_sequence, list, tuple)
+    if not sequence or not other_sequence:
+        return 0.
+    set_sequence = set(sequence)
+    set_other_sequence = set(other_sequence)
+    general_elements = set_sequence & set_other_sequence
+    unique_elements = set_sequence | set_other_sequence
+    return len(general_elements) / len(unique_elements)
 
 
 class SimilarityMatrix:
@@ -215,14 +232,15 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+        self._vertices = []
+        self._matrix = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -230,7 +248,10 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        check_type(vertex, Sentence)
+        if vertex not in self._vertices:
+            raise ValueError
+        return sum(i > 0 for i in self._matrix[self._vertices.index(vertex)])
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -239,7 +260,22 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        if vertex1 == vertex2:
+            raise ValueError
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
+
+        for edges_list in self._matrix:
+            if len(edges_list) < len(self._vertices):
+                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
+
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        similarity = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+        self._matrix[idx1][idx2] = similarity
+        self._matrix[idx2][idx1] = similarity
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -248,7 +284,11 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        idx1 = self._vertices.index(sentence)
+        idx2 = self._vertices.index(other_sentence)
+        return self._matrix[idx1][idx2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -256,7 +296,14 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        check_collection(sentences, tuple, Sentence)
+        encoded_sentences = []
+        for sentence1 in sentences:
+            if encoded_sentence1 := sentence1.get_encoded() not in encoded_sentences:
+                encoded_sentences.append(encoded_sentence1)
+                for sentence2 in sentences:
+                    if encoded_sentence1 != sentence2.get_encoded():
+                        self.add_edge(sentence1, sentence2)
 
 
 class TextRankSummarizer:

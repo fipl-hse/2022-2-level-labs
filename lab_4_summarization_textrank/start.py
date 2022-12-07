@@ -34,7 +34,7 @@ if __name__ == "__main__":
     preprocessor = SentencePreprocessor(punctuation, stop_words)
     encoder = SentenceEncoder()
 
-    #   for mark 6
+    # for mark 6
     sentences = preprocessor.get_sentences(text)
     encoder.encode_sentences(sentences)
     for sentence in sentences:
