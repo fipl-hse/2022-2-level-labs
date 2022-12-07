@@ -61,7 +61,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     for phrase in phrases:
         phrase = phrase.lower()
         phrase_list.append(phrase.split())
-    for phrase in phrase_list:
+    for phrase in phrase_list:  # Incompatible types in assignment (expression has type "List[str]", variable has type "str")  [assignment]
         for word in phrase:
             if word not in stop_words:
                 tuple_list.append(word)
@@ -156,14 +156,14 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             if word not in word_scores.keys():
                 return None
     keyword_phrases_with_scores = dict.fromkeys(candidate_keyword_phrases)
-    pure_score = 0
+    pure_score = 0.0
     for key in keyword_phrases_with_scores:
         for word in key:
             if word in word_scores:
-                pure_score += word_scores.get(word)
+                pure_score += word_scores.get(word)  # Unsupported operand types for + ("int" and "None")  [operator]
         keyword_phrases_with_scores[key] = pure_score
-        pure_score = 0
-    return keyword_phrases_with_scores
+        pure_score = 0.0
+    return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...], Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -214,7 +214,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
         return None
     keyword_pairs = list(pairwise(candidate_keyword_phrases))
     good_keyword_pairs = [keyword_pair for keyword_pair in set(keyword_pairs)
-                           if keyword_pairs.count(keyword_pair) >= 2]
+                          if keyword_pairs.count(keyword_pair) >= 2]
     adjoined_phrases = []
     for phrase in phrases:
         phrase = phrase.lower()
@@ -230,7 +230,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
                         if ' '.join(adjoined_phrase) in phrase:
                             adjoined_phrases.append(tuple(adjoined_phrase))
     good_adjoined_phrases = [adjoined_phrase for adjoined_phrase in set(adjoined_phrases)
-                              if adjoined_phrases.count(adjoined_phrase) >= 2]
+                             if adjoined_phrases.count(adjoined_phrase) >= 2]
     return good_adjoined_phrases
 
 
@@ -296,7 +296,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return None
     with open(path, 'r', encoding='utf-8') as f:
         array = json.load(f)
-    return array
+    return array  # Returning Any from function declared to return "Optional[Mapping[str, Sequence[str]]]"  [no-any-return]
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
@@ -307,13 +307,13 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     from the text).
     Returns extracted key phrases or None if something goes wrong.
     """
-    candidate_keyword_phrases, content_words_freqs, word_degrees, word_scores, keyword_phrases_with_scores, \
-    good_adjoined_phrases, all_phrases_scores = [None for _ in range(7)]
+    candidate_keyword_phrases, content_words_freqs, word_degrees, word_scores, keyword_phrases_with_scores,\
+        good_adjoined_phrases, all_phrases_scores = [None for _ in range(7)]
 
     phrases = extract_phrases(text)
 
     if not stop_words and not max_length:
-        stop_words = generate_stop_words(text, max_length)
+        stop_words = generate_stop_words(text, max_length)  # error: Argument 2 to "generate_stop_words" has incompatible type "Optional[int]"; expected "int"  [arg-type]
 
     if phrases and stop_words:
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)

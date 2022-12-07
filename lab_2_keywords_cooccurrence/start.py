@@ -48,15 +48,15 @@ if __name__ == "__main__":
             print('text', get_top_n(processed_text, 10, 4), "\n")
 
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
-    stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')  # Incompatible types in assignment (expression has type "Optional[Mapping[str, Sequence[str]]]", variable has type "List[str]")  [assignment]
     processed_polish = process_text(polish_text, stop_words)
     if processed_polish:
-        print('polish_text', get_top_n(process_text(polish_text), 10, 4), "\n")
+        print('polish_text', get_top_n(process_text(polish_text), 10, 4), "\n")  # Incompatible types in assignment (expression has type "Optional[Mapping[str, Sequence[str]]]", variable has type "List[str]")  [assignment]
 
     unknown_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     processed_unknown = process_text(unknown_text, stop_words)
     if processed_unknown:
-        print('unknown_text', get_top_n(process_text(unknown_text), 10, 4), "\n")
+        print('unknown_text', get_top_n(process_text(unknown_text), 10, 4), "\n")  # Argument 1 to "get_top_n" has incompatible type "Optional[Mapping[Tuple[str, ...], float]]"; expected "Mapping[Tuple[str, ...], float]"  [arg-type]
 
 RESULT = True
 
