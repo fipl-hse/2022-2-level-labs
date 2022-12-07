@@ -16,7 +16,13 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     :return: a list of phrases
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not isinstance(text, str) or not text:
+        return None
+    punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
+    for punc in punctuation:
+        text = text.replace(punc, ',')
+    split_text = text.split(',')
+
 #####
 
 
@@ -28,7 +34,25 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     :return: the candidate keyword phrases for the text
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not (isinstance(phrases, list) and isinstance(stop_words, list) and stop_words and phrases):
+        return None
+    key_word_phrases = []
+    for phrase in phrases:
+        lower_case = phrase.lower()
+        words_in_phrase = lower_case.split()
+        candidates = []
+        for word in words_in_phrase:
+            if word in stop_words:
+                if candidates:
+                    candidates_tuple = tuple(candidates)
+                    key_word_phrases.append(candidates_tuple)
+                    candidates.clear()
+                continue
+            candidates.append(word)
+        if candidates:
+            rest_of_words = tuple(candidates)
+            key_word_phrases.append(rest_of_words)
+    return key_word_phrases
 
 
 def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrases) -> Optional[Mapping[str, int]]:
@@ -38,7 +62,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     :return: a dictionary with the content words and corresponding frequencies
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False):
+        return None
+    frequencies_for_content_words = {}
+    for phrase in candidate_keyword_phrases:
+        for word in phrase:
+            frequencies_for_content_words[word] = frequencies_for_content_words.get(word, 0) + 1
+    return frequencies_for_content_words
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -51,7 +81,16 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     :return: the words and their degrees
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(content_words, str, False):
+        return None
+    word_degrees = {}
+    for phrase in candidate_keyword_phrases:
+        for word in content_words:
+            if word in phrase:
+                word_degrees[word] = word_degrees.get(word, 0) + len(phrase)
+            elif word not in word_degrees:
+                word_degrees[word] = 0
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
