@@ -278,7 +278,7 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     all_words_freqs = {}
     for index, word in enumerate(all_words_final):
         all_words_freqs.update({all_words_final[index]: all_words_final.count(word)})
-    percent_80 = sorted(all_words_freqs.values(), reverse=True)[int(len(all_words_freqs) * 0.2)]
+    percent_80 = sorted(all_words_freqs.values(), reverse=True)[int(len(all_words_freqs) * 0.2)-1]
     stop_words = []
     for key, value in all_words_freqs.items():
         if value >= percent_80:
