@@ -4,7 +4,7 @@ TextRank summarizer starter
 from pathlib import Path
 import json
 from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, \
-    SimilarityMatrix, TextRankSummarizer
+    SimilarityMatrix, TextRankSummarizer, NoRelevantTextsError, IncorrectQueryError, Buddy
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -27,7 +27,10 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
-    SENTENCE_PREPROCESSOR = SentencePreprocessor(stop_words, tuple('.,!?-:;()&'))
+    punctuation = tuple(mark for mark in ['.,!?-:;()&'])
+    paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+
+    SENTENCE_PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
     SENTENCES = SENTENCE_PREPROCESSOR.get_sentences(text)
     SENTENCE_ENCODER = SentenceEncoder()
     SENTENCE_ENCODER.encode_sentences(SENTENCES)
@@ -38,6 +41,10 @@ if __name__ == "__main__":
     TEXT_RANK = TextRankSummarizer(MATRIX)
     TEXT_RANK.train()
     SUMMARY = TEXT_RANK.make_summary(10)
+
+    BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    USER_INPUT = 'Юрий Алексеевич Гагарин это кто?'
+    print(BUDDY.reply(USER_INPUT))
 
     RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
