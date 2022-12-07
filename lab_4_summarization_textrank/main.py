@@ -122,7 +122,7 @@ class SentencePreprocessor(TextPreprocessor):
         if not isinstance(text, str):
             raise ValueError
         text = text.replace('\n', ' ').replace('  ', ' ')
-        sentences = re.split(r'(?<=[?!.]) (?=[А-ЯA-Z])', text)
+        sentences = re.split(r'(?<=[?!.])\s+(?=[А-ЯA-Z])', text)
         sentences_list = []
         for index, sentence in enumerate(sentences):
             sentences_list.append(Sentence(sentence, index))
