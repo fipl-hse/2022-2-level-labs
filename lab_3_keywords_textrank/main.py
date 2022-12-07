@@ -69,8 +69,8 @@ class TextPreprocessor:
                 clean lowercase tokens
         """
         if self._punctuation:
-            for punc in self._punctuation:
-                text = text.replace(punc, '')
+            for char in self._punctuation:
+                text = text.replace(char, '')
         return tuple(text.lower().split())
 
     # Step 1.3
@@ -86,7 +86,9 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(token for token in tokens if token not in self._stop_words)
+        for token in tokens:
+            if token not in self._stop_words:
+        return tuple()
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
