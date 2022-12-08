@@ -5,8 +5,7 @@ from pathlib import Path
 import json
 from string import punctuation
 from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder,
-                                               SimilarityMatrix, calculate_similarity,
-                                               TextRankSummarizer)
+                                               SimilarityMatrix, TextRankSummarizer)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
