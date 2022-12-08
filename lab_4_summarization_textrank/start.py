@@ -3,6 +3,7 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
+from lab_4_summarization_textrank.main import Sentence, SentencePreprocessor, SentenceEncoder, SimilarityMatrix
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -27,6 +28,18 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    RESULT = None
+    '''
+    В файле start.py в переменной text находится одна из статей. Выделите из неё предложения и закодируйте их.
+    '''
+    preprocessor = SentencePreprocessor(('!', '?', '.'), stop_words)
+    proc_sentences = preprocessor.get_sentences(text)
+    encoder = SentenceEncoder()
+    encoder.encode_sentences(proc_sentences)
+    enc_sentences = []
+    for sentence in proc_sentences:
+        enc = sentence.get_encoded()
+        enc_sentences.append(enc)
+    print(enc_sentences)
+    RESULT = enc_sentences
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
