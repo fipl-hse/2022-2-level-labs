@@ -425,43 +425,24 @@ class Buddy:
         :return:
         """
         check_type(path_to_text, str)
-        with open(path_to_text, encoding='utf-8') as file:
+        with open(path_to_text, 'r', encoding='utf-8') as file:
             text = file.read()
-        preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
-        sentences = preprocessor.get_sentences(text)
-        self._sentence_encoder.encode_sentences(sentences)
-        preprocessed_text = self._text_preprocessor.preprocess_text(text)
-        tf_idf = TFIDFAdapter(preprocessed_text, self._idf_values)
-        tf_idf.train()
-        number_of_keywords = 100
-        keywords = tf_idf.get_top_keywords(number_of_keywords)
-        similarity_matrix = SimilarityMatrix()
-        similarity_matrix.fill_from_sentences(sentences)
-        summarizer = TextRankSummarizer(similarity_matrix)
-        summarizer.train()
-        summary = '\n'.join([i.get_text() for i in sorted(summarizer.get_top_sentences(5),
-                                                          key=lambda x: x.get_position())])
-        key = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
-        self._knowledge_database[path_to_text] = key
-        # with open(path_to_text, 'r', encoding='utf-8') as file:
-        #     check_type(path_to_text, str)
-        #     text = file.read()
-        #
-        #     sentences = self._sentence_preprocessor.get_sentences(text)
-        #     self._sentence_encoder.encode_sentences(sentences)
-        #     tokens = self._text_preprocessor.preprocess_text(text)
-        #
-        #     tfidf = TFIDFAdapter(tokens, self._idf_values)
-        #     tfidf.train()
-        #     keywords = tfidf.get_top_keywords(100)
-        #
-        #     matrix = SimilarityMatrix()
-        #     matrix.fill_from_sentences(sentences)
-        #     summarizer = TextRankSummarizer(matrix)
-        #     summarizer.train()
-        #     summary = summarizer.make_summary(5)
-        #
-        #     self._knowledge_database[path_to_text] = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
+
+            sentences = self._sentence_preprocessor.get_sentences(text)
+            self._sentence_encoder.encode_sentences(sentences)
+            tokens = self._text_preprocessor.preprocess_text(text)
+
+            tfidf = TFIDFAdapter(tokens, self._idf_values)
+            tfidf.train()
+            keywords = tfidf.get_top_keywords(100)
+
+            matrix = SimilarityMatrix()
+            matrix.fill_from_sentences(sentences)
+            summarizer = TextRankSummarizer(matrix)
+            summarizer.train()
+            summary = summarizer.make_summary(5)
+
+            self._knowledge_database[path_to_text] = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
