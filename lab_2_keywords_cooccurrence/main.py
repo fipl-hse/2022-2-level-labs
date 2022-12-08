@@ -19,9 +19,11 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     if not isinstance(text, str) or not text:
         return None
     punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
-    for punc in punctuation:
-        text = text.replace(punc, ',')
-    split_text = text.split(',')
+    for punc in text:
+        if punc in punctuation:
+            text = text.replace(punc, ',')
+    phrases = text.split(',')
+    return [phrase.strip() for phrase in phrases if phrase.strip()]
 
 #####
 
@@ -38,20 +40,19 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
         return None
     key_word_phrases = []
     for phrase in phrases:
-        lower_case = phrase.lower()
-        words_in_phrase = lower_case.split()
+        words_in_phrase = phrase.lower().split()
         candidates = []
         for word in words_in_phrase:
             if word in stop_words:
                 if candidates:
-                    candidates_tuple = tuple(candidates)
-                    key_word_phrases.append(candidates_tuple)
+                    key_word_phrases.append(tuple(candidates))
                     candidates.clear()
-                continue
-            candidates.append(word)
-        if candidates:
-            rest_of_words = tuple(candidates)
-            key_word_phrases.append(rest_of_words)
+            elif word == words_in_phrase[len(words_in_phrase) - 1]:
+                candidates.append(word)
+                key_word_phrases.append(tuple(candidates))
+                candidates.clear()
+            else:
+                candidates.append(word)
     return key_word_phrases
 
 
@@ -62,13 +63,13 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
     :return: a dictionary with the content words and corresponding frequencies
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, tuple, False):
+    if not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []:
         return None
-    frequencies_for_content_words = {}
+    freq = {}
     for phrase in candidate_keyword_phrases:
         for word in phrase:
-            frequencies_for_content_words[word] = frequencies_for_content_words.get(word, 0) + 1
-    return frequencies_for_content_words
+            freq[word] = freq.get(word, 0) + 1
+    return freq
 
 
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
@@ -81,7 +82,8 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
     :return: the words and their degrees
     In case of corrupt input arguments, None is returned
     """
-    if not check_list(candidate_keyword_phrases, tuple, False) or not check_list(content_words, str, False):
+    if (not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []
+            or not isinstance(content_words, list) or content_words == []):
         return None
     word_degrees = {}
     for phrase in candidate_keyword_phrases:
@@ -102,7 +104,16 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     :return: a dictionary with {word: word_score}
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if (not isinstance(word_degrees, dict) or word_degrees == {}
+            or not isinstance(word_frequencies, dict) or word_frequencies == {}):
+        return None
+    for word in word_degrees:
+        if word not in word_frequencies:
+            return None
+    score = {}
+    for word in word_degrees.keys():
+        score[word] = word_degrees[word] / word_frequencies[word]
+    return score
 
 
 def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhrases,
@@ -115,7 +126,22 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     :return: a dictionary containing the mapping between the candidate keyword phrases and respective cumulative scores
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if (not isinstance(candidate_keyword_phrases, list) or candidate_keyword_phrases == []
+            or not isinstance(word_scores, dict) or not word_scores):
+        return None
+    cumulat = {}
+    for phrase in candidate_keyword_phrases:
+        cumulat_score = 0
+        for word in phrase:
+            if word not in word_scores:
+                return None
+            else:
+                cumulat_score += word_scores[word]
+        cumulat[phrase] = cumulat_score
+    return cumulat
+
+
+
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
@@ -129,7 +155,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     :return: a list of keyword phrases sorted by their scores in descending order
     In case of corrupt input arguments, None is returned
     """
-    pass
+
 
 
 def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: KeyPhrases,
