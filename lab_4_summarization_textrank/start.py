@@ -7,7 +7,9 @@ import json
 from lab_4_summarization_textrank.main import (SentenceEncoder,
                                                SentencePreprocessor,
                                                SimilarityMatrix,
-                                               TextRankSummarizer)
+                                               TextRankSummarizer,
+                                               Buddy,
+                                               NoRelevantTextsError)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -32,7 +34,8 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    preprocessor = SentencePreprocessor(stop_words, tuple(string.punctuation))
+    punctuation = tuple(string.punctuation)
+    preprocessor = SentencePreprocessor(stop_words, punctuation)
     encoder = SentenceEncoder()
 
     # for mark 6
@@ -47,7 +50,14 @@ if __name__ == "__main__":
     summarizer = TextRankSummarizer(matrix)
     summarizer.train()
 
-    RESULT = summarizer.make_summary(3)
-    print(RESULT)
+    # for mark 10
+    buddy = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    query = 'В чём смысл жизни?'
+    try:
+        buddy.reply(query)
+    except NoRelevantTextsError:
+        print('Не знаю…')
+
+    RESULT = 'hi'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

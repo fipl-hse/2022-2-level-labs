@@ -6,7 +6,7 @@ import re
 from typing import Union, Any, Type
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+    TextPreprocessor, TFIDFAdapter
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -167,6 +167,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
+        check_type(text, str)
         split_text = self._split_by_sentence(text)
         self._preprocess_sentences(split_text)
         return split_text
@@ -378,6 +379,14 @@ class TextRankSummarizer:
         return '\n'.join(sent.get_text() for sent in sorted_sent)
 
 
+class NoRelevantTextsError(Exception):
+    pass
+
+
+class IncorrectQueryError(Exception):
+    pass
+
+
 class Buddy:
     """
     (Almost) All-knowing entity
@@ -397,7 +406,17 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf_values = idf_values
+        self._text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        self._sentence_encoder = SentenceEncoder()
+        self._sentence_preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        self._paths_to_texts = paths_to_texts
+        self._knowledge_database = {}
+
+        for path in self._paths_to_texts:
+            self.add_text_to_database(path)
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """
@@ -405,7 +424,44 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        pass
+        check_type(path_to_text, str)
+        with open(path_to_text, encoding='utf-8') as file:
+            text = file.read()
+        preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        sentences = preprocessor.get_sentences(text)
+        self._sentence_encoder.encode_sentences(sentences)
+        preprocessed_text = self._text_preprocessor.preprocess_text(text)
+        tf_idf = TFIDFAdapter(preprocessed_text, self._idf_values)
+        tf_idf.train()
+        number_of_keywords = 100
+        keywords = tf_idf.get_top_keywords(number_of_keywords)
+        similarity_matrix = SimilarityMatrix()
+        similarity_matrix.fill_from_sentences(sentences)
+        summarizer = TextRankSummarizer(similarity_matrix)
+        summarizer.train()
+        summary = '\n'.join([i.get_text() for i in sorted(summarizer.get_top_sentences(5),
+                                                          key=lambda x: x.get_position())])
+        key = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
+        self._knowledge_database[path_to_text] = key
+        # with open(path_to_text, 'r', encoding='utf-8') as file:
+        #     check_type(path_to_text, str)
+        #     text = file.read()
+        #
+        #     sentences = self._sentence_preprocessor.get_sentences(text)
+        #     self._sentence_encoder.encode_sentences(sentences)
+        #     tokens = self._text_preprocessor.preprocess_text(text)
+        #
+        #     tfidf = TFIDFAdapter(tokens, self._idf_values)
+        #     tfidf.train()
+        #     keywords = tfidf.get_top_keywords(100)
+        #
+        #     matrix = SimilarityMatrix()
+        #     matrix.fill_from_sentences(sentences)
+        #     summarizer = TextRankSummarizer(matrix)
+        #     summarizer.train()
+        #     summary = summarizer.make_summary(5)
+        #
+        #     self._knowledge_database[path_to_text] = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
@@ -414,7 +470,12 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        pass
+        check_collection(keywords,  str, tuple)
+        check_type(n_texts, int)
+        similarity = {k: calculate_similarity(v['keywords'], keywords) for k, v in self._knowledge_database.items()}
+        if not any(similarity.values()):
+            raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
+        return tuple(sorted(similarity.keys(), key=lambda key: similarity[key], reverse=True)[:n_texts])
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
@@ -423,4 +484,11 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        pass
+        if not query or not isinstance(query, str):
+            raise IncorrectQueryError('Incorrect query. Use string as input.')
+        check_type(n_summaries, int)
+        if n_summaries > len(self._knowledge_database):
+            raise ValueError
+        keywords = self._sentence_preprocessor.preprocess_text(query)
+        close_texts = self._find_texts_close_to_keywords(keywords, n_summaries)
+        return 'Ответ:\n' + '\n\n'.join(close_texts)
