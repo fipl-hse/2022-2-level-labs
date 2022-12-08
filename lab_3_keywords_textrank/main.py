@@ -314,7 +314,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._vertices)
+        return tuple(self._vertices) # реализация метода
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -560,7 +560,7 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        self._graph = graph
+        self._graph = graph  # создаем атрибуты
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
         self._max_iter = 50
