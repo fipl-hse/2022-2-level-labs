@@ -61,8 +61,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     for phrase in phrases:
         phrase = phrase.lower()
         phrase_list.append(phrase.split())
-    for phrase in phrase_list:  # Incompatible types in assignment (expression has type "List[str]",э
-        # variable has type "str")  [assignment]
+    for phrase in phrase_list:  # (expression has type "List[str]", variable has type "str")  [assignment]
         for word in phrase:
             if word not in stop_words:
                 tuple_list.append(word)
@@ -276,14 +275,14 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     for token in text_no_commas:
         word_list = token.strip().split(" ")
         all_words += word_list
-    all_words_final = [word for word in all_words if not len(word) > max_length]
+    all_words_final = [word for word in all_words]
     all_words_freqs = {}
     for index, word in enumerate(all_words_final):
         all_words_freqs.update({all_words_final[index]: all_words_final.count(word)})
-    percent_80 = sorted(all_words_freqs.values(), reverse=True)[int(len(all_words_freqs) * 0.2)-1]
+    percent_80 = sorted(all_words_freqs.values(), reverse=True)[int(len(all_words_freqs) * 0.2)]
     stop_words = []
     for key, value in all_words_freqs.items():
-        if value >= percent_80:
+        if value >= percent_80 and not len(key) > max_length:
             stop_words.append(key)
     return stop_words
 
@@ -316,7 +315,7 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     phrases = extract_phrases(text)
 
     if not stop_words and not max_length:
-        stop_words = generate_stop_words(text, max_length)  # error: Argument 2 to "generate_stop_words"
+        stop_words = generate_stop_words(text, 10)  # error: Argument 2 to "generate_stop_words"
         # has incompatible type "Optional[int]"; expected "int"  [arg-type]
 
     if phrases and stop_words:
