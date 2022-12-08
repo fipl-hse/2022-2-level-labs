@@ -41,8 +41,8 @@ if __name__ == "__main__":
     # for mark 6
     sentences = preprocessor.get_sentences(text)
     encoder.encode_sentences(sentences)
-    for sentence in sentences:
-        print(sentence.get_encoded())
+    # for sentence in sentences:
+    #     print(sentence.get_encoded())
 
     # for mark 8
     matrix = SimilarityMatrix()
@@ -52,9 +52,9 @@ if __name__ == "__main__":
 
     # for mark 10
     buddy = Buddy(paths_to_texts, stop_words, punctuation, idf)
-    query = 'В чём смысл жизни?'
+    QUERY = 'В чём смысл жизни?'
     try:
-        buddy.reply(query)
+        buddy.reply(QUERY)
     except NoRelevantTextsError:
         print('Не знаю…')
 

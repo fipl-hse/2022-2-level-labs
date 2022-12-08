@@ -406,6 +406,10 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
+        check_collection(paths_to_texts, str, list)
+        check_collection(stop_words, str, tuple)
+        check_collection(punctuation, str, tuple)
+        check_type(idf_values, dict)
         self._stop_words = stop_words
         self._punctuation = punctuation
         self._idf_values = idf_values
