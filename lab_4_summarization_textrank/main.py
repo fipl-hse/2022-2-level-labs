@@ -101,7 +101,17 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__(stop_words, punctuation)
+        if not isinstance(stop_words, tuple):
+            raise ValueError
+        if not isinstance(punctuation, tuple):
+            raise ValueError
+        if not all(isinstance(stop_word, str) for stop_word in stop_words):
+            raise ValueError
+        if not all(isinstance(symbol, str) for symbol in punctuation):
+            raise ValueError
+        self._stop_words = stop_words
+        self._punctuation = punctuation
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
