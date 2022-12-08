@@ -160,7 +160,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for key in keyword_phrases_with_scores:
         for word in key:
             if word in word_scores:
-                pure_score += float(word_scores.get(word))
+                pure_score += word_scores.get(word)
                 # Unsupported operand types for + ("int" and "None")  [operator]
         keyword_phrases_with_scores[key] = pure_score
         pure_score = 0.0
@@ -296,7 +296,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     if not is_not_empty_or_bad(path, Path):
         return None
     with open(path, 'r', encoding='utf-8') as f:
-        array = json.load(f)
+        array = dict(json.load(f))
     return array  # Returning Any from function declared to return
     # "Optional[Mapping[str, Sequence[str]]]"  [no-any-return]
 
