@@ -110,9 +110,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
         return None
     word_degrees = {}
     for word in content_words:
-        fuck = [item for item in candidate_keyword_phrases if word in item]
-        fuck_squared = [item for every_tuple in fuck for item in every_tuple]
-        word_deg_num = len(fuck_squared)
+        tuples_with_word = [item for item in candidate_keyword_phrases if word in item]
+        tuples_with_word_smushed = [item for every_tuple in tuples_with_word for item in every_tuple]
+        word_deg_num = len(tuples_with_word_smushed)
         word_degrees[word] = word_deg_num
     return word_degrees
 
@@ -160,7 +160,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     for key in keyword_phrases_with_scores:
         for word in key:
             if word in word_scores:
-                pure_score += word_scores.get(word)  # Unsupported operand types for + ("int" and "None")  [operator]
+                pure_score += word_scores.get(float(word))  # Unsupported operand types for + ("int" and "None")  [operator]
         keyword_phrases_with_scores[key] = pure_score
         pure_score = 0.0
     return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...],
