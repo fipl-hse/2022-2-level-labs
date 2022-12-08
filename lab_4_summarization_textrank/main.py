@@ -206,6 +206,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
+    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
+        raise ValueError
     if not sequence or not other_sequence:
         return 0.
     set_sequence = set(sequence)
@@ -254,7 +256,7 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        if vertex1 == vertex2:
+        if vertex1.get_encoded() == vertex2.get_encoded():
             raise ValueError
         for vertex in vertex1, vertex2:
             check_type(vertex, Sentence)
