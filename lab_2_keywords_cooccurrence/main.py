@@ -162,7 +162,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             if word in word_scores:
                 pure_score += word_scores.get(word)
                 # Unsupported operand types for + ("int" and "None")  [operator]
-        keyword_phrases_with_scores[key] = pure_score
+        keyword_phrases_with_scores[key] = float(pure_score)
         pure_score = 0.0
     return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...],
     # Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
