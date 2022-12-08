@@ -12,7 +12,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(user_var: Any, expected_type: Type) -> None:
+def check_type(user_var: Any, expected_type: Union[Type, tuple[Type, ...]]) -> None:
     """
     Checks whether type of user_var is expected_type,
     if not - raises ValueError
@@ -24,7 +24,7 @@ def check_type(user_var: Any, expected_type: Type) -> None:
 
 
 def check_collection(user_var: Any,
-                     expected_elements_type: Union[None, Type],
+                     expected_elements_type: Type,
                      *expected_collection_type: Type,
                      can_be_empty: bool = False) -> None:
     """
@@ -34,6 +34,8 @@ def check_collection(user_var: Any,
     if expected_elements_type is None, doesn't check elements
     """
     num_errors = 0
+    if can_be_empty is False and not user_var:
+        raise ValueError
     for i in expected_collection_type:
         try:
             check_type(user_var, i)
@@ -41,11 +43,8 @@ def check_collection(user_var: Any,
             num_errors += 1
     if num_errors == len(expected_collection_type):
         raise ValueError
-    if expected_elements_type is not None:
-        if not user_var:
-            raise ValueError
-        for i in user_var:
-            check_type(i, expected_elements_type)
+    for i in user_var:
+        check_type(i, expected_elements_type)
 
 
 class Sentence:
@@ -129,7 +128,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        check_collection(stop_words, str, tuple)
+        check_collection(stop_words, str, tuple, can_be_empty=True)
         check_collection(punctuation, str, tuple)
         super().__init__(stop_words, punctuation)
         self._stop_words = stop_words
@@ -207,8 +206,6 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_collection(sequence, None, tuple, list)
-    check_collection(other_sequence, None, tuple, list)
     if not sequence or not other_sequence:
         return 0.
     set_sequence = set(sequence)
