@@ -1,6 +1,7 @@
 """
 TextRank keyword extraction starter
 """
+
 from pathlib import Path
 from time import process_time
 import json
