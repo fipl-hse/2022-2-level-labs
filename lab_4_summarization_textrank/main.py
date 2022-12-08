@@ -129,7 +129,7 @@ class SentencePreprocessor(TextPreprocessor):
         Constructs all the necessary attributes
         """
         check_collection(stop_words, str, tuple, can_be_empty=True)
-        check_collection(punctuation, str, tuple)
+        check_collection(punctuation, str, tuple, can_be_empty=True)
         super().__init__(stop_words, punctuation)
         self._stop_words = stop_words
         self._punctuation = punctuation
@@ -256,7 +256,7 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        if vertex1.get_encoded() == vertex2.get_encoded():
+        if vertex1 == vertex2:
             raise ValueError
         for vertex in vertex1, vertex2:
             check_type(vertex, Sentence)
@@ -313,6 +313,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
+        check_type(graph, SimilarityMatrix)
         self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
@@ -329,6 +330,8 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
+        check_type(vertex, Sentence)
+        check_type(scores, dict)
         summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
                     for inc_vertex in incidental_vertices)
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
