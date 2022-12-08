@@ -62,6 +62,6 @@ if __name__ == "__main__":
         # incompatible type "Optional[Mapping[Tuple[str, ...], float]]";
         # expected "Mapping[Tuple[str, ...], float]"  [arg-type]
 
-RESULT = True
+    RESULT = processed_unknown
 
-assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'

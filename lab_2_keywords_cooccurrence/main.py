@@ -88,8 +88,8 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
         return None
     content_words_list = [item for every_tuple in candidate_keyword_phrases for item in every_tuple]
     content_words_freqs = {}
-    for index, word in enumerate(content_words_list):
-        content_words_freqs.update({content_words_list[index]: content_words_list.count(word)})
+    for word in content_words_list:
+        content_words_freqs[word] = content_words_list.count(word)
     return content_words_freqs
 
 
