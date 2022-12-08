@@ -179,7 +179,7 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     if not isinstance(max_length, int) or not max_length > 0:
         return None
 
-    sort_phr = sorted(keyword_phrases_with_scores.keys(), key = lambda x: keyword_phrases_with_scores[x], reverse = True)
+    sort_phr = sorted(keyword_phrases_with_scores.keys(), key=lambda x: keyword_phrases_with_scores[x], reverse=True)
     top_list = []
     for el in sort_phr:
         if len(el) <= max_length:
@@ -246,38 +246,3 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :return: a dictionary containing the language names and corresponding stop word lists
     """
     pass
-
-def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
-        -> Optional[Mapping[KeyPhrase, float]]:
-    """
-    Uses previous functions to process a text and extract key phrases.
-    Accepts raw text and stop words list (or maximum length of a stop word if they have to be generated
-    from the text).
-    Returns extracted key phrases or None if something goes wrong.
-    """
-    candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
-        candidates_adjoined, cumulative_score_with_stop_words = repeat(None, 7)
-    phrases = extract_phrases(text)
-    if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
-        stop_words = stop_words_generated
-    if phrases and stop_words:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
-    if candidate_keyword_phrases:
-        word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-    if candidate_keyword_phrases and word_frequencies:
-        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
-    if word_degrees and word_frequencies:
-        word_scores = calculate_word_scores(word_degrees, word_frequencies)
-    if candidate_keyword_phrases and word_scores:
-        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
-    if candidate_keyword_phrases and phrases:
-        candidates_adjoined = \
-            extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
-    if candidates_adjoined and word_scores and stop_words:
-        cumulative_score_with_stop_words = \
-            calculate_cumulative_score_for_candidates_with_stop_words(candidates_adjoined, word_scores, stop_words)
-    else:
-        cumulative_score_with_stop_words = {}
-    if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
-        return {**keyword_phrases_with_scores, **cumulative_score_with_stop_words}
-    return None
