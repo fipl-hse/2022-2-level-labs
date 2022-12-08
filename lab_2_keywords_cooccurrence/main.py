@@ -82,6 +82,7 @@ def calculate_frequencies_for_content_words(candidate_keyword_phrases: KeyPhrase
             freq_dict[word] = freq_dict.get(word, 0) + 1
         return freq_dict
 
+
 def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
                            content_words: Sequence[str]) -> Optional[Mapping[str, int]]:
     """

@@ -51,3 +51,4 @@ if __name__ == "__main__":
     RESULT = get_top_n(PHRASES_SCORES, 10, 4)
 
     assert RESULT, 'Keywords are not extracted'
+
