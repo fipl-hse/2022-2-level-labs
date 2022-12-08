@@ -1,9 +1,9 @@
 """
 TextRank summarizer starter
 """
+import string
 from pathlib import Path
 import json
-from string import punctuation
 from lab_4_summarization_textrank.main import (SentenceEncoder,
                                                SentencePreprocessor,
                                                SimilarityMatrix,
@@ -32,8 +32,7 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    punctuation = tuple(punctuation)
-    preprocessor = SentencePreprocessor(stop_words, punctuation)
+    preprocessor = SentencePreprocessor(stop_words, tuple(string.punctuation))
     encoder = SentenceEncoder()
 
     # for mark 6

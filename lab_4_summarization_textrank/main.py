@@ -51,6 +51,8 @@ class Sentence:
     """
     An abstraction over the real-world sentences
     """
+    _preprocessed:  tuple[str, ...]
+     _encoded: tuple[int, ...]
 
     def __init__(self, text: str, position: int) -> None:
         """
@@ -206,8 +208,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
-        raise ValueError
+    check_type(sequence, (list, tuple))
+    check_type(other_sequence, (list, tuple))
     if not sequence or not other_sequence:
         return 0.
     set_sequence = set(sequence)
