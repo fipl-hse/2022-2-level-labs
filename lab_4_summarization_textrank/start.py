@@ -52,11 +52,12 @@ if __name__ == "__main__":
 
     # for mark 10
     buddy = Buddy(paths_to_texts, stop_words, punctuation, idf)
-    QUERY = 'В чём смысл жизни?'
-    try:
-        buddy.reply(QUERY)
-    except NoRelevantTextsError:
-        print('Не знаю…')
+    QUERY = ('Кто такой Юрий Гагарин', 'В чём смысл жизни?')
+    for i in QUERY:
+        try:
+            print(buddy.reply(i))
+        except NoRelevantTextsError:
+            print('Ответ:\nНе знаю…')
 
     RESULT = 'hi'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

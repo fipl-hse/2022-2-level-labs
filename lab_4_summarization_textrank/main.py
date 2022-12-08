@@ -94,7 +94,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_collection(preprocessed_sentence, str, tuple)
+        check_collection(preprocessed_sentence, str, tuple, can_be_empty=True)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -110,7 +110,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_collection(encoded_sentence, int, tuple)
+        check_collection(encoded_sentence, int, tuple, can_be_empty=True)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -156,7 +156,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        check_collection(sentences, Sentence, tuple)
+        check_collection(sentences, Sentence, tuple, can_be_empty=True)    # can_be_empty?
         for sentence in sentences:
             preprocessed = self.preprocess_text(sentence.get_text())
             sentence.set_preprocessed(preprocessed)
@@ -184,7 +184,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_collection(tokens, str, tuple)
+        check_collection(tokens, str, tuple, can_be_empty=True)    # can_be_empty?
         my_tokens = (token for token in tokens if token not in self._word2id)
         for ind, token in enumerate(my_tokens, start=1000 + len(self._word2id)):
             self._word2id[token] = ind
@@ -196,7 +196,7 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        check_collection(sentences, Sentence, tuple)
+        check_collection(sentences, Sentence, tuple, can_be_empty=True)
         for sentence in sentences:
             self._learn_indices(sentence.get_preprocessed())
             sentence.set_encoded(tuple(self._word2id[word] for word in sentence.get_preprocessed()))
@@ -334,6 +334,7 @@ class TextRankSummarizer:
         :return:
         """
         check_type(vertex, Sentence)
+        check_collection(incidental_vertices, Sentence, list, can_be_empty=True)
         check_type(scores, dict)
         summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
                     for inc_vertex in incidental_vertices)
@@ -460,7 +461,7 @@ class Buddy:
         similarity = {k: calculate_similarity(v['keywords'], keywords) for k, v in self._knowledge_database.items()}
         if not any(similarity.values()):
             raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
-        return tuple(sorted(similarity.keys(), key=lambda key: similarity[key], reverse=True)[:n_texts])
+        return tuple(sorted(sorted(similarity, reverse=True), key=lambda key: similarity[key], reverse=True)[:n_texts])
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
@@ -476,4 +477,4 @@ class Buddy:
             raise ValueError
         keywords = self._sentence_preprocessor.preprocess_text(query)
         close_texts = self._find_texts_close_to_keywords(keywords, n_summaries)
-        return 'Ответ:\n' + '\n\n'.join(close_texts)
+        return 'Ответ:\n' + '\n\n'.join(self._knowledge_database[text]['summary'] for text in close_texts)
