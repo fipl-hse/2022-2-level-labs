@@ -48,7 +48,7 @@ if __name__ == "__main__":
     WORD_DEGREE = calculate_word_degrees(CANDIDATE_PHRASES, list(WORD_FREQS.keys()))
     WORD_SCORES = calculate_word_scores(WORD_DEGREE, WORD_FREQS)
     PHRASES_SCORES = calculate_cumulative_score_for_candidates(CANDIDATE_PHRASES, WORD_SCORES)
-    RESULT = get_top_n(PHRASES_SCORES, 10, 4)
+    print(get_top_n(PHRASES_SCORES, 10, 4))
 
     assert RESULT, 'Keywords are not extracted'
 
