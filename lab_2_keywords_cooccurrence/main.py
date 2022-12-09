@@ -61,7 +61,7 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     for phrase in phrases:
         phrase = phrase.lower()
         phrase_list.append(phrase.split())
-    for phrase_supreme in phrase_list:  # (expression has type "List[str]", variable has type "str")  [assignment]
+    for phrase_supreme in phrase_list:
         for word in phrase_supreme:
             if word not in stop_words:
                 tuple_list.append(word)

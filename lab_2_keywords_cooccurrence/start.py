@@ -60,6 +60,6 @@ if __name__ == "__main__":
     if PROCESSED_UNKNOWN:
         print('unknown_text', get_top_n(PROCESSED_UNKNOWN, 10, 4), "\n")
 
-RESULT = True
+    RESULT = PROCESSED_UNKNOWN
 
-assert RESULT, 'Keywords are not extracted'
+    assert RESULT, 'Keywords are not extracted'
