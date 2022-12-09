@@ -53,13 +53,13 @@ if __name__ == "__main__":
     if stop_words:
         processed_polish = process_text(polish_text, stop_words['pl'])
         if processed_polish:
-            print('polish_text', get_top_n(process_text(polish_text), 10, 4), "\n")  # Incompatible types in assignment
+            print('polish_text', get_top_n(processed_polish, 10, 4), "\n")  # Incompatible types in assignment
         # (expression has type "Optional[Mapping[str, Sequence[str]]]", variable has type "List[str]")  [assignment]
 
     unknown_text = read_target_text(ASSETS_PATH / 'unknown.txt')
     processed_unknown = process_text(unknown_text, stop_words)
     if processed_unknown:
-        print('unknown_text', get_top_n(process_text(unknown_text), 10, 4), "\n")  # Argument 1 to "get_top_n" has
+        print('unknown_text', get_top_n(processed_unknown, 10, 4), "\n")  # Argument 1 to "get_top_n" has
         # incompatible type "Optional[Mapping[Tuple[str, ...], float]]";
         # expected "Mapping[Tuple[str, ...], float]"  [arg-type]
 
