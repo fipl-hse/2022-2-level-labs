@@ -156,14 +156,11 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             if word not in word_scores.keys():
                 return None
     keyword_phrases_with_scores = dict.fromkeys(candidate_keyword_phrases)
-    pure_score = 0.0
     for key in keyword_phrases_with_scores:
         for word in key:
-            if word in word_scores:
-                pure_score += word_scores.get(word)
-                # Unsupported operand types for + ("int" and "None")  [operator]
-        keyword_phrases_with_scores[key] = pure_score
-        pure_score = 0.0
+            if word not in word_scores:
+                return None
+        keyword_phrases_with_scores[key] = sum(word_scores[word] for word in key)
     return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...],
     # Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
 
@@ -297,8 +294,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return None
     with open(path, 'r', encoding='utf-8') as f:
         array = json.load(f)
-    return dict(array)  # Returning Any from function declared to return
-    # "Optional[Mapping[str, Sequence[str]]]"  [no-any-return]
+    return dict(array)
 
 
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
