@@ -155,6 +155,24 @@ def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
     :return: a list of keyword phrases sorted by their scores in descending order
     In case of corrupt input arguments, None is returned
     """
+    if (not isinstance(keyword_phrases_with_scores, dict)
+            or keyword_phrases_with_scores == {}
+            or not isinstance(top_n, int)
+            or top_n <= 0
+            or not isinstance(max_length, int)
+            or not max_length > 0):
+        return None
+    true_keywords_phrases = {}
+    for k, v in keyword_phrases_with_scores.items():
+        if len(k) <= max_length:
+            true_keywords_phrases[k] = v
+    sorted_list = sorted(true_keywords_phrases.items(), key=lambda x: x[1], reverse=True)
+    selected_number = sorted_list[:top_n]
+    n_list = []
+    for i in selected_number:
+        n_list.append(' '.join(i[0]))
+    return n_list
+
 
 
 
@@ -174,7 +192,10 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     :return: a list containing the pairs of candidate keyword phrases that are found at least twice together
     In case of corrupt input arguments, None is returned
     """
-    pass
+    if (not isinstance(candidate_keyword_phrases, tuple)
+            or (not isinstance(phrases, str):
+        return None
+
 
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
