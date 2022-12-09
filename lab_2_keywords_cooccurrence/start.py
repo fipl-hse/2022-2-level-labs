@@ -74,6 +74,7 @@ if __name__ == "__main__":
         top_phrases = get_top_n(extracted_phrases_score, 3, 5)
         print(top_phrases)
 
+    print()
     RESULT = "Done"
 
     assert RESULT, 'Keywords are not extracted'
