@@ -51,8 +51,7 @@ if __name__ == "__main__":
     POLISH_TEXT = read_target_text(ASSETS_PATH / 'polish.txt')
     stop_words_json = load_stop_words(ASSETS_PATH / 'stopwords.json')
     if stop_words_json:
-        PROCESSED_POLISH = process_text(POLISH_TEXT, stop_words_json['pl'])  # Value of type
-    # "Optional[Mapping[str, Sequence[str]]]" is not indexable  [index]
+        PROCESSED_POLISH = process_text(POLISH_TEXT, stop_words_json['pl'])
     if PROCESSED_POLISH:
         print('polish_text', get_top_n(PROCESSED_POLISH, 10, 4), "\n")
 
