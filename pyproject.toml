@@ -5,7 +5,9 @@ markers = [
     "mark8: tests for level 8",
     "mark10: tests for level 10",
     "lab_1_keywords_tfidf: lab_1_keywords_tfidf",
-    "lab_2_keywords_cooccurrence: lab_2_keywords_cooccurrence"
+    "lab_2_keywords_cooccurrence: lab_2_keywords_cooccurrence",
+    "lab_3_keywords_textrank: lab_3_keywords_textrank",
+    "lab_4_summarization_textrank: lab_4_summarization_textrank"
 ]
 norecursedirs = [
     "venv*"
