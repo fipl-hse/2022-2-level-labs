@@ -4,9 +4,10 @@ Co-occurrence-driven keyword extraction starter
 
 from pathlib import Path
 from lab_2_keywords_cooccurrence.main import (
-    extract_phrases,
-    extract_candidate_keyword_phrases,
-calculate_frequencies_for_content_words)
+    extract_phrases, extract_candidate_keyword_phrases,
+    calculate_frequencies_for_content_words, calculate_word_degrees,
+    calculate_word_scores, calculate_cumulative_score_for_candidates,
+    get_top_n)
 
 
 def read_target_text(file_path: Path) -> str:
@@ -40,16 +41,16 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    text = corpus['gagarin']
+    extracted_phrases = extract_phrases(corpus['gagarin'])
+    candidate_phrases = extract_candidate_keyword_phrases(extract_phrases(corpus['gagarin']), stop_words)
+    frequencies = calculate_frequencies_for_content_words(candidate_phrases)
+    word_degrees = calculate_word_degrees(candidate_phrases, list(frequencies.keys()))
+    word_scores = calculate_word_scores(word_degrees, frequencies)
+    cumulative_score = calculate_cumulative_score_for_candidates(candidate_phrases, word_scores)
+    RESULT = get_top_n(cumulative_score, 10, 5)
 
-    new_phrases = extract_phrases(text)
-    if new_phrases:
-        candidate_phrases = extract_candidate_keyword_phrases(new_phrases, stop_words)
-    if candidate_phrases:
-        RESULT = calculate_frequencies_for_content_words(candidate_phrases)
 
-
-    RESULT = None
+    # RESULT = None
 
 
     assert RESULT, 'Keywords are not extracted'
