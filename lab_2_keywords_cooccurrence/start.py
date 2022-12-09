@@ -16,6 +16,8 @@ def read_target_text(file_path: Path) -> str:
     :param file_path: the path to the file
     :return: the text content of the file
     """
+    with open(file_path, 'r', encoding='utf-8') as target_text_file:
+        return target_text_file.read()
 
 
 if __name__ == "__main__":
@@ -48,6 +50,7 @@ if __name__ == "__main__":
     word_scores = calculate_word_scores(word_degrees, frequencies)
     cumulative_score = calculate_cumulative_score_for_candidates(candidate_phrases, word_scores)
     RESULT = get_top_n(cumulative_score, 10, 5)
+    print(RESULT)
 
 
     # RESULT = None
