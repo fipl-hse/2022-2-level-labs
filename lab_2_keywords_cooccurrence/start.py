@@ -47,12 +47,12 @@ if __name__ == "__main__":
         if PROCESSED_TEXT:
             print('text', get_top_n(PROCESSED_TEXT, 10, 4), "\n")
 
+    PROCESSED_POLISH = None
     POLISH_TEXT = read_target_text(ASSETS_PATH / 'polish.txt')
-    stop_words_json = load_stop_words(ASSETS_PATH / 'stopwords.json')  # Incompatible types in assignment
-    # (expression has type "Optional[Mapping[str, Sequence[str]]]", variable has type "List[str]")  [assignment]
-    PROCESSED_POLISH = process_text(POLISH_TEXT, stop_words_json['pl'])  # No overload variant of
-    # "__getitem__" of "list"
-    # matches argument type "str"  [call-overload]
+    stop_words_json = load_stop_words(ASSETS_PATH / 'stopwords.json')
+    if stop_words_json:
+        PROCESSED_POLISH = process_text(POLISH_TEXT, stop_words_json['pl'])  # Value of type
+    # "Optional[Mapping[str, Sequence[str]]]" is not indexable  [index]
     if PROCESSED_POLISH:
         print('polish_text', get_top_n(PROCESSED_POLISH, 10, 4), "\n")
 
