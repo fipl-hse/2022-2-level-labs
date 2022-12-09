@@ -7,7 +7,7 @@ from typing import Optional, Union
 import csv
 from lab_1_keywords_tfidf.main import calculate_frequencies, \
     calculate_tf, calculate_tfidf, get_top_n
-from lab_2_keywords_cooccurrence.main import extract_phrases,\
+from lab_2_keywords_cooccurrence.main import extract_phrases, type_check, \
     extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
 
@@ -129,9 +129,9 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for index, word in enumerate(tokens, start=1_000):
-            self._id2word[index] = word
-            self._word2id[word] = index
+        for ind, word in enumerate(tokens, start=1_000):
+            self._id2word[ind] = word
+            self._word2id[word] = ind
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -166,13 +166,8 @@ class TextEncoder:
                 sequence of string tokens
         In case of out-of-dictionary input data, None is returned
         """
-        if not encoded_tokens:
-            return None
-
-        self._learn_indices(encoded_tokens)
-
         try:
-            return tuple(self._id2word[ind] for ind in encoded_tokens)
+            return tuple(self._id2word[i] for i in encoded_tokens)
         except KeyError:
             return None
 
@@ -195,13 +190,15 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
     In case of corrupt input data, None is returned:
     tokens must not be empty, window lengths must be integer, window lengths cannot be less than 2.
     """
-    if not tokens or window_length < 2 or not isinstance(window_length, int):
+    if not tokens or not type_check(window_length, int) or window_length < 2:
         return None
-    pairs = []
-    for ind in range(len(tokens) + 1 - window_length):
-        for j in range(1, window_length):
-            if tokens[ind] != tokens[ind + j]:
-                pairs.append((tokens[ind], tokens[ind + j],))
+    pairs = list()
+    for i in range(len(tokens) + 1 - window_length):
+        window = tokens[i: i + window_length]
+        for token_1 in window:
+            for token_2 in window:
+                if token_1 < token_2 and (token_1, token_2) not in pairs:
+                    pairs.append((token_1, token_2))
     return tuple(pairs)
 
 
@@ -291,10 +288,11 @@ class AdjacencyMatrixGraph:
                 1 if vertices are incidental, otherwise 0
         If either of vertices is not present in the graph, -1 is returned
         """
-        if vertex1 not in self._vertices or vertex2 not in self._vertices:
+        try:
+            ind1 = self._vertices[vertex1]
+            ind2 = self._vertices[vertex2]
+        except KeyError:
             return -1
-        ind1 = self._vertices[vertex1]
-        ind2 = self._vertices[vertex2]
         return self._matrix[ind1][ind2]
 
     # Step 4.4
@@ -581,8 +579,8 @@ class VanillaTextRank:
         self._graph = graph
         self._scores = {}
         self._max_iter = 50
-        self._damping_factor = 0.85
-        self._convergence_threshold = 0.0001
+        self._damping_factor = .85
+        self._convergence_threshold = .0001
 
     # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -597,8 +595,10 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        incidental = sum(scores[i] / self._graph.calculate_inout_score(i) for i in incidental_vertices) - 1
-        self._scores[vertex] = 1 + self._damping_factor * incidental
+        incidental = sum(((1 / self._graph.calculate_inout_score(i)) * scores[i]
+                          for i in incidental_vertices))
+        new_score = (1 - self._damping_factor) + self._damping_factor * incidental
+        self._scores[vertex] = new_score
 
     # Step 5.3
     def train(self) -> None:
@@ -620,7 +620,7 @@ class VanillaTextRank:
             dict[int, float]
                 importance scores of all tokens in the encoded text
         """
-        pass
+        return self._scores
 
     # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
@@ -631,7 +631,7 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        return tuple(sorted(self._scores, key=lambda word: (self._scores[word]), reverse=True)[:n_keywords])
+        return tuple(sorted(self._scores, key=lambda word: (-self._scores[word], word)))[:n_keywords]
 
 
 class PositionBiasedTextRank(VanillaTextRank):
@@ -675,8 +675,8 @@ class PositionBiasedTextRank(VanillaTextRank):
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        super().__init__(graph)
         self._position_weights = graph.get_position_weights()
+        super().__init__(graph)
 
     # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
@@ -691,8 +691,8 @@ class PositionBiasedTextRank(VanillaTextRank):
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        amount = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
-                     for inc_vertex in incidental_vertices)
+        amount = sum((1 / self._graph.calculate_inout_score(inc_vert)) * scores[inc_vert]
+                     for inc_vert in incidental_vertices)
         self._scores[vertex] = (amount * self._damping_factor +
                                 (1 - self._damping_factor) * self._position_weights[vertex])
 
@@ -768,7 +768,7 @@ class TFIDFAdapter:
         """
         keywords = get_top_n(self._scores, n_keywords)
         if not keywords:
-            return ()
+            return tuple()
         return tuple(keywords)
 
 
@@ -876,7 +876,7 @@ def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> flo
     target_set, predicted_set = set(target), set(predicted)
     true_pos = len(predicted_set & target_set)
     false_neg = len(target_set - predicted_set)
-    return true_pos / (true_pos + false_neg)
+    return true_pos / (false_neg + true_pos)
 
 
 class KeywordExtractionBenchmark:

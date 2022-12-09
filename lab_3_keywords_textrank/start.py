@@ -34,7 +34,7 @@ if __name__ == "__main__":
         print(extract_pairs(TOKENS, 5))
         print()
 
-    # extract key phrases with adjacency matrix graph
+    #  extract key phrases with adjacency matrix graph
     ADJACENCY_GRAPH = AdjacencyMatrixGraph()
     if TOKENS:
         ADJACENCY_GRAPH.fill_from_tokens(TOKENS, 5)
@@ -43,10 +43,10 @@ if __name__ == "__main__":
     ADJACENCY_UNBIASED_RANKING.train()
     FINISH_TIME = time.monotonic()
     print(ENCODER.decode(ADJACENCY_UNBIASED_RANKING.get_top_keywords(10)))
-    print(f"trained in {FINISH_TIME - START_TIME:.2f} seconds")
+    print(f"trained in {FINISH_TIME - START_TIME:.5f} seconds")
     print()
 
-    # extract key phrases with list of edges graph
+    #  extract key phrases with list of edges graph
     EDGE_GRAPH = EdgeListGraph()
     if TOKENS:
         EDGE_GRAPH.fill_from_tokens(TOKENS, 5)
@@ -55,7 +55,7 @@ if __name__ == "__main__":
     EDGE_UNBIASED_RANKING.train()
     FINISH_TIME = time.monotonic()
     print(ENCODER.decode(EDGE_UNBIASED_RANKING.get_top_keywords(10)))
-    print(f"trained in {FINISH_TIME - START_TIME:.2f} seconds")
+    print(f"trained in {FINISH_TIME - START_TIME:.5f} seconds")
     print()
 
     #  extract positionally biased key phrases with adjacency matrix graph
@@ -67,10 +67,10 @@ if __name__ == "__main__":
     ADJACENCY_POSITIONAL_RANKING.train()
     FINISH_TIME = time.monotonic()
     print(ENCODER.decode(ADJACENCY_POSITIONAL_RANKING.get_top_keywords(10)))
-    print(f"trained in {FINISH_TIME - START_TIME:.2f} seconds")
+    print(f"trained in {FINISH_TIME - START_TIME:.5f} seconds")
     print()
 
-    # extract positionally biased key phrases with list of edges graph
+    #  extract positionally biased key phrases with list of edges graph
     if TOKENS:
         EDGE_GRAPH.fill_positions(TOKENS)
     EDGE_GRAPH.calculate_position_weights()
@@ -79,7 +79,7 @@ if __name__ == "__main__":
     EDGE_POSITIONAL_RANKING.train()
     FINISH_TIME = time.monotonic()
     print(ENCODER.decode(EDGE_POSITIONAL_RANKING.get_top_keywords(10)))
-    print(f"trained in {FINISH_TIME - START_TIME:.2f} seconds")
+    print(f"trained in {FINISH_TIME - START_TIME:.5f} seconds")
     print()
 
     ENGLISH_STOP_WORDS_PATH = ASSETS_PATH / "benchmark_materials" / "eng_stop_words.txt"
