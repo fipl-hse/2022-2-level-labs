@@ -29,6 +29,7 @@ def arg_check(*args: Any) -> bool:
     """
     Excepts tuples with objects and expected types.
     Raises a ValueError if any object is empty when it should not be or has the wrong type.
+    Or if arguments are not tuples. Or tuples are too short.
     Returns True if everything is okay.
     Positions in tuples:
     0 = data
@@ -451,7 +452,7 @@ class Buddy:
         :return: the answer
         """
         if not isinstance(query, str) or not query:
-            raise IncorrectQueryError('Incorrect query. Use string as input.')
+            raise IncorrectQueryError('Incorrect query. Use a non-emtpy string as an input.')
         arg_check((n_summaries, int))
         arg_check((n_summaries <= len(self._knowledge_database), bool))
         keywords = tuple(word for word in query.lower().split() if word not in self._stop_words)
