@@ -311,8 +311,7 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     phrases = extract_phrases(text)
 
     if not stop_words and not max_length:
-        stop_words = generate_stop_words(text, 10)  # error: Argument 2 to "generate_stop_words"
-        # has incompatible type "Optional[int]"; expected "int"  [arg-type]
+        stop_words = generate_stop_words(text, 10)
 
     if phrases and stop_words:
         candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)

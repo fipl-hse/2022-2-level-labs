@@ -47,10 +47,13 @@ if __name__ == "__main__":
         if processed_text:
             print('text', get_top_n(processed_text, 10, 4), "\n")
 
+    processed_polish = None
     polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
     stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')  # Incompatible types in assignment
     # (expression has type "Optional[Mapping[str, Sequence[str]]]", variable has type "List[str]")  [assignment]
-    processed_polish = process_text(polish_text, stop_words['pl'])
+    if stop_words:
+        processed_polish = process_text(polish_text, stop_words['pl'])  # No overload variant of "__getitem__" of "list"
+    # matches argument type "str"  [call-overload]
     if processed_polish:
         print('polish_text', get_top_n(processed_polish, 10, 4), "\n")
 
