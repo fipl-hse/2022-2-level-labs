@@ -25,70 +25,6 @@ class IncorrectQueryError(Exception):
     """
 
 
-# def one_check(*args: Union[tuple[Any, Type], tuple[Any, tuple[Type, Type], None], tuple[Any, Type, None]]) -> bool:
-#     """
-#     Excepts tuples with objects and expected types.
-#     Raises a ValueError if any object is empty when it should not be or has the wrong type.
-#     Returns True if everything is okay.
-#     Positions in tuples:
-#     0 = data
-#     1 = expected type of data
-#     None in tuple = allowed to be falsy
-#     """
-#     for i in args:
-#         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
-#             raise ValueError
-#         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
-#             raise ValueError
-#     return True
-#
-#
-# def two_check(*args: Union[tuple[Any, Type, Type], tuple[Any, Type, Type, None]]) -> None:
-#     """
-#     Excepts tuples with objects and expected types.
-#     Raises a ValueError if any object is empty when it should not be or has the wrong type.
-#     Returns True if everything is okay.
-#     Positions in tuples:
-#     0 = data
-#     1 = expected type of data
-#     2 = expected type of a list or a tuple content
-#     None in tuple = allowed to be falsy
-#     """
-#     for i in args:
-#         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
-#             raise ValueError
-#         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
-#             raise ValueError
-#         if isinstance(i[0], (list, tuple, dict)):
-#             for item in i[0]:
-#                 one_check((item, i[2]))
-#
-#
-# def three_check(*args: Union[tuple[Any, Type, Type, Type]]) -> None:
-#     """
-#     Excepts tuples with objects and expected types.
-#     Raises a ValueError if any object is empty when it should not be or has the wrong type.
-#     Returns True if everything is okay.
-#     Positions in tuples:
-#     0 = data
-#     1 = expected type of data
-#     2 = expected type of keys if data is a dict
-#     3 = expected type of values if data is a dict
-#     None in tuple = allowed to be falsy
-#     """
-#     for i in args:
-#         if not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
-#             raise ValueError
-#         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
-#             raise ValueError
-#         if isinstance(i[0], (list, tuple, dict)):
-#             for item in i[0]:
-#                 one_check((item, i[2]))
-#         if isinstance(i[1], dict):
-#             for value in i[0].values():
-#                 one_check((value, i[3]))
-
-
 def arg_check(*args: Any) -> bool:
     """
     Excepts tuples with objects and expected types.
@@ -102,16 +38,15 @@ def arg_check(*args: Any) -> bool:
     None in tuple = allowed to be falsy
     """
     for i in args:
-        if not isinstance(i, tuple) or len(i) - int(None in i) < 2 or \
+        length = len(i) - int(None in i)
+        if not isinstance(i, tuple) or length < 2 or \
                 not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
             raise ValueError
         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
             raise ValueError
-        if len(i) - int(None in i) > 2 and \
-                isinstance(i[0], (list, tuple, dict)) and not all(arg_check((item, i[2])) for item in i[0]):
+        if length > 2 and isinstance(i[0], (list, tuple, dict)) and not arg_check(*[(item, i[2]) for item in i[0]]):
             raise ValueError
-        if len(i) - int(None in i) == 4 and \
-                isinstance(i[1], dict) and not all(arg_check((value, i[3])) for value in i[0].values()):
+        if length == 4 and isinstance(i[1], dict) and not arg_check(*[(value, i[3]) for value in i[0].values()]):
             raise ValueError
     return True
 

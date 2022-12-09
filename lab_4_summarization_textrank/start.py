@@ -37,7 +37,7 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    punctuation = tuple(i for i in string.punctuation)
+    punctuation = tuple(string.punctuation)
     preprocessor = SentencePreprocessor(stop_words, punctuation)
     encoder = SentenceEncoder()
 
