@@ -192,9 +192,7 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     :return: a list containing the pairs of candidate keyword phrases that are found at least twice together
     In case of corrupt input arguments, None is returned
     """
-    if (not isinstance(candidate_keyword_phrases, tuple)
-            or (not isinstance(phrases, str):
-        return None
+
 
 
 
