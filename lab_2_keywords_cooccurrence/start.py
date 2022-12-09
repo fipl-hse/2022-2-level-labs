@@ -42,25 +42,25 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    for text in corpus:
-        processed_text = process_text(text, stop_words)
-        if processed_text:
-            print('text', get_top_n(processed_text, 10, 4), "\n")
+    for TEXT in corpus:
+        PROCESSED_TEXT = process_text(TEXT, stop_words)
+        if PROCESSED_TEXT:
+            print('text', get_top_n(PROCESSED_TEXT, 10, 4), "\n")
 
-    processed_polish = None
-    polish_text = read_target_text(ASSETS_PATH / 'polish.txt')
+    PROCESSED_POLISH = None
+    POLISH_TEXT = read_target_text(ASSETS_PATH / 'polish.txt')
     stop_words = load_stop_words(ASSETS_PATH / 'stopwords.json')  # Incompatible types in assignment
     # (expression has type "Optional[Mapping[str, Sequence[str]]]", variable has type "List[str]")  [assignment]
     if stop_words:
-        processed_polish = process_text(polish_text, stop_words['pl'])  # No overload variant of "__getitem__" of "list"
+        PROCESSED_POLISH = process_text(POLISH_TEXT, stop_words['pl'])  # No overload variant of "__getitem__" of "list"
     # matches argument type "str"  [call-overload]
-    if processed_polish:
-        print('polish_text', get_top_n(processed_polish, 10, 4), "\n")
+    if PROCESSED_POLISH:
+        print('polish_text', get_top_n(PROCESSED_POLISH, 10, 4), "\n")
 
-    unknown_text = read_target_text(ASSETS_PATH / 'unknown.txt')
-    processed_unknown = process_text(unknown_text, stop_words)
-    if processed_unknown:
-        print('unknown_text', get_top_n(processed_unknown, 10, 4), "\n")
+    UNKNOWN_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
+    PROCESSED_UNKNOWN = process_text(UNKNOWN_TEXT, stop_words)
+    if PROCESSED_UNKNOWN:
+        print('unknown_text', get_top_n(PROCESSED_UNKNOWN, 10, 4), "\n")
 
 RESULT = True
 
