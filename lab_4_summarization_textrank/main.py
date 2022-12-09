@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any, Type
+from typing import Union, Any
 import re
 from itertools import chain, combinations
 
