@@ -39,8 +39,7 @@ def arg_check(*args: Any) -> bool:
     None in tuple = allowed to be falsy
     """
     for i in args:
-        length = len(i) - int(None in i)
-        if not isinstance(i, tuple) or length < 2 or \
+        if not isinstance(i, tuple) or (length := len(i) - int(None in i)) < 2 or \
                 not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
             raise ValueError
         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
