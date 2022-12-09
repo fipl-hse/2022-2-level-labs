@@ -151,16 +151,12 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
     """
     if not is_not_empty_or_bad(candidate_keyword_phrases, list, tuple) or not is_not_empty_or_bad(word_scores, dict):
         return None
+    keyword_phrases_with_scores = {}
     for tuple_phrase in candidate_keyword_phrases:
         for word in tuple_phrase:
             if word not in word_scores.keys():
                 return None
-    keyword_phrases_with_scores = {}
-    for phrase in keyword_phrases_with_scores:
-        for word in phrase:
-            if word not in word_scores:
-                return None
-        keyword_phrases_with_scores[phrase] = sum(word_scores[word] for word in phrase)
+        keyword_phrases_with_scores[tuple_phrase] = sum(word_scores[word] for word in tuple_phrase)
     return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...],
     # Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
 
