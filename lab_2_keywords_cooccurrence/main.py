@@ -61,8 +61,8 @@ def extract_candidate_keyword_phrases(phrases: Sequence[str], stop_words: Sequen
     for phrase in phrases:
         phrase = phrase.lower()
         phrase_list.append(phrase.split())
-    for phrase in phrase_list:  # (expression has type "List[str]", variable has type "str")  [assignment]
-        for word in phrase:
+    for phrase_supreme in phrase_list:  # (expression has type "List[str]", variable has type "str")  [assignment]
+        for word in phrase_supreme:
             if word not in stop_words:
                 tuple_list.append(word)
                 continue
@@ -157,8 +157,7 @@ def calculate_cumulative_score_for_candidates(candidate_keyword_phrases: KeyPhra
             if word not in word_scores.keys():
                 return None
         keyword_phrases_with_scores[tuple_phrase] = sum(word_scores[word] for word in tuple_phrase)
-    return keyword_phrases_with_scores  # Incompatible return value type (got "Dict[Tuple[str, ...],
-    # Optional[Any]]", expected "Optional[Mapping[Tuple[str, ...], float]]")  [return-value]
+    return keyword_phrases_with_scores
 
 
 def get_top_n(keyword_phrases_with_scores: Mapping[KeyPhrase, float],
