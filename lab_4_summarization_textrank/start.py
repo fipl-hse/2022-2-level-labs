@@ -42,9 +42,9 @@ if __name__ == "__main__":
     graph.fill_from_sentences(proc_sentences)
     sum_graph = TextRankSummarizer(graph)
     sum_graph.train()
-    summary = sum_graph.make_summary(15)
-    print(summary)
+    SUMMARY = sum_graph.make_summary(15)
+    print(SUMMARY)
 
-    RESULT = summary
+    RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
