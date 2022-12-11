@@ -62,13 +62,16 @@ class Sentence:
         :return: None
         """
         if not preprocessed_sentence:
+            self._preprocessed = preprocessed_sentence
             return None
+
         if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
-        else:
-            for element in preprocessed_sentence:
-                if not isinstance(element, str):
-                    raise ValueError
+
+        for element in preprocessed_sentence:
+            if not isinstance(element, str):
+                raise ValueError
+
         self._preprocessed = preprocessed_sentence
         return None
 
