@@ -4,9 +4,10 @@ Summarize text using TextRank algorithm
 """
 from typing import Union
 
+import re
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
-import re
+
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -113,7 +114,7 @@ class SentencePreprocessor(TextPreprocessor):
         if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
             raise ValueError
         if stop_words:
-           for element in stop_words:
+            for element in stop_words:
                 if not isinstance(element, str):
                     raise ValueError
         for element in punctuation:

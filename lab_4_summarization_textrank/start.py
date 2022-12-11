@@ -3,8 +3,9 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
-from main import Sentence, SentencePreprocessor, SentenceEncoder
 from string import punctuation
+from main import SentencePreprocessor, SentenceEncoder, SimilarityMatrix, TextRankSummarizer
+
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -38,6 +39,13 @@ if __name__ == "__main__":
     for one_sent in SENT_LIST:
         print(one_sent.get_encoded())
 
+    MATRIX = SimilarityMatrix()
+    MATRIX.fill_from_sentences(SENT_LIST)
+    SUMMARIZER = TextRankSummarizer(MATRIX)
+    SUMMARIZER.train()
+    SUMMARY = SUMMARIZER.make_summary(10)
+
+    print(SUMMARY)
 
 
     RESULT = SENT_LIST
