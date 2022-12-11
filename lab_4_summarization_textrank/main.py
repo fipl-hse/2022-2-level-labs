@@ -158,7 +158,10 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__()
+        self._word2id = {}
+        self._id2word = {}
+        # self._last_id_number =
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -166,7 +169,12 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        if not (isinstance(tokens, tuple) and all(isinstance(i, str) for i in tokens)):
+            raise ValueError
+        for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
+            self._word2id[token] = idx
+        for idx, token in self._word2id.items():
+            self._id2word[idx] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -174,7 +182,12 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        if not (isinstance(sentences, tuple) and all(isinstance(i, Sentence) for i in sentences)):
+            raise ValueError
+        for sent in sentences:
+            processed = sent.get_preprocessed()
+            self._learn_indices(processed)
+            sent.set_encoded(tuple(self._word2id[token] for token in processed))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
