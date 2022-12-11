@@ -32,11 +32,16 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    PREPROCESSOR = SentencePreprocessor()
+    # step 5
+    text = 'Мама мыла раму? Раму долго мыла. Идти можно долго! Можно долго использовать раму?'
+    PREPROCESSOR = SentencePreprocessor(stop_words, tuple('.,!?-:;()'))
     PREPROCESSED_SENTENCES = PREPROCESSOR.get_sentences(text)
 
     ENCODER = SentenceEncoder()
-    ENCODED_SENTENCES = ENCODER.encode_sentences(PREPROCESSED_SENTENCES)
+    ENCODER.encode_sentences(PREPROCESSED_SENTENCES)
+    print(ENCODER._word2id)
+    for ps in PREPROCESSED_SENTENCES:
+        print(ps.get_text())
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
