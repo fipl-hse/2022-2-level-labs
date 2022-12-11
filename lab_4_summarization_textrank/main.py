@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union
+from typing import Union, Any
 import re
 import itertools as it
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -14,7 +14,7 @@ EncodedSentence = tuple[int, ...]
 # написать функцию для проверки типов
 
 
-def check_type(seq, seq_type, elem_type) -> bool:
+def check_type(seq: Any, seq_type:Any, elem_type:Any) -> bool:
     """
     Checks iterable argument type
     return: bool
@@ -42,8 +42,8 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -222,7 +222,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     if not sequence or not other_sequence:
         return 0
     numerator = []
-    denominator = set(sequence + other_sequence)
+    denominator = set(tuple(sequence) + tuple(other_sequence))
     for i in sequence:
         if i in other_sequence:
             numerator.append(i)
