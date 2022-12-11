@@ -183,6 +183,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
+        self._last_idx = 999
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -192,10 +193,11 @@ class SentenceEncoder(TextEncoder):
         """
         type_check(tokens, tuple, str)
         new_tokens = (token for token in tokens if token not in self._word2id)
-        new_index = 1000 + len(self._word2id)
+        new_index = 1 + self._last_idx
         for ind, token in enumerate(new_tokens):
             self._word2id[token] = ind + new_index
             self._id2word[ind + new_index] = token
+        self._last_idx = max(self._id2word)
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
