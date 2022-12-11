@@ -65,9 +65,11 @@ class Sentence:
             return None
         if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
+            return None
         for element in preprocessed_sentence:
             if not isinstance(element, str):
                 raise ValueError
+                return None
         self._preprocessed = preprocessed_sentence
         return None
 
@@ -225,14 +227,14 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
+    if not sequence or not other_sequence:
+        return 0
+
     for variable in (sequence, other_sequence):
         if not isinstance(variable, (list, tuple)):
             raise ValueError
 
-    if not sequence or not other_sequence:
-        return 0
-
-    sequences = sequence + other_sequence
+    sequences = [*sequence, *other_sequence]
     intersection = len(set(sequences))
     association = []
 

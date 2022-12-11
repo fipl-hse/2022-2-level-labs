@@ -4,7 +4,7 @@ TextRank summarizer starter
 from pathlib import Path
 import json
 from string import punctuation
-from main import SentencePreprocessor, SentenceEncoder, SimilarityMatrix, TextRankSummarizer
+from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, SimilarityMatrix, TextRankSummarizer
 
 
 if __name__ == "__main__":
