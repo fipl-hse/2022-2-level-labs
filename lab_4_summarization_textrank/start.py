@@ -1,8 +1,12 @@
 """
 TextRank summarizer starter
 """
+import string
 from pathlib import Path
 import json
+
+from lab_4_summarization_textrank.main import SentenceEncoder, \
+    SentencePreprocessor
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -26,7 +30,14 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+    punctuation = tuple(string.punctuation)
+    PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
+    SENTENCES = PREPROCESSOR.get_sentences(text)
+    ENCODER = SentenceEncoder()
+    ENCODER.encode_sentences(SENTENCES)
+    for one_sentence in SENTENCES:
+        print(*(one_sentence.get_encoded()))
 
-    RESULT = None
+    RESULT = SENTENCES
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
