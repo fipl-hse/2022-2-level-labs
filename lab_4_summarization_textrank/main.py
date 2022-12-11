@@ -117,7 +117,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         # sentences = re.split('[.?!]\s(?=[A-ZА-ЯЁ])', text)
         check_type(text, str)
-        clean_text = text.strip().replace('!', '.').replace('?', '.')
+        clean_text = (' '.join(text.split())).replace('!', '.').replace('?', '.')
         sentences = []
         sentence_start_idx = 0
         sentence_counter = 0
@@ -377,7 +377,7 @@ class TextRankSummarizer:
         """
         check_type(n_sentences, int)
         srtd_sentences = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0].get_position()))
-        return tuple(elem[0].get_text() for elem in srtd_sentences)[:n_sentences]
+        return tuple(elem[0] for elem in srtd_sentences)[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -386,11 +386,14 @@ class TextRankSummarizer:
         :return: summary
         """
         check_type(n_sentences, int)
-        score_srtd_sentences = sorted(self._scores.items(), key=lambda elem: -elem[1])[:n_sentences]
-        position_srtd_sentences = [elem[0].get_text() for elem in sorted(score_srtd_sentences, key=lambda elem: elem[0].get_position())]
+        positioned_sentences = {}
+        top_sentences = self.get_top_sentences(n_sentences)
+        for sentence in top_sentences:
+            positioned_sentences[sentence] = sentence.get_position()
+
+        position_srtd_sentences = [s.get_text() for s in sorted(positioned_sentences.keys(),
+                                                                key=lambda s: positioned_sentences[s])]
         return '\n'.join(position_srtd_sentences)
-
-
 
 class Buddy:
     """
@@ -411,7 +414,7 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        pass
+        self._stop_words = stop_words
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """

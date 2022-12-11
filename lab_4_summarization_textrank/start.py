@@ -3,7 +3,9 @@ TextRank summarizer starter
 """
 from lab_4_summarization_textrank.main import (Sentence,
                                                SentencePreprocessor,
-                                               SentenceEncoder)
+                                               SentenceEncoder,
+                                               SimilarityMatrix,
+                                               TextRankSummarizer)
 
 
 from pathlib import Path
@@ -33,15 +35,25 @@ if __name__ == "__main__":
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
     # step 5
-    text = 'Мама мыла раму? Раму долго мыла. Идти можно долго! Можно долго использовать раму?'
     PREPROCESSOR = SentencePreprocessor(stop_words, tuple('.,!?-:;()'))
     PREPROCESSED_SENTENCES = PREPROCESSOR.get_sentences(text)
 
     ENCODER = SentenceEncoder()
     ENCODER.encode_sentences(PREPROCESSED_SENTENCES)
-    print(ENCODER._word2id)
-    for ps in PREPROCESSED_SENTENCES:
-        print(ps.get_text())
+
+    # step 9
+    GRAPH = SimilarityMatrix()
+    GRAPH.fill_from_sentences(PREPROCESSED_SENTENCES)
+
+    SUMMARIZER = TextRankSummarizer(GRAPH)
+    SUMMARIZER.train()
+
+    text_summary = SUMMARIZER.make_summary(4)
+    print('The text summary:', text_summary, sep='\n')
+
+
+
+
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
