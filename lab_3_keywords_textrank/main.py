@@ -131,8 +131,7 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        self._word2id = {}
-        self._id2word = {}
+
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
