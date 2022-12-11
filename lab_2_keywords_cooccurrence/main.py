@@ -235,7 +235,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     with open(path, 'r', encoding='utf-8') as file:
         return dict(json_load(file))
 
-
+"""рарара"""
 def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
         -> Optional[Mapping[KeyPhrase, float]]:
     """
