@@ -182,9 +182,9 @@ class SentenceEncoder(TextEncoder):
         for token in tokens:
             if token not in self._word2id:
                 updated_tokens.append(token)
-        for idx, token in enumerate(updated_tokens, self.last_index + 1):
-            self._word2id[token] = idx
-            self._id2word[idx] = token
+        for index, token in enumerate(updated_tokens, self.last_index + 1):
+            self._word2id[token] = index
+            self._id2word[index] = token
         self.last_index = max(self._id2word)
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -212,7 +212,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         raise ValueError
     if not sequence or not sequence:
         return 0
-    #пока приблизительно, имена переменным еще не придумала
+    #пока приблизительно
     a = set(sequence)
     b = set(other_sequence)
     c = a.intersection(b)
