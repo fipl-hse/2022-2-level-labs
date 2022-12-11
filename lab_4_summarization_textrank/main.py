@@ -65,11 +65,9 @@ class Sentence:
             return None
         if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
-            return None
         for element in preprocessed_sentence:
             if not isinstance(element, str):
                 raise ValueError
-                return None
         self._preprocessed = preprocessed_sentence
         return None
 
