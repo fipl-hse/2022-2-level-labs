@@ -120,6 +120,7 @@ class SentencePreprocessor(TextPreprocessor):
             if not isinstance(element, str):
                 raise ValueError
         super().__init__(stop_words, punctuation)
+        self._idx = 0
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -129,15 +130,18 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
+
         sent_list = []
-        pattern = re.compile('((?<=[.?!]\s))')
+        pattern = re.compile('(?<=[.?!])\s(?=[А-Я A-Z \d])(((?<!г.)(?!Гагарин)))')
         split_text = re.split(pattern, text)
-        idx = 0
+
         for txt_element in split_text:
-            if txt_element:
-                sent_list.append(Sentence(txt_element.strip(), idx))
-                idx += 1
-        return tuple(sent_list) # this function doesn't work correctly but i don't know why
+            if txt_element and txt_element != '\n':
+                txt_element = txt_element.replace('  ', ' ')
+                txt_element = txt_element.replace('\n\n', ' ')
+                sent_list.append(Sentence(txt_element.strip(), self._idx))
+                self._idx += 1
+        return tuple(sent_list)  # this function doesn't work correctly, i don't understand how to fix
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
