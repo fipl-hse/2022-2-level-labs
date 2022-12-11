@@ -133,7 +133,7 @@ class SentencePreprocessor(TextPreprocessor):
         pattern = re.compile('\s*(?<=[.?!])')
         split_text = re.split(pattern, text)
         for idx, txt_element in enumerate(split_text):
-            if txt_element != '\n':
+            if txt_element and txt_element != '\n':
                 sent_list.append(Sentence(txt_element.strip(), idx))
         return tuple(sent_list)
 
