@@ -290,13 +290,13 @@ class SimilarityMatrix:
         for i in range(len(self._matrix)):
             for _ in range((len(self._vertices)) - len((self._matrix[i]))):
                 self._matrix[i].append(0)
-        v1 = vertex1.get_encoded()
-        v2 = vertex2.get_encoded()
+        vert1 = vertex1.get_encoded()
+        vert2 = vertex2.get_encoded()
         v1_index = self._vertices.index(vertex1)
         v2_index = self._vertices.index(vertex2)
 
-        self._matrix[v1_index][v2_index] = calculate_similarity(v1, v2)
-        self._matrix[v2_index][v1_index] = calculate_similarity(v1, v2)
+        self._matrix[v1_index][v2_index] = calculate_similarity(vert1, vert2)
+        self._matrix[v2_index][v1_index] = calculate_similarity(vert1, vert2)
 
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
