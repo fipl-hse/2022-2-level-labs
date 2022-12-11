@@ -3,16 +3,17 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union, Type, Any
+import re
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+    TextPreprocessor, TFIDFAdapter
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def type_check(check_object: Any, object_type: Type, token_type: Type = None, value_type: Type = None,
-               can_be_empty: bool = True) -> bool:
+def type_check(check_object: Any, object_type: Union[Type, tuple[Type, ...]], token_type: Type = None,
+               value_type: Type = None, can_be_empty: bool = True) -> None:
     """
     Checks types of the object and its contents. Also checks if it is empty.
     :param check_object: the object we need to check
@@ -20,20 +21,37 @@ def type_check(check_object: Any, object_type: Type, token_type: Type = None, va
     :param token_type: expected type of its tokens (or keys if the object is a dictionary)
     :param value_type: expected type of its values (for dictionaries)
     :param can_be_empty: True if the object can be empty, False otherwise
+    :return: None
     """
     if not can_be_empty and not check_object:
         raise ValueError
     if not isinstance(check_object, object_type):
         raise ValueError
-    if isinstance(check_object, dict):
+    if object_type == 'int' and isinstance(check_object, bool):
+        raise ValueError
+    if isinstance(check_object, dict) and token_type and value_type:
         for token, value in check_object.items():
             if not isinstance(token, token_type) or not isinstance(value, value_type):
                 raise ValueError
     else:
-        for token in check_object:
-            if not isinstance(token, token_type):
-                raise ValueError
-    return True
+        if token_type:
+            for token in check_object:
+                if not isinstance(token, token_type):
+                    raise ValueError
+
+
+class NoRelevantTextsError(Exception):
+    """
+    An error which is raised if there are no relevant texts.
+    """
+    pass
+
+
+class IncorrectQueryError(Exception):
+    """
+    An error which is raised if the query is incorrect.
+    """
+    pass
 
 
 class Sentence:
@@ -45,6 +63,8 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
+        type_check(text, str)
+        type_check(position, int)
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -125,7 +145,10 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        pass
+        type_check(text, str)
+        text = text.replace('\n', ' ').replace('  ', ' ')
+        split_text = re.split(r'(?<=[.!?])\s+(?=[A-ZА-ЯЁ])', text)
+        return tuple(Sentence(sentence.strip(), position) for position, sentence in enumerate(split_text))
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -133,7 +156,10 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+        type_check(sentences, tuple, Sentence)
+        for sentence in sentences:
+            preprocessed_sentence = self.preprocess_text(sentence.get_text())
+            sentence.set_preprocessed(preprocessed_sentence)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -141,7 +167,10 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
+        type_check(text, str)
+        split_text = self._split_by_sentence(text)
+        self._preprocess_sentences(split_text)
+        return split_text
 
 
 class SentenceEncoder(TextEncoder):
@@ -153,7 +182,7 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__()
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -161,7 +190,12 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        type_check(tokens, tuple, str)
+        new_tokens = (token for token in tokens if token not in self._word2id)
+        new_index = 1000 + len(self._word2id)
+        for ind, token in enumerate(new_tokens):
+            self._word2id[token] = ind + new_index
+            self._id2word[ind + new_index] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -169,7 +203,12 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        type_check(sentences, tuple, Sentence)
+        for sentence in sentences:
+            preprocessed = sentence.get_preprocessed()
+            self._learn_indices(preprocessed)
+            encoded = tuple(self._word2id[word] for word in preprocessed)
+            sentence.set_encoded(encoded)
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
@@ -179,7 +218,13 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    type_check(sequence, (list, tuple))
+    type_check(other_sequence, (list, tuple))
+    if not sequence or not other_sequence:
+        return 0.0
+    ab_common = set(sequence) & set(other_sequence)
+    ab_total = set(sequence) | set(other_sequence)
+    return len(ab_common) / len(ab_total)
 
 
 class SimilarityMatrix:
@@ -193,14 +238,15 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+        self._matrix = []
+        self._vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -208,7 +254,11 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        type_check(vertex, Sentence)
+        if vertex not in self._vertices:
+            raise ValueError
+        idx = self._vertices.index(vertex)
+        return sum(i > 0 for i in self._matrix[idx])
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -217,7 +267,24 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        type_check(vertex1, Sentence)
+        type_check(vertex2, Sentence)
+        if vertex1 == vertex2:
+            raise ValueError
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
+        for edges_list in self._matrix:
+            if len(edges_list) < len(self._vertices):
+                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
+        encoded1 = vertex1.get_encoded()
+        encoded2 = vertex2.get_encoded()
+        similarity = calculate_similarity(encoded1, encoded2)
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        self._matrix[idx1][idx2] = similarity
+        self._matrix[idx2][idx1] = similarity
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -226,7 +293,13 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        type_check(sentence, Sentence)
+        type_check(other_sentence, Sentence)
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        idx1 = self._vertices.index(sentence)
+        idx2 = self._vertices.index(other_sentence)
+        return self._matrix[idx1][idx2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -234,7 +307,11 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        type_check(sentences, tuple, Sentence, can_be_empty=False)
+        for sentence1 in sentences:
+            for sentence2 in sentences:
+                if sentence1.get_encoded() != sentence2.get_encoded():
+                    self.add_edge(sentence1, sentence2)
 
 
 class TextRankSummarizer:
@@ -250,7 +327,12 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        type_check(graph, SimilarityMatrix)
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -262,7 +344,12 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        type_check(vertex, Sentence)
+        type_check(incidental_vertices, list, Sentence)
+        type_check(scores, dict, Sentence, float)
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -290,7 +377,8 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        type_check(n_sentences, int)
+        return tuple(sorted(self._scores, key=lambda sent: self._scores[sent], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -298,7 +386,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        type_check(n_sentences, int)
+        top_sentences = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        return '\n'.join(sentence.get_text() for sentence in top_sentences)
 
 
 class Buddy:
@@ -320,7 +410,20 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        pass
+        type_check(paths_to_texts, list, str)
+        type_check(stop_words, tuple, str)
+        type_check(punctuation, tuple, str)
+        type_check(idf_values, dict, str, float)
+        self._paths_to_texts = paths_to_texts
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf_values = idf_values
+        self._text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        self._sentence_encoder = SentenceEncoder()
+        self._sentence_preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        self._knowledge_database = {}
+        for text in paths_to_texts:
+            self.add_text_to_database(text)
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """
@@ -328,7 +431,29 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        pass
+        type_check(path_to_text, str)
+        with open(path_to_text, 'r', encoding='utf-8') as f:
+            text = f.read()
+
+        tokens = self._text_preprocessor.preprocess_text(text)
+        sentences = self._sentence_preprocessor.get_sentences(text)
+        self._sentence_encoder.encode_sentences(sentences)
+
+        tfidf = TFIDFAdapter(tokens, self._idf_values)
+        tfidf.train()
+        keywords = tfidf.get_top_keywords(100)
+
+        graph = SimilarityMatrix()
+        graph.fill_from_sentences(sentences)
+        summarizer = TextRankSummarizer(graph)
+        summarizer.train()
+        summary = summarizer.make_summary(5)
+
+        self._knowledge_database[path_to_text] = {
+            'sentences': sentences,
+            'keywords': keywords,
+            'summary': summary
+        }
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
@@ -337,7 +462,14 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        pass
+        type_check(keywords, tuple, str)
+        type_check(n_texts, int)
+        similarity = {text: calculate_similarity(data['keywords'], keywords)
+                      for text, data in self._knowledge_database.items()}
+        if all(not value for value in similarity.values()):
+            raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
+        similarity_sorted = sorted(similarity, reverse=True)
+        return tuple(sorted(similarity_sorted, key=lambda x: similarity[x], reverse=True)[:n_texts])
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
@@ -346,4 +478,11 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        pass
+        if not query or not isinstance(query, str):
+            raise IncorrectQueryError('Incorrect query. Use string as input.')
+        type_check(n_summaries, int)
+        if len(self._knowledge_database) < n_summaries:
+            raise ValueError
+        keywords = self._text_preprocessor.preprocess_text(query)
+        texts = self._find_texts_close_to_keywords(keywords, n_summaries)
+        return 'Ответ:\n' + '\n\n'.join(self._knowledge_database[text]['summary'] for text in texts)
