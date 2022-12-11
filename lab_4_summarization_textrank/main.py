@@ -194,8 +194,7 @@ class SentenceEncoder(TextEncoder):
                 raise ValueError
         for sentence in sentences:
             self._learn_indices(sentence.get_preprocessed())
-            for word in sentence.get_preprocessed():
-                sentence.set_encoded(tuple(self._word2id[word]))
+            sentence.set_encoded(tuple(self._word2id[word] for word in sentence.get_preprocessed()))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
