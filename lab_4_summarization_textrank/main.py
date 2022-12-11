@@ -314,3 +314,5 @@ class Buddy:
         :return: the answer
         """
         pass
+pass 
+print('')
