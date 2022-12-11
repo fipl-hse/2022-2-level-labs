@@ -130,11 +130,11 @@ class SentencePreprocessor(TextPreprocessor):
         if not isinstance(text, str):
             raise ValueError
         sent_list = []
-        pattern = r'\b[.!?]+\s*'
+        pattern = re.compile('\s*(?<=[.?!])')
         split_text = re.split(pattern, text)
         for idx, txt_element in enumerate(split_text):
             if txt_element:
-                sent_list.append(Sentence(txt_element, idx))
+                sent_list.append(Sentence(txt_element.strip(), idx))
         return tuple(sent_list)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -175,7 +175,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
-        last_ident = 0
+        self._last_idx = 1000
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -183,7 +183,16 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        TextEncoder._learn_indices(self, tokens)
+        if not isinstance(tokens, tuple):
+            raise ValueError
+
+        for one_token in tokens:
+            if not isinstance(one_token, str):
+                raise ValueError
+            self._word2id[one_token] = self._word2id.get(one_token, self._last_idx)
+            self._id2word[self._last_idx] = self._id2word.get(self._last_idx, one_token)
+            self._last_idx += 1
+
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -191,8 +200,12 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
+        if not isinstance(sentences, tuple):
+            raise ValueError
         coded_sent = []
         for one_sentence in sentences:
+            if not isinstance(one_sentence, Sentence):
+                raise ValueError
             preprocessed_tokens = one_sentence.get_preprocessed()
             self._learn_indices(preprocessed_tokens)
             for words in preprocessed_tokens:
