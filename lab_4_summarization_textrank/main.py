@@ -5,6 +5,7 @@ Summarize text using TextRank algorithm
 from typing import Union, Any
 import re
 
+from lab_3_keywords_textrank.main import extract_pairs
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
@@ -12,14 +13,14 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_types_1(user_input: str, can_be_empty: bool) -> None:
-    if not isinstance(user_input, str):
+def check_type(user_input: Any, user_input_type: type, can_be_empty: bool) -> None:
+    if not isinstance(user_input, user_input_type):
         raise ValueError
     if not user_input and can_be_empty is False:
         raise ValueError
 
 
-def check_types_2(user_input: Any, user_input_type: type, elements_type: type, can_be_empty: bool) -> None:
+def check_inner_types(user_input: Any, user_input_type: type, elements_type: type, can_be_empty: bool) -> None:
     if not isinstance(user_input, user_input_type):
         raise ValueError
     if not user_input and can_be_empty is False:
@@ -38,7 +39,7 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        if not isinstance(text, str) or isinstance(position, bool) or not isinstance(position, int):
+        if not isinstance(text, str) or not isinstance(position, int) or isinstance(position, bool):
             raise ValueError
         self._text = text
         self._position = position
@@ -58,7 +59,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        check_types_1(text, False)
+        check_type(text, str, False)
         self._text = text
 
     def get_text(self) -> str:
@@ -74,7 +75,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_types_2(preprocessed_sentence, tuple, str, True)
+        check_inner_types(preprocessed_sentence, tuple, str, True)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -90,7 +91,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_types_2(encoded_sentence, tuple, int, True)
+        check_inner_types(encoded_sentence, tuple, int, True)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -111,8 +112,8 @@ class SentencePreprocessor(TextPreprocessor):
         Constructs all the necessary attributes
         """
         super().__init__(stop_words, punctuation)
-        check_types_2(self._stop_words, tuple, str, True)
-        check_types_2(self._punctuation, tuple, str, False)
+        check_inner_types(self._stop_words, tuple, str, True)
+        check_inner_types(self._punctuation, tuple, str, True)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -120,9 +121,8 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        check_types_1(text, False)
-        for punc in "\n":
-            text = text.replace(punc, ' ')
+        check_type(text, str, False)
+        text = text.replace("\n", ' ')
         phrases = re.split(r'(?<=[.?!])\s+(?=[A-ZА-Я])', text)
         sentences = []
         for ind, phrase in enumerate(phrases):
@@ -135,7 +135,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        check_types_2(sentences, tuple, Sentence, False)
+        check_inner_types(sentences, tuple, Sentence, False)
         for sentence in sentences:
             text = sentence.get_text()
             new_sentence = super().preprocess_text(text)
@@ -147,7 +147,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        check_types_1(text, False)
+        check_type(text, str, False)
         sentences = self._split_by_sentence(text)
         self._preprocess_sentences(sentences)
         return sentences
@@ -170,7 +170,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_types_2(tokens, tuple, str, False)
+        check_inner_types(tokens, tuple, str, False)
         new_tokens = (elem for elem in tokens if elem not in self._word2id)
 
         for ind, element in enumerate(new_tokens, start=1000 + len(self._word2id)):
@@ -183,7 +183,7 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        check_types_2(sentences, tuple, Sentence, False)
+        check_inner_types(sentences, tuple, Sentence, False)
         for sentence in sentences:
             self._learn_indices(sentence.get_preprocessed())
             sentence.set_encoded(tuple(self._word2id[sent] for sent in sentence.get_preprocessed()))
@@ -196,7 +196,14 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    check_type(sequence, Union[list, tuple], True)
+    check_type(other_sequence, Union[list, tuple], True)
+    if len(sequence) == 0 or len(other_sequence) == 0:
+        return 0
+    whole_sequence = sequence + other_sequence
+    all_unique_element = set(whole_sequence)
+    the_same_elements = set([elem for elem in whole_sequence if elem in sequence and elem in other_sequence])
+    return len(the_same_elements) / len(all_unique_element)
 
 
 class SimilarityMatrix:
@@ -210,14 +217,15 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+        self._matrix = []
+        self._vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -225,7 +233,11 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        check_type(vertex, Sentence, False)
+        if vertex not in self._vertices:
+            raise ValueError
+        idx = self._vertices.index(vertex)
+        return len([element for element in self._matrix[idx] if element > 0])
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -234,7 +246,24 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        check_type(vertex1, Sentence, False)
+        check_type(vertex2, Sentence, False)
+        if vertex1.get_encoded() == vertex2.get_encoded():
+            raise ValueError
+
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
+
+        for edges_list in self._matrix:
+            if len(edges_list) < len(self._vertices):
+                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
+
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+        self._matrix[idx2][idx1] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -243,7 +272,13 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        check_type(sentence, Sentence, False)
+        check_type(other_sentence, Sentence, False)
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        idx1 = self._vertices.index(sentence)
+        idx2 = self._vertices.index(other_sentence)
+        return self._matrix[idx1][idx2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -251,7 +286,16 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        check_inner_types(sentences, tuple, Sentence, False)
+
+        pairs = []
+        for idx1, token1 in enumerate(sentences):
+            for token2 in sentences[idx1 + 1:idx1 + len(sentences)]:
+                if token1.get_encoded() != token2.get_encoded():
+                    pairs.append((token1, token2))
+
+        for pair in pairs:
+            self.add_edge(pair[0], pair[1])
 
 
 class TextRankSummarizer:
@@ -267,7 +311,11 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
