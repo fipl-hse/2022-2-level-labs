@@ -6,9 +6,7 @@ from pathlib import Path
 from typing import Optional, Sequence, Mapping, Any, Type
 import re
 from itertools import repeat, pairwise, chain
-import json
 from json import load
-
 
 
 KeyPhrase = tuple[str]
@@ -28,8 +26,7 @@ def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     if not isinstance(text, str):
         return None
-    expression = re.compile(r'(?<=^)[^\s\w\$]')
-
+    expression = re.compile(r'(?<=^)[^\s\w]')
     return [clean for phrase in re.split(expression, text) if (clean := phrase.strip())]
 
 
@@ -74,6 +71,7 @@ def calculate_word_scores(word_degrees: Mapping[str, int],
     """
     Calculates the word score based on the word degree and the word frequency.
     """
+
     if not isinstance(word_degrees, dict) or not isinstance(word_frequencies, dict) \
             or not all(word_frequencies.get(token, False) for token in word_degrees):
         return None
@@ -161,10 +159,11 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
         return None
     with open(path, 'r', encoding='utf-8') as file:
         return dict(load(file))
+    with open(path, 'r', encoding='utf-8') as file:
+        return dict(load(file))
 
 
-def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) \
-        -> Optional[Mapping[KeyPhrase, float]]:
+def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_length: Optional[int] = None) -> Optional[Mapping[KeyPhrase, float]]:
     """
     Extract key phrases, returns extracted key phrases or None.
     """
