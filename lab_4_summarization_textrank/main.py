@@ -132,16 +132,14 @@ class SentencePreprocessor(TextPreprocessor):
             raise ValueError
 
         sent_list = []
-        pattern = re.compile('(?<=[.?!])\s(?=[А-Я A-Z \d])(((?<!г.)(?!Гагарин)))')
-        split_text = re.split(pattern, text)
+        split_text = re.split(r'(?<=[.?!])\s+(?=[А-Я A-Z])', text)
 
-        for txt_element in split_text:
-            if txt_element and txt_element != '\n':
-                txt_element = txt_element.replace('  ', ' ')
-                txt_element = txt_element.replace('\n\n', ' ')
-                sent_list.append(Sentence(txt_element.strip(), self._idx))
-                self._idx += 1
-        return tuple(sent_list)  # this function doesn't work correctly, i don't understand how to fix
+        for idx, txt_element in enumerate(split_text):
+            txt_element = txt_element.replace('\n', ' ').replace('  ', ' ')
+            if txt_element:
+                sent_list.append(Sentence(txt_element, idx))
+        return tuple(sent_list)
+
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
