@@ -21,6 +21,9 @@ def check_type(user_input: Any, correct_type: Type) -> bool:
 
 
 def check_sequence(user_input: Any, correct_type: Type, element_type: Type) -> bool:
+    """
+    Checks type of users input and its elements
+    """
     if isinstance(user_input, correct_type) and all(isinstance(element, element_type) for element in user_input):
         return True
     raise ValueError
