@@ -27,7 +27,7 @@ class Sentence:
         Returns the attribute
         :return: the position of the sentence in the text
         """
-        pass
+        kdsffksf
 
     def set_text(self, text: str) -> None:
         """
