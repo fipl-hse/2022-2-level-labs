@@ -132,8 +132,7 @@ class SentencePreprocessor(TextPreprocessor):
         sentences = re.split(r'(?<=[?!.])\s+(?=[A-ZА-Я])', text)
         tuple_with_sent = []
         for count, value in enumerate(sentences):
-            value = value.strip()
-            sent = Sentence(value, count)
+            sent = Sentence(value.replace('\n', ' ').replace('  ', ' '), count)
             if sent:
                 tuple_with_sent.append(sent)
         print(tuple_with_sent)
@@ -266,10 +265,9 @@ class SimilarityMatrix:
         """
         if not isinstance(vertex, Sentence):
             raise ValueError
-        vert = vertex.get_encoded()
-        if vert not in self._vertices:
+        if vertex not in self._vertices:
             raise ValueError
-        vert_ind = self._vertices.index(vert)
+        vert_ind = self._vertices.index(vertex)
         inout_score = len(self._matrix) - self._matrix[vert_ind].count(0)
         return inout_score
 
@@ -283,19 +281,19 @@ class SimilarityMatrix:
         """
         if not (isinstance(vertex1, Sentence) or isinstance(vertex2, Sentence)):
             raise ValueError
-        if vertex1 == vertex2:
+        if vertex1.get_encoded() == vertex2.get_encoded():
             raise ValueError
-        v1 = vertex1.get_encoded()
-        v2 = vertex2.get_encoded()
-        for vertex in v1, v2:
+        for vertex in vertex1, vertex2:
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
                 self._matrix.append([0])
         for i in range(len(self._matrix)):
             for _ in range((len(self._vertices)) - len((self._matrix[i]))):
                 self._matrix[i].append(0)
-        v1_index = self._vertices.index(v1)
-        v2_index = self._vertices.index(v2)
+        v1 = vertex1.get_encoded()
+        v2 = vertex2.get_encoded()
+        v1_index = self._vertices.index(vertex1)
+        v2_index = self._vertices.index(vertex2)
 
         self._matrix[v1_index][v2_index] = calculate_similarity(v1, v2)
         self._matrix[v2_index][v1_index] = calculate_similarity(v1, v2)
@@ -310,11 +308,9 @@ class SimilarityMatrix:
         """
         if not isinstance(sentence, Sentence) or not isinstance(other_sentence, Sentence):
             raise ValueError
-        sent1 = sentence.get_encoded()
-        sent2 = other_sentence.get_encoded()
-        if (sent1 or sent2) not in self._vertices:
+        if (sentence or other_sentence) not in self._vertices:
             raise ValueError
-        sim_score = self._matrix[self._vertices.index(sent1)][self._vertices.index(sent2)]
+        sim_score = self._matrix[self._vertices.index(sentence)][self._vertices.index(other_sentence)]
         return sim_score
 
 
@@ -405,9 +401,10 @@ class TextRankSummarizer:
         """
         if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
-        top_n = (k for k, v in sorted(self._scores.items(), key=lambda item: (item[1], -item[0]),
-                                          reverse=True))[:n_sentences]
-        return tuple(top_n)
+        top_n = sorted(self._scores.items(), key=lambda item: item[1],
+                                      reverse=True)[:n_sentences]
+
+        return tuple(k for k, v in top_n)
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -415,13 +412,12 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
+        # выводить предложения в хронологическом порядке!!! Нужно исправить
         if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
-        sentences = self.get_top_sentences(n_sentences)
-        for i in sentences:
-            print(i)
-
-
+        sent_dict = {sentence: sentence.get_position() for sentence in self.get_top_sentences(n_sentences)}
+        right_order = (k for k, v in sorted(sent_dict.items(), key=lambda item: item[1])[:n_sentences])
+        return '\n'.join(sentence.get_text().strip() for sentence in right_order)
 class Buddy:
     """
     (Almost) All-knowing entity
