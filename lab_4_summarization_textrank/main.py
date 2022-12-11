@@ -111,15 +111,20 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
-        sentences = []
+        final_sentences = []
+        clean_txt = ''
         new_txt = text.replace('!', '.').replace('?', '.')
         for idx, elem in enumerate(new_txt[:-2]):
-            if (elem == ' ' or '\n') and new_txt[idx - 1] == '.' and new_txt[idx + 1].isupper():
-                splitted_txt = new_txt.split(f'{new_txt[idx - 1]}')
-                for index, sent in enumerate(splitted_txt):
-                    sentence = Sentence(sent.strip(), idx)
-                    sentences.append(sentence)
-        return tuple(sentences)
+            if not ((elem == ' ' or '\n') and new_txt[idx - 1] == '.' and new_txt[idx + 1].isupper()):
+                clean_txt += elem
+            else:
+                clean_txt += '  '
+        clean_txt += new_txt[-2:]
+        sentences = clean_txt.split('  ')
+        for index, sent in enumerate(list(sentences)):
+            sentence = Sentence(sent.strip(), index)
+            final_sentences.append(sentence)
+        return tuple(final_sentences)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
