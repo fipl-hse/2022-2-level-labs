@@ -32,8 +32,8 @@ if __name__ == "__main__":
     sentence_preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
     sentences = sentence_preprocessor.get_sentences(text)
     sentence_encoder = SentenceEncoder()
-    sentence_encoder.encode_sentences(sentences)
+    encoded = sentence_encoder.encode_sentences(sentences)
 
-    RESULT = None
+    RESULT = encoded
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
