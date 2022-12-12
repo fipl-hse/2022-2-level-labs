@@ -1,16 +1,13 @@
 """
 TextRank summarizer starter
 """
-from lab_4_summarization_textrank.main import (Sentence,
-                                               SentencePreprocessor,
+from pathlib import Path
+import json
+from lab_4_summarization_textrank.main import (SentencePreprocessor,
                                                SentenceEncoder,
                                                SimilarityMatrix,
                                                TextRankSummarizer,
                                                Buddy)
-
-
-from pathlib import Path
-import json
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -49,8 +46,8 @@ if __name__ == "__main__":
     SUMMARIZER = TextRankSummarizer(GRAPH)
     SUMMARIZER.train()
 
-    text_summary = SUMMARIZER.make_summary(4)
-    print('The text summary:', text_summary, sep='\n')
+    TEXT_SUMMARY = SUMMARIZER.make_summary(4)
+    print('The text summary:', TEXT_SUMMARY, sep='\n')
 
 
 

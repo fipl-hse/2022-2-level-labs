@@ -309,10 +309,10 @@ class SimilarityMatrix:
         :return:
         """
         check_type(sentences, tuple, Sentence)
-        for s1 in sentences[:len(sentences)]:
-            for s2 in sentences[1:]:
-                if s1.get_encoded != s2.get_encoded:
-                    self.add_edge(s1, s2)
+        for sent1 in sentences[:len(sentences)]:
+            for sent2 in sentences[1:]:
+                if sent1.get_encoded != sent2.get_encoded:
+                    self.add_edge(sent1, sent2)
 
 
 class TextRankSummarizer:
@@ -390,7 +390,7 @@ class TextRankSummarizer:
         """
         check_type(n_sentences, int)
         top_sentences = self.get_top_sentences(n_sentences)
-        position_srtd_sentences = [s.get_text() for s in sorted(top_sentences, key=lambda s: s._get_position())]
+        position_srtd_sentences = [s.get_text() for s in sorted(top_sentences, key=lambda s: s.get_position())]
         return '\n'.join(position_srtd_sentences)
 
 
@@ -473,8 +473,6 @@ class Buddy:
         return tuple(sorted(similarity_scores, key=lambda p: (similarity_scores[p], p),
                             reverse=True)[:n_texts])
 
-        return srtd_similarity_scores.keys()[:n_texts]
-
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
         Replies to the query
@@ -486,7 +484,7 @@ class Buddy:
             raise ValueError
         try:
             check_type(query, str)
-        except ValueError:
-            raise IncorrectQueryError('Incorrect query. Use string as input.')
+        except ValueError as error:
+            raise IncorrectQueryError('Incorrect query. Use string as input.') from error
         summaries = self._find_texts_close_to_keywords(TextPreprocessor.preprocess_text(query), n_summaries)
         return 'Ответ:\n,' + '\n\n'.join(list(summaries))
