@@ -13,7 +13,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_types(variable: Any, possible_var_type: list[Type], container_value_type: Union[Type, None] = None) -> None:
+def check_types(variable: Any, possible_var_type: Type, container_value_type: Union[Type, None] = None) -> None:
     """
     Checks if the variable is of an apropriate type
     param: variable
@@ -21,9 +21,8 @@ def check_types(variable: Any, possible_var_type: list[Type], container_value_ty
     param: container_value_type (default = None)
     return:
     """
-    for var_type in possible_var_type:
-        if not isinstance(variable, var_type) or isinstance(variable, bool):
-            raise ValueError
+    if not isinstance(variable, possible_var_type) or isinstance(variable, bool):
+        raise ValueError
     if container_value_type:
         for element in variable:
             if not isinstance(element, container_value_type):
@@ -39,8 +38,8 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        check_types(text, [str])
-        check_types(position, [int])
+        check_types(text, str)
+        check_types(position, int)
         self._text = text
         self._position = position
         self._preprocessed: tuple[str, ...] = ()
@@ -59,7 +58,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        check_types(text, [str])
+        check_types(text, str)
         self._text = text
 
     def get_text(self) -> str:
@@ -75,7 +74,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_types(preprocessed_sentence, [tuple], str)
+        check_types(preprocessed_sentence, tuple, str)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -91,7 +90,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_types(encoded_sentence, [tuple], int)
+        check_types(encoded_sentence, tuple, int)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -111,17 +110,8 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        # if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
-        #     raise ValueError
-        check_types(stop_words, [tuple], str)
-        check_types(punctuation, [tuple], str)
-        # if stop_words:
-        #     for element in stop_words:
-        #         if not isinstance(element, str):
-        #             raise ValueError
-        # for element in punctuation:
-        #     if not isinstance(element, str):
-        #         raise ValueError
+        check_types(stop_words, tuple, str)
+        check_types(punctuation, tuple, str)
         super().__init__(stop_words, punctuation)
         self._idx = 0
 
@@ -131,9 +121,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        # if not isinstance(text, str):
-        #     raise ValueError
-        check_types(text, [str])
+        check_types(text, str)
 
         sent_list = []
         split_text = re.split(r'(?<=[.?!])\s+(?=[А-Я A-Z])', text)
@@ -144,18 +132,14 @@ class SentencePreprocessor(TextPreprocessor):
                 sent_list.append(Sentence(txt_element, idx))
         return tuple(sent_list)
 
-
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
         Enriches the instances of sentences with their preprocessed versions
         :param sentences: a list of sentences
         :return:
         """
-        if not isinstance(sentences, tuple):
-            raise ValueError
+        check_types(sentences, tuple, Sentence)
         for one_sentence in sentences:
-            if not isinstance(one_sentence, Sentence):
-                raise ValueError
             txt = one_sentence.get_text()
             preprocessing = TextPreprocessor.preprocess_text(self, txt)
             one_sentence.set_preprocessed(preprocessing)
@@ -166,12 +150,12 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        if not isinstance(text, str):
-            raise ValueError
+        check_types(text, str)
 
         sentences = self._split_by_sentence(text)
         self._preprocess_sentences(sentences)
         return tuple(sentences)
+
 
 class SentenceEncoder(TextEncoder):
     """
@@ -191,12 +175,9 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        if not isinstance(tokens, tuple):
-            raise ValueError
+        check_types(tokens, tuple, str)
 
         for one_token in tokens:
-            if not isinstance(one_token, str):
-                raise ValueError
             self._word2id[one_token] = self._word2id.get(one_token, self._last_idx)
             self._id2word[self._last_idx] = self._id2word.get(self._last_idx, one_token)
             self._last_idx += 1
@@ -207,12 +188,10 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        if not isinstance(sentences, tuple):
-            raise ValueError
+        check_types(sentences, tuple, Sentence)
+
         coded_sent = []
         for one_sentence in sentences:
-            if not isinstance(one_sentence, Sentence):
-                raise ValueError
             preprocessed_tokens = one_sentence.get_preprocessed()
             self._learn_indices(preprocessed_tokens)
             for words in preprocessed_tokens:
@@ -292,8 +271,7 @@ class SimilarityMatrix:
         :return:
         """
         for variable in (vertex1, vertex2):
-            if not isinstance(variable, Sentence):
-                raise ValueError
+            check_types(variable, Sentence)
 
         if vertex1 == vertex2:
             raise ValueError
@@ -328,8 +306,8 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        if not isinstance(sentence, Sentence) or not isinstance(other_sentence, Sentence):
-            raise ValueError
+        check_types(sentence, Sentence)
+        check_types(other_sentence, Sentence)
 
         seq1 = sorted(sentence.get_encoded())
         seq2 = sorted(other_sentence.get_encoded())
@@ -347,15 +325,18 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        if not isinstance(sentences, tuple) or not sentences:
+        if not sentences:
             raise ValueError
+        check_types(sentences, tuple)
 
         for idx1 in range(len(sentences)-1):
             for idx2 in range(1, len(sentences)):
                 sent1 = sentences[idx1]
                 sent2 = sentences[idx2]
-                if not isinstance(sent1, Sentence) or not isinstance(sent2, Sentence):
-                    raise ValueError
+
+                check_types(sent1, Sentence)
+                check_types(sent2, Sentence)
+
                 if sorted(sent1.get_encoded()) == sorted(sent2.get_encoded()):
                     continue
                 self.add_edge(sent1, sent2)
@@ -374,8 +355,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        if not isinstance(graph, SimilarityMatrix):
-            raise ValueError
+        check_types(graph, SimilarityMatrix)
         self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
@@ -392,13 +372,9 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not isinstance(vertex, Sentence) or not isinstance(incidental_vertices, list) \
-                or not isinstance(scores, dict):
-            raise ValueError
-
-        for inc_vert in incidental_vertices:
-            if not isinstance(inc_vert, Sentence):
-                raise ValueError
+        check_types(vertex, Sentence)
+        check_types(incidental_vertices, list, Sentence)
+        check_types(scores, dict)
 
         summa = sum((1 / (1 + self._graph.calculate_inout_score(inc_vertex))) * scores[inc_vertex]
                     for inc_vertex in incidental_vertices)
@@ -430,8 +406,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
-            raise ValueError
+        check_types(n_sentences, int)
         sort_list = sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_sentences]
         return tuple(sort_list)
 
@@ -441,13 +416,14 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
-            raise ValueError
+        check_types(n_sentences, int)
 
         important_list = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
         result = []
+
         for element in important_list:
             result.append(element.get_text())
+
         return '\n'.join(result)
 
 
