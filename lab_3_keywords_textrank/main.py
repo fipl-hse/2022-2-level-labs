@@ -2,6 +2,7 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+from pathlib import Path
 from typing import Optional, Union
 
 
@@ -521,7 +522,7 @@ class VanillaTextRank:
         pass
 
     # Step 5.3
-    def score_vertices(self) -> None:
+    def train(self) -> None:
         """
         Iteratively computes significance scores for vertices
         Returns
@@ -533,7 +534,7 @@ class VanillaTextRank:
         for vertex in vertices:
             self._scores[vertex] = 1.0
 
-        for iteration in range(0, self._max_iter):
+        for _ in range(0, self._max_iter):
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
                 incidental_vertices = [vertex for vertex in vertices
@@ -621,5 +622,217 @@ class PositionBiasedTextRank(VanillaTextRank):
                 vertices incidental to the scored one
             scores: dict[int, float]
                 scores of all vertices in the graph
+        """
+        pass
+
+
+class TFIDFAdapter:
+    """
+    A class to unify the interface of TF-IDF keywords extractor with TextRank algorithms
+    ...
+    Attributes
+    ----------
+    _tokens: tuple[str, ...]
+        sequence of tokens from which to extract keywords
+    _idf: dict[str, float]
+         Inverse Document Frequency scores for tokens
+    _scores: dict[str, float]
+        TF-IDF scores reflecting how important each token is
+    Methods
+    -------
+     train(self) -> int:
+        Computes importance scores for all tokens
+     get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
+        Retrieves a requested number of the most important tokens
+    """
+
+    _scores: dict[str, float]
+
+    # Step 10.1
+    def __init__(self, tokens: tuple[str, ...], idf: dict[str, float]) -> None:
+        """
+        Constructs all the necessary attributes
+        for the TF-IDF keywords extractor
+        Parameters
+        ----------
+            tokens: tuple[str, ...]
+                sequence of tokens from which to extract keywords
+            idf: dict[str, float]
+                Inverse Document Frequency scores for tokens
+        """
+        pass
+
+    # Step 10.2
+    def train(self) -> int:
+        """
+        Computes importance scores for all tokens
+        Returns
+        -------
+            int:
+                0 if importance scores were calculated successfully, otherwise -1
+        """
+        pass
+
+    # Step 10.3
+    def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
+        """
+        Retrieves a requested number of the most important tokens
+        Parameters
+        ----------
+            n_keywords: int
+                requested number of keywords to extract
+        Returns
+        -------
+            tuple[str, ...]:
+                a requested number tokens with the highest importance scores
+        """
+        pass
+
+
+class RAKEAdapter:
+    """
+    A class to unify the interface of RAKE keywords extractor with TextRank algorithms
+    ...
+    Attributes
+    ----------
+    _text: str
+        a text from which to extract keywords
+    _stop_words: tuple[str, ...]
+         a sequence of stop-words
+    _scores: dict[str, float]
+        word scores reflecting how important each token is
+    Methods
+    -------
+     train(self) -> int:
+        Computes importance scores for all tokens
+     get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
+        Retrieves a requested number of the most important tokens
+    """
+
+    _scores: dict[str, float]
+
+    # Step 11.1
+    def __init__(self, text: str, stop_words: tuple[str, ...]) -> None:
+        """
+        Constructs all the necessary attributes
+        for the RAKE keywords extractor
+        Parameters
+        ----------
+            text: str
+                a text from which to extract keywords
+            stop_words: tuple[str, ...]
+                a sequence of stop-words
+        """
+        pass
+
+    # Step 11.2
+    def train(self) -> int:
+        """
+        Computes importance scores for all tokens
+        Returns
+        -------
+            int:
+                0 if importance scores were calculated successfully, otherwise -1
+        """
+        pass
+
+    # Step 11.3
+    def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
+        """
+        Retrieves a requested number of the most important tokens
+        Parameters
+        ----------
+            n_keywords: int
+                requested number of keywords to extract
+        Returns
+        -------
+            tuple[str, ...]:
+                a requested number tokens with the highest importance scores
+        """
+        pass
+
+
+# Step 12.1
+def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> float:
+    """
+    Computes recall metric
+    Parameters
+    ----------
+        predicted: tuple[str, ...]
+            keywords predictions of an algorithm to estimate
+        target: tuple[str, ...]
+            ground truth keywords
+    Returns
+    -------
+        float:
+            recall value
+    """
+    pass
+
+
+class KeywordExtractionBenchmark:
+    """
+    A class to compare 4 different algorithms of keywords extraction
+    ...
+    Attributes
+    ----------
+    _stop_words: tuple[str, ...]
+        a sequence of stop-words
+    _punctuation: tuple[str, ...]
+        symbols of punctuation
+    _idf: dict[str, float]
+        Inverse Document Frequency scores for the words in materials
+    _materials_path: Path
+        a path to materials to use for comparison
+    themes: tuple[str, ...]
+        a sequence of topics to which comparison materials relate
+    report: dict[str, dict[str, float]]
+        comparison report reflecting how successfully each model extracts keywords
+    Methods
+    -------
+    run(self) -> Optional[dict[str, dict[str, float]]]:
+        creates comparison report
+    save_to_csv(self, path: Path) -> None:
+        saves the report in the .csv format
+    """
+
+    # Step 12.2
+    def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...],
+                 idf: dict[str, float], materials_path: Path) -> None:
+        """
+        Constructs all the necessary attributes for the Benchmark instance
+        Parameters
+        ----------
+            stop_words: tuple[str, ...]
+                a sequence of stop-words
+            punctuation: tuple[str, ...]
+                symbols of punctuation
+            idf: dict[str, float]
+                Inverse Document Frequency scores for the words in materials
+            materials_path: Path
+                a path to materials to use for comparison
+        """
+        pass
+
+    # Step 12.3
+    def run(self) -> Optional[dict[str, dict[str, float]]]:
+        """
+        Creates comparison report
+        Returns
+        -------
+            Optional[dict[str, dict[str, float]]]:
+                comparison report
+        In case it is impossible to extract keywords due to corrupt inputs, None is returned
+        """
+        pass
+
+    # Step 12.4
+    def save_to_csv(self, path: Path) -> None:
+        """
+        Saves comparison report to csv
+        Parameters
+        ----------
+            path: Path
+                a path where to save the report file
         """
         pass
