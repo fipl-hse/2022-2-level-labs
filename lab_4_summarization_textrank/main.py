@@ -3,10 +3,10 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union, Any
-
+import re
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
-import re
+
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -49,6 +49,7 @@ def check_type(user_input: Any, user_input_type: type, can_be_empty: bool) -> No
     if not user_input and can_be_empty is False:
         raise ValueError
 
+
 class Sentence:
     """
     An abstraction over the real-world sentences
@@ -59,7 +60,7 @@ class Sentence:
         Constructs all the necessary attributes
         """
         if not isinstance(text, str) or isinstance(position, bool) or not isinstance(position, int):
-            raise ValueError #the instruction allows you to interrupt the regular execution flow by raising an exception.
+            raise ValueError
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -195,7 +196,6 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        super().__init__()
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
