@@ -6,9 +6,9 @@ Working with enclosing scope
 
 from typing import Callable
 
-def wrapper_func() -> None:
+def wrapper_func() -> Callable:
     cache = {}
-    def internal(first, second):
+    def internal(first: int, second: int) -> int:
         pair = (first, second)
         if pair not in cache:
             print(f'Computing for {pair} ...')
@@ -18,9 +18,9 @@ def wrapper_func() -> None:
     return internal
 
 
-def cached(target_func: Callable) -> None:
+def cached(target_func: Callable) -> Callable:
     cache = dict()
-    def internal(*args):
+    def internal(*args: int) -> int:
         if args not in cache:
             print(f'Computing for {args} ...')
             cache[args] = sum(args)
