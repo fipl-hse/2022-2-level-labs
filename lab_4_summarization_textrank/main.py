@@ -30,6 +30,20 @@ def check_inner_types(user_input: Any, user_input_type: type, elements_type: typ
             raise ValueError
 
 
+def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> None:
+    """
+    Checks weather object is dictionary
+    hat has keys and values of certain type
+    """
+    if not isinstance(user_input, dict):
+        raise ValueError
+    if not user_input and can_be_empty is False:
+        raise ValueError
+    for key, value in user_input.items():
+        if not isinstance(key, key_type) or not isinstance(value, value_type):
+            raise ValueError
+
+
 class Sentence:
     """
     An abstraction over the real-world sentences
@@ -122,7 +136,7 @@ class SentencePreprocessor(TextPreprocessor):
         :return: a sequence of sentences
         """
         check_type(text, str, False)
-        text = text.replace("\n", ' ')
+        text = text.replace("\n", ' ').replace("  ", " ")
         phrases = re.split(r'(?<=[.?!])\s+(?=[A-ZА-Я])', text)
         sentences = []
         for ind, phrase in enumerate(phrases):
@@ -311,6 +325,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
+        check_type(graph, SimilarityMatrix, False)
         self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
@@ -327,7 +342,13 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        check_type(vertex, Sentence, False)
+        check_inner_types(incidental_vertices, list, Sentence,  True)
+        check_dict(scores, Sentence, float, False)
+
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -355,7 +376,10 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        check_type(n_sentences, int, True)
+        if isinstance(n_sentences, bool):
+            raise ValueError
+        return tuple(sorted(self._scores, key=lambda elem: self._scores[elem], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -363,7 +387,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        check_type(n_sentences, int, False)
+        summery = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
+        return '\n'.join(element.get_text() for element in summery)
 
 
 class Buddy:
