@@ -11,6 +11,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
+#python -m pytest -m mark6
 class Sentence:
     """
     An abstraction over the real-world sentences
@@ -20,9 +21,12 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        if not (isinstance(text, str) or isinstance(position, int)):
+        if not isinstance(text, str):
             raise ValueError
-
+        if isinstance(position, bool):
+            raise ValueError
+        if not isinstance(position, int):
+            raise ValueError
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -64,6 +68,8 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
+        if not isinstance(preprocessed_sentence, tuple):
+            raise ValueError
         for word in preprocessed_sentence:
             if not isinstance(word, str):
                 raise ValueError
@@ -84,6 +90,8 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
+        if not isinstance(encoded_sentence, tuple):
+            raise ValueError
         for number in encoded_sentence:
             if not isinstance(number, int):
                 raise ValueError
@@ -107,7 +115,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        pass
+
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
