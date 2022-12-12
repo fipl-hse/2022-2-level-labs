@@ -4,11 +4,6 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-import csv
-from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
-from lab_2_keywords_cooccurrence.main import (extract_phrases, extract_candidate_keyword_phrases,
-                                              calculate_frequencies_for_content_words, calculate_word_degrees,
-                                              calculate_word_scores)
 
 import csv
 
@@ -46,7 +41,6 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
-
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -192,7 +186,7 @@ class TextEncoder:
 
 
 # Step 3
-def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
+def extract_pairs(tokens, window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
     """
     Retrieves all pairs of co-occurring words in the token sequence
     Parameters
@@ -340,7 +334,7 @@ class AdjacencyMatrixGraph:
         Returns
         -------
             int
-                number of incidental verticesя
+                number of incidental vertices
         If vertex is not present in the graph, -1 is returned
         """
         if vertex not in self._vertices:

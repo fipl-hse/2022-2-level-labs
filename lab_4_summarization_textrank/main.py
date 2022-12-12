@@ -5,7 +5,6 @@ Summarize text using TextRank algorithm
 from typing import Union, Any
 import re
 
-from lab_3_keywords_textrank.main import extract_pairs
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
@@ -14,6 +13,9 @@ EncodedSentence = tuple[int, ...]
 
 
 def check_type(user_input: Any, user_input_type: type, can_be_empty: bool) -> None:
+    """
+    Checks weather object has the correct type
+    """
     if not isinstance(user_input, user_input_type):
         raise ValueError
     if not user_input and can_be_empty is False:
@@ -21,6 +23,10 @@ def check_type(user_input: Any, user_input_type: type, can_be_empty: bool) -> No
 
 
 def check_inner_types(user_input: Any, user_input_type: type, elements_type: type, can_be_empty: bool) -> None:
+    """
+    Checks weather object has the correct type
+    and elements within are of certain type
+    """
     if not isinstance(user_input, user_input_type):
         raise ValueError
     if not user_input and can_be_empty is False:
@@ -172,12 +178,6 @@ class SentenceEncoder(TextEncoder):
     A class to encode string sequence into matching integer sequence
     """
 
-    def __init__(self) -> None:
-        """
-        Constructs all the necessary attributes
-        """
-        super().__init__()
-
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other
@@ -216,7 +216,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         return 0
     whole_sequence = sequence + other_sequence
     all_unique_element = set(whole_sequence)
-    the_same_elements = set([elem for elem in whole_sequence if elem in sequence and elem in other_sequence])
+    the_same_elements = {elem for elem in whole_sequence if elem in sequence and elem in other_sequence}
     return len(the_same_elements) / len(all_unique_element)
 
 
