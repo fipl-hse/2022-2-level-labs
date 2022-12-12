@@ -5,7 +5,8 @@ from lab_4_summarization_textrank.main import (Sentence,
                                                SentencePreprocessor,
                                                SentenceEncoder,
                                                SimilarityMatrix,
-                                               TextRankSummarizer)
+                                               TextRankSummarizer,
+                                               Buddy)
 
 
 from pathlib import Path
