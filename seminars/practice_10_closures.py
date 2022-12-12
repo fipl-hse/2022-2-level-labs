@@ -1,43 +1,50 @@
+"""
+Programming 2022
+Seminar 10
+Working with enclosing scope
+"""
+
 from typing import Callable
 
-def g() -> None:
-    d = {}
-    def f(a, b):
-        if (a,b) not in d:
-            print(f'Computing for {(a,b)} ...')
-            d[(a,b)] = a + b
-        print(f'Retrieving results from internal cache...')
-        return d[(a,b)]
-    return f
+def wrapper_func() -> None:
+    cache = {}
+    def internal(first, second):
+        pair = (first, second)
+        if pair not in cache:
+            print(f'Computing for {pair} ...')
+            cache[pair] = first + second
+        print('Retrieving results from internal cache...')
+        return cache[pair]
+    return internal
 
 
-def cached(fn: Callable) -> None:
-    d = dict()
+def cached(target_func: Callable) -> None:
+    cache = dict()
     def internal(*args):
-        if args not in d:
+        if args not in cache:
             print(f'Computing for {args} ...')
-            d[args] = sum(args)
-        print(f'Retrieving results from internal cache...')
-        return d[args]
+            cache[args] = sum(args)
+        print('Retrieving results from internal cache...')
+        return cache[args]
     return internal
 
 @cached
-def f(a: int, b: int) -> int:
-    return a + b
+def f(first: int, second: int) -> int:
+    return first + second
 
 
 def main() -> None:
-    print(f'######### Closure-based calls')
-    c = g()
-    res = c(10, 20)
-    res = c(10, 20)
-    res = c(10, 20)
-    res = c(10, 20)
-    res = c(10, 20)
-    res = c(10, 20)
+    print('######### Closure-based calls')
+    wrapped_func = wrapper_func()
+    res = wrapped_func(10, 20)
+    res = wrapped_func(10, 20)
+    res = wrapped_func(10, 20)
+    res = wrapped_func(10, 20)
+    res = wrapped_func(10, 20)
+    res = wrapped_func(10, 20)
     print(f'Result is {res}')
 
-    print(f'\n\n\n######### Decorator-based calls')
+    print('\n\n\n######### Decorator-based calls')
     res = f(10, 20)
     res = f(10, 20)
     res = f(10, 20)
