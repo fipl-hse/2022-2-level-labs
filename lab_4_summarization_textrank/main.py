@@ -210,11 +210,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_type(sequence, Union[list, tuple], True)
-    check_type(other_sequence, Union[list, tuple], True)
+    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
+        raise ValueError
     if len(sequence) == 0 or len(other_sequence) == 0:
         return 0
-    whole_sequence = sequence + other_sequence
+    whole_sequence = tuple(sequence) + tuple(other_sequence)
     all_unique_element = set(whole_sequence)
     the_same_elements = {elem for elem in whole_sequence if elem in sequence and elem in other_sequence}
     return len(the_same_elements) / len(all_unique_element)

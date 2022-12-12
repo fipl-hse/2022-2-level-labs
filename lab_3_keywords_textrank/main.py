@@ -186,7 +186,7 @@ class TextEncoder:
 
 
 # Step 3
-def extract_pairs(tokens, window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
+def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
     """
     Retrieves all pairs of co-occurring words in the token sequence
     Parameters
@@ -876,6 +876,7 @@ class RAKEAdapter:
         self._scores = dict(score_dict)
         return 0
 
+    # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         Retrieves a requested number of the most important tokens
