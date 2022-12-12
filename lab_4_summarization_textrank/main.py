@@ -34,13 +34,15 @@ def arg_check(*args: Any) -> bool:
     Positions in tuples:
     0 = data
     1 = expected type of data
-    2 = expected type of (1) content if data is a list or a tuple, (2) keys if data is a dict
+    2 = expected type of (a) content if data is a list or a tuple, (b) keys if data is a dict
     3 = expected type of values if data is a dict
     None in tuple = allowed to be falsy
     """
     for i in args:
-        if not isinstance(i, tuple) or (length := len(i) - int(None in i)) < 2 or \
-                not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
+        if not isinstance(i, tuple):
+            raise ValueError
+        length = len(i) - i.count(None)  # working tuple length (everything but Nones)
+        if length < 2 or not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
             raise ValueError
         if isinstance(i[0], (bool, list, tuple, dict)) and None not in i and not i[0]:
             raise ValueError
