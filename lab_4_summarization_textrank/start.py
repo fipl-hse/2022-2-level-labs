@@ -25,6 +25,8 @@ if __name__ == "__main__":
     with open(STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
+    punctuation = tuple('.,!?-:;()')
+
     # reading IDF scores
     IDF_PATH = ASSETS_PATH / 'IDF.json'
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
@@ -33,7 +35,7 @@ if __name__ == "__main__":
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
     # step 5
-    PREPROCESSOR = SentencePreprocessor(stop_words, tuple('.,!?-:;()'))
+    PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
     PREPROCESSED_SENTENCES = PREPROCESSOR.get_sentences(text)
 
     ENCODER = SentenceEncoder()
@@ -46,8 +48,10 @@ if __name__ == "__main__":
     SUMMARIZER = TextRankSummarizer(GRAPH)
     SUMMARIZER.train()
 
-    TEXT_SUMMARY = SUMMARIZER.make_summary(4)
+    TEXT_SUMMARY = SUMMARIZER.make_summary(5)
     print('The text summary:', TEXT_SUMMARY, sep='\n')
+
+    BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
 
 
 

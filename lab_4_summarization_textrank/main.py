@@ -24,9 +24,8 @@ def check_type(var: Any, var_type: (type, tuple), el_type: (type, tuple) = None,
         raise ValueError
     if var_type == int and isinstance(var, bool):
         raise ValueError
-    if isinstance(var, var_type) and not can_be_empty and not var and var != 0:
-        raise ValueError
-
+    # if can_be_empty is False and var != 0 and not var:
+    #     raise ValueError
 
 class NoRelevantTextsError(Exception):
     pass
@@ -189,7 +188,7 @@ class SentenceEncoder(TextEncoder):
         :return:
         """
         check_type(tokens, tuple, str)
-        for token, idx in zip(tokens, range(1000 + len(tokens))):
+        for token, idx in zip(tokens, range(1000, 1000 + len(tokens))):
             self._word2id[token] = idx
 
         for token, idx in self._word2id.items():
@@ -203,9 +202,11 @@ class SentenceEncoder(TextEncoder):
         """
         check_type(sentences, tuple, Sentence)
 
+        all_tokens = tuple([token for sentence in sentences for token in sentence.get_preprocessed()])
+        self._learn_indices(all_tokens)
+
         for sentence in sentences:
             tokens = sentence.get_preprocessed()
-            self._learn_indices(sentence.get_preprocessed())
             encoded_sentence = []
 
             for token in tokens:
@@ -221,8 +222,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_type(sequence, (list, tuple))
-    check_type(other_sequence, (list, tuple))
+    check_type(sequence, (list, tuple), can_be_empty=True)
+    check_type(other_sequence, (list, tuple), can_be_empty=True)
 
     if not(sequence or other_sequence):
         return 0.0
@@ -380,7 +381,7 @@ class TextRankSummarizer:
         :return: a sequence of sentences
         """
         check_type(n_sentences, int)
-        return tuple(sorted(self._scores, key=lambda s: self._scores[s], reverse=True)[:n_sentences])
+        return tuple(sorted(self._scores, key=lambda s: (-self._scores[s], s.get_position()))[:n_sentences])
 
     def make_summary(self, n_sentences: int = 5) -> str:
         """
