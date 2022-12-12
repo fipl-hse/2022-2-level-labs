@@ -20,14 +20,26 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        pass
+        if not (isinstance(text, str) or isinstance(position, int)):
+            raise ValueError
+
+        self._text = text
+        self._position = position
+        self._preprocessed = ()
+        self._encoded = ()
+
+
+
+
+
 
     def get_position(self) -> int:
         """
         Returns the attribute
         :return: the position of the sentence in the text
         """
-        pass
+        return self._position
+
 
     def set_text(self, text: str) -> None:
         """
@@ -35,14 +47,16 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        pass
+        self._text = text
 
     def get_text(self) -> str:
         """
         Returns the attribute
         :return: the text
         """
-        pass
+        return self._text
+
+
 
     def set_preprocessed(self, preprocessed_sentence: PreprocessedSentence) -> None:
         """
@@ -50,14 +64,19 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        pass
+        for word in preprocessed_sentence:
+            if not isinstance(word, str):
+                raise ValueError
+
+        self._preprocessed = preprocessed_sentence
+
 
     def get_preprocessed(self) -> PreprocessedSentence:
         """
         Returns the attribute
         :return: the preprocessed sentence (a sequence of tokens)
         """
-        pass
+        return self._preprocessed
 
     def set_encoded(self, encoded_sentence: EncodedSentence) -> None:
         """
@@ -65,14 +84,18 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        pass
+        for number in encoded_sentence:
+            if not isinstance(number, int):
+                raise ValueError
+
+        self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
         """
         Returns the attribute
         :return: the encoded sentence (a sequence of numbers)
         """
-        pass
+        return self._encoded
 
 
 class SentencePreprocessor(TextPreprocessor):
