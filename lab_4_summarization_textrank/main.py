@@ -4,8 +4,9 @@ Summarize text using TextRank algorithm
 """
 from typing import Union
 
-from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+from lab_3_keywords_textrank.main import (TextEncoder,
+                                          TextPreprocessor,
+                                          TFIDFAdapter)
 
 # import re
 
@@ -415,6 +416,16 @@ class Buddy:
         :param idf_values: pre-computed IDF values
         """
         self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf_values = idf_values
+        self._text_preprocessor = TextPreprocessor(stop_words, punctuation)
+        self._sentence_encoder = SentenceEncoder()
+        self._sentence_preprocessor = SentencePreprocessor(stop_words, punctuation)
+        self._paths_to_texts = paths_to_texts
+        self._knowledge_database = {}
+
+        for path in self._paths_to_texts:
+            self.add_text_to_database(path)
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """
@@ -423,6 +434,24 @@ class Buddy:
         :return:
         """
         check_type(path_to_text, str)
+        with open(path_to_text, 'r', encoding='utf-8') as file:
+            text = ' '.join([line.strip() for line in file.readline()])
+            sentences = self._sentence_preprocessor.get_sentences(text)
+            self._sentence_encoder.encode_sentences(sentences)
+            tokens = self._text_preprocessor.preprocess_text(text)
+
+            self._tfidf_adapter = TFIDFAdapter(tokens, self._idf_values)
+            self._tfidf_adapter.train()
+            keywords = self._tfidf_adapter.get_top_keywords(100)
+
+            graph = SimilarityMatrix()
+            graph.fill_from_sentences(sentences)
+
+            summarizer = TextRankSummarizer(graph)
+            summary = summarizer.make_summary(5)
+
+            inner_dct = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
+            self._knowledge_database[path_to_text] = inner_dct
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
@@ -431,7 +460,8 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        pass
+        check_type(keywords, tuple, str)
+        check_type(n_texts, int)
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
