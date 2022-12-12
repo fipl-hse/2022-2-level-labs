@@ -35,6 +35,7 @@ if __name__ == "__main__":
     TARGET_TEXT_PATH_ALBATROSS = ASSETS_PATH / 'albatross.txt'
     TARGET_TEXT_PATH_PAIN_DETECTION = ASSETS_PATH / 'pain_detection.txt'
     TARGET_TEXT_PATH_GAGARIN = ASSETS_PATH / 'gagarin.txt'
+
     corpus = {
         'gagarin': read_target_text(TARGET_TEXT_PATH_GAGARIN),
         'albatross': read_target_text(TARGET_TEXT_PATH_ALBATROSS),
@@ -42,24 +43,31 @@ if __name__ == "__main__":
         'pain_detection': read_target_text(TARGET_TEXT_PATH_PAIN_DETECTION)
     }
 
-    for TEXT in corpus:
-        PROCESSED_TEXT = process_text(TEXT, stop_words)
-        if PROCESSED_TEXT:
-            print('text', get_top_n(PROCESSED_TEXT, 10, 4), "\n")
+    GAGARIN_PROCESSED = process_text(corpus['gagarin'], stop_words)
+    if GAGARIN_PROCESSED:
+        print(get_top_n(GAGARIN_PROCESSED, 10, 5))
+    ALBATROSS_PROCESSED = process_text(corpus['albatross'], stop_words)
+    if ALBATROSS_PROCESSED:
+        print(get_top_n(ALBATROSS_PROCESSED, 10, 5))
+    GENOME_PROCESSED = process_text(corpus['genome_engineering'], stop_words)
+    if GENOME_PROCESSED:
+        print(get_top_n(GENOME_PROCESSED, 10, 5))
+    PAIN_PROCESSED = process_text(corpus['pain_detection'], stop_words)
+    if PAIN_PROCESSED:
+        print(get_top_n(PAIN_PROCESSED, 10, 5))
 
-    PROCESSED_POLISH = None
-    POLISH_TEXT = read_target_text(ASSETS_PATH / 'polish.txt')
-    stop_words_json = load_stop_words(ASSETS_PATH / 'stopwords.json')
-    if stop_words_json:
-        PROCESSED_POLISH = process_text(POLISH_TEXT, stop_words_json['pl'])
-    if PROCESSED_POLISH:
-        print('polish_text', get_top_n(PROCESSED_POLISH, 10, 4), "\n")
+    STOP_WORDS = load_stop_words(ASSETS_PATH / 'stopwords.json')
 
-    UNKNOWN_TEXT = read_target_text(ASSETS_PATH / 'unknown.txt')
-    PROCESSED_UNKNOWN = process_text(UNKNOWN_TEXT, stop_words)
-    if PROCESSED_UNKNOWN:
-        print('unknown_text', get_top_n(PROCESSED_UNKNOWN, 10, 4), "\n")
+    POLISH_PROCESSED = None
+    if STOP_WORDS:
+        POLISH_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'polish.txt'), STOP_WORDS['pl'])
+    if POLISH_PROCESSED:
+        print(get_top_n(POLISH_PROCESSED, 10, 5))
 
-    RESULT = PROCESSED_UNKNOWN
+    UNKNOWN_PROCESSED = process_text(read_target_text(ASSETS_PATH / 'unknown.txt'), max_length=8)
+    if UNKNOWN_PROCESSED:
+        print(get_top_n(UNKNOWN_PROCESSED, 10, 5))  # эсперанто
+
+    RESULT = UNKNOWN_PROCESSED
 
     assert RESULT, 'Keywords are not extracted'
