@@ -1,7 +1,7 @@
 """
 TextRank keyword extraction starter
 """
-import json
+
 from pathlib import Path
 
 

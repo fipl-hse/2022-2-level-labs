@@ -2,19 +2,8 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
-import csv
 from pathlib import Path
 from typing import Optional, Union
-from lab_1_keywords_tfidf.main import (calculate_frequencies,
-                                       calculate_tf,
-                                       calculate_tfidf,
-                                       get_top_n)
-from lab_2_keywords_cooccurrence.main import (type_check,
-                                              extract_phrases,
-                                              extract_candidate_keyword_phrases,
-                                              calculate_frequencies_for_content_words,
-                                              calculate_word_degrees,
-                                              calculate_word_scores)
 
 
 class TextPreprocessor:
@@ -36,7 +25,6 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
-
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
