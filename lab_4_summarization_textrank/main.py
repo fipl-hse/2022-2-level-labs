@@ -51,6 +51,9 @@ class Sentence:
         :param text: the text
         :return: None
         """
+        if not isinstance(text, str):
+            raise ValueError
+
         self._text = text
 
     def get_text(self) -> str:
