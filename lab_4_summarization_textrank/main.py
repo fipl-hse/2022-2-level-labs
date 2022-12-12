@@ -196,6 +196,7 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
+        super().__init__()
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
