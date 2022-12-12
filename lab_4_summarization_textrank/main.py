@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union
+from typing import Union, Any, Type
 
 import re
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -12,6 +12,21 @@ from lab_3_keywords_textrank.main import TextEncoder, \
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
+def check_types(variable: Any, possible_var_type: list[Type], container_value_type=None) -> None:
+    """
+    Checks if the variable is of an apropriate type
+    param: variable
+    param: possible_var_type
+    param: container_value_type (default = None)
+    return:
+    """
+    for var_type in possible_var_type:
+        if not isinstance(variable, var_type) or isinstance(variable, bool):
+            raise ValueError
+    if container_value_type:
+        for element in variable:
+            if not isinstance(element, container_value_type):
+                raise ValueError
 
 class Sentence:
     """
@@ -22,10 +37,8 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        if not isinstance(text, str):
-            raise ValueError
-        if not isinstance(position, int) or isinstance(position, bool):
-            raise ValueError
+        check_types(text, [str])
+        check_types(position, [int])
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -44,8 +57,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        if not isinstance(text, str):
-            raise ValueError
+        check_types(text, [str])
         self._text = text
 
     def get_text(self) -> str:
@@ -61,17 +73,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not preprocessed_sentence:
-            self._preprocessed = preprocessed_sentence
-            return None
-
-        if not isinstance(preprocessed_sentence, tuple):
-            raise ValueError
-
-        for element in preprocessed_sentence:
-            if not isinstance(element, str):
-                raise ValueError
-
+        check_types(preprocessed_sentence, [tuple], str)
         self._preprocessed = preprocessed_sentence
         return None
 
@@ -88,13 +90,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        if not encoded_sentence:
-            return None
-        if not isinstance(encoded_sentence, tuple):
-            raise ValueError
-        for element in encoded_sentence:
-            if not isinstance(element, int):
-                raise ValueError
+        check_types(encoded_sentence, [tuple], int)
         self._encoded = encoded_sentence
         return None
 
@@ -115,15 +111,17 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
-            raise ValueError
-        if stop_words:
-            for element in stop_words:
-                if not isinstance(element, str):
-                    raise ValueError
-        for element in punctuation:
-            if not isinstance(element, str):
-                raise ValueError
+        # if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
+        #     raise ValueError
+        check_types(stop_words, [tuple], str)
+        check_types(punctuation, [tuple], str)
+        # if stop_words:
+        #     for element in stop_words:
+        #         if not isinstance(element, str):
+        #             raise ValueError
+        # for element in punctuation:
+        #     if not isinstance(element, str):
+        #         raise ValueError
         super().__init__(stop_words, punctuation)
         self._idx = 0
 
@@ -133,8 +131,9 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        if not isinstance(text, str):
-            raise ValueError
+        # if not isinstance(text, str):
+        #     raise ValueError
+        check_types(text, [str])
 
         sent_list = []
         split_text = re.split(r'(?<=[.?!])\s+(?=[А-Я A-Z])', text)
