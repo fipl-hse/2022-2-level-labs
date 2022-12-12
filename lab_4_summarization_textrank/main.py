@@ -3,7 +3,8 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 import re
-from typing import Union, Any, Tuple
+from itertools import combinations
+from typing import Union, Any, Tuple, get_args
 
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
@@ -125,6 +126,7 @@ class SentencePreprocessor(TextPreprocessor):
         if not isinstance(text, str):
             raise ValueError
 
+        text = text.replace('\n', ' ').replace('  ', ' ')
         sentences = re.split(r"(?<=[.!?])\s+(?=[A-ZА-Я])", text)
         return tuple(Sentence(sentence, position) for position, sentence in enumerate(sentences))
 
@@ -197,7 +199,14 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    if not isinstance(sequence, get_args(Union[list, tuple])) or not isinstance(other_sequence,
+                                                                                get_args(Union[list, tuple])):
+        raise ValueError
+    if not sequence and not other_sequence:
+        return 0
+    sequence_set = set(sequence)
+    other_sequence_set = set(other_sequence)
+    return len(sequence_set.intersection(other_sequence_set)) / len(sequence_set.union(other_sequence_set))
 
 
 class SimilarityMatrix:
@@ -206,19 +215,21 @@ class SimilarityMatrix:
     """
 
     _matrix: list[list[float]]
+    _vertices: list[Sentence]
 
     def __init__(self) -> None:
         """
         Constructs necessary attributes
         """
-        pass
+        self._matrix = []
+        self._vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -226,7 +237,10 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        if vertex not in self._vertices:
+            raise ValueError
+        idx = self._vertices.index(vertex)
+        return sum(1 for score in self._matrix[idx] if score > 0)
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -235,7 +249,25 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        if not isinstance(vertex1, Sentence) or not isinstance(vertex2, Sentence):
+            raise ValueError
+
+        if vertex1.get_encoded() == vertex2.get_encoded():
+            raise ValueError
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
+
+        for edges_list in self._matrix:
+            if len(edges_list) < len(self._vertices):
+                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
+
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
+        jaccard_index = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+        self._matrix[idx1][idx2] = jaccard_index
+        self._matrix[idx2][idx1] = jaccard_index
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -244,7 +276,11 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        idx1 = self._vertices.index(sentence)
+        idx2 = self._vertices.index(other_sentence)
+        return self._matrix[idx1][idx2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -252,7 +288,11 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        if not sentences:
+            raise ValueError
+        check_types(sentences, tuple, Sentence)
+        for sentence, other_sentence in combinations(sentences, 2):
+            self.add_edge(sentence, other_sentence)
 
 
 class TextRankSummarizer:
@@ -268,7 +308,13 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        if not isinstance(graph, SimilarityMatrix):
+            raise ValueError
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -280,7 +326,9 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        summary = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                      for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summary * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -308,7 +356,10 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        if not n_sentences or not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        sorted_sentences = sorted(self._scores, key=lambda sentence: self._scores[sentence], reverse=True)
+        return tuple(sentence for sentence in sorted_sentences)[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -316,7 +367,8 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        top = sorted(self.get_top_sentences(n_sentences), key=lambda sentence: sentence.get_position())
+        return '\n'.join(sentence.get_text() for sentence in top)
 
 
 class Buddy:

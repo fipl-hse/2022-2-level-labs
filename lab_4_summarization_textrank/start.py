@@ -4,7 +4,8 @@ TextRank summarizer starter
 import string
 from pathlib import Path
 import json
-from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder
+from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, SimilarityMatrix, \
+    TextRankSummarizer
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -29,12 +30,18 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    sentence_preprocessor = SentencePreprocessor(stop_words, tuple(string.punctuation))
-    sentence_encoder = SentenceEncoder()
+    preprocessor = SentencePreprocessor(stop_words, tuple(string.punctuation))
+    sentences = preprocessor.get_sentences(text)
+    encoder = SentenceEncoder()
+    encoder.encode_sentences(sentences)
 
-    sentences = sentence_preprocessor.get_sentences(text)
-    sentence_encoder.encode_sentences(sentences)
+    graph = SimilarityMatrix()
+    graph.fill_from_sentences(sentences)
 
-    RESULT = sentences
+    summarizer = TextRankSummarizer(graph)
+    summarizer.train()
+
+    RESULT = summarizer.make_summary(10)
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
