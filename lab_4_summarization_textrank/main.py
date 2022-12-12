@@ -477,4 +477,4 @@ class Buddy:
             raise ValueError
         keywords = self._sentence_preprocessor.preprocess_text(query)
         close_texts = self._find_texts_close_to_keywords(keywords, n_summaries)
-        return f'Ответ:\n\n\n{"".join(self._knowledge_database[text]["summary"] for text in close_texts)}'
+        return 'Ответ:\n' + '\n\n'.join(self._knowledge_database[text]["summary"] for text in close_texts)
