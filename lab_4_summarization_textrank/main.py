@@ -12,7 +12,8 @@ from lab_3_keywords_textrank.main import TextEncoder, \
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
-def check_types(variable: Any, possible_var_type: list[Type], container_value_type: Type = None) -> None:
+
+def check_types(variable: Any, possible_var_type: list[Type], container_value_type: Union[Type, None] = None) -> None:
     """
     Checks if the variable is of an apropriate type
     param: variable
@@ -28,6 +29,7 @@ def check_types(variable: Any, possible_var_type: list[Type], container_value_ty
             if not isinstance(element, container_value_type):
                 raise ValueError
 
+
 class Sentence:
     """
     An abstraction over the real-world sentences
@@ -42,7 +44,7 @@ class Sentence:
         self._text = text
         self._position = position
         self._preprocessed: tuple[str, ...] = ()
-        self._encoded = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
