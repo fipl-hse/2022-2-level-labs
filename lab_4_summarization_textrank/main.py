@@ -75,7 +75,6 @@ class Sentence:
         """
         check_types(preprocessed_sentence, [tuple], str)
         self._preprocessed = preprocessed_sentence
-        return None
 
     def get_preprocessed(self) -> PreprocessedSentence:
         """
@@ -92,7 +91,6 @@ class Sentence:
         """
         check_types(encoded_sentence, [tuple], int)
         self._encoded = encoded_sentence
-        return None
 
     def get_encoded(self) -> EncodedSentence:
         """
