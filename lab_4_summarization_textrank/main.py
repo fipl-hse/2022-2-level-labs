@@ -121,7 +121,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
-        text = text.replace('\n', ' ')
+        text = text.replace('\n', ' ').replace('  ', ' ')
         splited_text = re.split(r'(?<=[.?!])\s+(?=[A-ZА-Я])', text)
         sentences = []
         for index, value in enumerate(splited_text):
@@ -201,7 +201,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    if not isinstance(sequence, (list,tuple)) or not isinstance(other_sequence, (list,tuple)):
+        raise ValueError
+    if not sequence or not other_sequence:
+        return 0
+    return len(set(sequence) & set(other_sequence)) / len(set(sequence) | set(other_sequence))
 
 
 class SimilarityMatrix:
@@ -215,14 +219,15 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+        self._matrix = []
+        self._vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -230,7 +235,10 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        if vertex not in self._vertices:
+            raise ValueError
+        index = self._vertices.index(vertex)
+        return len([i for i in self._matrix[index] if i > 0])
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -239,7 +247,23 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        if vertex1 == vertex2:
+            raise ValueError
+        for vertex in vertex1, vertex2:
+            if vertex in self._vertices:
+                continue
+            self._vertices.append(vertex)
+            for i in self._matrix:
+                i.append(0)
+            new_item = [0 for x in self._vertices]
+            self._matrix.append(new_item)
+        encoded1 = vertex1.get_encoded()
+        encoded2 = vertex2.get_encoded()
+        vert1_index = self._vertices.index(vertex1)
+        vert2_index = self._vertices.index(vertex2)
+        self._matrix[vert1_index][vert2_index] = calculate_similarity(encoded1, encoded2)
+        self._matrix[vert2_index][vert1_index] = calculate_similarity(encoded1, encoded2)
+
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -248,7 +272,11 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        index1 = self._vertices.index(sentence)
+        index2 = self._vertices.index(other_sentence)
+        return self._matrix[index1][index2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -256,7 +284,12 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        if not isinstance(sentences, tuple) or not sentences:
+            raise ValueError
+        for sentence1 in sentences:
+            for sentence2 in sentences:
+                if sentence1.get_encoded() != sentence2.get_encoded():
+                    self.add_edge(sentence1, sentence2)
 
 
 class TextRankSummarizer:
@@ -272,7 +305,13 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        if not isinstance(graph, SimilarityMatrix):
+            raise ValueError
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -284,7 +323,13 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        sum_list = []
+        for vert in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(vert)
+            sum_list.append(1 / inout_score * self._scores[vert])
+        summa = sum(sum_list)
+        vertex_score = (1 - self._damping_factor) + self._damping_factor * summa
+        self._scores[vertex] = vertex_score
 
     def train(self) -> None:
         """
@@ -312,7 +357,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        return tuple(sorted(self._scores, reverse=True, key=lambda sentence: self._scores[sentence])[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -320,7 +367,11 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        sorted_lst = sorted(self.get_top_sentences(n_sentences), key=lambda sentence: sentence.get_position())
+        summary = [i.get_text() for i in sorted_lst]
+        return '\n'.join(summary)
 
 
 class Buddy:
