@@ -4,27 +4,13 @@ Summarize text using TextRank algorithm
 """
 from typing import Union
 from typing import Union, Any
-# import re
+import re
 # import itertools as it
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
-
-
-def check_type(sequence: Any, seq_type: Any, elem_type: Any) -> bool:
-    """
-    Checks type of needed sequence
-    Then checks type of elements in sequence
-    return: bool
-    """
-    if not isinstance(sequence, seq_type):
-        return False
-    for elem in sequence:
-        if not isinstance(elem, elem_type):
-            return False
-    return True
 
 
 class Sentence:
@@ -75,8 +61,11 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not check_type(preprocessed_sentence, tuple, str):
+        if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
+        for sentence in preprocessed_sentence:
+            if not isinstance(sentence, str):
+                raise ValueError
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -92,8 +81,11 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        if not check_type(encoded_sentence, tuple, int):
+        if not isinstance(encoded_sentence, tuple):
             raise ValueError
+        for sentence in encoded_sentence:
+            if not isinstance(sentence, int):
+                raise ValueError
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -113,8 +105,15 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        self._stop_words = stop_words
-        self._punctuation = punctuation
+        if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
+            raise ValueError
+        for word in stop_words:
+            if not isinstance(word, str):
+                raise ValueError
+        for punc in punctuation:
+            if not isinstance(punc, str):
+                raise ValueError
+        super().__init__(stop_words, punctuation)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -122,7 +121,15 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+        clean_txt = text.replace(' ', ' ').replace('\n', ' ')
+        splited_txt = re.split(r'(?<=[?!.])\s+(?=[А-ЯA-Z])', clean_txt)
+        tuple_for_sentence = []
+        for idx, value in enumerate(splited_txt):
+            sentence = Sentence(value, idx)
+            tuple_for_sentence.append(sentence)
+        return tuple(tuple_for_sentence)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -130,7 +137,10 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for sentence in sentences:
+            sentence.set_preprocessed(super().preprocess_text(sentence.get_text()))
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -138,8 +148,11 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
-
+        if not isinstance(text, str):
+            raise ValueError
+        sentences = self._split_by_sentence(text)
+        self._preprocess_sentences(sentences)
+        return sentences
 
 class SentenceEncoder(TextEncoder):
     """
