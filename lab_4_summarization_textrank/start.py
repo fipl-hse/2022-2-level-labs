@@ -3,6 +3,9 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
+import string
+from lab_4_summarization_textrank.main import (SentencePreprocessor,
+    SentenceEncoder)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -27,6 +30,11 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    RESULT = None
+    preprocessed_text = SentencePreprocessor(stop_words, tuple(string.punctuation))
+    sentences = preprocessed_text.get_sentences(text)
+    encoded_sentences = SentenceEncoder()
+    encoded_sentences.encode_sentences(sentences)
+    RESULT = sentences
+    print(RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

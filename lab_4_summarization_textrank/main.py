@@ -7,6 +7,8 @@ from typing import Union
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
+import re
+
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
@@ -20,6 +22,8 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
+        if not isinstance(text, str) or not isinstance(position, int) or isinstance(position, bool):
+            raise ValueError
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -99,7 +103,15 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        pass
+        if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
+            raise ValueError
+        for word in stop_words:
+            if not isinstance(word, str):
+                raise ValueError
+        for i in punctuation:
+            if not isinstance(i, str):
+                raise ValueError
+        super().__init__(stop_words, punctuation)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -107,7 +119,14 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+        text = text.replace('\n', ' ')
+        splited_text = re.split(r'(?<=[.?!])\s+(?=[A-ZА-Я])', text)
+        sentences = []
+        for index, value in enumerate(splited_text):
+            sentences.append(Sentence(value, index))
+        return tuple(sentences)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -115,7 +134,11 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for sentence in sentences:
+            preprocessed_sentence = self.preprocess_text(sentence.get_text())
+            sentence.set_preprocessed(preprocessed_sentence)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -123,7 +146,11 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+        splited_text = self._split_by_sentence(text)
+        self._preprocess_sentences(splited_text)
+        return splited_text
 
 
 class SentenceEncoder(TextEncoder):
@@ -135,7 +162,8 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__()
+        self.last_value = 1000
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -143,7 +171,13 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        if not isinstance(tokens, tuple):
+            raise ValueError
+
+        for index, token in enumerate((token for token in tokens if token not in self._word2id), self.last_value):
+            self._word2id[token] = index
+            self._id2word[self.last_value] = token
+            self.last_value += 1
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -151,7 +185,13 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+
+        for sentence in sentences:
+            preprocessed_sent = sentence.get_preprocessed()
+            self._learn_indices(preprocessed_sent)
+            sentence.set_encoded(tuple(self._word2id[word] for word in preprocessed_sent))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
