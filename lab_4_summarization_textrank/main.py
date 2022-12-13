@@ -12,8 +12,8 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def type_check(check_object: Any, object_type: Union[Type, tuple[Type, ...]], token_type: Type = None,
-               value_type: Type = None, can_be_empty: bool = True) -> None:
+def type_check(check_object: Any, object_type: Union[Type, tuple[Type, ...]], token_type: Any = None,
+               value_type: Any = None, can_be_empty: bool = True) -> None:
     """
     Checks types of the object and its contents. Also checks if it is empty.
     :param check_object: the object we need to check
@@ -58,6 +58,9 @@ class Sentence:
     """
     An abstraction over the real-world sentences
     """
+
+    _preprocessed = tuple[str, ...]
+    _encoded = tuple[int, ...]
 
     def __init__(self, text: str, position: int) -> None:
         """
