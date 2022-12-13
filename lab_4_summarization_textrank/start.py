@@ -40,9 +40,9 @@ if __name__ == "__main__":
     matrix.fill_from_sentences(sentences)
     text_rank_summ = TextRankSummarizer(matrix)
     text_rank_summ.train()
-    summa = text_rank_summ.make_summary(10)
-    print(summa)
+    SUMMA = text_rank_summ.make_summary(10)
+    print(SUMMA)
 
-    RESULT = summa
+    RESULT = SUMMA
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

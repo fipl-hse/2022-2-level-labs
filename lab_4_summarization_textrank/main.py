@@ -4,9 +4,10 @@ Summarize text using TextRank algorithm
 """
 from typing import Union
 
+import re
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor, TFIDFAdapter
-import re
+
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -215,11 +216,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         raise ValueError
     if not sequence or not sequence:
         return 0
-    #пока приблизительно
-    a = set(sequence)
-    b = set(other_sequence)
-    c = a.intersection(b)
-    return float(len(c)) / (len(a) + len(b) - len(c))
+
+    sequence1 = set(sequence)
+    sequence2 = set(other_sequence)
+    junction = sequence1.intersection(sequence2)
+    return float(len(junction)) / (len(sequence1) + len(sequence2) - len(junction))
 
 
 class SimilarityMatrix:
