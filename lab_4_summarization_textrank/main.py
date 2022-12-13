@@ -3,11 +3,9 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union
-
+import re
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
-
-import re
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -255,7 +253,7 @@ class SimilarityMatrix:
             self._vertices.append(vertex)
             for i in self._matrix:
                 i.append(0)
-            new_item = [0 for x in self._vertices]
+            new_item = [0 for _ in self._vertices]
             self._matrix.append(new_item)
         encoded1 = vertex1.get_encoded()
         encoded2 = vertex2.get_encoded()
