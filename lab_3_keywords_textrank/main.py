@@ -241,7 +241,9 @@ class AdjacencyMatrixGraph:
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
         self._matrix = [[0]]
-        self._vertices, self._positions, self._position_weights = ({} for _ in range(3))
+        self._vertices = dict()
+        self._positions = dict()
+        self._position_weights = dict()
 
     # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
