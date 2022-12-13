@@ -59,8 +59,8 @@ class Sentence:
     An abstraction over the real-world sentences
     """
 
-    _preprocessed = tuple[str, ...]
-    _encoded = tuple[int, ...]
+    _preprocessed: tuple[str, ...]
+    _encoded: tuple[int, ...]
 
     def __init__(self, text: str, position: int) -> None:
         """
