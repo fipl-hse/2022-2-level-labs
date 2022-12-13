@@ -27,17 +27,16 @@ def type_check(check_object: Any, object_type: Union[Type, tuple[Type, ...]], to
         raise ValueError
     if not isinstance(check_object, object_type):
         raise ValueError
-    if object_type == 'int' and isinstance(check_object, bool):
+    if object_type == int and isinstance(check_object, bool):
         raise ValueError
     if isinstance(check_object, dict) and token_type and value_type:
         for token, value in check_object.items():
             if not isinstance(token, token_type) or not isinstance(value, value_type):
                 raise ValueError
-    else:
-        if token_type:
-            for token in check_object:
-                if not isinstance(token, token_type):
-                    raise ValueError
+    elif not isinstance(check_object, dict) and token_type:
+        for token in check_object:
+            if not isinstance(token, token_type):
+                raise ValueError
 
 
 class NoRelevantTextsError(Exception):
