@@ -4,25 +4,6 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
-import random
-
-
-def check_content(massive, type_name) -> Optional[bool]:
-    """
-       Checks if all elements in a sequence is the same type
-
-       Parameters:
-       massive: A sequence to check
-       type_name: name of type (str, int, etc)
-
-       Returns:
-       True
-
-       In case of different types of elements, None is returned
-       """
-    if not (massive and all(isinstance(el, type_name) for el in massive)):
-        return None
-    return True
 
 import csv
 
