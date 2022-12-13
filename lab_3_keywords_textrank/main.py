@@ -264,13 +264,11 @@ class AdjacencyMatrixGraph:
         ind1 = self._vertices.setdefault(vertex1, len(self._vertices))
         ind2 = self._vertices.setdefault(vertex2, len(self._vertices))
         diff = max(ind1, ind2,) - len(self._matrix) + 1
-        print(diff)
         for _ in range(diff):
             self._matrix.append([0] * len(self._matrix[0]))
         for row in self._matrix:
             row.extend((0,) * diff)
         self._matrix[ind1][ind2] = self._matrix[ind2][ind1] = 1
-        print(self._matrix)
         return 0
 
     # Step 4.3
