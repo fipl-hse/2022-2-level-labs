@@ -14,7 +14,7 @@ EncodedSentence = tuple[int, ...]
 
 def raise_error(obj: Any, type_name: Any, el_type: Any):
     """
-    Checks if arguments have correct type. If object has a wrong type, raises ValueError
+    Checks if arguments have correct type. If object has a wrong type, raises ValueError.
     Parameters:
     obj: object is checked
     type_name: object's supposed type
