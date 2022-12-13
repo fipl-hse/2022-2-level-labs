@@ -36,6 +36,10 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
+        if not isinstance(text, str):
+            raise ValueError
+        if not isinstance(position, int) or isinstance(position, bool):
+            raise ValueError
         self._text = text
         self._position = position
         self._preprocessed = ()
