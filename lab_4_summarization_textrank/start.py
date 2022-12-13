@@ -5,7 +5,7 @@ from pathlib import Path
 import json
 from string import punctuation
 from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, SimilarityMatrix, \
-    TextRankSummarizer
+    TextRankSummarizer, Buddy, Sentence
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -35,14 +35,34 @@ if __name__ == "__main__":
     sentences = sentence_preprocessor.get_sentences(text)
     sentence_encoder = SentenceEncoder()
     sentence_encoder.encode_sentences(sentences)
+    print(" + ".join(sentence.get_text() for sentence in sentences))
 
     # mark 8
     similarity_matrix = SimilarityMatrix()
     similarity_matrix.fill_from_sentences(sentences)
     text_rank_summarizer = TextRankSummarizer(similarity_matrix)
     text_rank_summarizer.train()
-    print(text_rank_summarizer.make_summary(10))
+    summary = text_rank_summarizer.make_summary(5)
+    print(text_rank_summarizer.make_summary(5))
 
-    #RESULT = None
+    # mark 10
+    buddy = Buddy(paths_to_texts, stop_words, tuple(punctuation), idf)
+    for path in paths_to_texts:
+        buddy.add_text_to_database(path)
+    print(buddy.reply('Первым генномодифицированным детям на Земле скоро исполнится четыре года. '
+                      'Научное сообщество осудило их «создателя» Хэ Цзянькуя, китайские власти и вовсе '
+                      'отправили его в тюрьму (на свободу он вышел буквально несколько недель назад), но дискуссии '
+                      'о том, как далеко мы готовы зайти, вооружившись инструментами по редактированию генома, '
+                      'на этом, естественно, не закончились. В книге «Неестественный отбор: Генная инженерия '
+                      'и человек будущего» (издательство «Альпина Паблишер»), переведенной на русский язык Асей '
+                      'Лаврушей, научная журналистка Торилл Корнфельт рассказывает о развитии генетических технологий '
+                      'и новых этических дилеммах, с которыми нам только предстоит столкнуться. Предлагаем вам '
+                      'ознакомиться с фрагментом, посвященным использованию CRISPR для лечения генетических '
+                      'заболеваний.На вопрос журналиста New Scientist о том, какие болезни можно лечить с помощью '
+                      'CRISPR, исследователь Ирина Конбой отвечает: «Все».'))
+
+    print(buddy.reply('неизвестно'))
+
+    RESULT = summary
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    #assert RESULT, 'Summaries are not extracted'
+    assert RESULT, 'Summaries are not extracted'
