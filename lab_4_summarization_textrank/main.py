@@ -463,7 +463,7 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        check_inner_types(keywords, tuple, str, False)
+        check_inner_types(keywords, tuple, str, True)
         check_type(n_texts, int, False)
         if isinstance(n_texts, bool):
             raise ValueError
