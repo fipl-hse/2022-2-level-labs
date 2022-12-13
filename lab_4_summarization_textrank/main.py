@@ -2,16 +2,16 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import (Union, Any)
+from typing import Union, Any
 
-from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+from lab_3_keywords_textrank.main import TextEncoder, TextPreprocessor
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
 def check_type(object: Any, type: type) -> None:
+    """checks the type of an object"""
     if not isinstance(object, type):
         raise ValueError
 
@@ -19,7 +19,8 @@ def check_type(object: Any, type: type) -> None:
         raise ValueError
 
 
-def check_collection(coll, type):
+def check_collection(coll: tuple[Any], type: type):
+    """checks the type of a collection"""
     if not isinstance(coll, tuple):
         raise ValueError
 
@@ -121,11 +122,11 @@ class SentencePreprocessor(TextPreprocessor):
         """
         check_type(text, str)
         sentences = []
-        text = text.replace('\n', ' ').replace('  ', ' ')
-        new_text = ''
+        text = text.replace("\n", " ").replace("  ", " ")
+        new_text = ""
         for idx, symbol in enumerate(text):
             try:
-                if symbol in ".?!" and text[idx + 1] == ' ' and text[idx + 2].isupper():
+                if symbol in ".?!" and text[idx + 1] == " " and text[idx + 2].isupper():
                     new_text += symbol
                     new_text += "/"
                 else:
@@ -285,7 +286,7 @@ class TextRankSummarizer:
         pass
 
     def update_vertex_score(
-            self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
+        self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
     ) -> None:
         """
         Changes vertex significance score using algorithm-specific formula
@@ -307,8 +308,9 @@ class TextRankSummarizer:
         for iteration in range(self._max_iter):
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
-                similar_vertices = [vertex for vertex in vertices
-                                    if self._graph.get_similarity_score(scored_vertex, vertex) > 0]
+                similar_vertices = [
+                    vertex for vertex in vertices if self._graph.get_similarity_score(scored_vertex, vertex) > 0
+                ]
                 self.update_vertex_score(scored_vertex, similar_vertices, prev_score)
             abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
 
@@ -339,11 +341,11 @@ class Buddy:
     """
 
     def __init__(
-            self,
-            paths_to_texts: list[str],
-            stop_words: tuple[str, ...],
-            punctuation: tuple[str, ...],
-            idf_values: dict[str, float],
+        self,
+        paths_to_texts: list[str],
+        stop_words: tuple[str, ...],
+        punctuation: tuple[str, ...],
+        idf_values: dict[str, float],
     ):
         """
         Constructs all the necessary attributes
