@@ -5,7 +5,7 @@ Summarize text using TextRank algorithm
 from typing import Union
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+    TextPreprocessor, TFIDFAdapter
 import re
 
 PreprocessedSentence = tuple[str, ...]
@@ -43,7 +43,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        if not isinstance(text, str):
+        if not isinstance(text, str) and text:
             raise ValueError
         self._text = text
 
@@ -104,7 +104,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        super().__init__(stop_words, punctuation)
+
         if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
             raise ValueError
 
@@ -115,6 +115,9 @@ class SentencePreprocessor(TextPreprocessor):
         for sign in punctuation:
             if not isinstance(sign, str):
                 raise ValueError
+
+        super().__init__(stop_words, punctuation)
+
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -342,7 +345,8 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not isinstance(vertex, Sentence) or not isinstance(scores, dict):
+        if not isinstance(vertex, Sentence) or not isinstance(scores, dict) and isinstance(incidental_vertices, list)\
+                and isinstance(incidental_vertices, Sentence):
             raise ValueError
         summa = sum((1 / self._graph.calculate_inout_score(vertex)) * scores[vertex]
                     for vertex in incidental_vertices)
@@ -409,7 +413,17 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        pass
+        self._paths_to_texts: list[str] = paths_to_texts
+        self._stop_words: tuple[str, ...] = stop_words
+        self._punctuation: tuple[str, ...] = punctuation
+        self._idf_values: dict[str, float] = idf_values
+        self._text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        self._sentence_encoder = SentenceEncoder()
+        self._sentence_preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        self._knowledge_database = {}
+
+        for path in paths_to_texts:
+            self.add_text_to_database(path)
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """
@@ -417,7 +431,27 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        pass
+        if not isinstance(path_to_text, str):
+            raise ValueError
+        with open(path_to_text, encoding='utf-8') as file:
+            text = file.read()
+
+
+        processed_sentences = self._sentence_preprocessor.get_sentences(text)
+        self._sentence_encoder.encode_sentences(processed_sentences)
+
+        tf_idf = TFIDFAdapter(self._text_preprocessor.preprocess_text(text), self._idf_values)
+        tf_idf.train()
+        keywords = tf_idf.get_top_keywords(100)
+
+        matrix = SimilarityMatrix()
+        matrix.fill_from_sentences(processed_sentences)
+
+        text_rank = TextRankSummarizer(matrix)
+        text_rank.train()
+        summary = text_rank.make_summary(5)
+
+        self._knowledge_database[path_to_text] = {'sentences': processed_sentences, 'keywords': keywords, 'summary': summary}
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
