@@ -1,9 +1,7 @@
 """
 TextRank keyword extraction starter
 """
-
 from pathlib import Path
-
 from string import punctuation
 import time
 import json
@@ -97,6 +95,5 @@ if __name__ == "__main__":
     BENCH.save_to_csv(PROJECT_ROOT / "report.csv")
     BENCH.report
     RESULT = True
-
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
