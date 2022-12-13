@@ -357,7 +357,7 @@ class AdjacencyMatrixGraph:
         for pair in extract_pairs(tokens, window_length):
             self.add_edge(*pair)
 
-        # Step 8.2
+    # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
         """
         Saves information about all positions of each vertex in the token sequence
@@ -640,6 +640,7 @@ class VanillaTextRank:
         vertices = self._graph.get_vertices()
         for vertex in vertices:
             self._scores[vertex] = 1.0
+
         for _ in range(0, self._max_iter):
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
