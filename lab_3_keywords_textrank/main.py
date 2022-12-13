@@ -7,10 +7,10 @@ from typing import Optional, Union
 import csv
 from lab_1_keywords_tfidf.main import calculate_frequencies, \
     calculate_tf, calculate_tfidf, get_top_n
-from lab_2_keywords_cooccurrence.main import extract_phrases, type_check, \
+from lab_2_keywords_cooccurrence.main import type_check, extract_phrases, \
     extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
-#@
+
 
 class TextPreprocessor:
     """
@@ -117,8 +117,7 @@ class TextEncoder:
         """
         Constructs all the necessary attributes for the text encoder object
         """
-        self._word2id = dict()
-        self._id2word = dict()
+        self._word2id, self._id2word = ({} for _ in range(2))
 
     # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
@@ -129,7 +128,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        for ind, word in enumerate(tokens, start=1_000):
+        for ind, word in enumerate(tokens, start=1_001):
             self._id2word[ind] = word
             self._word2id[word] = ind
 
@@ -197,8 +196,8 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
         window = tokens[i: i + window_length]
         for token_1 in window:
             for token_2 in window:
-                if token_1 < token_2 and (token_1, token_2) not in pairs:
-                    pairs.append((token_1, token_2))
+                if token_2 > token_1 and (pair := (token_1, token_2,)) not in pairs:
+                    pairs.append(pair)
     return tuple(pairs)
 
 
@@ -264,12 +263,14 @@ class AdjacencyMatrixGraph:
             return -1
         ind1 = self._vertices.setdefault(vertex1, len(self._vertices))
         ind2 = self._vertices.setdefault(vertex2, len(self._vertices))
-        diff = max(ind1, ind2) - len(self._matrix) + 1
+        diff = max(ind1, ind2,) - len(self._matrix) + 1
+        print(diff)
         for _ in range(diff):
             self._matrix.append([0] * len(self._matrix[0]))
         for row in self._matrix:
             row.extend((0,) * diff)
         self._matrix[ind1][ind2] = self._matrix[ind2][ind1] = 1
+        print(self._matrix)
         return 0
 
     # Step 4.3
@@ -609,7 +610,18 @@ class VanillaTextRank:
             dict[int, float]:
                 scores for all vertices present in the graph
         """
-        return self._scores
+        vertices = self._graph.get_vertices()
+        for vertex in vertices:
+            self._scores[vertex] = 1.0
+        for _ in range(0, self._max_iter):
+            prev_score = self._scores.copy()
+            for scored_vertex in vertices:
+                incidental_vertices = [vertex for vertex in vertices
+                                       if self._graph.is_incidental(scored_vertex, vertex) == 1]
+                self.update_vertex_score(scored_vertex, incidental_vertices, prev_score)
+            abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
+            if sum(abs_score_diff) <= self._convergence_threshold:
+                break
 
     # Step 5.4
     def get_scores(self) -> dict[int, float]:
