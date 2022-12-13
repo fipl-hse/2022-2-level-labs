@@ -6,7 +6,8 @@ from typing import Union
 
 import re
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor, TFIDFAdapter
+    TextPreprocessor,\
+    TFIDFAdapter
 
 
 PreprocessedSentence = tuple[str, ...]
@@ -452,7 +453,8 @@ class Buddy:
         text_rank.train()
         summary = text_rank.make_summary(5)
 
-        self._knowledge_database[path_to_text] = {'sentences': processed_sentences, 'keywords': keywords, 'summary': summary}
+        self._knowledge_database[path_to_text] = {'sentences': processed_sentences,
+                                                  'keywords': keywords, 'summary': summary}
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
