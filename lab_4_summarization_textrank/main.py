@@ -55,6 +55,9 @@ class NoRelevantTextsError(Exception):
     """
 
     def __str__(self):
+        """
+        Type massage to the user
+        """
         return 'Texts that are related to the query were not found. Try another query.'
 
 
@@ -64,6 +67,9 @@ class IncorrectQueryError(Exception):
     """
 
     def __str__(self):
+        """
+        Type massage to the user
+        """
         return 'Incorrect query. Use string as input.'
 
 
@@ -80,8 +86,8 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded:tuple[str, ...] = ()
 
     def get_position(self) -> int:
         """
