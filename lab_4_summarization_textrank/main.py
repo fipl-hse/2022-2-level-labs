@@ -50,13 +50,19 @@ def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty:
 
 
 class NoRelevantTextsError(Exception):
-    """This error raises when there aren't texts related to the user's query"""
+    """
+    This error raises when there aren't texts related to the user's query
+    """
+
     def __str__(self):
         return 'Texts that are related to the query were not found. Try another query.'
 
 
 class IncorrectQueryError(Exception):
-    """This error raises when user enters the wrong query"""
+    """
+    This error raises when user enters the wrong query
+    """
+
     def __str__(self):
         return 'Incorrect query. Use string as input.'
 
@@ -106,7 +112,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_inner_types(preprocessed_sentence, tuple, str, False)
+        check_inner_types(preprocessed_sentence, tuple, str, True)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -122,7 +128,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_inner_types(encoded_sentence, tuple, int, False)
+        check_inner_types(encoded_sentence, tuple, int, True)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:

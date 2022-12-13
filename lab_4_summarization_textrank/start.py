@@ -35,7 +35,7 @@ if __name__ == "__main__":
     sentences = sentence_preprocessor.get_sentences(text)
     sentence_encoder = SentenceEncoder()
     sentence_encoder.encode_sentences(sentences)
-    print(sentences)
+    print("Sentences:", sentences)
 
     # mark 8
     similarity_matrix = SimilarityMatrix()
@@ -50,8 +50,6 @@ if __name__ == "__main__":
     for path in paths_to_texts:
         buddy.add_text_to_database(path)
     print(buddy.reply('Кто такой Гагарин?'))
-
-    print(buddy.reply('Кто я?'))
 
     RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
