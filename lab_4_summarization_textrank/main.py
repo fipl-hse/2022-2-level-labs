@@ -109,7 +109,9 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-
+        super(SentencePreprocessor, self).__init__(stop_words, punctuation)
+        check_collection(stop_words, str)
+        check_collection(punctuation, str)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -117,7 +119,25 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        pass
+        check_type(text, str)
+        sentences = []
+        text = text.replace('\n', ' ').replace('  ', ' ')
+        new_text = ''
+        for idx, symbol in enumerate(text):
+            try:
+                if symbol in ".?!" and text[idx + 1] == ' ' and text[idx + 2].isupper():
+                    new_text += symbol
+                    new_text += "/"
+                else:
+                    new_text += symbol
+            except IndexError:
+                new_text += text[idx:]
+
+        splitted_text = new_text.split("/")
+
+        for idx, element in enumerate(splitted_text):
+            sentences.append(Sentence(element.strip(), idx))
+        return tuple(sentences)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -125,7 +145,10 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+        check_collection(sentences, Sentence)
+        for sentence in sentences:
+            preprocessed_sentences = self.preprocess_text(sentence.get_text())
+            sentence.set_preprocessed(preprocessed_sentences)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -133,7 +156,10 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
+        check_type(text, str)
+        splitted_sentences = self._split_by_sentence(text)
+        self._preprocess_sentences(splitted_sentences)
+        return splitted_sentences
 
 
 class SentenceEncoder(TextEncoder):
