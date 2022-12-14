@@ -3,7 +3,7 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
-from string import punctuation
+
 from lab_4_summarization_textrank.main import (SentencePreprocessor,
                                                SentenceEncoder, SimilarityMatrix,
                                                TextRankSummarizer,
@@ -30,6 +30,8 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
+    punctuation = tuple(elem for elem in ['.,!?-:;()&'])
+
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
     preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
@@ -47,8 +49,8 @@ if __name__ == "__main__":
     print(SUMMA)
 
     BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
-    USER_INPUT = 'Юрий Алексеевич Гагарин это кто?'
-    print(BUDDY.reply(USER_INPUT))
+    USER = 'Юрий Алексеевич Гагарин это кто?'
+    print(BUDDY.reply(USER))
 
 
     RESULT = SUMMA

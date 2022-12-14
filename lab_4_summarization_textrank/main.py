@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any
+from typing import Union
 
 import re
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -482,7 +482,8 @@ class Buddy:
                       for text, words in self._knowledge_database.items()}
         if not any(calculation[text] for text in calculation):
             raise NoRelevantTextsError
-        return tuple(sorted(sorted(calculation, reverse=True), key=lambda obj: calculation[obj], reverse=True))[:n_texts]
+        return tuple(sorted(sorted(calculation, reverse=True),
+                            key=lambda obj: calculation[obj], reverse=True))[:n_texts]
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
