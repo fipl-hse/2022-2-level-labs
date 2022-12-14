@@ -3,8 +3,8 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder
-from pathlib import Path
-from typing import Optional, Union
+from typing import Union
+import re
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -20,6 +20,8 @@ class Sentence:
         Constructs all the necessary attributes
         """
         if not isinstance(text, str) or not isinstance(position, int):
+            raise ValueError
+        if isinstance(text, bool) or isinstance(position, bool):
             raise ValueError
         self._text = text
         self._position = position
@@ -56,8 +58,10 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
+        if not isinstance(preprocessed_sentence, tuple) or isinstance(preprocessed_sentence, bool):
+            raise ValueError
         for item in preprocessed_sentence:
-            if not isinstance(item, str):
+            if not isinstance(item, str) or isinstance(item, bool):
                 raise ValueError
         self._preprocessed = preprocessed_sentence
 
@@ -74,8 +78,10 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
+        if not isinstance(encoded_sentence, tuple) or isinstance(encoded_sentence, bool):
+            raise ValueError
         for item in encoded_sentence:
-            if not isinstance(item, int):
+            if not isinstance(item, int) or isinstance(item, bool):
                 raise ValueError
         self._encoded = encoded_sentence
 
@@ -115,11 +121,15 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
-        text = text.replace('!', '.')
-        text = text.replace('?', '.')
-        sentences = text.split('.')
-        res = tuple(Sentence(sentence, position) for position, sentence in enumerate(sentences))
-        return res
+        text = text.replace('\n', ' ').strip()
+        sentences = re.split(r"(?<=[.!?])\s+(?=[A-ZА-Я])", text)
+        sentence_list = []
+        count = 0
+        for item in sentences:
+            sentence = Sentence(item, count)
+            count += 1
+            sentence_list.append(sentence)
+        return tuple(sentence_list)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
