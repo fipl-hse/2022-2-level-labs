@@ -20,6 +20,7 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
+
         pass
 
     def get_position(self) -> int:
