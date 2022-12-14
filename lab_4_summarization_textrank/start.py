@@ -41,9 +41,9 @@ if __name__ == "__main__":
     matrix_graph.fill_from_sentences(completed_sentences)
     text_rank = TextRankSummarizer(matrix_graph)
     text_rank.train()
-    completed_summary = text_rank.make_summary(5)
-    print('Summary:\n', completed_summary)
+    COMPLETED_SUMMARY = text_rank.make_summary(5)
+    print('Summary:\n', COMPLETED_SUMMARY)
 
-    RESULT = completed_summary
+    RESULT = COMPLETED_SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
