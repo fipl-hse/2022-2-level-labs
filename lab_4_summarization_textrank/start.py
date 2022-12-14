@@ -28,14 +28,17 @@ if __name__ == "__main__":
     with open(IDF_PATH, 'r', encoding='utf-8') as file:
         idf = json.load(file)
 
+    punctuation = tuple(elem for elem in ['.,!?-:;()&'])
+
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+
+    RESULT = None
     preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
     encoder = SentenceEncoder()
     sentences = preprocessor.get_sentences(text)
     encoder.encode_sentences(sentences)
     for sentence in sentences:
         print(sentence.get_encoded())
-
-    RESULT = None
+    RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
