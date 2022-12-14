@@ -164,6 +164,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
+        self._index = 1000
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -176,10 +177,14 @@ class SentenceEncoder(TextEncoder):
         for element in tokens:
             if not isinstance(element, str):
                 raise ValueError
-        new_tokens = (i for i in tokens if i not in self._word2id)
-        for index, token in enumerate(new_tokens, start=max(1000, 1000 + len(self._word2id))):
-            self._word2id[token] = index
-            self._id2word[index] = token
+        new_tokens = []
+        for element in tokens:
+            if element not in self._word2id:
+                new_tokens.append(element)
+        for element1 in new_tokens:
+            self._word2id[element1] = self._index
+            self._id2word[self._index] = element1
+            self._index += 1
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -193,7 +198,7 @@ class SentenceEncoder(TextEncoder):
             if not isinstance(element, Sentence):
                 raise ValueError
             self._learn_indices(element.get_preprocessed())
-            element.set_encoded(tuple(self._word2id[word] for word in element.get_preprocessed()))
+            element.set_encoded(tuple(self._word2id[item] for item in element.get_preprocessed()))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
