@@ -96,11 +96,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not isinstance(preprocessed_sentence, tuple):
-            raise ValueError
-        for token in preprocessed_sentence:
-            if not isinstance(token, str):
-                raise ValueError
+        check_type(preprocessed_sentence, tuple, str)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
