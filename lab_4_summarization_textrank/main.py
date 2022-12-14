@@ -89,12 +89,14 @@ class Sentence:
                 raise ValueError
         self._encoded = encoded_sentence
 
+
     def get_encoded(self) -> EncodedSentence:
         """
         Returns the attribute
         :return: the encoded sentence (a sequence of numbers)
         """
         return self._encoded
+
 
 
 class SentencePreprocessor(TextPreprocessor):
