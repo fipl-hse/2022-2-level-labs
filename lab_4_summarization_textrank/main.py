@@ -464,19 +464,7 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        check_type(keywords, tuple, str)
-        check_type(n_texts, int)
-
-        similarity_scores = {}
-        for path, info in self._knowledge_database.items():
-            text_keywords = info.get('keywords')
-            similarity_scores[path] = calculate_similarity(text_keywords, keywords)
-
-        if all(val == 0 for val in similarity_scores.values()):
-            raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
-
-        return tuple(sorted(similarity_scores, key=lambda p: (similarity_scores[p], p),
-                            reverse=True)[:n_texts])
+        pass
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
@@ -485,11 +473,4 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        if n_summaries > len(self._knowledge_database):
-            raise ValueError
-        try:
-            check_type(query, str)
-        except ValueError as error:
-            raise IncorrectQueryError('Incorrect query. Use string as input.') from error
-        summaries = self._find_texts_close_to_keywords(TextPreprocessor.preprocess_text(query), n_summaries)
-        return 'Ответ:\n,' + '\n\n'.join(list(summaries))
+        pass
