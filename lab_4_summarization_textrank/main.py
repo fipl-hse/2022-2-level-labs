@@ -223,15 +223,14 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        self._matrix = []
-        self._vertices = []
+        pass
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        return tuple(self._vertices)
+        pass
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -239,13 +238,7 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        if not isinstance(vertex, Sentence):
-            raise ValueError
-        summa = 0
-        for score in self._matrix[self._vertices.index(vertex)]:
-            if score > 0:
-                summa += 1
-        return summa - 1
+        pass
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -254,23 +247,7 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        if not isinstance(vertex1, Sentence) or not isinstance(vertex2, Sentence):
-            raise ValueError
-        if vertex1.get_encoded() == vertex2.get_encoded():
-            raise ValueError
-        for vertex in vertex1, vertex2:
-            if vertex not in self._vertices:
-                self._vertices.append(vertex)
-                self._matrix.append([])
-        for row in self._matrix:
-            for _ in range(len(self._matrix) - len(row)):
-                row.append(0)
-        idx1 = self._vertices.index(vertex1)
-        idx2 = self._vertices.index(vertex2)
-        self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
-        self._matrix[idx2][idx1] = calculate_similarity(vertex2.get_encoded(), vertex1.get_encoded())
-        self._matrix[idx1][idx1] = 1
-        self._matrix[idx2][idx2] = 1
+        pass
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -279,11 +256,7 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        if not isinstance(sentence, Sentence) or not isinstance(other_sentence, Sentence):
-            raise ValueError
-        if sentence not in self._vertices or other_sentence not in self._vertices:
-            raise ValueError
-        return self._matrix[self._vertices.index(sentence)][self._vertices.index(other_sentence)]
+        pass
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -291,14 +264,7 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        if not isinstance(sentences, tuple) or not sentences:
-            raise ValueError
-        if not all(isinstance(sentence, Sentence) for sentence in sentences):
-            raise ValueError
-        for sentence1 in sentences:
-            for sentence2 in sentences:
-                if sentence1.get_encoded() != sentence2.get_encoded():
-                    self.add_edge(sentence1, sentence2)
+        pass
 
 
 class TextRankSummarizer:
@@ -314,13 +280,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        if not isinstance(graph, SimilarityMatrix):
-            raise ValueError
-        self._graph = graph
-        self._damping_factor = 0.85
-        self._convergence_threshold = 0.0001
-        self._max_iter = 50
-        self._scores = {}
+        pass
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -332,31 +292,13 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not isinstance(vertex, Sentence) or not isinstance(scores, dict):
-            raise ValueError
-        summa = sum(self._scores[inc] / (1 + self._graph.calculate_inout_score(inc))
-                    for inc in incidental_vertices)
-        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
+        pass
 
     def train(self) -> None:
         """
         Iteratively computes significance scores for vertices
         """
-        vertices = self._graph.get_vertices()
-        for vertex in vertices:
-            self._scores[vertex] = 1.0
-
-        for iteration in range(self._max_iter):
-            prev_score = self._scores.copy()
-            for scored_vertex in vertices:
-                similar_vertices = [vertex for vertex in vertices
-                                    if self._graph.get_similarity_score(scored_vertex, vertex) > 0]
-                self.update_vertex_score(scored_vertex, similar_vertices, prev_score)
-            abs_score_diff = [abs(i - j) for i, j in zip(prev_score.values(), self._scores.values())]
-
-            if sum(abs_score_diff) <= self._convergence_threshold:  # convergence condition
-                print("Converging at iteration " + str(iteration) + "...")
-                break
+        pass
 
     def get_top_sentences(self, n_sentences: int) -> tuple[Sentence, ...]:
         """
@@ -364,9 +306,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
-            raise ValueError
-        return tuple(sorted(self._scores, key=lambda key: self._scores[key], reverse=True)[:n_sentences])
+        pass
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -374,10 +314,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
-            raise ValueError
-        top = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
-        return '\n'.join([sentence.get_text() for sentence in top])
+        pass
 
 
 class Buddy:
