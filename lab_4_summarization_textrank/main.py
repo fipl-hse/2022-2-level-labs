@@ -215,7 +215,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     if not sequence or not sequence:
         return 0
     intersection = list(set(sequence) & set(other_sequence))
-    unification = list(set(sequence + other_sequence))
+    unification = list(set().union(sequence, other_sequence))
     measure_of_jacquard = float(len(intersection) / len(unification))
     return measure_of_jacquard
 
