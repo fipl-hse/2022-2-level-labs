@@ -23,17 +23,14 @@ def check_type(var: Any, type_of_object: Type) -> None:
         raise ValueError
 
 
-def check_object_and_type(var: Any,
-                          object_type: Type,
-                          element_type: Type) -> None:
+def check_object_and_type(var: Any, object_type: Type, element_type: Type) -> None:
     """
     Checks whether type of var is expected one;
     checks whether type of elements in var are expected one
     if input is not correct - ValueError is occurred
     """
-    check_type(var, object_type)
-    for i in var:
-        check_type(i, element_type)
+    if not isinstance(var, object_type) and all(isinstance(element, element_type) for element in var):
+        raise ValueError
 
 
 class Sentence:
@@ -180,8 +177,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        if not isinstance(tokens, tuple):
-            raise ValueError
+        check_object_and_type(tokens, tuple, str)
         tokens = (token for token in tokens if token not in self._word2id)
         for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
             self._word2id[token] = idx
