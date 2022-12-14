@@ -2,24 +2,11 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+
 from pathlib import Path
+
 from typing import Optional, Union
-
-import csv
-
-from lab_1_keywords_tfidf.main import (
-    calculate_frequencies,
-    calculate_tf,
-    calculate_tfidf
-)
-
-from lab_2_keywords_cooccurrence.main import (
-    extract_phrases,
-    extract_candidate_keyword_phrases,
-    calculate_frequencies_for_content_words,
-    calculate_word_degrees,
-    calculate_word_scores,
-)
+from itertools import combinations
 
 
 class TextPreprocessor:
@@ -68,10 +55,10 @@ class TextPreprocessor:
             tuple[str, ...]
                 clean lowercase tokens
         """
-        if self._punctuation:
-            for punc in self._punctuation:
-                text = text.replace(punc, '')
-        return tuple(text.lower().split())
+        for i in self._punctuation:
+            text = text.replace(i, '')
+        token = text.lower().split()
+        return tuple(token)
 
     # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
@@ -86,7 +73,11 @@ class TextPreprocessor:
             tuple[str, ...]
                 tokens without stop-words
         """
-        return tuple(token for token in tokens if token not in self._stop_words)
+        ready_text = []
+        for word in tokens:
+            if word not in self._stop_words:
+                ready_text.append(word)
+        return tuple(ready_text)
 
     # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
