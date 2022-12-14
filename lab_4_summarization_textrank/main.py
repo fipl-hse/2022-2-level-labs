@@ -183,6 +183,7 @@ class SentenceEncoder(TextEncoder):
         tokens = (token for token in tokens if token not in self._word2id)
         for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
             self._word2id[token] = idx
+        for idx, token in self._word2id.items():
             self._id2word[idx] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
