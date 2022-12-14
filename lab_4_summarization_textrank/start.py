@@ -5,7 +5,9 @@ from pathlib import Path
 import json
 from lab_4_summarization_textrank.main import (
     SentencePreprocessor,
-    SentenceEncoder
+    SentenceEncoder,
+    SimilarityMatrix,
+    TextRankSummarizer
 )
 import string
 
@@ -44,6 +46,13 @@ if __name__ == "__main__":
         ENCODED.append(encode)
     print(ENCODED)
 
-    RESULT = ENCODED
+    graph = SimilarityMatrix()
+    graph.fill_from_sentences(SENTENCES)
+    text_rank = TextRankSummarizer(graph)
+    text_rank.train()
+    SUMMARY = text_rank.make_summary(5)
+    print(SUMMARY)
+
+    RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
