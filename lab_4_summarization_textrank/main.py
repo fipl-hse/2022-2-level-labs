@@ -178,7 +178,8 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_object_and_type(tokens, tuple, str)
+        if not isinstance(tokens, tuple):
+            raise ValueError
         tokens = (token for token in tokens if token not in self._word2id)
         for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
             self._word2id[token] = idx
