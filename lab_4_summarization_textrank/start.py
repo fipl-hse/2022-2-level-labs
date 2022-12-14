@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 
 from lab_4_summarization_textrank.main import SentenceEncoder, \
-    SentencePreprocessor
+    SentencePreprocessor, SimilarityMatrix, TextRankSummarizer
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -31,13 +31,19 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
     punctuation = tuple(string.punctuation)
-    PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
-    SENTENCES = PREPROCESSOR.get_sentences(text)
-    ENCODER = SentenceEncoder()
-    ENCODER.encode_sentences(SENTENCES)
-    for one_sentence in SENTENCES:
+    preprocess_sentences = SentencePreprocessor(stop_words, punctuation)
+    completed_sentences = preprocess_sentences.get_sentences(text)
+    encoder = SentenceEncoder()
+    encoder.encode_sentences(completed_sentences)
+    for one_sentence in completed_sentences:
         print(*(one_sentence.get_encoded()))
+    matrix_graph = SimilarityMatrix()
+    matrix_graph.fill_from_sentences(completed_sentences)
+    text_rank = TextRankSummarizer(matrix_graph)
+    text_rank.train()
+    completed_summary = text_rank.make_summary(5)
+    print('Summary:\n', completed_summary)
 
-    RESULT = SENTENCES
+    RESULT = completed_summary
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
