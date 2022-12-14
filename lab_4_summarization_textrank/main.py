@@ -203,7 +203,7 @@ class SentenceEncoder(TextEncoder):
         """
         check_type(sentences, tuple, Sentence)
 
-        all_tokens = tuple([token for sentence in sentences for token in sentence.get_preprocessed()])
+        all_tokens = tuple(token for sentence in sentences for token in sentence.get_preprocessed())
         self._learn_indices(all_tokens)
 
         for sentence in sentences:
@@ -490,5 +490,5 @@ class Buddy:
             check_type(query, str)
         except ValueError as error:
             raise IncorrectQueryError('Incorrect query. Use string as input.') from error
-        summaries = self._find_texts_close_to_keywords(TextPreprocessor.preprocess_text(query), n_summaries)
+        summaries = self._find_texts_close_to_keywords(TextPreprocessor.preprocess_text(self, query), n_summaries)
         return 'Ответ:\n,' + '\n\n'.join(list(summaries))
