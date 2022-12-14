@@ -6,7 +6,8 @@ import json
 from string import punctuation
 from lab_4_summarization_textrank.main import (SentenceEncoder,
                                                SentencePreprocessor,
-                                               SimilarityMatrix)
+                                               SimilarityMatrix,
+                                               TextRankSummarizer)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -39,7 +40,11 @@ if __name__ == "__main__":
         print('Encoded sentence:', sentence.get_encoded())
     matrix = SimilarityMatrix()
     matrix.fill_from_sentences(sentences)
+    rank = TextRankSummarizer(matrix)
+    rank.train()
+    summary = rank.make_summary(10)
+    print(f'Summary:\n {summary}')
 
-    RESULT = True
+    RESULT = summary
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

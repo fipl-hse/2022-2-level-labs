@@ -133,7 +133,7 @@ class SentencePreprocessor(TextPreprocessor):
         :return: a sequence of sentences
         """
         check_type(text, str)
-        split_content = re.split("(?<=[.!?])\s+", text.replace('\n', ' ').replace('  ', ' '))
+        split_content = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text.replace('\n', ' ').replace('  ', ' '))
         split_sentences = []
         for idx, sentence in enumerate(split_content):
             this_sentence = Sentence(sentence, idx)
@@ -315,7 +315,12 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        check_type(graph, SimilarityMatrix)
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -327,7 +332,11 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        check_type(vertex, Sentence)
+        check_type(scores, dict)
+        summa = sum((1 / (1 + self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices))
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -355,7 +364,8 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        check_type(n_sentences, int)
+        return tuple(sorted(self._scores, key=lambda ele: self._scores[ele], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -363,7 +373,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        check_type(n_sentences, int)
+        sorted_sent = sorted(self.get_top_sentences(n_sentences), key=lambda ele: ele.get_position())
+        return '\n'.join([sent.get_text() for sent in sorted_sent])
 
 
 class Buddy:
