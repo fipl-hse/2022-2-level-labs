@@ -251,10 +251,11 @@ class SimilarityMatrix:
             if vertex in self._vertices:
                 continue
             self._vertices.append(vertex)
+            self._matrix.append([])
             for i in self._matrix:
-                i.append(0)
-            new_item = [0 for _ in self._vertices]
-            self._matrix.append(new_item)
+                if len(i) < len(self._vertices):
+                    i.extend([0 for _ in range(len(self._vertices) - len(i))])
+
         encoded1 = vertex1.get_encoded()
         encoded2 = vertex2.get_encoded()
         vert1_index = self._vertices.index(vertex1)
