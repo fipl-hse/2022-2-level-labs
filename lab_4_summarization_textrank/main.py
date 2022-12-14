@@ -6,7 +6,7 @@ from typing import Union, Any, Type
 import re
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor, AdjacencyMatrixGraph
+    TextPreprocessor
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
