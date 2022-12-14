@@ -27,8 +27,6 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
         self._preprocessed: tuple[str, ...] = ()
         self._encoded: tuple[int, ...] = ()
 
