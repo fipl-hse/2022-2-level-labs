@@ -154,6 +154,7 @@ class SentencePreprocessor(TextPreprocessor):
         self._preprocess_sentences(sentences)
         return sentences
 
+
 class SentenceEncoder(TextEncoder):
     """
     A class to encode string sequence into matching integer sequence
@@ -163,7 +164,8 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__()
+        self.last_id = 0
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -171,7 +173,15 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        if not isinstance(tokens, tuple):
+            raise ValueError
+        for token in tokens:
+            if not isinstance(token, str):
+                raise ValueError
+        for token, idx in zip(tokens, range(1000, 1000 + len(tokens))):
+            self._word2id[token] = idx
+        for token, idx in self._word2id.items():
+            self._id2word[idx] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -179,7 +189,11 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for token in sentences:
+            self._learn_indices(token.get_preprocessed())
+            token.set_encoded(tuple(self._word2id[word] for word in token.get_preprocessed()))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
@@ -189,7 +203,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    pass
+    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
+        raise ValueError
+    if not sequence or not other_sequence:
+        return 0
+    return len(set(sequence) & set(other_sequence)) / len(set(sequence) | set(other_sequence))
 
 
 class SimilarityMatrix:
