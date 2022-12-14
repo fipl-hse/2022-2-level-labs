@@ -197,6 +197,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
+        self.last = 999
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -204,12 +205,16 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_inner_types(tokens, tuple, str, False)
-        new_tokens = (elem for elem in tokens if elem not in self._word2id)
-
-        for ind, element in enumerate(new_tokens, start=1000 + len(self._word2id)):
-            self._word2id[element] = ind
-            self._id2word[ind] = element
+        if not isinstance(tokens, tuple):
+            raise ValueError
+        new_tokens = []
+        for elem in tokens:
+            if elem not in self._word2id:
+                new_tokens.append(elem)
+        for idx, token in enumerate(new_tokens, self.last + 1):
+            self._word2id[token] = idx
+            self._id2word[idx] = token
+        self.last = max(self._id2word)
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -217,10 +222,18 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        check_inner_types(sentences, tuple, Sentence, False)
-        for sentence in sentences:
-            self._learn_indices(sentence.get_preprocessed())
-            sentence.set_encoded(tuple(self._word2id[sent] for sent in sentence.get_preprocessed()))
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        sentences_list = []
+        for sentence_1 in sentences:
+            sentences_list.append((sentence_1, sentence_1.get_preprocessed()))
+        for sentence, preprocessed_sentence in sentences_list:
+            self._learn_indices(preprocessed_sentence)
+            sentences_list1 = []
+            for token in preprocessed_sentence:
+                var = self._word2id[token]
+                sentences_list1.append(var)
+            sentence.set_encoded(tuple(sentences_list1))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
@@ -230,14 +243,17 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
+    if not isinstance(sequence, list | tuple) or not isinstance(other_sequence, list | tuple):
         raise ValueError
-    if len(sequence) == 0 or len(other_sequence) == 0:
+    try:
+        similar = 0
+        for elem in sequence:
+            if elem in other_sequence:
+                similar += 1
+        index_jaccard = similar / (len(set(sequence) | set(other_sequence)))
+        return index_jaccard
+    except ZeroDivisionError:
         return 0
-    whole_sequence = tuple(sequence) + tuple(other_sequence)
-    all_unique_element = set(whole_sequence)
-    the_same_elements = {elem for elem in whole_sequence if elem in sequence and elem in other_sequence}
-    return len(the_same_elements) / len(all_unique_element)
 
 
 class SimilarityMatrix:
