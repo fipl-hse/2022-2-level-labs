@@ -116,11 +116,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        if not isinstance(encoded_sentence, tuple):
-            raise ValueError
-        for number in encoded_sentence:
-            if not isinstance(number, int):
-                raise ValueError
+        check_type(encoded_sentence, tuple, int)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
