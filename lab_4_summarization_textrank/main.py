@@ -29,8 +29,9 @@ def check_object_and_type(var: Any, object_type: Type, element_type: Type) -> No
     checks whether type of elements in var are expected one
     if input is not correct - ValueError is occurred
     """
-    if not isinstance(var, object_type) and all(isinstance(element, element_type) for element in var):
-        raise ValueError
+    check_type(var, object_type)
+    for elem in var:
+        check_type(elem, element_type)
 
 
 class Sentence:
