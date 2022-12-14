@@ -40,7 +40,7 @@ if __name__ == "__main__":
     with open(CORPUS_FREQ_PATH, 'r', encoding='utf-8') as file:
         corpus_freqs = json.load(file)
 
-    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict = [None for notdef in range(6)]
+    no_stop_words, freq_dict, tf_dict, tfidf_dict, exp_freq_dict, chi_dict, RESULT = [None] * 7
     tokenization = clean_and_tokenize(target_text)
 
     if tokenization:
@@ -55,6 +55,9 @@ if __name__ == "__main__":
     if freq_dict and tf_dict:
         tfidf_dict = calculate_tfidf(tf_dict, idf)
 
+    if tfidf_dict:
+        print('Top tfidf: ', get_top_n(tfidf_dict, 10))
+
     if tfidf_dict and freq_dict:
         exp_freq_dict = calculate_expected_frequency(freq_dict, corpus_freqs)
 
@@ -63,5 +66,6 @@ if __name__ == "__main__":
 
     if chi_dict:
         RESULT = get_top_n(chi_dict, 10)
+        print('Top chi: ', RESULT)
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
