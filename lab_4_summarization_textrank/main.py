@@ -81,7 +81,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_type(preprocessed_sentence, tuple, str)
+        check_type(preprocessed_sentence, tuple, str, can_be_empty=True)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
