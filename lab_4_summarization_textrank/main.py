@@ -9,7 +9,7 @@ from lab_3_keywords_textrank.main import TextEncoder, \
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
-
+ 
 
 class Sentence:
     """
