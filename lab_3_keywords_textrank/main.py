@@ -294,7 +294,7 @@ class AdjacencyMatrixGraph:
             ind2 = self._vertices[vertex2]
         except KeyError:
             return -1
-        return self._matrix[ind1][ind2]
+        return int(self._matrix[ind1][ind2])
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
