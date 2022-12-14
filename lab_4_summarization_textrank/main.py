@@ -120,14 +120,14 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        if check_type(text, str):
-            list_of_sentences = []
-            text = text.replace('\n', ' ').replace('  ', ' ')
-            sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text)
-            for number, sentence in enumerate(sentences):
-                if sentence:
-                    list_of_sentences.append(Sentence(sentence, number))
-            return tuple(list_of_sentences)
+        check_type(text, str)
+        list_of_sentences = []
+        text = text.replace('\n', ' ').replace('  ', ' ')
+        sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text)
+        for number, sentence in enumerate(sentences):
+            if sentence:
+                list_of_sentences.append(Sentence(sentence, number))
+        return tuple(list_of_sentences)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -155,12 +155,6 @@ class SentenceEncoder(TextEncoder):
     """
     A class to encode string sequence into matching integer sequence
     """
-
-    def __init__(self) -> None:
-        """
-        Constructs all the necessary attributes
-        """
-        super().__init__()
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -230,12 +224,12 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        if check_type(vertex, Sentence):
-            if vertex not in self._vertices:
-                raise ValueError
-            vert_index = self._vertices.index(vertex)
-            inout_score = len(self._matrix) - self._matrix[vert_index].count(0) - 1
-            return inout_score
+        check_type(vertex, Sentence)
+        if vertex not in self._vertices:
+            raise ValueError
+        index = self._vertices.index(vertex)
+        inout_score = len(self._matrix) - self._matrix[index].count(0) - 1
+        return inout_score
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
