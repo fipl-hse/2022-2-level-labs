@@ -49,8 +49,8 @@ class Sentence:
         check_type(position, int)
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed = tuple[str, ...]
+        self._encoded = tuple[int, ...]
 
     def get_position(self) -> int:
         """
@@ -81,7 +81,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_type(preprocessed_sentence, tuple, str, can_be_empty=True)
+        check_type(preprocessed_sentence, tuple, str)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
