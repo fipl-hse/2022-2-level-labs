@@ -192,6 +192,8 @@ class SentenceEncoder(TextEncoder):
         if not isinstance(sentences, tuple):
             raise ValueError
         for token in sentences:
+            if not isinstance(token, Sentence):
+                raise ValueError
             self._learn_indices(token.get_preprocessed())
             token.set_encoded(tuple(self._word2id[word] for word in token.get_preprocessed()))
 
@@ -221,14 +223,15 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+        self._matrix = []
+        self._vertices = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        pass
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
@@ -236,7 +239,13 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        pass
+        if vertex not in self._vertices:
+            raise ValueError
+        summarization = 0
+        for index in self._matrix[self._vertices.index(vertex)]:
+            if index > 0:
+                summarization += 1
+        return summarization
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -245,7 +254,20 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        pass
+        if not isinstance(vertex1, Sentence) or not isinstance(vertex2, Sentence):
+            raise ValueError
+        if vertex1 == vertex2:
+            raise ValueError
+        for vertex in vertex1, vertex2:
+            if vertex not in self._vertices:
+                self._vertices.append(vertex)
+                self._matrix.append([])
+        for row in self._matrix:
+            if len(row) < len(self._vertices):
+                row.extend([0 for _ in range(len(self._vertices) - len(row))])
+        idx1, idx2 = self._vertices.index(vertex1), self._vertices.index(vertex2)
+        self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+        self._matrix[idx2][idx1] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -254,7 +276,13 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        pass
+        if not isinstance(sentence, Sentence) or not isinstance(other_sentence, Sentence):
+            raise ValueError
+        if not (sentence or other_sentence in self._vertices):
+            raise ValueError
+        idx1 = self._vertices.index(sentence)
+        idx2 = self._vertices.index(other_sentence)
+        return self._matrix[idx1][idx2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -262,7 +290,14 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for sentence1 in sentences:
+            if not isinstance(sentence1, Sentence):
+                raise ValueError
+            for sentence2 in sentences:
+                if sentence1.get_encoded() != sentence2.get_encoded():
+                    self.add_edge(sentence1, sentence2)
 
 
 class TextRankSummarizer:
