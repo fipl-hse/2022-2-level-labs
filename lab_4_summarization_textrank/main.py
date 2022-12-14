@@ -3,7 +3,7 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union
-
+import re
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
@@ -27,6 +27,7 @@ class Sentence:
             raise ValueError
         if not isinstance(position, int):
             raise ValueError
+
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -118,6 +119,22 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
+        super().__init__(stop_words, punctuation)
+
+        if not isinstance(stop_words, tuple):
+            raise ValueError
+        for word in stop_words:
+            if not isinstance(word, str):
+                raise ValueError
+        if not isinstance(punctuation, tuple):
+            raise ValueError
+        for symbol in punctuation:
+            if not isinstance(symbol, str):
+                raise ValueError
+
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+
 
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
@@ -126,7 +143,20 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+
+        text = text.replace('\n', ' ').replace('  ', ' ')
+        sentences = re.split(r'(?<=[?!.])\s+(?=[A-ZА-Я])', text)
+        list_of_sentences = []
+        for index, sentence in enumerate(sentences):
+            list_of_sentences.append(Sentence(sentence, index))
+        return tuple(list_of_sentences)
+
+
+
+
+
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -134,7 +164,13 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+
+        for sentence in sentences:
+            sentence.set_preprocessed(super().preprocess_text(sentence.get_text()))
+
+
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -142,7 +178,12 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+
+        sentences = self._split_by_sentence(text)
+        self._preprocess_sentences(sentences)
+        return sentences
 
 
 class SentenceEncoder(TextEncoder):
@@ -154,7 +195,8 @@ class SentenceEncoder(TextEncoder):
         """
         Constructs all the necessary attributes
         """
-        pass
+
+
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
