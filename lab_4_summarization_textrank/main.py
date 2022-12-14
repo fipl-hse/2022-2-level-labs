@@ -30,8 +30,8 @@ def check_object_and_type(var: Any, object_type: Type, element_type: Type) -> No
     if input is not correct - ValueError is occurred
     """
     check_type(var, object_type)
-    for elem in var:
-        check_type(elem, element_type)
+    for ele in var:
+        check_type(ele, element_type)
 
 
 class Sentence:
@@ -178,7 +178,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        if not isinstance(tokens, tuple):
+        if not (isinstance(tokens, tuple) and all(isinstance(ele, str) for ele in tokens)):
             raise ValueError
         tokens = (token for token in tokens if token not in self._word2id)
         for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
