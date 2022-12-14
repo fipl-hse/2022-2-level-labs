@@ -32,19 +32,19 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
-    sentences = preprocessor.get_sentences(text)
-    encoder = SentenceEncoder()
-    encoder.encode_sentences(sentences)
-    for sentence in sentences:
+    PREPROCESSOR = SentencePreprocessor(stop_words, tuple(punctuation))
+    SENTENCES = PREPROCESSOR.get_sentences(text)
+    ENCODER = SentenceEncoder()
+    ENCODER.encode_sentences(SENTENCES)
+    for sentence in SENTENCES:
         print('Encoded sentence:', sentence.get_encoded())
-    matrix = SimilarityMatrix()
-    matrix.fill_from_sentences(sentences)
-    rank = TextRankSummarizer(matrix)
-    rank.train()
-    summary = rank.make_summary(10)
-    print(f'Summary:\n {summary}')
+    MATRIX = SimilarityMatrix()
+    MATRIX.fill_from_sentences(SENTENCES)
+    RANK = TextRankSummarizer(MATRIX)
+    RANK.train()
+    SUMMARY = RANK.make_summary(10)
+    print(f'Summary:\n {SUMMARY}')
 
-    RESULT = summary
+    RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
