@@ -13,11 +13,10 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(var: Any, var_type: Union[type, tuple], el_type: Union[type, tuple] = None,
+def check_type(var: Any, var_type: Union[type, tuple[type, ...]], el_type: Union[type, tuple[type, ...]] = type(None),
                can_be_empty: bool = False) -> None:
     """
-    Checks if the given variable is of a certain type,
-    raises ValueError in case it's not
+    Checks if the given variable is of a certain type, raises ValueError in case it's not
     """
     if not isinstance(var, var_type):
         raise ValueError
@@ -210,7 +209,7 @@ class SentenceEncoder(TextEncoder):
         for sentence in sentences:
             tokens = sentence.get_preprocessed()
 
-            sentence.set_encoded(tuple((self._word2id.get(token) for token in tokens)))
+            sentence.set_encoded(tuple((self._word2id[token] for token in tokens)))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
