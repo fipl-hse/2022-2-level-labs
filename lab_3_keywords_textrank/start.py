@@ -2,9 +2,10 @@
 TextRank keyword extraction starter
 """
 import string
+import json
 from pathlib import Path
 from lab_3_keywords_textrank.main import TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
+    VanillaTextRank, EdgeListGraph, PositionBiasedTextRank, KeywordExtractionBenchmark
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -53,5 +54,19 @@ if __name__ == "__main__":
             print(ranker.__class__.__name__, graph.__class__.__name__, KEYWORDS)
 
     RESULT = KEYWORDS
+
+    MATERIALS_PATH = ASSETS_PATH / 'benchmark_materials'
+    ENG_STOP_WORDS_PATH = MATERIALS_PATH / 'eng_stop_words.txt'
+    IDF_PATH = MATERIALS_PATH / 'IDF.json'
+
+    with open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
+        eng_stop_words = tuple(file.read().split('\n'))
+
+    with open(IDF_PATH, 'r', encoding='utf-8') as file:
+        idf = json.load(file)
+
+    BENCHMARK = KeywordExtractionBenchmark(eng_stop_words, punctuation, idf, MATERIALS_PATH)
+    BENCHMARK.run()
+    BENCHMARK.save_to_csv(MATERIALS_PATH / 'report.csv')
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'

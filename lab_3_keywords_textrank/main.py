@@ -2,6 +2,7 @@
 Lab 3
 Extract keywords based on TextRank algorithm
 """
+import csv
 from pathlib import Path
 from typing import Optional, Union
 from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calculate_tfidf
@@ -997,6 +998,8 @@ class KeywordExtractionBenchmark:
 
             encoder = TextEncoder()
             encoded_tokens = encoder.encode(tokens)
+            if not encoded_tokens:
+                return None
 
             graph = EdgeListGraph()
 
@@ -1004,23 +1007,24 @@ class KeywordExtractionBenchmark:
             graph.fill_positions(encoded_tokens)
             graph.calculate_position_weights()
 
-            for algorithm in (VanillaTextRank(graph), PositionBiasedTextRank(graph), TFIDFAdapter(tokens, self._idf),
-                              RAKEAdapter(text, self._stop_words)):
-
-                algorithm_name = algorithm.__class__.__name__
+            for name, algorithm in {
+                "VanillaTextRank": VanillaTextRank(graph),
+                "PositionBiasedTextRank": PositionBiasedTextRank(graph),
+                "TF-IDF": TFIDFAdapter(tokens, self._idf),
+                "RAKE": RAKEAdapter(text, self._stop_words)
+            }.items():
 
                 algorithm.train()
                 top_keywords = algorithm.get_top_keywords(50)
-                if algorithm_name in ('VanillaTextRank', 'PositionBiasedTextRank'):
+                if name in ('VanillaTextRank', 'PositionBiasedTextRank'):
                     top_keywords = encoder.decode(top_keywords)
                 recall = calculate_recall(top_keywords, keywords)
 
-                if algorithm_name not in report:
-                    report[algorithm_name] = {}
-                report[algorithm_name][theme] = recall
+                if name not in report:
+                    report[name] = {}
+                report[name][theme] = recall
         self.report = report
         return report
-
 
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
@@ -1031,4 +1035,8 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        pass
+        with open(path, 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(('name', *self.themes))
+            for algorithm in self.report:
+                writer.writerow((algorithm, *self.report[algorithm].values()))
