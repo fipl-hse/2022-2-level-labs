@@ -3,7 +3,7 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
-from string import punctuation
+import string
 
 from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, SimilarityMatrix, \
     TextRankSummarizer
@@ -31,17 +31,25 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    sentence_preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
-    sentences = sentence_preprocessor.get_sentences(text)
-    sentence_encoder = SentenceEncoder()
-    sentence_encoder.encode_sentences(sentences)
+    punctuation = tuple(string.punctuation)
+    SENTENCE_ENCODER = SentenceEncoder()
+    SENTENCE_PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
 
-    similarity_matrix = SimilarityMatrix()
-    similarity_matrix.fill_from_sentences(sentences)
-    text_rank_summarizer = TextRankSummarizer(similarity_matrix)
-    text_rank_summarizer.train()
-    print(text_rank_summarizer.make_summary(10))
+    SENTENCES = SENTENCE_PREPROCESSOR.get_sentences(text)
+    SENTENCE_ENCODER.encode_sentences(SENTENCES)
+    ENCODED = []
+    for sentence in SENTENCES:
+        encode = sentence.get_encoded()
+        ENCODED.append(encode)
+    print(ENCODED)
 
-    RESULT = None
+    graph = SimilarityMatrix()
+    graph.fill_from_sentences(SENTENCES)
+    text_rank = TextRankSummarizer(graph)
+    text_rank.train()
+    SUMMARY = text_rank.make_summary(5)
+    print(SUMMARY)
+
+    RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
