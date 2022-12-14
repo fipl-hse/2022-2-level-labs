@@ -3,13 +3,13 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
+import string
 from lab_4_summarization_textrank.main import (
     SentencePreprocessor,
     SentenceEncoder,
     SimilarityMatrix,
     TextRankSummarizer
 )
-import string
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
