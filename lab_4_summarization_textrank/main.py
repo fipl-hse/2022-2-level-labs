@@ -257,12 +257,13 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        if check_type(sentence, Sentence) and check_type(other_sentence, Sentence):
-            if sentence not in self._vertices or other_sentence not in self._vertices:
-                raise ValueError
-            index1 = self._vertices.index(sentence)
-            index2 = self._vertices.index(other_sentence)
-            return self._matrix[index1][index2]
+        check_type(sentence, Sentence)
+        check_type(other_sentence, Sentence)
+        if sentence not in self._vertices or other_sentence not in self._vertices:
+            raise ValueError
+        index1 = self._vertices.index(sentence)
+        index2 = self._vertices.index(other_sentence)
+        return self._matrix[index1][index2]
 
     def fill_from_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -342,9 +343,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        if check_type(n_sentences, int):
-            sorted_sentences = sorted(self._scores, key=lambda sent: self._scores[sent], reverse=True)
-            return tuple(sorted_sentences[:n_sentences])
+        check_type(n_sentences, int)
+        sorted_sentences = sorted(self._scores, key=lambda sent: self._scores[sent], reverse=True)
+        return tuple(sorted_sentences[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -352,9 +353,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        if check_type(n_sentences, int):
-            top_sentences = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
-            return '\n'.join(sentence.get_text() for sentence in top_sentences)
+        check_type(n_sentences, int)
+        top_sentences = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        return '\n'.join(sentence.get_text() for sentence in top_sentences)
 
 
 class Buddy:
