@@ -12,42 +12,15 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_inner_types(user_input: Any, user_input_type: type, elements_type: type, can_be_empty: bool) -> None:
+def check_type(input1: Any,  objects_type: type, elements_type: type) -> None:
     """
-    Checks weather object has the correct type
-    and elements within are of certain type
+    Checks type of variables and if incorrect raises ValueError
     """
-    if not isinstance(user_input, user_input_type):
+    if not isinstance(input1, objects_type):
         raise ValueError
-    if not user_input and can_be_empty is False:
-        raise ValueError
-    for element in user_input:
-        if not isinstance(element, elements_type):
+    for item in input1:
+        if not isinstance(item, elements_type):
             raise ValueError
-
-
-def check_dict(user_input: dict, key_type: type, value_type: type, can_be_empty: bool) -> None:
-    """
-    Checks weather object is dictionary
-    hat has keys and values of certain type
-    """
-    if not isinstance(user_input, dict):
-        raise ValueError
-    if not user_input and can_be_empty is False:
-        raise ValueError
-    for key, value in user_input.items():
-        if not isinstance(key, key_type) or not isinstance(value, value_type):
-            raise ValueError
-
-
-def check_type(user_input: Any, user_input_type: type, can_be_empty: bool) -> None:
-    """
-    Checks weather object has the correct type
-    """
-    if not isinstance(user_input, user_input_type):
-        raise ValueError
-    if not user_input and can_be_empty is False:
-        raise ValueError
 
 
 class Sentence:
@@ -277,7 +250,7 @@ class SimilarityMatrix:
         """
         if vertex not in self._vertices:
             raise ValueError
-        summarization = 0
+        summarization = -1
         for index in self._matrix[self._vertices.index(vertex)]:
             if index > 0:
                 summarization += 1
@@ -290,24 +263,19 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
-        check_type(vertex1, Sentence, False)
-        check_type(vertex2, Sentence, False)
-        if vertex1.get_encoded() == vertex2.get_encoded():
+        if not isinstance(vertex1, Sentence) or not isinstance(vertex2, Sentence) \
+                or vertex1.get_encoded() == vertex2.get_encoded():
             raise ValueError
-
         for vertex in vertex1, vertex2:
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
-                self._matrix.append([])
-
-        for edges_list in self._matrix:
-            if len(edges_list) < len(self._vertices):
-                edges_list.extend([0 for _ in range(len(self._vertices) - len(edges_list))])
-
-        idx1 = self._vertices.index(vertex1)
-        idx2 = self._vertices.index(vertex2)
-        self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
-        self._matrix[idx2][idx1] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+                self._matrix.append([calculate_similarity(vertex.get_encoded(), other.get_encoded())
+                                     for other in self._vertices])
+                position = 0
+                length = len(self._matrix) - 1
+                while position < length:
+                    self._matrix[position].append(self._matrix[length][position])
+                    position += 1
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -316,8 +284,6 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        check_type(sentence, Sentence, False)
-        check_type(other_sentence, Sentence, False)
         if sentence not in self._vertices or other_sentence not in self._vertices:
             raise ValueError
         idx1 = self._vertices.index(sentence)
@@ -332,12 +298,10 @@ class SimilarityMatrix:
         """
         if not isinstance(sentences, tuple) or not sentences:
             raise ValueError
-        pairs = []
-        for sentence1 in sentences:
-            for sentence2 in sentences:
-                if sentence1.get_encoded() != sentence2.get_encoded():
-                    pairs.append((sentence1, sentence2))
-                    self.add_edge(sentence1, sentence2)
+        for elem1 in sentences:
+            for elem2 in sentences:
+                if elem1.get_encoded() != elem2.get_encoded():
+                    self.add_edge(elem1, elem2)
 
 
 class TextRankSummarizer:
@@ -371,11 +335,9 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        check_type(vertex, Sentence, False)
-        check_inner_types(incidental_vertices, list, Sentence, True)
-        check_dict(scores, Sentence, float, False)
-
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+        if not isinstance(vertex, Sentence) or not isinstance(scores, dict) or not isinstance(vertex, Sentence):
+            raise ValueError
+        summa = sum((1 / (self._graph.calculate_inout_score(inc_vertex) + 1)) * scores[inc_vertex]
                     for inc_vertex in incidental_vertices)
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
@@ -405,10 +367,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        check_type(n_sentences, int, True)
-        if isinstance(n_sentences, bool):
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
-        return tuple(sorted(self._scores, key=lambda elem: self._scores[elem], reverse=True)[:n_sentences])
+        return tuple(sorted(self._scores, key=lambda elem: self._scores[elem], reverse=True))[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -416,9 +377,12 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        check_type(n_sentences, int, False)
-        summery = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
-        return '\n'.join(element.get_text() for element in summery)
+        if not isinstance(n_sentences, int):
+            raise ValueError
+        sentences = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
+        return '\n'.join(sentence.get_text() for sentence in sentences)
+
+
 
 
 class Buddy:
