@@ -6,8 +6,7 @@ import json
 from lab_4_summarization_textrank.main import (SentencePreprocessor,
                                                SentenceEncoder,
                                                SimilarityMatrix,
-                                               TextRankSummarizer,
-                                               Buddy)
+                                               TextRankSummarizer)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -48,15 +47,11 @@ if __name__ == "__main__":
     SUMMARIZER = TextRankSummarizer(GRAPH)
     SUMMARIZER.train()
 
-    TEXT_SUMMARY = SUMMARIZER.make_summary(5)
+    TEXT_SUMMARY = SUMMARIZER.make_summary(10)
     print('The text summary:', TEXT_SUMMARY, sep='\n')
 
-    BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    # BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
 
-
-
-
-
-    RESULT = None
+    RESULT = TEXT_SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    # assert RESULT, 'Summaries are not extracted'
+    assert RESULT, 'Summaries are not extracted'

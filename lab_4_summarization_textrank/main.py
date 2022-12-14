@@ -13,7 +13,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(var: Any, var_type: (type, tuple), el_type: (type, tuple) = None, can_be_empty : bool = False) -> None:
+def check_type(var: Any, var_type: (type, tuple), el_type: (type, tuple) = None, can_be_empty: bool = False) -> None:
     """
     Checks if the given variable is of a certain type,
     raises ValueError in case it's not
@@ -24,8 +24,9 @@ def check_type(var: Any, var_type: (type, tuple), el_type: (type, tuple) = None,
         raise ValueError
     if var_type == int and isinstance(var, bool):
         raise ValueError
-    # if can_be_empty is False and var != 0 and not var:
-    #     raise ValueError
+    if can_be_empty is False and var != 0 and not var and (not el for el in var):
+        raise ValueError
+
 
 class NoRelevantTextsError(Exception):
     pass
@@ -117,7 +118,7 @@ class SentencePreprocessor(TextPreprocessor):
         Constructs all the necessary attributes
         """
         check_type(stop_words, tuple, str, can_be_empty=True)
-        check_type(punctuation, tuple, str)
+        check_type(punctuation, tuple, str, can_be_empty=True)
         super().__init__(stop_words, punctuation)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
@@ -271,11 +272,12 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
+        check_type(vertex1, Sentence)
+        check_type(vertex2, Sentence)
         if vertex1.get_encoded() == vertex2.get_encoded():
             raise ValueError
 
         for vertex in vertex1, vertex2:
-            check_type(vertex, Sentence)
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
                 self._matrix.append([])
@@ -312,7 +314,7 @@ class SimilarityMatrix:
         check_type(sentences, tuple, Sentence)
         for sent1 in sentences[:len(sentences)]:
             for sent2 in sentences[1:]:
-                if sent1.get_encoded != sent2.get_encoded:
+                if sent1.get_encoded() != sent2.get_encoded():
                     self.add_edge(sent1, sent2)
 
 
@@ -381,7 +383,8 @@ class TextRankSummarizer:
         :return: a sequence of sentences
         """
         check_type(n_sentences, int)
-        return tuple(sorted(self._scores, key=lambda s: (-self._scores[s], s.get_position()))[:n_sentences])
+        srtd = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0].get_position()))
+        return tuple(elem[0] for elem in srtd[:n_sentences])
 
     def make_summary(self, n_sentences: int = 5) -> str:
         """
