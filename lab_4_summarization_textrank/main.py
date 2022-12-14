@@ -15,8 +15,6 @@ class Sentence:
     """
     An abstraction over the real-world sentences
     """
-    _preprocessed: tuple[str, ...]
-    _encoded: tuple[int, ...]
 
     def __init__(self, text: str, position: int) -> None:
         """
@@ -26,8 +24,8 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ('', )
+        self._encoded: tuple[int, ...] = (0, )
 
     def get_position(self) -> int:
         """
