@@ -74,7 +74,6 @@ class TextPreprocessor:
         return tuple(text.lower().split())
 
     # Step 1.3
-
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
         """
         Filters tokens, removing stop words
@@ -212,6 +211,7 @@ def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple
             if token1 != token2:
                 pairs.append((token1, token2))
     return tuple(pairs)
+
 
 class AdjacencyMatrixGraph:
     """
@@ -640,6 +640,7 @@ class VanillaTextRank:
         vertices = self._graph.get_vertices()
         for vertex in vertices:
             self._scores[vertex] = 1.0
+
         for _ in range(0, self._max_iter):
             prev_score = self._scores.copy()
             for scored_vertex in vertices:
