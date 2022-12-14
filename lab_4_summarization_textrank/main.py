@@ -11,8 +11,6 @@ from lab_3_keywords_textrank.main import TextEncoder, \
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
-# написать функцию для проверки типов
-
 
 def check_type(seq: Any, seq_type:Any, elem_type:Any) -> bool:
     """
@@ -169,6 +167,9 @@ class SentenceEncoder(TextEncoder):
     A class to encode string sequence into matching integer sequence
     """
 
+    def __init__(self) -> None:
+        super().__init__()
+        self._max_identificator = 1000
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other
@@ -177,14 +178,11 @@ class SentenceEncoder(TextEncoder):
         """
         if not check_type(tokens, tuple, str):
             raise ValueError
-        if self._id2word:
-            start_v = max(self._id2word.keys())
-        else:
-            start_v = 1000
-        for count, token in enumerate(tokens, start=start_v):
+        for count, token in enumerate(tokens, start=self._max_identificator):
             if token not in (self._word2id.keys() and self._id2word.keys()):
                 self._word2id[token] = count
                 self._id2word[count] = token
+                self._max_identificator +=1
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -194,12 +192,12 @@ class SentenceEncoder(TextEncoder):
         """
         if not check_type(sentences, tuple, Sentence):
             raise ValueError
-        words = []
         for sentence in sentences:
+            words = []
             prepr = sentence.get_preprocessed()
             for word in prepr:
                 words.append(word)
-        self._learn_indices(tuple(words))
+                self._learn_indices(tuple(words))
         for sentence in sentences:
             prepr = sentence.get_preprocessed()
             enc_sent = []
@@ -223,10 +221,9 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         return 0
     numerator = []
     denominator = set(tuple(sequence) + tuple(other_sequence))
-    for i in sequence:
-        if i in other_sequence:
+    for i in set(sequence):
+        if i in set(other_sequence):
             numerator.append(i)
-    set(numerator)
     j_val = len(numerator) / len(denominator)
     return j_val
 
@@ -406,7 +403,6 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        # выводить предложения в хронологическом порядке!!! Нужно исправить
         if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
         sent_dict = {sentence: sentence.get_position() for sentence in self.get_top_sentences(n_sentences)}
