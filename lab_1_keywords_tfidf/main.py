@@ -4,7 +4,7 @@ Extract keywords based on frequency related metrics
 """
 import string
 from math import log
-from typing import Optional, Union, Any, get_args
+from typing import Optional, Union, Any
 
 
 def check_types(value: Any, keys_type: type, values_type: Union[type, tuple], can_empty: bool = False) -> bool:
@@ -173,11 +173,11 @@ def calculate_expected_frequency(
 
     expected_frequency = {}
     for word, freq in doc_freqs.items():
-        j = freq
-        k = corpus_freqs.get(word, 0)
-        l = sum(doc_freqs.values()) - j
-        m = sum(corpus_freqs.values()) - k
-        expected_frequency[word] = ((j + k) * (j + l)) / (j + k + l + m)
+        corpus_freq = corpus_freqs.get(word, 0)
+        except_word_doc_freq = sum(doc_freqs.values()) - freq
+        except_word_corpus_freq = sum(corpus_freqs.values()) - corpus_freq
+        expected_frequency[word] = ((freq + corpus_freq) * (freq + except_word_doc_freq)) / (
+                    freq + corpus_freq + except_word_doc_freq + except_word_corpus_freq)
     return expected_frequency
 
 
