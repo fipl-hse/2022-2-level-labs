@@ -178,12 +178,13 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        if not (isinstance(tokens, tuple) and all(isinstance(ele, str) for ele in tokens)):
+        if not isinstance(tokens, tuple):
             raise ValueError
-        tokens = (token for token in tokens if token not in self._word2id)
-        for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
+        if not all(isinstance(token, str) for token in tokens):
+            raise ValueError
+        new_tokens = (token for token in tokens if token not in self._word2id)
+        for idx, token in enumerate(new_tokens, 1000 + len(self._word2id)):
             self._word2id[token] = idx
-        for idx, token in self._word2id.items():
             self._id2word[idx] = token
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -335,7 +336,7 @@ class TextRankSummarizer:
         check_type(vertex, Sentence)
         check_type(scores, dict)
         summa = sum((1 / (1 + self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
-                    for inc_vertex in incidental_vertices))
+                     for inc_vertex in incidental_vertices))
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
