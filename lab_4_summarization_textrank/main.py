@@ -379,7 +379,6 @@ class TextRankSummarizer:
         return '\n'.join([sentence.get_text() for sentence in top_sent])
 
 
-
 class Buddy:
     """
     (Almost) All-knowing entity
