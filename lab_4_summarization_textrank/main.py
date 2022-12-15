@@ -40,8 +40,8 @@ class Sentence:
         check_type(position, int)
         self._text = text
         self._position = position
-        self._preprocessed: tuple[str, ...] = ('',)
-        self._encoded: tuple[int, ...] = (0,)
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -244,12 +244,12 @@ class SimilarityMatrix:
         check_type(vertex2, Sentence)
         if vertex1 == vertex2:
             raise ValueError
-        for vertex in vertex1, vertex2:
-            if vertex not in self._vertices:
-                self._vertices.append(vertex)
-                new_row = [calculate_similarity(vertex.get_encoded(), other.get_encoded())
-                           for other in self._vertices]
-                self._matrix.append(new_row)
+        for one_vertex in vertex1, vertex2:
+            if one_vertex not in self._vertices:
+                self._vertices.append(one_vertex)
+                row = [calculate_similarity(one_vertex.get_encoded(), other_vertex.get_encoded())
+                       for other_vertex in self._vertices]
+                self._matrix.append(row)
                 for i in range(len(self._matrix) - 1):
                     self._matrix[i].append(self._matrix[-1][i])
 
@@ -347,7 +347,7 @@ class TextRankSummarizer:
         :return: a sequence of sentences
         """
         check_type(n_sentences, int)
-        sorted_sentences = sorted(self._scores, key=lambda sent: self._scores[sent], reverse=True)
+        sorted_sentences = sorted(self._scores, key=lambda sentence: self._scores[sentence], reverse=True)
         return tuple(sorted_sentences[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
