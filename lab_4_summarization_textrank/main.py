@@ -31,7 +31,7 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        if not (isinstance(text, str) or isinstance(position, int) or not isinstance(position, bool)):
+        if not isinstance(text, str) or isinstance(position, bool) or not isinstance(position, int):
             raise ValueError
         self._text = text
         self._position = position
