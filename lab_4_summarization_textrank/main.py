@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any
+from typing import Union, Any, Type, Optional
 import re
 from itertools import chain, combinations
 
@@ -25,7 +25,7 @@ class IncorrectQueryError(Exception):
     """
 
 
-def arg_check(*args: Any) -> bool:
+def arg_check(*args: tuple) -> bool:
     """
     Accepts tuples with objects and expected types.
     Raises a ValueError if any object is empty when it should not be or has the wrong type.
@@ -39,8 +39,6 @@ def arg_check(*args: Any) -> bool:
     None in tuple = allowed to be falsy
     """
     for i in args:
-        if not isinstance(i, tuple):
-            raise ValueError
         length = len(i) - i.count(None)  # working tuple length (everything but Nones)
         if length < 2 or not isinstance(i[0], i[1]) or i[1] == int and isinstance(i[0], bool):
             raise ValueError
