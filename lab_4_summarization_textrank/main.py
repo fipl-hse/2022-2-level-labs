@@ -62,9 +62,8 @@ class Sentence:
         """
         if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
-        for token in preprocessed_sentence:
-            if not isinstance(token, str):
-                raise ValueError
+        if not all(isinstance(token, str) for token in preprocessed_sentence):
+            raise ValueError
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -82,9 +81,8 @@ class Sentence:
         """
         if not isinstance(encoded_sentence, tuple):
             raise ValueError
-        for num in encoded_sentence:
-            if not isinstance(num, int):
-                raise ValueError
+        if not all(isinstance(number, int) for number in encoded_sentence):
+            raise ValueError
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
