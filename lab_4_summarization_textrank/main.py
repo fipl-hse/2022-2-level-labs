@@ -58,6 +58,8 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
+        if not isinstance(preprocessed_sentence, tuple):
+            raise ValueError
         for i in preprocessed_sentence:
             if not isinstance(i, str):
                 raise ValueError
@@ -76,6 +78,8 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
+        if not isinstance(encoded_sentence, tuple):
+            raise ValueError
         for i in encoded_sentence:
             if not isinstance(i, int):
                 raise ValueError
@@ -170,6 +174,9 @@ class SentenceEncoder(TextEncoder):
         """
         if not isinstance(tokens, tuple):
             raise ValueError
+        for i in tokens:
+            if not isinstance(i, str):
+                raise ValueError
         new_tokens = ()
         for i in tokens:
             if i not in self._word2id:
