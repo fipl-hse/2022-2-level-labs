@@ -17,8 +17,7 @@ from lab_3_keywords_textrank.main import (
     KeywordExtractionBenchmark
 )
 
-from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, \
-    TextEncoder, AdjacencyMatrixGraph, VanillaTextRank, EdgeListGraph, PositionBiasedTextRank
+
 if __name__ == "__main__":
 
     # finding paths to the necessary utils

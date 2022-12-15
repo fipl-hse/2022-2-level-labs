@@ -978,7 +978,7 @@ class KeywordExtractionBenchmark:
             keywords_path = self._materials_path / f'{self.themes.index(theme)}_keywords.txt'
 
             with (open(text_path, 'r', encoding='utf-8') as text_to_read,
-                           open(keywords_path, 'r', encoding='utf-8') as keywords_to_read):
+                    open(keywords_path, 'r', encoding='utf-8') as keywords_to_read):
                 text = text_to_read.read()
                 keywords = tuple(keywords_to_read.read().split('\n'))
 
