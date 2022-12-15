@@ -198,8 +198,7 @@ class SentenceEncoder(TextEncoder):
         for i in sentences:
             preprocessed = i.get_preprocessed()
             self._learn_indices(preprocessed)
-            for one in preprocessed:
-                i.set_encoded(tuple(self._word2id[one]))
+            i.set_encoded(tuple(self._word2id[one] for one in preprocessed))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
