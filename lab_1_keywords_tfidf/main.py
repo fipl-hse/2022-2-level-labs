@@ -68,7 +68,7 @@ def remove_stop_words(tokens: list[str], stop_words: list[str]) -> Optional[list
     return [word for word in tokens if word not in stop_words]
 
 
-def calculate_frequencies(text_without_stopwords: list[str]) -> Optional[dict[str, int]]:
+def calculate_frequencies(tokens: list[str]) -> Optional[dict[str, int]]:
     """
     Composes a frequency dictionary from the token sequence
 
@@ -80,14 +80,14 @@ def calculate_frequencies(text_without_stopwords: list[str]) -> Optional[dict[st
 
     In case of corrupt input arguments, None is returned
     """
-    if not isinstance(text_without_stopwords, list) or not text_without_stopwords:
+    if not isinstance(tokens, list) or not tokens:
         return None
-    for element in text_without_stopwords:
+    for element in tokens:
         if not isinstance(element, str):
             return None
 
     frequency_dict = {}
-    for word in text_without_stopwords:
+    for word in tokens:
         frequency_dict[word] = frequency_dict.get(word, 0) + 1
     return frequency_dict
 
@@ -153,7 +153,7 @@ def calculate_tfidf(term_freq: dict[str, float], idf: dict[str, float]) -> Optio
 
 
 def calculate_expected_frequency(
-        doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
+    doc_freqs: dict[str, int], corpus_freqs: dict[str, int]
 ) -> Optional[dict[str, float]]:
     """
     Calculates expected frequency for each of the tokens based on its
