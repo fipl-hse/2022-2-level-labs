@@ -21,6 +21,8 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
+        if not isinstance(text, str) or not isinstance(position, int):
+            raise ValueError
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -118,8 +120,10 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
-        sentences = tuple(re.split(r"(?<=[.!?]|\s|[А-Я]|[A-Z])", text))  # <= - after, |=or, \s-any space symbol
-        return sentences
+        sentences = tuple(re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯЁ])", text))
+        for position, i in enumerate(sentences):
+            final = [Sentence(i.strip(), position)]
+            return tuple(final)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
