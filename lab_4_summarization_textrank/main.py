@@ -119,8 +119,6 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        super().__init__(stop_words, punctuation)
-
         if not isinstance(stop_words, tuple):
             raise ValueError
         for word in stop_words:
@@ -132,8 +130,7 @@ class SentencePreprocessor(TextPreprocessor):
             if not isinstance(symbol, str):
                 raise ValueError
 
-        self._stop_words = stop_words
-        self._punctuation = punctuation
+        super().__init__(stop_words, punctuation)
 
 
 
@@ -168,7 +165,7 @@ class SentencePreprocessor(TextPreprocessor):
             raise ValueError
 
         for sentence in sentences:
-            sentence.set_preprocessed(super().preprocess_text(sentence.get_text()))
+            sentence.set_preprocessed(self.preprocess_text(sentence.get_text()))
 
 
 
