@@ -13,7 +13,7 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(var: Any, var_type: Union[type, tuple[type, ...]], el_type: Union[type, tuple[type, ...], None] = None,
+def check_type(var: Any, var_type: Union[type, tuple[type, ...]], elem_type: Union[type, tuple[type, ...], None] = None,
                can_be_empty: bool = True) -> None:
     """
     Checks if the given variable is of a certain type, raises ValueError in case it's not
@@ -23,9 +23,9 @@ def check_type(var: Any, var_type: Union[type, tuple[type, ...]], el_type: Union
     if var_type == int and isinstance(var, bool):
         raise ValueError
 
-    if el_type:
-        for el in var:
-            if not isinstance(el, el_type):
+    if elem_type:
+        for elem in var:
+            if not isinstance(elem, elem_type):
                 raise ValueError
     #
     if can_be_empty is False and not var:
