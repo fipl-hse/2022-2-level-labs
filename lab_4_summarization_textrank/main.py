@@ -482,4 +482,3 @@ class Buddy:
         for sent in summaries:
             reply.append(self._knowledge_database[sent]['summary'])
         return 'Ответ:\n' + '\n\n'.join(reply)
-
