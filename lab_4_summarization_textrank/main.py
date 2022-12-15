@@ -56,15 +56,13 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        _preprocessed: tuple[str, ...]
-        _encoded: tuple[int, ...]
 
         check_type(text, str)
         check_type(position, int)
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
