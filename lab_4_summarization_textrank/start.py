@@ -46,6 +46,6 @@ if __name__ == "__main__":
     SUMMARY = TEXT_RANK.make_summary(10)
     print(SUMMARY)
 
-    RESULT = SUMMARY
+    RESULT = ENCODED
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
