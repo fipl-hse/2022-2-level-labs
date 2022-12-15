@@ -36,7 +36,7 @@ if __name__ == "__main__":
     SENTENCES = PREPROCESSOR.get_sentences(text)
     ENCODER.encode_sentences(SENTENCES)
     for i in SENTENCES:
-        ENCODED = [SENTENCES.get_encoded()]
+        ENCODED = i.get_encoded()
         print(ENCODED)
 
     MATRIX = SimilarityMatrix()

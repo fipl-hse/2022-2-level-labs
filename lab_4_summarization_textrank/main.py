@@ -21,7 +21,7 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        self.text = text
+        self._text = text
         self._position = position
         self._preprocessed = ()
         self._encoded = ()
@@ -156,6 +156,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
+        self.last_number = 1000
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -169,7 +170,7 @@ class SentenceEncoder(TextEncoder):
         for i in tokens:
             if i not in self._word2id:
                 new_tokens += 1
-        for number, token in enumerate(new_tokens, 1000):
+        for number, token in enumerate(new_tokens, self.last_number):
             self._word2id[token] = number
             self._id2word[number] = token
 
@@ -215,7 +216,6 @@ class SimilarityMatrix:
     """
 
     _matrix: list[list[float]]
-    _vertices = list(Sentence)
 
     def __init__(self) -> None:
         """
@@ -237,12 +237,12 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        sum = 0
+        summary = 0
         i = self._vertices.index(vertex)
         for number in self._matrix[i]:
             if number > 0:
-                sum += 1
-        return sum
+                summary += 1
+        return summary
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
