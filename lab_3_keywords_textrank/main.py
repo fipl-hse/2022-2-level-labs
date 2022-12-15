@@ -41,7 +41,6 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
-
     # Step 1.1
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
@@ -89,6 +88,7 @@ class TextPreprocessor:
         """
         return tuple(token for token in tokens if token not in self._stop_words)
 
+    # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
         """
         Produces filtered clean lowercase tokens from raw text
@@ -321,7 +321,7 @@ class AdjacencyMatrixGraph:
             tuple[int, ...]
                 a sequence of vertices present in the graph
         """
-        return tuple(self._vertices) # реализация метода
+        return tuple(self._vertices)
 
     # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
@@ -604,7 +604,7 @@ class VanillaTextRank:
         graph: Union[AdjacencyMatrixGraph, EdgeListGraph]
             a graph representing the text
         """
-        self._graph = graph  # создаем атрибуты
+        self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
         self._max_iter = 50
