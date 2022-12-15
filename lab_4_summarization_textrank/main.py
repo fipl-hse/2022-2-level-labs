@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any, Type
+from typing import Union, Any, Type, Optional
 
 import re
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -13,9 +13,9 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_types(variable: Any, possible_var_type: Type, container_value_type: Union[Type, None] = None) -> None:
+def check_types(variable: Any, possible_var_type: Type, container_value_type: Optional[Type] = None) -> None:
     """
-    Checks if the variable is of an apropriate type
+    Checks if the variable is of an appropriate type
     param: variable
     param: possible_var_type
     param: container_value_type (default = None)
@@ -432,6 +432,7 @@ class NoRelevantTextsError(Exception):
     Raises when no relevant texts for summary is found
     """
     pass
+
 
 class IncorrectQueryError(Exception):
     """
