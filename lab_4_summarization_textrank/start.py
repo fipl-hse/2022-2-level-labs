@@ -8,9 +8,7 @@ import string
 from lab_4_summarization_textrank.main import (SentenceEncoder,
                                                SentencePreprocessor,
                                                SimilarityMatrix,
-                                               TextRankSummarizer,
-                                               Buddy,
-                                               NoRelevantTextsError)
+                                               TextRankSummarizer)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -43,6 +41,14 @@ if __name__ == "__main__":
     sentences = preprocessor.get_sentences(text)
     encoder.encode_sentences(sentences)
 
-    RESULT = None
+    # step 9
+    matrix = SimilarityMatrix()
+    matrix.fill_from_sentences(sentences)
+    summarizer = TextRankSummarizer(matrix)
+    summarizer.train()
+    summary = summarizer.make_summary(5)
+    print(summary)
+
+    RESULT = summary
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
