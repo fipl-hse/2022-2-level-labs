@@ -167,7 +167,8 @@ class SentenceEncoder(TextEncoder):
         """
         if not (isinstance(tokens, tuple) and all(isinstance(i, str) for i in tokens)):
             raise ValueError
-        for idx, token in enumerate(tokens, 1000 + len(self._word2id)):
+        unique_tokens = [i for i in tokens if i not in self._word2id]
+        for idx, token in enumerate(unique_tokens, 1000 + len(self._word2id)):
             self._word2id[token] = idx
         for idx, token in self._word2id.items():
             self._id2word[idx] = token
@@ -196,13 +197,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     if not (isinstance(sequence, (list, tuple)) and isinstance(other_sequence, (list, tuple))):
         raise ValueError
     if not sequence or not other_sequence:
-        return 0
-    common_elements = []
-    for el1 in sequence:
-        for el2 in other_sequence:
-            if el1 == el2:
-                common_elements.append(el1)
-    return len(common_elements) / len(set(sequence) | set(other_sequence))
+        return 0.
+    return len(set(sequence) & set(other_sequence)) / len(set(sequence) | set(other_sequence))
 
 
 class SimilarityMatrix:
