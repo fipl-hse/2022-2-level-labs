@@ -57,7 +57,9 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not (isinstance(preprocessed_sentence, tuple) and all(isinstance(i, str) for i in preprocessed_sentence)):
+        if not isinstance(preprocessed_sentence, tuple):
+            raise ValueError
+        if not all(isinstance(i, str) for i in preprocessed_sentence):
             raise ValueError
         self._preprocessed = preprocessed_sentence
 
@@ -178,6 +180,7 @@ class SentenceEncoder(TextEncoder):
         for sent in sentences:
             self._learn_indices(sent.get_preprocessed())
             sent.set_encoded(tuple(self._word2id[token] for token in sent.get_preprocessed()))
+
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
     """
