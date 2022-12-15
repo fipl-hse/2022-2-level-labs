@@ -5,7 +5,7 @@ from pathlib import Path
 from string import punctuation
 import json
 from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder, SimilarityMatrix,
-                                               TextRankSummarizer)
+                                               TextRankSummarizer, Buddy)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -38,11 +38,16 @@ if __name__ == "__main__":
 
     similarity_matrix = SimilarityMatrix()
     similarity_matrix.fill_from_sentences(sentences)
+
     rank_summarizer = TextRankSummarizer(similarity_matrix)
     rank_summarizer.train()
 
     BRIEF = rank_summarizer.make_summary(7)
     print(BRIEF)
+
+    buddy = Buddy(paths_to_texts, stop_words, tuple(punctuation), idf)
+    user_txt = 'Чем известен Юрий Гагарин?'
+    print(buddy.reply(user_txt))
 
     RESULT = BRIEF
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
