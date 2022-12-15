@@ -176,9 +176,9 @@ class SentenceEncoder(TextEncoder):
         for token in tokens:
             if not isinstance(token, str):
                 raise ValueError
-        tokens = (elem for elem in tokens if elem not in self._word2id)
+        new_tokens = (elem for elem in tokens if elem not in self._word2id)
 
-        for ind, element in enumerate(tokens, start=1000 + len(self._word2id)):
+        for ind, element in enumerate(new_tokens, start=1000 + len(self._word2id)):
             self._word2id[element] = ind
             self._id2word[ind] = element
 
