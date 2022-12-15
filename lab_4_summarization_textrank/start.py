@@ -6,7 +6,8 @@ import json
 from lab_4_summarization_textrank.main import (SentencePreprocessor,
                                                SentenceEncoder,
                                                SimilarityMatrix,
-                                               TextRankSummarizer)
+                                               TextRankSummarizer,
+                                               Buddy)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -48,9 +49,14 @@ if __name__ == "__main__":
     SUMMARIZER.train()
 
     TEXT_SUMMARY = SUMMARIZER.make_summary(10)
-    print('The text summary:', TEXT_SUMMARY, sep='\n')
+    print('The text summary:', TEXT_SUMMARY, sep='\n', end='\n')
 
-    # BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    # step 11
+    BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
+    QUESTIONS = ['Когда Гагарин полетел в космос?', 'Чувствуют ли мыши боль?']
+    for QUESTION in QUESTIONS:
+        print(QUESTION, BUDDY.reply(QUESTION))
+        print()
 
     RESULT = TEXT_SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
