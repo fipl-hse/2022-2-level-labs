@@ -111,13 +111,14 @@ class SentencePreprocessor(TextPreprocessor):
             raise ValueError
         final_sentences = []
         clean_txt = ''
-        new_txt = text.replace('!', '.').replace('?', '.')
+        new_txt = text.replace('\n', ' ').replace('  ', ' ')
         for idx, elem in enumerate(new_txt[:-1]):
-            if not ((elem == ' ' or '\n') and new_txt[idx - 1] == '.' and new_txt[idx + 1].isupper()):
+            if not (elem == ' ' and new_txt[idx - 1] in '.?!' and new_txt[idx + 1].isupper()):
                 clean_txt += elem
             else:
+                clean_txt += elem
                 clean_txt += '  '
-        clean_txt += new_txt[-1]
+        clean_txt += new_txt[-1:]
         sentences = clean_txt.split('  ')
         for index, sent in enumerate(list(sentences)):
             sentence = Sentence(sent.strip(), index)
@@ -157,7 +158,6 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
-        # self._last_id_number =
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -167,7 +167,7 @@ class SentenceEncoder(TextEncoder):
         """
         if not (isinstance(tokens, tuple) and all(isinstance(i, str) for i in tokens)):
             raise ValueError
-        unique_tokens = [i for i in tokens if i not in self._word2id]
+        unique_tokens = (i for i in tokens if i not in self._word2id)
         for idx, token in enumerate(unique_tokens, 1000 + len(self._word2id)):
             self._word2id[token] = idx
         for idx, token in self._word2id.items():
@@ -234,7 +234,7 @@ class SimilarityMatrix:
         for val in self._matrix[self._vertices.index(vertex)]:
             if val > 0:
                 count += 1
-        return count
+        return count - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -260,6 +260,8 @@ class SimilarityMatrix:
         idx2 = self._vertices.index(vertex2)
         self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
         self._matrix[idx2][idx1] = calculate_similarity(vertex2.get_encoded(), vertex1.get_encoded())
+        self._matrix[idx1][idx1] = 1
+        self._matrix[idx2][idx2] = 1
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -364,8 +366,6 @@ class TextRankSummarizer:
         if not (n_sentences and isinstance(n_sentences, int) and not isinstance(n_sentences, bool)):
             raise ValueError
         top_sent = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
-        # for sentence in top_sent:
-        #     return '\n'.join(sentence.get_text())
         return '\n'.join([sentence.get_text() for sentence in top_sent])
 
 
