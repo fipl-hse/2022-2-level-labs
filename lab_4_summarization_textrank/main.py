@@ -223,6 +223,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     jaccard_index = similar/different
     return jaccard_index
 
+
 class SimilarityMatrix:
     """
     A class to represent relations between sentences
@@ -250,6 +251,8 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
+        if vertex not in self._vertices:
+            raise ValueError
         summary = 0
         i = self._vertices.index(vertex)
         for number in self._matrix[i]:
@@ -289,9 +292,7 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        if sentence not in self._matrix:
-            raise ValueError
-        if other_sentence not in self._matrix:
+        if sentence not in self._matrix or other_sentence not in self._matrix:
             raise ValueError
         first = self._vertices.index(sentence)
         second = self._vertices.index(other_sentence)
@@ -303,7 +304,12 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for sentence in sentences:
+            for other_sentence in sentences:
+                if sentence.get_encoded() != other_sentence.get_encoded():
+                    self.add_edge(sentence, other_sentence)
 
 
 class TextRankSummarizer:
