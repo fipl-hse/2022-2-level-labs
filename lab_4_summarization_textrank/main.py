@@ -38,7 +38,7 @@ class Sentence:
         self._position = position
         self._preprocessed = ()
         self._encoded = ()
-
+#
     def get_position(self) -> int:
         """
         Returns the attribute
