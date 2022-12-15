@@ -5,7 +5,6 @@ Summarize text using TextRank algorithm
 from typing import Union, Any, Type
 
 import re
-import os
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor, TFIDFAdapter
 
@@ -434,6 +433,12 @@ class NoRelevantTextsError(Exception):
     """
     pass
 
+class IncorrectQueryError(Exception):
+    """
+    Raises when
+    """
+    pass
+
 
 class Buddy:
     """
@@ -482,7 +487,6 @@ class Buddy:
         check_types(path_to_text, str)
         with open(path_to_text, encoding='utf-8') as file:
             text = file.read()
-
         sentences = self._sentence_preprocessor.get_sentences(text)
         self._sentence_encoder.encode_sentences(sentences)
 
@@ -516,15 +520,15 @@ class Buddy:
         check_types(n_texts, int)
         similar_texts = {}
 
-        for key, value in self._knowledge_database:
+        for key, value in self._knowledge_database.items():
             text_keywords = value['keywords']
             similarity_val = calculate_similarity(keywords, text_keywords)
             similar_texts[key] = similarity_val
 
-        sorted_similar_texts = sorted(similar_texts, key=lambda x: similar_texts[x], reverse=True)[:n_texts]
-
-        if sorted_similar_texts[0] == 0:
+        if not any(similar_texts.values()):
             raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
+
+        sorted_similar_texts = sorted(similar_texts, key=lambda x: (similar_texts[x], x), reverse=True)[:n_texts]
 
         return tuple(sorted_similar_texts)
 
@@ -535,4 +539,18 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        pass
+        if not isinstance(query, str) or not query:
+            raise IncorrectQueryError('Incorrect query. Use string as input')
+
+        check_types(n_summaries, int)
+
+        if len(self._knowledge_database) < n_summaries:
+            raise ValueError
+
+        query_keywords = self._text_preprocessor.preprocess_text(query)
+
+        summaries = self._find_texts_close_to_keywords(query_keywords, n_summaries)
+        answer = []
+        for element in summaries:
+            answer.append(self._knowledge_database[element]['summary'])
+        return 'Ответ:\n' + '\n\n'.join(answer)

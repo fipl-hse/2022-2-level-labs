@@ -5,7 +5,7 @@ from pathlib import Path
 import json
 from string import punctuation
 from lab_4_summarization_textrank.main import SentencePreprocessor, SentenceEncoder, \
-    SimilarityMatrix, TextRankSummarizer
+    SimilarityMatrix, TextRankSummarizer, Buddy
 
 
 if __name__ == "__main__":
@@ -46,7 +46,13 @@ if __name__ == "__main__":
     SUMMARIZER.train()
     SUMMARY = SUMMARIZER.make_summary(10)
 
-    print(SUMMARY)
+    print('На 8: краткое содержание текста \n', SUMMARY)
+
+    BUDDY = Buddy(paths_to_texts, stop_words, PUNCTUATION, idf)
+    QUESTION1 = 'Кто убил девочек в Рыбинске?'
+    QUESTION2 = 'Педофил Тесак убийства'
+    print(BUDDY.reply(QUESTION1, 3))
+    print(BUDDY.reply(QUESTION2, 3))
 
 
     RESULT = SENT_LIST
