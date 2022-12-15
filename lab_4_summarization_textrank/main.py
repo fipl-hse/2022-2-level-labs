@@ -186,8 +186,7 @@ class SentenceEncoder(TextEncoder):
             preprocessed_sentence = sentence.get_preprocessed()
             self._learn_indices(preprocessed_sentence)
             for word in preprocessed_sentence:
-                id = self._word2id[word]
-                encoded_list.append(id)
+                encoded_list.append(self._word2id[word])
             sentence.set_encoded(tuple(encoded_list))
 
 
