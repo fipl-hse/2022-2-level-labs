@@ -3,9 +3,8 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union
-from typing import Union, Any
 import re
-# import itertools as it
+import itertools as it
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
@@ -178,10 +177,15 @@ class SentenceEncoder(TextEncoder):
         for token in tokens:
             if not isinstance(token, str):
                 raise ValueError
-        for token, idx in zip(tokens, range(1000, 1000 + len(tokens))):
-            self._word2id[token] = idx
-        for token, idx in self._word2id.items():
-            self._id2word[idx] = token
+        # for token, idx in zip(tokens, range(1000, 1000 + len(tokens))):
+        #     self._word2id[token] = idx
+        # for token, idx in self._word2id.items():
+        #     self._id2word[idx] = token
+        new_tokens = (elem for elem in tokens if elem not in self._word2id)
+
+        for ind, element in enumerate(new_tokens, start=1000 + len(self._word2id)):
+            self._word2id[element] = ind
+            self._id2word[ind] = element
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -313,7 +317,13 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        if not isinstance(graph, SimilarityMatrix):
+            raise ValueError
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -325,7 +335,12 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        if not isinstance(vertex, Sentence) or not isinstance(scores, dict) and isinstance(incidental_vertices, list) \
+                    and isinstance(incidental_vertices, Sentence):
+            raise ValueError
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -353,7 +368,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        return tuple(sorted(self._scores, key=lambda token: self._scores[token], reverse=True))[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -361,7 +378,11 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        top_sentences = self.get_top_sentences(n_sentences)
+        position_srtd_sentences = [s.get_text() for s in sorted(top_sentences, key=lambda s: s.get_position())]
+        return '\n'.join(position_srtd_sentences)
 
 
 class Buddy:
