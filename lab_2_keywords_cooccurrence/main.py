@@ -9,7 +9,6 @@ KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
 
 
-
 def extract_phrases(text: str) -> Optional[Sequence[str]]:
     """
     Splits the text into separate phrases using phrase delimiters
@@ -100,9 +99,9 @@ def calculate_word_degrees(candidate_keyword_phrases: KeyPhrases,
             elif word in content_words:
                 word_degrees[word] = len(phrase)
         for word in content_words:
-            if word not in word_degrees:
+            if word not in word_degrees.keys():
                 word_degrees[word] = 0
-        return word_degrees
+    return word_degrees
 
 
 def calculate_word_scores(word_degrees: Mapping[str, int],
@@ -195,22 +194,22 @@ def extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases: 
     """
     if not (candidate_keyword_phrases and isinstance(candidate_keyword_phrases, list)
             and phrases and isinstance(phrases, list)):
-        keyword_phrases_with_adj = []
+        return None
+    keyword_phrases_with_adj = []
 
-        for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
-            splited_phrase = phrase.split()
-            keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)
-            next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1]
-            next_phrase_freq = candidate_keyword_phrases.count(next_phrase)
-            for keyword, word in zip(keyword_phrase, next_phrase):
-                if keyword in splited_phrase \
-                        and word in splited_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
-                    next_phrase_start_idx = splited_phrase.index(next_phrase[0])
-                    stop_word = splited_phrase[next_phrase_start_idx - 1]
-                    word_idx = next_phrase.index(word)
-                    keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
-            return keyword_phrases_with_adj
-
+    for keyword_phrase, phrase in zip(candidate_keyword_phrases, phrases):
+        splited_phrase = phrase.split()
+        keyword_phrase_freq = candidate_keyword_phrases.count(keyword_phrase)
+        next_phrase = candidate_keyword_phrases[candidate_keyword_phrases.index(keyword_phrase) + 1]
+        next_phrase_freq = candidate_keyword_phrases.count(next_phrase)
+        for keyword, word in zip(keyword_phrase, next_phrase):
+            if keyword in splited_phrase \
+                    and word in splited_phrase and keyword_phrase_freq > 1 and next_phrase_freq > 1:
+                next_phrase_start_idx = splited_phrase.index(next_phrase[0])
+                stop_word = splited_phrase[next_phrase_start_idx - 1]
+                word_idx = next_phrase.index(word)
+                keyword_phrases_with_adj.append(tuple([keyword] + [stop_word] + list(next_phrase[word_idx:])))
+    return keyword_phrases_with_adj
 
 def calculate_cumulative_score_for_candidates_with_stop_words(candidate_keyword_phrases: KeyPhrases,
                                                               word_scores: Mapping[str, float],
