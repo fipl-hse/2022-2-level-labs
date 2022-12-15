@@ -27,7 +27,7 @@ class IncorrectQueryError(Exception):
 
 def arg_check(*args: Any) -> bool:
     """
-    Excepts tuples with objects and expected types.
+    Accepts tuples with objects and expected types.
     Raises a ValueError if any object is empty when it should not be or has the wrong type.
     Or if arguments are not tuples. Or tuples are too short.
     Returns True if everything is okay.
