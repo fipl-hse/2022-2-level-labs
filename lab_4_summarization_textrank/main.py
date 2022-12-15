@@ -493,7 +493,7 @@ class Buddy:
         :return: the answer
         """
         if not isinstance(query, str) or not query:
-            raise IncorrectQueryError('Incorrect query. Use string as input.')
+            raise IncorrectQueryError
         if not isinstance(n_summaries, int):
             raise ValueError
         if len(self._knowledge_database) < n_summaries:
