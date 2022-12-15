@@ -113,6 +113,7 @@ class SentencePreprocessor(TextPreprocessor):
             if not isinstance(stop_word, str) or not isinstance(mark, str):
                 raise ValueError
 
+
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
         Splits the provided text by sentence
