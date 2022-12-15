@@ -47,8 +47,8 @@ if __name__ == "__main__":
 
     # step 11
     buddy = Buddy(paths_to_texts, stop_words, tuple(string.punctuation), idf)
-    query = "Юрий Гагарин"
-    print(buddy.reply(query))
+    QUERY = "Юрий Гагарин"
+    print(buddy.reply(QUERY))
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
