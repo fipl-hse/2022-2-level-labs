@@ -60,7 +60,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not isinstance(preprocessed_sentence, tuple):
+        if not isinstance(preprocessed_sentence, tuple) and preprocessed_sentence:
             raise ValueError
         if not all(isinstance(token, str) for token in preprocessed_sentence):
             raise ValueError
