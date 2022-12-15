@@ -36,8 +36,8 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed: tuple[str, ...] = ('',)
-        self._encoded: tuple[int, ...] = (0,)
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -223,7 +223,7 @@ class SimilarityMatrix:
         Returns a sequence of all vertices present in the graph
         :return: a sequence of vertices
         """
-        return self._vertices
+        return tuple(self._vertices)
 
     def calculate_inout_score(self, vertex: Sentence) -> int:
         """
