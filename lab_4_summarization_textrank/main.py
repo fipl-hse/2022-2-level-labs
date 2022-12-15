@@ -3,10 +3,10 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union
-
-from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
 import re
+
+from lab_3_keywords_textrank.main import TextEncoder,\
+    TextPreprocessor
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
