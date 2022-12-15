@@ -556,3 +556,4 @@ class Buddy:
         for element in summaries:
             answer.append(self._knowledge_database[element]['summary'])
         return 'Ответ:\n' + '\n\n'.join(answer)
+
