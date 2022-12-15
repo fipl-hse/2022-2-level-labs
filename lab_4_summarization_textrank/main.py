@@ -27,8 +27,8 @@ class Sentence:
         if not isinstance(position, int) or isinstance(position, bool):
             raise ValueError
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -60,7 +60,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        if not isinstance(preprocessed_sentence, tuple) and preprocessed_sentence:
+        if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
         if not all(isinstance(token, str) for token in preprocessed_sentence):
             raise ValueError
