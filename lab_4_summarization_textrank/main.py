@@ -3,6 +3,7 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union
+import re
 
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
@@ -20,14 +21,21 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+        if not isinstance(position, int) or isinstance(position, bool):
+            raise ValueError
+        self._text = text
+        self._position = position
+        self._preprocessed = ()
+        self._encoded = ()
 
     def get_position(self) -> int:
         """
         Returns the attribute
         :return: the position of the sentence in the text
         """
-        pass
+        return self._position
 
     def set_text(self, text: str) -> None:
         """
@@ -35,14 +43,16 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+        self._text = text
 
     def get_text(self) -> str:
         """
         Returns the attribute
         :return: the text
         """
-        pass
+        return self._text
 
     def set_preprocessed(self, preprocessed_sentence: PreprocessedSentence) -> None:
         """
@@ -50,14 +60,19 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        pass
+        if not isinstance(preprocessed_sentence, tuple):
+            raise ValueError
+        for token in preprocessed_sentence:
+            if not isinstance(token, str):
+                raise ValueError
+        self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
         """
         Returns the attribute
         :return: the preprocessed sentence (a sequence of tokens)
         """
-        pass
+        return self._preprocessed
 
     def set_encoded(self, encoded_sentence: EncodedSentence) -> None:
         """
@@ -65,14 +80,19 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        pass
+        if not isinstance(encoded_sentence, tuple):
+            raise ValueError
+        for number in encoded_sentence:
+            if not isinstance(number, int):
+                raise ValueError
+        self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
         """
         Returns the attribute
         :return: the encoded sentence (a sequence of numbers)
         """
-        pass
+        return self._encoded
 
 
 class SentencePreprocessor(TextPreprocessor):
@@ -84,7 +104,18 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        pass
+        super().__init__(stop_words, punctuation)
+        # The super() function is used to give access to methods and properties of a parent or sibling class.
+        # The super() function returns an object that represents the parent class.
+        if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
+            raise ValueError
+        for word in stop_words:
+            if not isinstance(word, str):
+                raise ValueError
+        for symbol in punctuation:
+            if not isinstance(symbol, str):
+                raise ValueError
+
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -92,7 +123,17 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(text, str):
+            raise ValueError
+        text = text.replace('\n', ' ').replace("  ", " ")
+        text_list = re.split(r'(?<=[.!?])[\s\n]+', text)
+        # splits into sentences
+        split_sentences_list = []
+        for index, sentence in enumerate(text_list):
+            sentence = sentence.lower().split()
+            split_sentences_list.append(Sentence(str(sentence), index))
+        return tuple(split_sentences_list)
+
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -100,7 +141,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        pass
+
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
