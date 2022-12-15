@@ -35,16 +35,17 @@ if __name__ == "__main__":
 
     SENTENCES = PREPROCESSOR.get_sentences(text)
     ENCODER.encode_sentences(SENTENCES)
+    ENCODED = []
     for i in SENTENCES:
-        ENCODED = i.get_encoded()
-        print(ENCODED)
+        ENCODED.append(i.get_encoded())
+    print(ENCODED)
 
-    MATRIX = SimilarityMatrix()
-    MATRIX.fill_from_sentences(SENTENCES)
-    TEXT_RANK = TextRankSummarizer(MATRIX)
-    TEXT_RANK.train()
-    SUMMARY = TEXT_RANK.make_summary(10)
-    print(SUMMARY)
+    #MATRIX = SimilarityMatrix()
+    #MATRIX.fill_from_sentences(SENTENCES)
+    #TEXT_RANK = TextRankSummarizer(MATRIX)
+    #TEXT_RANK.train()
+    #SUMMARY = TEXT_RANK.make_summary(10)
+    #print(SUMMARY)
 
     RESULT = ENCODED
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
