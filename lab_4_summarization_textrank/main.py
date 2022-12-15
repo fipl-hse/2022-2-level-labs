@@ -4,7 +4,6 @@ Summarize text using TextRank algorithm
 """
 from typing import Union
 import re
-import itertools as it
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
@@ -122,7 +121,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
-        clean_txt = text.replace(' ', ' ').replace('\n', ' ')
+        clean_txt = text.replace('\n', ' ').replace('  ', ' ')
         splited_txt = re.split(r'(?<=[?!.])\s+(?=[А-ЯA-Z])', clean_txt)
         tuple_for_sentence = []
         for idx, value in enumerate(splited_txt):
@@ -378,6 +377,7 @@ class TextRankSummarizer:
             raise ValueError
         top_sent = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
         return '\n'.join([sentence.get_text() for sentence in top_sent])
+
 
 
 class Buddy:
