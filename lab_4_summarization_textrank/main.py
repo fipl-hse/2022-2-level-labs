@@ -181,8 +181,8 @@ class SentenceEncoder(TextEncoder):
         :return: a list of sentences with their preprocessed versions
         """
         check_sequence(sentences, tuple, Sentence)
-        encoded_list = []
         for sentence in sentences:
+            encoded_list = []
             processed_sentence = sentence.get_preprocessed()
             self._learn_indices(processed_sentence)
             for word in processed_sentence:
