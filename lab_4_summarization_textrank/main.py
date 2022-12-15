@@ -182,7 +182,7 @@ class SentenceEncoder(TextEncoder):
             if token not in (self._word2id.keys() and self._id2word.keys()):
                 self._word2id[token] = count
                 self._id2word[count] = token
-                self._max_identificator +=1
+                self._max_identificator += 1
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -193,11 +193,7 @@ class SentenceEncoder(TextEncoder):
         if not check_type(sentences, tuple, Sentence):
             raise ValueError
         for sentence in sentences:
-            words = []
-            prepr = sentence.get_preprocessed()
-            for word in prepr:
-                words.append(word)
-                self._learn_indices(tuple(words))
+            self._learn_indices(sentence.get_preprocessed())
         for sentence in sentences:
             prepr = sentence.get_preprocessed()
             enc_sent = []
@@ -219,11 +215,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         raise ValueError
     if not sequence or not other_sequence:
         return 0
-    numerator = []
+    numerator = [i for i in set(sequence) if i in set(other_sequence)]
     denominator = set(tuple(sequence) + tuple(other_sequence))
-    for i in set(sequence):
-        if i in set(other_sequence):
-            numerator.append(i)
     j_val = len(numerator) / len(denominator)
     return j_val
 
@@ -392,9 +385,7 @@ class TextRankSummarizer:
         """
         if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
-        top_n = sorted(self._scores.items(), key=lambda item: item[1],
-                                      reverse=True)[:n_sentences]
-
+        top_n = sorted(self._scores.items(), key=lambda item: item[1], reverse=True)[:n_sentences]
         return tuple(k for k, v in top_n)
 
     def make_summary(self, n_sentences: int) -> str:
