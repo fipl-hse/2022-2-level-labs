@@ -5,7 +5,7 @@ from pathlib import Path
 import json
 import string
 from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder, SimilarityMatrix,
-                                               TextRankSummarizer)
+                                               TextRankSummarizer, Buddy)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     sentences = preprocessed_text.get_sentences(text)
     encoded_sentences = SentenceEncoder()
     encoded_sentences.encode_sentences(sentences)
-    print(sentences)
+    #print(sentences)
 
     # step 9
     matrix = SimilarityMatrix()
@@ -43,8 +43,12 @@ if __name__ == "__main__":
     summarizer = TextRankSummarizer(matrix)
     summarizer.train()
     RESULT = summarizer.make_summary(10)
-    print(RESULT)
-    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
-    assert RESULT, 'Summaries are not extracted'
+    #print(RESULT)
 
     # step 11
+    buddy = Buddy(paths_to_texts, stop_words, tuple(string.punctuation), idf)
+    query = "Юрий Гагарин"
+    print(buddy.reply(query))
+
+    # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
+    assert RESULT, 'Summaries are not extracted'
