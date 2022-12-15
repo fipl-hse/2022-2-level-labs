@@ -49,7 +49,7 @@ if __name__ == "__main__":
     print(SUMMA)
 
     BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
-    USER = 'Юрий Алексеевич Гагарин это кто?'
+    USER = 'Юрий Алексеевич Гагарин это?'
     print(BUDDY.reply(USER))
 
 
