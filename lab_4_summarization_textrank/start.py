@@ -3,6 +3,14 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
+import string
+
+from lab_4_summarization_textrank.main import (SentenceEncoder,
+                                               SentencePreprocessor,
+                                               SimilarityMatrix,
+                                               TextRankSummarizer,
+                                               Buddy,
+                                               NoRelevantTextsError)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -26,6 +34,14 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+
+    punctuation = tuple(string.punctuation)
+    preprocessor = SentencePreprocessor(stop_words, punctuation)
+    encoder = SentenceEncoder()
+
+    # step 5
+    sentences = preprocessor.get_sentences(text)
+    encoder.encode_sentences(sentences)
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
