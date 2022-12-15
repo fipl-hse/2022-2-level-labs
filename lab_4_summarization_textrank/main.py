@@ -40,7 +40,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        if not (text and isinstance(text, str)):
+        if not isinstance(text, str):
             raise ValueError
         self._text = text
 
