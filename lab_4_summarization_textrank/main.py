@@ -367,7 +367,7 @@ class TextRankSummarizer:
         """
         if not isinstance(n_sentences, int):
             raise ValueError
-        sort = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))[:n_sentences]
+        sort = sorted(self._scores, key=lambda i: self._scores[i])[:n_sentences]
         return tuple(sort)
 
     def make_summary(self, n_sentences: int) -> str:
