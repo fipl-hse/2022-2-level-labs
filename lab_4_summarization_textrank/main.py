@@ -25,8 +25,8 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -124,10 +124,11 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
-        sentences = tuple(re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯЁ])", text))
+        sentences = re.split(r"(?<=[.!?])\s+(?=[A-ZА-ЯЁ])", text)
+        final = []
         for position, i in enumerate(sentences):
-            final = [Sentence(i.strip(), position)]
-            return tuple(final)
+            final.append(Sentence(i.strip(), position))
+        return tuple(final)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -366,8 +367,8 @@ class TextRankSummarizer:
         """
         if not isinstance(n_sentences, int):
             raise ValueError
-        sort = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(sort)[:n_sentences]
+        sort = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))[:n_sentences]
+        return tuple(sort)
 
     def make_summary(self, n_sentences: int) -> str:
         """
