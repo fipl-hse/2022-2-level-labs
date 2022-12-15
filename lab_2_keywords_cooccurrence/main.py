@@ -4,6 +4,7 @@ Extract keywords based on co-occurrence frequency
 """
 from pathlib import Path
 from typing import Optional, Sequence, Mapping
+import json
 
 KeyPhrase = tuple[str, ...]
 KeyPhrases = Sequence[KeyPhrase]
@@ -247,7 +248,15 @@ def generate_stop_words(text: str, max_length: int) -> Optional[Sequence[str]]:
     :param max_length: maximum length (in characters) of an individual stop word
     :return: a list of stop words
     """
-    pass
+    if not isinstance(text, str) or not isinstance(max_length, int) or max_length < 0 or not text:
+        return None
+    punctuation = '''.,;':¡!¿?…⋯‹›«»\\/"“”[]()⟨⟩}{&|-–~—'''
+    clean_text = ''
+    clean_text_1 = [clean_text + mark for mark in text.lower().replace(',', '').split() if mark not in punctuation]
+    frequencies = {token: clean_text_1.count(token) for token in clean_text_1}
+    freq_list = sorted(frequencies.values())
+    percentile = int((80 / 100) * len(freq_list))
+    return [key for key, value in frequencies.items() if percentile <= value and len(key) <= max_length]
 
 
 def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
@@ -256,4 +265,7 @@ def load_stop_words(path: Path) -> Optional[Mapping[str, Sequence[str]]]:
     :param path: path to the file with stop word lists
     :return: a dictionary containing the language names and corresponding stop word lists
     """
-    pass
+    if not isinstance(path, Path):
+        return None
+    with open(path, 'r', encoding='utf-8') as stop_words:
+        return dict(json.load(stop_words))
