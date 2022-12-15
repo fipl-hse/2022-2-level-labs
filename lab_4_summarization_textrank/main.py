@@ -276,6 +276,7 @@ class SimilarityMatrix:
             self._matrix[v2_idx][v1_idx] = similarity
 
 
+
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
         Gets the similarity score for two sentences from the matrix
