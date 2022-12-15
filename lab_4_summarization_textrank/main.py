@@ -196,9 +196,11 @@ class SentenceEncoder(TextEncoder):
         if not isinstance(sentences, tuple):
             raise ValueError
         for i in sentences:
-            self._learn_indices(i.get_preprocessed())
-            for one in i.get_preprocessed():
+            preprocessed = i.get_preprocessed()
+            self._learn_indices(preprocessed)
+            for one in preprocessed:
                 i.set_encoded(tuple(self._word2id[one]))
+
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
     """
