@@ -196,7 +196,7 @@ jobs:
   coverage:
     name: Coverage
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 10
     needs: [ unittests ]
     env:
       PR_NAME: ${{ github.event.pull_request.title }}
