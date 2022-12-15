@@ -28,6 +28,7 @@ def check_types(variable: Any, possible_var_type: Type, container_value_type: Op
     for element in variable:
         if not isinstance(element, container_value_type):
             raise ValueError
+    return None
 
 
 class Sentence:
@@ -556,4 +557,3 @@ class Buddy:
         for element in summaries:
             answer.append(self._knowledge_database[element]['summary'])
         return 'Ответ:\n' + '\n\n'.join(answer)
-
