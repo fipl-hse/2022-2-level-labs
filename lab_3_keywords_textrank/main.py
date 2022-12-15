@@ -90,8 +90,7 @@ class TextPreprocessor:
                 clean lowercase tokens with no stop-words
         """
         tokens = self._clean_and_tokenize(text)
-        filtered_tokens = self._remove_stop_words(tokens)
-        return filtered_tokens
+        return self._remove_stop_words(tokens)
 
 
 class TextEncoder:
@@ -131,11 +130,10 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        code = 1000
-        for word in set(tokens):
+        start = 1000
+        for code, word in enumerate(set(tokens), start):
             self._word2id[word] = code
             self._id2word[code] = word
-            code += 1
 
     # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
@@ -629,9 +627,8 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        self._scores[vertex] = (1 - self._damping_factor) + self._damping_factor * sum(
-            [scores[j] / self._graph.calculate_inout_score(j)
-             for j in incidental_vertices])
+        divided_scores = [scores[j] / self._graph.calculate_inout_score(j) for j in incidental_vertices]
+        self._scores[vertex] = (1 - self._damping_factor) + self._damping_factor * sum(divided_scores)
 
     # Step 5.3
     def train(self) -> None:
