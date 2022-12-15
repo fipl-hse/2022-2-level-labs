@@ -6,7 +6,7 @@ from pathlib import Path
 import json
 
 from lab_4_summarization_textrank.main import SentenceEncoder, \
-    SentencePreprocessor, SimilarityMatrix, TextRankSummarizer
+    SentencePreprocessor, SimilarityMatrix, TextRankSummarizer, NoRelevantTextsError, Buddy
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -43,6 +43,13 @@ if __name__ == "__main__":
     text_rank.train()
     COMPLETED_SUMMARY = text_rank.make_summary(5)
     print('Summary:\n', COMPLETED_SUMMARY)
+
+    BUDDY = Buddy(paths_to_texts, stop_words, tuple(punctuation), idf)
+    QUERY = 'Кто был первый космонавт?'
+    try:
+        print(f'Вопрос: {QUERY}\n{BUDDY.reply(QUERY)}')
+    except NoRelevantTextsError:
+        print('Not found. Please, try another input.')
 
     RESULT = COMPLETED_SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
