@@ -130,7 +130,7 @@ class SentencePreprocessor(TextPreprocessor):
         # splits into sentences
         split_sentences_list = []
         for index, sentence in enumerate(text_list):
-            sentence = sentence.lower().split()
+            # sentence = sentence.lower().split()
             split_sentences_list.append(Sentence(str(sentence), index))
         return tuple(split_sentences_list)
 
@@ -141,7 +141,15 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for sentence in sentences:
+            if not isinstance(sentence, Sentence):
+                raise ValueError
+        for sentence in sentences:
+            text = sentence.get_text()
+            preprocessing = TextPreprocessor.preprocess_text(self, text)
+            sentence.set_preprocessed(preprocessing)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -149,8 +157,11 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return:
         """
-        pass
-
+        if not isinstance(text, str):
+            raise ValueError
+        sentences = self._split_by_sentence(text)
+        self._preprocess_sentences(sentences)
+        return tuple(sentences)
 
 class SentenceEncoder(TextEncoder):
     """
@@ -201,7 +212,7 @@ class SimilarityMatrix:
         """
         Constructs necessary attributes
         """
-        pass
+
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
