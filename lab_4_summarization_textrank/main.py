@@ -232,13 +232,20 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        if not (isinstance(vertex, Sentence) and vertex in self._vertices):
+        # if not (isinstance(vertex, Sentence) and vertex in self._vertices):
+        #     raise ValueError
+        # count = 0
+        # for val in self._matrix[self._vertices.index(vertex)]:
+        #     if val > 0:
+        #         count += 1
+        # return count
+        if not isinstance(vertex, Sentence):
             raise ValueError
-        count = 0
-        for val in self._matrix[self._vertices.index(vertex)]:
-            if val > 0:
-                count += 1
-        return count
+        summa = 0
+        for score in self._matrix[self._vertices.index(vertex)]:
+            if score > 0:
+                summa += 1
+        return summa - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -325,8 +332,8 @@ class TextRankSummarizer:
         """
         if not (isinstance(vertex, Sentence) and isinstance(incidental_vertices, list) and isinstance(scores, dict)):
             raise ValueError
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
-                    for inc_vertex in incidental_vertices)
+        summa = sum(self._scores[inc] / (1 + self._graph.calculate_inout_score(inc))
+                    for inc in incidental_vertices)
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
