@@ -177,10 +177,10 @@ class SentenceEncoder(TextEncoder):
         for i in tokens:
             if not isinstance(i, str):
                 raise ValueError
-        new_tokens = ()
+        new_tokens = []
         for i in tokens:
             if i not in self._word2id:
-                new_tokens += i
+                new_tokens.append(i)
         last_index = len(new_tokens)+self.last_number
         for number, token in enumerate(new_tokens, last_index):
             self._word2id[token] = number
