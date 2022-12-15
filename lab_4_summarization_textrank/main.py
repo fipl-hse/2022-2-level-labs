@@ -153,12 +153,6 @@ class SentenceEncoder(TextEncoder):
     A class to encode string sequence into matching integer sequence
     """
 
-    def __init__(self) -> None:
-        """
-        Constructs all the necessary attributes
-        """
-        super().__init__()
-
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other

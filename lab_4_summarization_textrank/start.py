@@ -40,10 +40,10 @@ if __name__ == "__main__":
     similarity_matrix.fill_from_sentences(sentences)
     rank_summarizer = TextRankSummarizer(similarity_matrix)
     rank_summarizer.train()
-    brief = rank_summarizer.make_summary(7)
-    print(brief)
-    # similarity_matrix.add_edge()
 
-    RESULT = brief
+    BRIEF = rank_summarizer.make_summary(7)
+    print(BRIEF)
+
+    RESULT = BRIEF
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
