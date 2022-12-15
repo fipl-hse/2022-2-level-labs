@@ -106,7 +106,8 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        if not (punctuation and isinstance(stop_words, tuple) and isinstance(punctuation, tuple) and
+        if not (isinstance(stop_words, tuple) and
+                isinstance(punctuation, tuple) and
             check_iter(stop_words, str) and check_iter(punctuation, str)):
             raise ValueError
         self._stop_words = stop_words
@@ -120,7 +121,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not (text and isinstance(text, str)):
             raise ValueError
-        text_list = re.split(r'(?<=[.!?])[\s\n]+', text)
+        text_list = re.split(r'(?<=\w\w[.!?])\s', text)
         return tuple(Sentence(sent, pos) for pos, sent in enumerate(text_list) if sent)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -201,9 +202,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not (isinstance(sequence, tuple) or isinstance(sequence, list) or
-        isinstance(other_sequence, list) or isinstance(other_sequence, tuple)):
+    if not ((isinstance(sequence, tuple) or isinstance(sequence, list)) and
+    (isinstance(other_sequence, list) or isinstance(other_sequence, tuple))):
         raise ValueError
+    if not (sequence and other_sequence):
+        return 0.0
     seq_set = frozenset(sequence)
     other_seq_set = frozenset(other_sequence)
     intersedtion = seq_set.intersection(other_seq_set)
@@ -237,13 +240,16 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        if not (isinstance(vertex, Sentence) or vertex in self._vertices):
+        if not (isinstance(vertex, Sentence) and vertex in self._vertices):
             raise ValueError
         v_idx = self._vertices.index(vertex)
         counter = 0
         for elem1 in self._matrix:
-            if 0 < elem1[v_idx] < 1:
-                counter += 1
+            try:
+                if 0 < elem1[v_idx] < 1:
+                    counter += 1
+            except IndexError:
+                continue
         for elem2 in self._matrix[v_idx]:
             if 0 < elem2 < 1:
                 counter += 1
@@ -256,9 +262,13 @@ class SimilarityMatrix:
         :param vertex2:
         :return:
         """
+        if not ((isinstance(vertex1, Sentence)) and isinstance(vertex2, Sentence)):
+            raise ValueError
+        enc1 = vertex1.get_encoded()
+        enc2 = vertex2.get_encoded()
+        if enc1 == enc2 and vertex1 == vertex2:
+            raise ValueError
         for vertex in (vertex1, vertex2):
-            if not (isinstance(vertex, Sentence)) or vertex1.get_encoded() == vertex2.get_encoded():
-                raise ValueError
             if vertex in self._vertices:
                 continue
             self._vertices.append(vertex)
@@ -284,8 +294,9 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        if not (isinstance(sentence, Sentence) or isinstance(other_sentence, Sentence) or
-        sentence in self._matrix or other_sentence not in self._matrix):
+        if not (isinstance(sentence, Sentence) and isinstance(other_sentence, Sentence)):
+            raise ValueError
+        if not (sentence in self._vertices and other_sentence in self._vertices):
             raise ValueError
         return calculate_similarity(sentence.get_encoded(), other_sentence.get_encoded())
 
@@ -295,7 +306,7 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        if not (isinstance(sentences, tuple) or check_iter(sentences, Sentence)):
+        if not (sentences and isinstance(sentences, tuple) and check_iter(sentences, Sentence)):
             raise ValueError
         pairs = list(permutations(sentences, r=2))
         for idx, pair in enumerate(pairs):
@@ -333,12 +344,12 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not (vertex or isinstance(vertex, Sentence) or incidental_vertices or
-        isinstance(incidental_vertices, list) or check_iter(incidental_vertices, Sentence) or
-        scores or isinstance(scores, dict) or scores or isinstance(scores, dict) or
-        check_iter(scores, Sentence) or all(isinstance(val, float) for val in scores.values())):
+        if not (vertex and isinstance(vertex, Sentence) and incidental_vertices and
+        isinstance(incidental_vertices, list) and check_iter(incidental_vertices, Sentence) and
+        scores and isinstance(scores, dict) and scores and isinstance(scores, dict) and
+        check_iter(scores, Sentence) and all(isinstance(val, float) for val in scores.values())):
             raise ValueError
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+        summa = sum((1 / (1 + self._graph.calculate_inout_score(inc_vertex))) * scores[inc_vertex]
                     for inc_vertex in incidental_vertices)
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
@@ -368,10 +379,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        if not (n_sentences or isinstance(n_sentences, int)):
+        if not (n_sentences and isinstance(n_sentences, int) and not isinstance(n_sentences, bool)):
             raise ValueError
-        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(elem[0] for elem in srtd_tokens)[:n_sentences]
+        return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True))[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -380,11 +390,11 @@ class TextRankSummarizer:
         :return: summary
         """
 
-        if not (n_sentences or isinstance(n_sentences, int)):
+        if not (n_sentences and isinstance(n_sentences, int) and not isinstance(n_sentences, bool)):
             raise ValueError
-        sent_positions = {sent: sent.get_position() for sent in self._graph.get_vertices()}
-        sent_sorted = sorted(sent_positions, key=lambda x: sent_positions[x], reverse=True)
-        return ''.join(sent_sorted[:n_sentences])
+        sent_positions = {sent.get_text(): sent.get_position() for sent in self._graph.get_vertices()}
+        sent_sorted = sorted(sent_positions, key=lambda x: sent_positions[x])
+        return ' '.join(sent_sorted[:n_sentences])
 
 
 class Buddy:
