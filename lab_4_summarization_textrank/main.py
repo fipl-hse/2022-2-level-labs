@@ -305,7 +305,13 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        if not isinstance(graph, SimilarityMatrix):
+            raise ValueError
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -317,7 +323,11 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        if not (isinstance(vertex, Sentence) and isinstance(incidental_vertices, list) and isinstance(scores, dict)):
+            raise ValueError
+        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
+                    for inc_vertex in incidental_vertices)
+        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
 
     def train(self) -> None:
         """
@@ -345,7 +355,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        if not (n_sentences and isinstance(n_sentences, int) and not isinstance(n_sentences, bool)):
+            raise ValueError
+        return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -353,7 +365,12 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        if not (n_sentences and isinstance(n_sentences, int) and not isinstance(n_sentences, bool)):
+            raise ValueError
+        top_sent = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        # for sentence in top_sent:
+        #     return '\n'.join(sentence.get_text())
+        return '\n'.join([sentence.get_text() for sentence in top_sent])
 
 
 class Buddy:
