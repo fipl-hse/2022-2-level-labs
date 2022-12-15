@@ -23,10 +23,11 @@ def check_types(variable: Any, possible_var_type: Type, container_value_type: Op
     """
     if not isinstance(variable, possible_var_type) or isinstance(variable, bool):
         raise ValueError
-    if container_value_type:
-        for element in variable:
-            if not isinstance(element, container_value_type):
-                raise ValueError
+    if not container_value_type:
+        return None
+    for element in variable:
+        if not isinstance(element, container_value_type):
+            raise ValueError
 
 
 class Sentence:
