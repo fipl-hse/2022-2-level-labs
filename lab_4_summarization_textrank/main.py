@@ -41,7 +41,7 @@ def check_collection(user_var: Any,
             check_type(user_var, i)
         except ValueError:
             num_errors += 1
-    if num_errors == len(expected_collection_type):
+    if num_errors > 0:
         raise ValueError
     for i in user_var:
         check_type(i, expected_elements_type)
@@ -51,13 +51,14 @@ class Sentence:
     """
     An abstraction over the real-world sentences
     """
-    _preprocessed:  tuple[str, ...]
-    _encoded: tuple[int, ...]
 
     def __init__(self, text: str, position: int) -> None:
         """
         Constructs all the necessary attributes
         """
+        _preprocessed: tuple[str, ...]
+        _encoded: tuple[int, ...]
+
         check_type(text, str)
         check_type(position, int)
         self._text = text

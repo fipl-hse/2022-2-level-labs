@@ -33,6 +33,7 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+    RESULT = None
 
     punctuation = tuple(string.punctuation)
     preprocessor = SentencePreprocessor(stop_words, punctuation)
@@ -41,8 +42,8 @@ if __name__ == "__main__":
     # for mark 6
     sentences = preprocessor.get_sentences(text)
     encoder.encode_sentences(sentences)
-    # for sentence in sentences:
-    #     print(sentence.get_encoded())
+    for sentence in sentences:
+        print(sentence.get_encoded())
 
     # for mark 8
     matrix = SimilarityMatrix()
@@ -55,10 +56,9 @@ if __name__ == "__main__":
     QUERY = ('Кто такой Юрий Гагарин', 'В чём смысл жизни?')
     for i in QUERY:
         try:
-            print(buddy.reply(i))
+            print(RESULT := buddy.reply(i))
         except NoRelevantTextsError:
             print('Ответ:\nНе знаю…')
 
-    RESULT = 'hi'
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
