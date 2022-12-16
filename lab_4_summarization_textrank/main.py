@@ -126,8 +126,7 @@ class SentencePreprocessor(TextPreprocessor):
         text = text.replace('\n', ' ').replace('  ', ' ')
         sentences = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', text)
         for number, sentence in enumerate(sentences):
-            if sentence:
-                list_of_sentences.append(Sentence(sentence, number))
+            list_of_sentences.append(Sentence(sentence, number))
         return tuple(list_of_sentences)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -137,10 +136,9 @@ class SentencePreprocessor(TextPreprocessor):
         :return:
         """
         check_sequence(sentences, tuple, Sentence)
-        if sentences:
-            for sentence in sentences:
-                preprocessed_sentence = self.preprocess_text(sentence.get_text())
-                sentence.set_preprocessed(preprocessed_sentence)
+        for sentence in sentences:
+            preprocessed_sentence = self.preprocess_text(sentence.get_text())
+            sentence.set_preprocessed(preprocessed_sentence)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -165,9 +163,8 @@ class SentenceEncoder(TextEncoder):
         :return:
         """
         check_sequence(tokens, tuple, str)
-        start = 1000
         tokens2 = (token for token in tokens if token not in self._word2id)
-        for index, token in enumerate(tokens2, start + len(self._word2id)):
+        for index, token in enumerate(tokens2, 1000 + len(self._word2id)):
             self._word2id[token] = index
             self._id2word[index] = token
 
@@ -247,11 +244,16 @@ class SimilarityMatrix:
         for one_vertex in vertex1, vertex2:
             if one_vertex not in self._vertices:
                 self._vertices.append(one_vertex)
-                row = [calculate_similarity(one_vertex.get_encoded(), other_vertex.get_encoded())
-                       for other_vertex in self._vertices]
-                self._matrix.append(row)
-                for i in range(len(self._matrix) - 1):
-                    self._matrix[i].append(self._matrix[-1][i])
+                self._matrix.append([])
+        for row in self._matrix:
+            for i in range(len(self._matrix) - len(row)):
+                row.append(0)
+        index1 = self._vertices.index(vertex1)
+        index2 = self._vertices.index(vertex2)
+        self._matrix[index1][index2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+        self._matrix[index2][index1] = calculate_similarity(vertex2.get_encoded(), vertex1.get_encoded())
+        self._matrix[index1][index1] = 1
+        self._matrix[index2][index2] = 1
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
