@@ -11,22 +11,6 @@ from lab_3_keywords_textrank.main import TextEncoder, \
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
-def check_types(variable: Any, possible_var_type: Type, container_value_type: Optional[Type] = None) -> None:
-    """
-    Checks if the variable is of an appropriate type
-    param: variable
-    param: possible_var_type
-    param: container_value_type (default = None)
-    return:
-    """
-    if not isinstance(variable, possible_var_type) or isinstance(variable, bool):
-        raise ValueError
-    if not container_value_type:
-        return None
-    for element in variable:
-        if not isinstance(element, container_value_type):
-            raise ValueError
-    return None
 def check_iter(iterable: Iterable, val_type: Type) -> bool:
     """
     Checks, if all values in iterable are of needed type
