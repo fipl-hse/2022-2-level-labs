@@ -346,9 +346,6 @@ class TextRankSummarizer:
         for one_vertex in incidental_vertices:
             if not isinstance(one_vertex, Sentence):
                 raise ValueError
-        for one_sentence, score in scores:
-            if not (isinstance(one_sentence, Sentence) or isinstance(score, float)):
-                raise ValueError
         summ = 0.0
         for ver in incidental_vertices:
             inout_score = self._graph.calculate_inout_score(ver)
