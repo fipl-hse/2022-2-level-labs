@@ -74,8 +74,9 @@ def arg_check(data: Any, expected: Type, empty_allowed: bool = False) -> bool:
     3 = expected type of values if data is a dict
     None in tuple = allowed to be falsy
     """
-    if not isinstance(data, expected) or expected == int and isinstance(data, bool) or \
-            isinstance(data, (bool, str)) and not empty_allowed and not data:
+    if not isinstance(data, expected) or expected == int and isinstance(data, bool):
+        raise ValueError
+    if isinstance(data, (bool, str)) and not empty_allowed and not data:
         raise ValueError
     return True
 
