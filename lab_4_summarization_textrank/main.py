@@ -50,7 +50,7 @@ class Sentence:
         self._text = text
         self._position = position
         self._preprocessed: tuple[str, ...] = ()
-        self._encoded = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -85,9 +85,7 @@ class Sentence:
         if not (isinstance(preprocessed_sentence, tuple) and
             check_iter(preprocessed_sentence, str)):
             raise ValueError
-        if (isinstance(self._preprocessed, tuple) and
-                check_iter(self._preprocessed, str)):
-            self._preprocessed = tuple(preprocessed_sentence)
+        self._preprocessed = tuple(preprocessed_sentence)
 
 
     def get_preprocessed(self) -> PreprocessedSentence:
