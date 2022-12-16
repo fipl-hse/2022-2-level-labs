@@ -14,14 +14,14 @@ class NoRelevantTextsError(Exception):
     """
     Raised if there are no relevant texts.
     """
-    pass
+    print ('NoRelevantTextsError')
 
 
 class IncorrectQueryError(Exception):
     """
     Raised if query is incorrect.
     """
-    pass
+    print (' IncorrectQueryError')
 
 
 class Sentence:
