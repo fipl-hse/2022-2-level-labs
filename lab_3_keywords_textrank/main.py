@@ -131,7 +131,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        counter = 1000
+        counter = 1001
         for token in tokens:
             if token not in self._word2id.keys():
                 self._word2id[token] = counter + tokens.index(token)
