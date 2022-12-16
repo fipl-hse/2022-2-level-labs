@@ -207,7 +207,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     """
     check_types(sequence, [tuple, list])
     check_types(other_sequence, [tuple, list])
-    if not sequence or not sequence:
+    if not sequence:
         return 0
     sequence_set, other_sequence_set = set(sequence), set(other_sequence)
     return len(sequence_set & other_sequence_set) / len(sequence_set | other_sequence_set)
