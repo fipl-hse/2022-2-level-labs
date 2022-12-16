@@ -380,14 +380,11 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0.0
-        for vertex in self._positions:
-            for position in self._positions[vertex]:
-                self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) + 1 / position
-            non_norm_total_weight += self._position_weights[vertex]
-
-        for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
+        weights = {}
+        for token in self._positions:
+            weights[token] = sum(1 / position for position in self._positions[token])
+        for token in self._positions:
+            self._position_weights[token] = weights[token] / sum(weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
@@ -470,11 +467,8 @@ class EdgeListGraph:
         for vertex in vertex1, vertex2:
             if vertex not in self._edges:
                 self._edges[vertex] = []
-
-        if vertex1 not in self._edges[vertex2]:
-            self._edges[vertex2].append(vertex1)
-        if vertex2 not in self._edges[vertex1]:
-            self._edges[vertex1].append(vertex2)
+        self._edges[vertex1].append(vertex2)
+        self._edges[vertex2].append(vertex1)
         return 0
 
     # Step 7.2
@@ -495,7 +489,9 @@ class EdgeListGraph:
         """
         if vertex1 not in self._edges or vertex2 not in self._edges:
             return -1
-        return int(vertex1 in self._edges.get(vertex2, 0))
+        if vertex2 in self._edges[vertex1]:
+            return 1
+        return 0
 
     # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
@@ -527,8 +523,8 @@ class EdgeListGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        for pair in extract_pairs(tokens, window_length):
-            self.add_edge(*pair)
+        for vertices in extract_pairs(tokens, window_length):
+            self.add_edge(vertices[0], vertices[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -541,21 +537,18 @@ class EdgeListGraph:
         for idx, token in enumerate(tokens):
             if token not in self._positions:
                 self._positions[token] = []
-            self._positions[token] += [idx + 1]
+            self._positions[token].append(idx + 1)
 
     # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
         """
-        non_norm_total_weight = 0.0
-        for vertex in self._positions:
-            for position in self._positions[vertex]:
-                self._position_weights[vertex] = self._position_weights.get(vertex, 0) + 1 / position
-            non_norm_total_weight += self._position_weights[vertex]
-
-        for vertex in self._position_weights:
-            self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
+        weights = {}
+        for token in self._positions:
+            weights[token] = sum(1 / position for position in self._positions[token])
+        for token in self._positions:
+            self._position_weights[token] = weights[token] / sum(weights.values())
 
     # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
