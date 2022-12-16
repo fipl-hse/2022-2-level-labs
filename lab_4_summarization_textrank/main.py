@@ -15,9 +15,7 @@ def check_iter(iterable: Iterable, val_type: Type) -> bool:
     """
     Checks, if all values in iterable are of needed type
     """
-    if not all(isinstance(val, val_type) for val in iterable):
-        return False
-    return True
+    return all(isinstance(val, val_type) for val in iterable)
 
 class Sentence:
     """
