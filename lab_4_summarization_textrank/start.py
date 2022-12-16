@@ -44,7 +44,6 @@ if __name__ == "__main__":
     COMPLETED_SUMMARY = text_rank.make_summary(5)
     print('Summary:\n', COMPLETED_SUMMARY)
 
-
     RESULT = COMPLETED_SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

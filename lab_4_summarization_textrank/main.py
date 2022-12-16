@@ -9,8 +9,6 @@ from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
 
-
-
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
