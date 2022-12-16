@@ -348,13 +348,7 @@ class Buddy:
     All-knowing entity
     """
 
-    def __init__(
-            self,
-            paths_to_texts: list[str],
-            stop_words: tuple[str, ...],
-            punctuation: tuple[str, ...],
-            idf_values: dict[str, float],
-    ):
+    def __init__(self, paths_to_texts: list[str], stop_words: tuple[str, ...], punctuation: tuple[str, ...], idf_values: dict[str, float]):
         """
         Constructs all the necessary attributes.
         """
@@ -396,7 +390,7 @@ class Buddy:
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
-        Cntains the ame keywors to the given keywords.
+        Contains the same keyword to the given keywords.
         """
         if not isinstance(keywords, tuple) or not isinstance(n_texts, int):
             raise ValueError
