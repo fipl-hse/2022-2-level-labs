@@ -154,9 +154,9 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        super().__init__(stop_words, punctuation)
         check_inner_types(self._stop_words, tuple, str, True)
         check_inner_types(self._punctuation, tuple, str, True)
+        super().__init__(stop_words, punctuation)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
