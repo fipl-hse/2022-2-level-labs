@@ -255,10 +255,10 @@ class SimilarityMatrix:
         if vertex not in self._vertices:
             raise ValueError
         summarization = 0
-        for index in self._matrix[self._vertices.index(vertex)]:
-            if index > 0:
+        for score in self._matrix[self._vertices.index(vertex)]:
+            if score > 0:
                 summarization += 1
-        return summarization
+        return summarization - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -269,23 +269,21 @@ class SimilarityMatrix:
         """
         if not isinstance(vertex1, Sentence) or not isinstance(vertex2, Sentence):
             raise ValueError
-        if vertex1 == vertex2:
+        if vertex1.get_encoded() == vertex2.get_encoded():
             raise ValueError
-
         for vertex in vertex1, vertex2:
             if vertex not in self._vertices:
                 self._vertices.append(vertex)
                 self._matrix.append([])
-
-        for i in self._matrix:
-            for _ in self._vertices:
-                if len(i) < len(self._vertices):
-                    i.append(0)
-
+        for row in self._matrix:
+            for _ in range(len(self._matrix) - len(row)):
+                row.append(0)
         idx1 = self._vertices.index(vertex1)
         idx2 = self._vertices.index(vertex2)
         self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
-        self._matrix[idx2][idx1] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
+        self._matrix[idx2][idx1] = calculate_similarity(vertex2.get_encoded(), vertex1.get_encoded())
+        self._matrix[idx1][idx1] = 1
+        self._matrix[idx2][idx2] = 1
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -308,10 +306,12 @@ class SimilarityMatrix:
         """
         if not isinstance(sentences, tuple) or not sentences:
             raise ValueError
-        for sentence in sentences:
-            for other_sentence in sentences:
-                if sentence.get_encoded() != other_sentence.get_encoded():
-                    self.add_edge(sentence, other_sentence)
+        pairs = []
+        for sentence1 in sentences:
+            for sentence2 in sentences:
+                if sentence1.get_encoded() != sentence2.get_encoded():
+                    pairs.append((sentence1, sentence2))
+                    self.add_edge(sentence1, sentence2)
 
 
 class TextRankSummarizer:
