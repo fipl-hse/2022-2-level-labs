@@ -122,15 +122,15 @@ class SentencePreprocessor(TextPreprocessor):
         if not isinstance(text, str):
             raise ValueError
         text = text.replace('\n', ' ').replace("  ", " ")
-        dogs = ""
+        s = ""
         for idx, symbol in enumerate(text[:-2]):
             if symbol in ".?!" and text[idx + 1] == ' ' and text[idx + 2].isupper():
-                dogs += symbol
-                dogs += "@"
+                s += symbol
+                s += "@"
             else:
-                dogs += symbol
-        dogs += text[-2:]
-        sentences = dogs.split("@")
+                s += symbol
+        s += text[-2:]
+        sentences = s.split("@")
         result = []
         for idx, element in enumerate(sentences):
             result.append(Sentence(element.strip(), idx))

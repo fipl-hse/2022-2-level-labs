@@ -29,7 +29,6 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    # mark 6
     preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
     encoder = SentenceEncoder()
     sentences = preprocessor.get_sentences(text)
