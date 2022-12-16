@@ -4,8 +4,7 @@ TextRank summarizer starter
 from pathlib import Path
 import json
 import string
-from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder, SimilarityMatrix,
-                                               TextRankSummarizer, Buddy)
+from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder, SimilarityMatrix, TextRankSummarizer, Buddy)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -34,7 +33,6 @@ if __name__ == "__main__":
     sentences = preprocessed_text.get_sentences(text)
     encoded_sentences = SentenceEncoder()
     encoded_sentences.encode_sentences(sentences)
-    # print(sentences)
 
     matrix = SimilarityMatrix()
     matrix.fill_from_sentences(sentences)

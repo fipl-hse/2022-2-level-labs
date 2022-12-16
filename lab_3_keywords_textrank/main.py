@@ -9,7 +9,7 @@ import csv
 
 from lab_1_keywords_tfidf.main import (calculate_frequencies, calculate_tf, calculate_tfidf)
 
-from lab_2_keywords_cooccurrence.main import (
+from lab_2_keywords_cooccurrence import (
     extract_phrases,
     extract_candidate_keyword_phrases,
     calculate_frequencies_for_content_words,
