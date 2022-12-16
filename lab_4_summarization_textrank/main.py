@@ -31,7 +31,7 @@ def check_items_type(collection: Any, collections_type: list[Type], items_type: 
     """
     blegh
     """
-    
+
     check_types(collection, collections_type)
     for item in collection:
         check_types(item, items_type)
@@ -136,7 +136,7 @@ class SentencePreprocessor(TextPreprocessor):
         """
         check_types(text, [str])
         text = re.sub(r"\s+", " ", text)
-        filtered_sentences = filter(bool, re.split(r"(?<=[.!?])\s+(?=[А-ЯA-Z])", text))
+        filtered_sentences = filter(bool, re.split(r"(?<=[.!?])\s(?=[А-ЯA-Z])", text))
         return tuple((Sentence(sent, num)) for num, sent in enumerate(filtered_sentences))
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
@@ -182,7 +182,7 @@ class SentenceEncoder(TextEncoder):
         """
         check_items_type(tokens, [tuple], [str])
         new_tokens = (token for token in tokens if token not in self._word2id)
-        for ind, token in enumerate(new_tokens, start=max(1000, 1000 + len(self._word2id))):
+        for ind, token in enumerate(new_tokens, start=max(1_000, 1_000 + len(self._word2id))):
             self._word2id[token] = ind
             self._id2word[ind] = token
 
