@@ -8,6 +8,7 @@ from itertools import permutations
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
 
+
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 def check_types(variable: Any, possible_var_type: Type, container_value_type: Optional[Type] = None) -> None:
