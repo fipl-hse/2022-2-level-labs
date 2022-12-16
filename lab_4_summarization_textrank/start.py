@@ -7,7 +7,9 @@ from string import punctuation
 from lab_4_summarization_textrank.main import (SentenceEncoder,
                                                SentencePreprocessor,
                                                SimilarityMatrix,
-                                               TextRankSummarizer)
+                                               TextRankSummarizer,
+                                               Buddy,
+                                               NoRelevantTextsError)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -46,6 +48,13 @@ if __name__ == "__main__":
     RANK.train()
     SUMMARY = RANK.make_summary(5)
     print(f'Summary:\n {SUMMARY}')
+
+    BUDDY = Buddy(paths_to_texts, stop_words, tuple(punctuation), idf)
+    QUERY = 'Где учился Юрий Гагарин?'
+    try:
+        print(f'Вопрос: {QUERY}\n{BUDDY.reply(QUERY)}')
+    except NoRelevantTextsError:
+        print('haven\'t find. try again')
 
     RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST

@@ -6,7 +6,7 @@ from typing import Union, Any, Type
 import re
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor
+    TextPreprocessor, TFIDFAdapter
 
 
 class NoRelevantTextsError(Exception):
@@ -21,14 +21,14 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(var: Any, type_of_object: Type) -> None:
+def check_type(var: Any, type_of_object: Union[Type, tuple[Type, ...]]) -> None:
     """
     Checks whether type of var is expected one,
     if input is not correct - ValueError is occurred
     """
-    if not isinstance(var, type_of_object):
+    if type_of_object == int and isinstance(var, int) and isinstance(var, bool):
         raise ValueError
-    if isinstance(var, int) and isinstance(var, bool):
+    if not isinstance(var, type_of_object):
         raise ValueError
 
 
@@ -187,12 +187,10 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        if not isinstance(tokens, tuple):
-            raise ValueError
-        if not all(isinstance(token, str) for token in tokens):
-            raise ValueError
+        check_type(tokens, tuple)
+        check_object_and_type(tokens, tuple, str)
         new_tokens = (token for token in tokens if token not in self._word2id)
-        for idx, token in enumerate(new_tokens, 1000 + len(self._word2id)):
+        for idx, token in enumerate(new_tokens, self.last_id + len(self._word2id)):
             self._word2id[token] = idx
             self._id2word[idx] = token
 
@@ -215,8 +213,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
-        raise ValueError
+    check_type(sequence, (list, tuple))
+    check_type(other_sequence, (list, tuple))
     if not sequence or not other_sequence:
         return 0
     return len(set(sequence).intersection(set(other_sequence))) / len(set(sequence).union(set(other_sequence)))
@@ -276,10 +274,12 @@ class SimilarityMatrix:
             if len(row) < len(self._vertices):
                 row.extend([0 for _ in range(len(self._vertices) - len(row))])
 
-        idx1, idx2 = self._vertices.index(vertex1), self._vertices.index(vertex2)
+        idx1 = self._vertices.index(vertex1)
+        idx2 = self._vertices.index(vertex2)
         self._matrix[idx1][idx2] = calculate_similarity(vertex1.get_encoded(), vertex2.get_encoded())
         self._matrix[idx2][idx1] = calculate_similarity(vertex2.get_encoded(), vertex1.get_encoded())
-        self._matrix[idx1][idx1], self._matrix[idx2][idx2] = 1, 1
+        self._matrix[idx1][idx1] = 1
+        self._matrix[idx2][idx2] = 1
 
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
@@ -407,7 +407,17 @@ class Buddy:
         :param punctuation: a sequence of punctuation symbols
         :param idf_values: pre-computed IDF values
         """
-        pass
+        self._stop_words = stop_words
+        self._punctuation = punctuation
+        self._idf_values = idf_values
+        self._text_preprocessor = TextPreprocessor(self._stop_words, self._punctuation)
+        self._sentence_encoder = SentenceEncoder()
+        self._sentence_preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        self._paths_to_texts = paths_to_texts
+        self._knowledge_database = {}
+
+        for path in paths_to_texts:
+            self.add_text_to_database(path)
 
     def add_text_to_database(self, path_to_text: str) -> None:
         """
@@ -415,7 +425,27 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        pass
+        check_type(path_to_text, str)
+        with open(path_to_text, encoding='utf-8') as file:
+            text = file.read()
+
+        preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
+        sentences = preprocessor.get_sentences(text)
+        self._sentence_encoder.encode_sentences(sentences)
+
+        preprocessed_text = self._text_preprocessor.preprocess_text(text)
+        tf_idf_adapter = TFIDFAdapter(preprocessed_text, self._idf_values)
+        tf_idf_adapter.train()
+        keywords = tf_idf_adapter.get_top_keywords(100)
+
+        matrix = SimilarityMatrix()
+        matrix.fill_from_sentences(sentences)
+
+        summarizer = TextRankSummarizer(matrix)
+        summarizer.train()
+        summary = summarizer.make_summary(5)
+
+        self._knowledge_database[path_to_text] = {'sentences': sentences, 'keywords': keywords, 'summary': summary}
 
     def _find_texts_close_to_keywords(self, keywords: tuple[str, ...], n_texts: int) -> tuple[str, ...]:
         """
@@ -424,7 +454,14 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        pass
+        check_object_and_type(keywords, tuple, str)
+        check_type(n_texts, int)
+        similar_texts = {}
+        for path_to_text, data in self._knowledge_database.items():
+            similar_texts[path_to_text] = calculate_similarity(data['keywords'], keywords)
+        if not any(similar_texts.values()):
+            raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
+        return tuple(sorted(similar_texts, key=lambda path: (similar_texts[path], path), reverse=True)[:n_texts])
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
@@ -433,4 +470,14 @@ class Buddy:
         :param n_summaries: the number of summaries to include in the answer
         :return: the answer
         """
-        pass
+        if not isinstance(query, str) or not query:
+            raise IncorrectQueryError('Incorrect query. Use string as input.')
+        check_type(n_summaries, int)
+        if len(self._knowledge_database) < n_summaries:
+            raise ValueError
+        user_input = self._text_preprocessor.preprocess_text(query)
+        summaries = self._find_texts_close_to_keywords(user_input, n_summaries)
+        reply = []
+        for sent in summaries:
+            reply.append(self._knowledge_database[sent]['summary'])
+        return 'Ответ:\n' + '\n\n'.join(reply)
