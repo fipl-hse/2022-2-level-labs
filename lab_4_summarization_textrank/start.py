@@ -3,6 +3,8 @@ TextRank summarizer starter
 """
 from pathlib import Path
 import json
+import string
+from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder, SimilarityMatrix, TextRankSummarizer, Buddy)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -26,6 +28,21 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+
+    preprocessed_text = SentencePreprocessor(stop_words, tuple(string.punctuation))
+    sentences = preprocessed_text.get_sentences(text)
+    encoded_sentences = SentenceEncoder()
+    encoded_sentences.encode_sentences(sentences)
+
+    matrix = SimilarityMatrix()
+    matrix.fill_from_sentences(sentences)
+    summarizer = TextRankSummarizer(matrix)
+    summarizer.train()
+    RESULT = summarizer.make_summary(10)
+
+    buddy = Buddy(paths_to_texts, stop_words, tuple(string.punctuation), idf)
+    Query = 'Юрий Гагарин'
+    print(buddy.reply(Query))
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
