@@ -81,7 +81,8 @@ def arg_check(data: Any, expected: Type, empty_allowed: bool = False) -> bool:
     return True
 
 
-def list_tuple_check(data: Any, expected: Union[Type, Union[Type, Type]], content: Type, empty_allowed: bool = False) -> bool:
+def list_tuple_check(data: Any, expected: Union[Type, Union[Type, Type]], content: Type, empty_allowed: bool = False) \
+        -> bool:
     if not isinstance(data, expected) or not empty_allowed and not data:
         raise ValueError
     if isinstance(data, (tuple, list)) and not all(arg_check(i, content) for i in data):
