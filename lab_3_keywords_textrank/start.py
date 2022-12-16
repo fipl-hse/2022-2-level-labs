@@ -5,8 +5,7 @@ TextRank keyword extraction starter
 from pathlib import Path
 
 from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank, KeywordExtractionBenchmark
-
+    VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank
 
 if __name__ == "__main__":
 
