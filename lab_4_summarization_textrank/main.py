@@ -43,7 +43,7 @@ def check_types(variable: Any, possible_var_type: list[Type]) -> None:
     error_result = []  # save 'not' bools of check result
     for one_type in possible_var_type:
         if isinstance(one_type, bool):
-            a_check = not (isinstance(variable, one_type))
+            a_check = not isinstance(variable, one_type)
             error_result.append(a_check)
         else:
             a_check = not isinstance(variable, one_type) or isinstance(variable, bool)
@@ -376,15 +376,15 @@ class SimilarityMatrix:
         """
         if not sentences:
             raise ValueError
-        check_types(sentences, [tuple])
+        check_iterable_var(sentences, [tuple], [Sentence])
 
         for idx1 in range(len(sentences)-1):
             for idx2 in range(1, len(sentences)):
                 sent1 = sentences[idx1]
                 sent2 = sentences[idx2]
 
-                check_types(sent1, [Sentence])
-                check_types(sent2, [Sentence])
+                # check_types(sent1, [Sentence])
+                # check_types(sent2, [Sentence])
 
                 if sorted(sent1.get_encoded()) == sorted(sent2.get_encoded()):
                     continue
