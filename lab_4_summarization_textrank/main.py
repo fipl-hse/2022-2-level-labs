@@ -345,7 +345,7 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not isinstance(vertex, Sentence) or not isinstance(incidental_vertices, list) splior not isinstance(scores, dict):
+        if not isinstance(vertex, Sentence) or not isinstance(incidental_vertices, list) or not isinstance(scores, dict):
             raise ValueError
         summa = sum((1 / self._graph.calculate_inout_score(vertex)) * scores[vertex]
                     for vertex in incidental_vertices)
