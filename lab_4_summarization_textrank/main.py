@@ -128,8 +128,8 @@ class SentencePreprocessor(TextPreprocessor):
         :return: a sequence of sentences
         """
         check_types(text, [str])
-        text = text.replace('\n', ' ').replace(' ', ' ')
-        filtered_sentences = filter(bool, re.split(r"[.!?]+\s(?=[А-ЯA-Z])", text))
+        text = re.sub(r"\s+", " ", text)
+        filtered_sentences = filter(bool, re.split(r"(?<=[.!?])\s+(?=[А-ЯA-Z])", text))
         return tuple((Sentence(sent, num)) for num, sent in enumerate(filtered_sentences))
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
