@@ -7,9 +7,7 @@ from string import punctuation
 from lab_4_summarization_textrank.main import (SentenceEncoder,
                                                SentencePreprocessor,
                                                SimilarityMatrix,
-                                               TextRankSummarizer,
-                                               Buddy,
-                                               NoRelevantTextsError)
+                                               TextRankSummarizer)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
