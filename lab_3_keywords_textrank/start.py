@@ -4,9 +4,9 @@ TextRank keyword extraction starter
 
 from pathlib import Path
 from string import punctuation
+import json
 from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
     VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank, KeywordExtractionBenchmark
-import json
 
 if __name__ == "__main__":
 
@@ -36,6 +36,7 @@ if __name__ == "__main__":
     if tokens:
         adjacency_matrix_graph.fill_from_tokens(tokens, 3)
     adjacency_ranking = VanillaTextRank(adjacency_matrix_graph)
+    adjacency_ranking.train()
     print(encoder.decode(adjacency_ranking.get_top_keywords(10)))
 
     # step 7, working with VTR through EdgeListGraph
@@ -43,6 +44,7 @@ if __name__ == "__main__":
     if tokens:
         edge_list_graph.fill_from_tokens(tokens, 3)
     edge_ranking = VanillaTextRank(edge_list_graph)
+    edge_ranking.train()
     print(encoder.decode(edge_ranking.get_top_keywords(10)))
 
     # step 9, working with PTR(PositionTextRank) through AdjacencyMatrixGraph and

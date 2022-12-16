@@ -4,10 +4,10 @@ Extract keywords based on TextRank algorithm
 """
 from pathlib import Path
 from typing import Optional, Union
+import csv
 from lab_1_keywords_tfidf.main import calculate_frequencies, calculate_tf, calculate_tfidf
 from lab_2_keywords_cooccurrence.main import extract_phrases, extract_candidate_keyword_phrases, \
     calculate_frequencies_for_content_words, calculate_word_degrees, calculate_word_scores
-import csv
 
 
 class TextPreprocessor:
@@ -777,13 +777,13 @@ class TFIDFAdapter:
         frequencies = calculate_frequencies(list(self._tokens))
         if not frequencies:
             return -1
-        tf = calculate_tf(frequencies)
-        if not tf:
+        tf_dict = calculate_tf(frequencies)
+        if not tf_dict:
             return -1
-        tfidf = calculate_tfidf(tf, self._idf)
-        if not tfidf:
+        tfidf_dict = calculate_tfidf(tf_dict, self._idf)
+        if not tfidf_dict:
             return -1
-        self._scores = tfidf
+        self._scores = tfidf_dict
         return 0
 
     # Step 10.3
