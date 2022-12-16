@@ -36,7 +36,8 @@ def check_items_type(collection: Any, collections_type: Any, items_type: Any) \
         -> None:
     """
     Checks type of the first argument given and raises ValueError
-    if the first argument doesn't correspond to possible types
+    if the first argument doesn't correspond to possible types or first
+    argument's arguments don't correspond to item's type
     """
     check_types(collection, collections_type)
     if isinstance(collection, (frozenset, set, dict, tuple, list,)) and items_type:
