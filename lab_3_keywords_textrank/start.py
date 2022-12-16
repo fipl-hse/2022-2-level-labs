@@ -5,7 +5,7 @@ TextRank keyword extraction starter
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank
+    VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank
 
 if __name__ == "__main__":
 
@@ -30,11 +30,27 @@ if __name__ == "__main__":
     if tokens:
         print(extract_pairs(tokens, 3))
 
+    # step 6, working with VTR through AdjacencyMatrixGraph
     adjacency_matrix_graph = AdjacencyMatrixGraph()
     if tokens:
         adjacency_matrix_graph.fill_from_tokens(tokens, 3)
     adjacency_ranking = VanillaTextRank(adjacency_matrix_graph)
     print(encoder.decode(adjacency_ranking.get_top_keywords(10)))
+
+    # step 7, working with VTR through EdgeListGraph
+    edge_list_graph = EdgeListGraph()
+    if tokens:
+        edge_list_graph.fill_from_tokens(tokens, 3)
+    edge_ranking = VanillaTextRank(edge_list_graph)
+    print(encoder.decode(edge_ranking.get_top_keywords(10)))
+
+    # step 9, working with PTR(PositionTextRank) through AdjacencyMatrixGraph and
+    # step 7, working with VTR through
+    position_rank_adjacency = PositionBiasedTextRank(adjacency_matrix_graph)
+    position_rank_edge = PositionBiasedTextRank(edge_list_graph)
+    for position_rank in position_rank_adjacency, position_rank_edge:
+        position_rank.train()
+        print(encoder.decode(position_rank.get_top_keywords(10)))
 
     RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
