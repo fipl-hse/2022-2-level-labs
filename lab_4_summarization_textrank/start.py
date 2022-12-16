@@ -2,6 +2,12 @@
 TextRank summarizer starter
 """
 from pathlib import Path
+from string import punctuation
+from lab_4_summarization_textrank.main import (
+    SentenceEncoder,
+    SentencePreprocessor, SimilarityMatrix,
+    TextRankSummarizer, Buddy
+) #NoRelevantTextsError
 import json
 
 if __name__ == "__main__":
@@ -26,6 +32,13 @@ if __name__ == "__main__":
         idf = json.load(file)
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
+
+    punctuation = tuple(punctuation)
+    PREPROCESSOR = SentencePreprocessor(stop_words, punctuation)
+    SENTENCES = PREPROCESSOR.get_sentences(text)
+    ENCODER = SentenceEncoder()
+    ENCODER.encode_sentences(SENTENCES)
+    print("Encoded:", *(sentence.get_encoded() for sentence in SENTENCES))
 
     RESULT = None
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
