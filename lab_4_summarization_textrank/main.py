@@ -125,8 +125,7 @@ class SentencePreprocessor(TextPreprocessor):
                 isinstance(punctuation, tuple) and
             check_iter(stop_words, str) and check_iter(punctuation, str)):
             raise ValueError
-        self._stop_words = stop_words
-        self._punctuation = punctuation
+        super().__init__(stop_words, punctuation)
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -220,8 +219,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not ((isinstance(sequence, tuple) or isinstance(sequence, list)) and
-    (isinstance(other_sequence, list) or isinstance(other_sequence, tuple))):
+    if not (isinstance(sequence, (list, tuple)) and
+    isinstance(other_sequence, (tuple, list))):
         raise ValueError
     if not (sequence and other_sequence):
         return 0.0
@@ -327,7 +326,7 @@ class SimilarityMatrix:
         if not (sentences and isinstance(sentences, tuple) and check_iter(sentences, Sentence)):
             raise ValueError
         pairs = list(permutations(sentences, r=2))
-        for idx, pair in enumerate(pairs):
+        for pair in pairs:
             self.add_edge(pair[0], pair[1])
 
 class TextRankSummarizer:
@@ -343,7 +342,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        if not (isinstance(graph, SimilarityMatrix)):
+        if not isinstance(graph, SimilarityMatrix):
             raise ValueError
         self._graph = graph
         self._scores = {}
