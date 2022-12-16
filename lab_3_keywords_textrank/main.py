@@ -418,7 +418,9 @@ class EdgeListGraph:
         """
         Constructs all the necessary attributes for the edge list graph object
         """
-        pass
+        self._edges = {}
+        self._positions = {}
+        self._position_weights = {}
 
     # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
