@@ -32,12 +32,14 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        if not isinstance(text, str) or isinstance(position, bool) or not isinstance(position, int):
+        if not isinstance(text, str):
+            raise ValueError
+        if not isinstance(position, int) or isinstance(position, bool):
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
-        self._encoded = ()
+        self._preprocessed: tuple[str, ...] = ()
+        self._encoded: tuple[int, ...] = ()
 
     def get_position(self) -> int:
         """
@@ -71,8 +73,8 @@ class Sentence:
         """
         if not isinstance(preprocessed_sentence, tuple):
             raise ValueError
-        for token in preprocessed_sentence:
-            if not isinstance(token, str):
+        for sentence in preprocessed_sentence:
+            if not isinstance(sentence, str):
                 raise ValueError
         self._preprocessed = preprocessed_sentence
 
