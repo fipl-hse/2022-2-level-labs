@@ -5,7 +5,7 @@ from pathlib import Path
 import json
 import string
 from lab_4_summarization_textrank.main import (SentencePreprocessor, SentenceEncoder, SimilarityMatrix,
-                                               TextRankSummarizer, Buddy)
+                                               TextRankSummarizer, Buddy, IncorrectQueryError, NoRelevantTextsError)
 
 if __name__ == "__main__":
     # finding paths to the necessary utils
@@ -47,8 +47,14 @@ if __name__ == "__main__":
 
     # step 11
     buddy = Buddy(paths_to_texts, stop_words, tuple(string.punctuation), idf)
-    QUERY = "Юрий Гагарин"
-    print(buddy.reply(QUERY))
+    QUERY = ""
+    try:
+        print(buddy.reply(QUERY))
+    except NoRelevantTextsError:
+        print("No relevant texts found.")
+    except IncorrectQueryError:
+        print("Query is incorrect.")
+
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
