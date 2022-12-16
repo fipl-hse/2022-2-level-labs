@@ -259,8 +259,14 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    arg_check(sequence, Union[list, tuple], True)
-    arg_check(other_sequence, Union[list, tuple], True)
+    try:
+        arg_check(sequence, list, True)
+    except ValueError:
+        arg_check(sequence, tuple, True)
+    try:
+        arg_check(other_sequence, list, True)
+    except ValueError:
+        arg_check(other_sequence, tuple, True)
     try:
         return sum(1 for i in sequence if i in other_sequence) / len(set(chain(sequence, other_sequence)))
     except ZeroDivisionError:
