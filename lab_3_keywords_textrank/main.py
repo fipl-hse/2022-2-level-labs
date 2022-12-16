@@ -290,11 +290,13 @@ class AdjacencyMatrixGraph:
         If either of vertices is not present in the graph, -1 is returned
         """
         try:
-            ind1 = self._vertices[vertex1]
-            ind2 = self._vertices[vertex2]
-        except KeyError:
-            return -1
-        return int(self._matrix[ind1][ind2])
+            try:
+                ind1 = self._vertices[vertex1]
+                ind2 = self._vertices[vertex2]
+            except KeyError:
+                return -1
+        except IndexError:
+            return int(self._matrix[ind1][ind2])
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -341,6 +343,7 @@ class AdjacencyMatrixGraph:
         """
         for pair in extract_pairs(tokens, window_length):
             self.add_edge(*pair)
+        self._matrix = [self._matrix[i][i:] for i in range(len(self._matrix))]
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:

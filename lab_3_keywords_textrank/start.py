@@ -93,6 +93,7 @@ if __name__ == "__main__":
     BENCH = KeywordExtractionBenchmark(ENGLISH_STOP_WORDS, tuple(punctuation), IDF, MATERIALS_PATH)
     BENCH.run()
     BENCH.save_to_csv(PROJECT_ROOT / "report.csv")
+
     RESULT = BENCH.report
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
