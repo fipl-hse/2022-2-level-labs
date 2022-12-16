@@ -3,7 +3,7 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 from typing import Union, Type, Any
-from lab_3_keywords_textrank.main import TextEncoder,TextPreprocessor, TFIDFAdapter
+from lab_3_keywords_textrank.main import TextEncoder, TextPreprocessor, TFIDFAdapter
 import re
 
 PreprocessedSentence = tuple[str, ...]
@@ -21,12 +21,12 @@ def check_types(collection: Any,
     checks = list()
     if isinstance(collections_type, tuple):
         for concrete_type in collections_type:
-            check = not isinstance(collection, collections_type) or ((isinstance(collection, int)
+            check = not isinstance(collection, concrete_type) or ((isinstance(collection, int)
                                                                    and isinstance(collection, bool)))
             checks.append(check)
     else:
         check = not isinstance(collection, collections_type) or ((isinstance(collection, int)
-                                                               and isinstance(collection, bool)))
+                                                                  and isinstance(collection, bool)))
         checks.append(check)
     if all(checks):
         raise ValueError
@@ -42,13 +42,9 @@ def check_items_type(collection: Any, collections_type: Any, items_type: Any) \
     if isinstance(collection, (frozenset, set, dict, tuple, list,)) and items_type:
         for item in collection:
             check_types(item, items_type)
-    check = not isinstance(collection, collections_type) or ((isinstance(collection, int)
-                                                              and isinstance(collection, bool)))
-
 
 
 class Sentence:
-
     """
     An abstraction over the real-world sentences
     """
@@ -183,6 +179,7 @@ class SentenceEncoder(TextEncoder):
         Constructs all the necessary attributes
         """
         super().__init__()
+        self.magic_constant = 1000
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -192,7 +189,8 @@ class SentenceEncoder(TextEncoder):
         """
         check_items_type(tokens, tuple, str)
         new_tokens = (token for token in tokens if token not in self._word2id)
-        for ind, token in enumerate(new_tokens, start=max(1_000, 1_000 + len(self._word2id))):
+        for ind, token in enumerate(new_tokens, start=max(self.magic_constant,
+                                                          self.magic_constant + len(self._word2id))):
             self._word2id[token] = ind
             self._id2word[ind] = token
 
