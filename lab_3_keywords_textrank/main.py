@@ -1022,3 +1022,4 @@ class KeywordExtractionBenchmark:
             writer.writerow(headers)
             for algorithm in self.report:
                 writer.writerow((algorithm, *self.report[algorithm].values()))
+pass
