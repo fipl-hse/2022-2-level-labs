@@ -161,6 +161,13 @@ class SentenceEncoder(TextEncoder):
     A class to encode string sequence into matching integer sequence
     """
 
+    def __init__(self) -> None:
+        """
+        Constructs all the necessary attributes
+        """
+        super().__init__()
+        self._number = 1000
+
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other
@@ -173,7 +180,7 @@ class SentenceEncoder(TextEncoder):
             if not isinstance(token, str):
                 raise ValueError
         my_tokens = (token for token in tokens if token not in self._word2id)
-        for index, token in enumerate(my_tokens, start=1000 + len(self._word2id)):
+        for index, token in enumerate(my_tokens, start=self._number + len(self._word2id)):
             self._word2id[token] = index
             self._id2word[index] = token
 
