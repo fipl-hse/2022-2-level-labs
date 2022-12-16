@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Iterable, Type, Any, Optional
+from typing import Union, Iterable, Type
 import re
 from itertools import permutations
 from lab_3_keywords_textrank.main import TextEncoder, \
