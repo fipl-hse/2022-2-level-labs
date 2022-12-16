@@ -14,14 +14,14 @@ class NoRelevantTextsError(Exception):
     """
     Raised if there are no relevant texts.
     """
-    print ('NoRelevantTextsError')
+    print('NoRelevantTextsError')
 
 
 class IncorrectQueryError(Exception):
     """
     Raised if query is incorrect.
     """
-    print (' IncorrectQueryError')
+    print('IncorrectQueryError')
 
 
 class Sentence:
@@ -392,25 +392,10 @@ class Buddy:
         """
         Contains the same keyword to the given keywords.
         """
-        if not isinstance(keywords, tuple) or not isinstance(n_texts, int):
-            raise ValueError
-        close_texts = {}
-        for k, val in self._knowledge_database.items():
-            similarity = calculate_similarity(keywords, val['keywords'])
-            close_texts[k] = similarity
-        if not any(close_texts.values()):
-            raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
-        sorted_texts = sorted(close_texts, reverse=True)
-        return tuple(sorted(sorted_texts, key=lambda x: close_texts[x], reverse=True))[:n_texts]
+       pass
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
         Replies to the query.
         """
-        if not isinstance(n_summaries, int) or len(self._knowledge_database) < n_summaries:
-            raise ValueError
-        if not query or not isinstance(query, str):
-            raise IncorrectQueryError('Incorrect query. Use string as input.')
-        keywords = self._text_preprocessor.preprocess_text(query)
-        summaries = self._find_texts_close_to_keywords(keywords, n_summaries)
-        return 'The answer:\n' + '\n\n'.join(self._knowledge_database[text]['summary'] for text in summaries)
+       pass
