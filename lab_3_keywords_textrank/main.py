@@ -369,7 +369,7 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        for token in self._positions.keys():
+        for token in self._positions:
             self._position_weights[token] = sum(1 / index for index in self._positions.get(token))
         norm_cum_weight = sum(value for value in self._position_weights.values())
         for token, value in self._position_weights.items():
@@ -531,7 +531,7 @@ class EdgeListGraph:
         """
         Computes position weights for all tokens in text
         """
-        for token in self._positions.keys():
+        for token in self._positions:
             self._position_weights[token] = sum(1 / index for index in self._positions.get(token))
         norm_cum_weight = sum(value for value in self._position_weights.values())
         for token, value in self._position_weights.items():
@@ -933,4 +933,3 @@ class KeywordExtractionBenchmark:
                 a path where to save the report file
         """
         pass
-   
