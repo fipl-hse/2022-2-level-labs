@@ -5,7 +5,8 @@ Summarize text using TextRank algorithm
 from typing import Union
 
 from lab_3_keywords_textrank.main import TextEncoder, \
-    TextPreprocessor, TFIDFAdapter
+    TextPreprocessor
+#TFIDFAdapter
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
@@ -448,7 +449,8 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        # if not (isinstance(keywords, tuple) and isinstance(n_texts, int) and all(isinstance(i, str) for i in keywords)):
+        # if not (isinstance(keywords, tuple) and isinstance(n_texts, int) and all(isinstance(i, str)
+        # for i in keywords)):
         #     raise ValueError
         # close_texts = {}
         # for key, value in self._knowledge_database.items():
