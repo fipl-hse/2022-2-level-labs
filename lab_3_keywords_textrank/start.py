@@ -5,7 +5,8 @@ TextRank keyword extraction starter
 from pathlib import Path
 from string import punctuation
 from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank
+    VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank, KeywordExtractionBenchmark
+import json
 
 if __name__ == "__main__":
 
@@ -52,6 +53,22 @@ if __name__ == "__main__":
         position_rank.train()
         print(encoder.decode(position_rank.get_top_keywords(10)))
 
-    RESULT = True
+    # step 12
+    BENCHMARK_PATH = ASSETS_PATH / 'benchmark_materials'
+
+    ENG_STOP_WORDS_PATH = BENCHMARK_PATH / 'eng_stop_words.txt'
+    with open(ENG_STOP_WORDS_PATH, 'r', encoding='utf-8') as file:
+        eng_stop_words = tuple(file.read().split('\n'))
+
+    IDF_PATH = BENCHMARK_PATH / 'IDF.json'
+    with open(IDF_PATH, 'r', encoding='utf-8') as file:
+        idf = dict(json.load(file))
+
+    REPORT_PATH = PROJECT_ROOT / 'report.csv'
+    benchmark = KeywordExtractionBenchmark(eng_stop_words, tuple(punctuation), idf, BENCHMARK_PATH)
+    benchmark.run()
+    benchmark.save_to_csv(REPORT_PATH)
+
+    RESULT = benchmark.report
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
