@@ -30,18 +30,18 @@ if __name__ == "__main__":
 
     paths_to_texts = [str(path) for path in TEXTS_PATH.glob('*.txt')]
 
-    PREPROSESS = SentencePreprocessor(stop_words, tuple(punctuation))
-    ENCODE = SentenceEncoder()
-    SENTENCES = PREPROSESS.get_sentences(text)
-    ENCODE.encode_sentences(SENTENCES)
-    for sentence in SENTENCES:
-        print(sentence.get_encoded(), sentence.get_text())
+    preprocessor = SentencePreprocessor(stop_words, tuple(punctuation))
+    encoder = SentenceEncoder()
+    sentences = preprocessor.get_sentences(text)
+    encoder.encode_sentences(sentences)
+    for sentence in sentences:
+        print(sentence.get_encoded())
 
-    MATRIX = SimilarityMatrix()
-    MATRIX.fill_from_sentences(SENTENCES)
-    TEXT_RANK = TextRankSummarizer(MATRIX)
-    TEXT_RANK.train()
-    SUMMARY = TEXT_RANK.make_summary(5)
+    matrix = SimilarityMatrix()
+    matrix.fill_from_sentences(sentences)
+    text_rank_summ = TextRankSummarizer(matrix)
+    text_rank_summ.train()
+    SUMMARY = text_rank_summ.make_summary(10)
     print(SUMMARY)
 
     RESULT = SUMMARY
