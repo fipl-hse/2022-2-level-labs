@@ -85,7 +85,9 @@ class Sentence:
         if not (isinstance(preprocessed_sentence, tuple) and
             check_iter(preprocessed_sentence, str)):
             raise ValueError
-        self._preprocessed = preprocessed_sentence
+        if check_iter(self._preprocessed, str):
+            self._preprocessed = preprocessed_sentence
+
 
     def get_preprocessed(self) -> PreprocessedSentence:
         """
