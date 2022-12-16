@@ -248,12 +248,12 @@ class SimilarityMatrix:
         :return:
         """
         check_type(vertex, Sentence)
-        count = 0
+        counting = 0
         idx = self._vertices.index(vertex)
         for score in self._matrix[idx]:
             if score > 0:
-                count += 1
-        return count - 1
+                counting += 1
+        return counting - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """

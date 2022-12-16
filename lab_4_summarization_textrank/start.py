@@ -54,7 +54,7 @@ if __name__ == "__main__":
     try:
         print(f'Вопрос: {QUERY}\n{BUDDY.reply(QUERY)}')
     except NoRelevantTextsError:
-        print('haven\'t find. try again')
+        print('haven\'t find. try again, please')
 
     RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
