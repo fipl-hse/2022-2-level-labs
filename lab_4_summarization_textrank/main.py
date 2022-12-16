@@ -347,7 +347,7 @@ class TextRankSummarizer:
             if not isinstance(one_vertex, Sentence):
                 raise ValueError
         for one_sentence, score in scores:
-            if not (isinstance(score, float) or isinstance(one_sentence, Sentence)):
+            if not (isinstance(one_sentence, Sentence) or isinstance(score, float)):
                 raise ValueError
         summ = 0.0
         for ver in incidental_vertices:
