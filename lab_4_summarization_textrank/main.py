@@ -41,7 +41,7 @@ def check_collection(user_var: Any,
             check_type(user_var, i)
         except ValueError:
             num_errors += 1
-    if num_errors > 0:
+    if num_errors != 0 and num_errors >= len(expected_collection_type) - 1:
         raise ValueError
     for i in user_var:
         check_type(i, expected_elements_type)
