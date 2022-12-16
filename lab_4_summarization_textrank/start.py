@@ -5,9 +5,7 @@ from pathlib import Path
 from string import punctuation
 from lab_4_summarization_textrank.main import (
     SentenceEncoder,
-    SentencePreprocessor, SimilarityMatrix,
-    TextRankSummarizer, Buddy
-) #NoRelevantTextsError
+    SentencePreprocessor)
 import json
 
 if __name__ == "__main__":
@@ -40,6 +38,7 @@ if __name__ == "__main__":
     ENCODER.encode_sentences(SENTENCES)
     print("Encoded:", *(sentence.get_encoded() for sentence in SENTENCES))
 
-    RESULT = True
+    RESULT = [sentence.get_encoded() for sentence in SENTENCES]
+
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'

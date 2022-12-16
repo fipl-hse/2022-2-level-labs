@@ -11,30 +11,40 @@ EncodedSentence = tuple[int, ...]
 
 
 def check_types(collection: Any,
-                collections_type: list[Type]) \
+                collections_type: Any) \
         -> None:
     """
-    blegh
+    Checks type of the first argument given and raises ValueError
+    if the first argument doesn't correspond to possible types
     """
 
     checks = list()
-    for concrete_type in collections_type:
-        check = not isinstance(collection, concrete_type) or ((isinstance(collection, int)
+    if isinstance(collections_type, tuple):
+        for concrete_type in collections_type:
+            check = not isinstance(collection, collections_type) or ((isinstance(collection, int)
+                                                                   and isinstance(collection, bool)))
+            checks.append(check)
+    else:
+        check = not isinstance(collection, collections_type) or ((isinstance(collection, int)
                                                                and isinstance(collection, bool)))
         checks.append(check)
     if all(checks):
         raise ValueError
 
 
-def check_items_type(collection: Any, collections_type: list[Type], items_type: list[Type]) \
+def check_items_type(collection: Any, collections_type: Any, items_type: Any) \
         -> None:
     """
-    blegh
+    Checks type of the first argument given and raises ValueError
+    if the first argument doesn't correspond to possible types
     """
-
     check_types(collection, collections_type)
-    for item in collection:
-        check_types(item, items_type)
+    if isinstance(collection, (frozenset, set, dict, tuple, list,)) and items_type:
+        for item in collection:
+            check_types(item, items_type)
+    check = not isinstance(collection, collections_type) or ((isinstance(collection, int)
+                                                              and isinstance(collection, bool)))
+
 
 
 class Sentence:
@@ -48,8 +58,8 @@ class Sentence:
         Constructs all the necessary attributes
         """
 
-        check_types(text, [str])
-        check_types(position, [int])
+        check_types(text, str)
+        check_types(position, int)
 
         self._text = text
         self._position = position
@@ -68,7 +78,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        check_types(text, [str])
+        check_types(text, str)
         self._text = text
 
     def get_text(self) -> str:
@@ -84,7 +94,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_items_type(preprocessed_sentence, [tuple], [str])
+        check_items_type(preprocessed_sentence, tuple, str)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -100,7 +110,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_items_type(encoded_sentence, [tuple], [int])
+        check_items_type(encoded_sentence, tuple, int)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -122,8 +132,8 @@ class SentencePreprocessor(TextPreprocessor):
         """
         super().__init__(stop_words, punctuation)
 
-        check_items_type(stop_words, [tuple], [str])
-        check_items_type(punctuation, [tuple], [str])
+        check_items_type(stop_words, tuple, str)
+        check_items_type(punctuation, tuple, str)
 
         self._stop_words = stop_words
         self._punctuation = punctuation
@@ -134,7 +144,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        check_types(text, [str])
+        check_types(text, str)
         text = re.sub(r"\s+", " ", text)
         filtered_sentences = filter(bool, re.split(r"(?<=[.!?])\s(?=[А-ЯA-Z])", text))
         return tuple((Sentence(sent, num)) for num, sent in enumerate(filtered_sentences))
@@ -146,7 +156,7 @@ class SentencePreprocessor(TextPreprocessor):
         :return:
         """
 
-        check_items_type(sentences, [tuple], [Sentence])
+        check_items_type(sentences, tuple, Sentence)
 
         for sent in sentences:
             preprocessed = self.preprocess_text(sent.get_text())
@@ -180,7 +190,7 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_items_type(tokens, [tuple], [str])
+        check_items_type(tokens, tuple, str)
         new_tokens = (token for token in tokens if token not in self._word2id)
         for ind, token in enumerate(new_tokens, start=max(1_000, 1_000 + len(self._word2id))):
             self._word2id[token] = ind
@@ -192,7 +202,7 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        check_items_type(sentences, [tuple], [Sentence])
+        check_items_type(sentences, tuple, Sentence)
         for sent in sentences:
             self._learn_indices(sent.get_preprocessed())
             sent.set_encoded(tuple(self._word2id[word] for word in sent.get_preprocessed()))
@@ -205,8 +215,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_types(sequence, [tuple, list])
-    check_types(other_sequence, [tuple, list])
+    check_types(sequence, (tuple, list,))
+    check_types(other_sequence, (tuple, list,))
     if not sequence:
         return 0
     sequence_set, other_sequence_set = set(sequence), set(other_sequence)
