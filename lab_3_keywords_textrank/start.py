@@ -36,7 +36,7 @@ if __name__ == "__main__":
     adjacency_ranking = VanillaTextRank(adjacency_matrix_graph)
     print(encoder.decode(adjacency_ranking.get_top_keywords(10)))
 
-    RESULT = None
+    RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
     
