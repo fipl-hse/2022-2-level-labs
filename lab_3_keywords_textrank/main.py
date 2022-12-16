@@ -255,7 +255,7 @@ class AdjacencyMatrixGraph:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
         """
-        self._matrix = []
+        self._matrix = [[]]
         self._vertices = []
         self._positions = {}
         self._position_weights = {}
@@ -278,10 +278,13 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 == vertex2:
             return -1
-        for vertex in vertex1, vertex2:
-            if vertex not in self._vertices:
-                self._vertices.append(vertex)
-                self._matrix.append([])
+        if vertex1 not in self._vertices:
+            self._vertices.append(vertex1)
+            self._matrix.append([])
+
+        if vertex2 not in self._vertices:
+            self._vertices.append(vertex2)
+            self._matrix.append([])
 
         for edges_list in self._matrix:
             if len(edges_list) < len(self._vertices):
@@ -311,9 +314,7 @@ class AdjacencyMatrixGraph:
         """
         if vertex1 not in self._vertices or vertex2 not in self._vertices:
             return -1
-        idx1 = self._vertices.index(vertex1)
-        idx2 = self._vertices.index(vertex2)
-        return self._matrix[idx1][idx2]
+        return self._matrix[self._vertices.index(vertex1)][self._vertices.index(vertex2)]
 
     # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
@@ -343,7 +344,8 @@ class AdjacencyMatrixGraph:
         if vertex not in self._vertices:
             return -1
         idx = self._vertices.index(vertex)
-        return sum(self._matrix[idx])
+        inout_score = sum(self._matrix[idx])
+        return inout_score
 
     # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
@@ -357,8 +359,8 @@ class AdjacencyMatrixGraph:
                 maximum distance between co-occurring tokens: tokens are considered co-occurring
                 if they appear in the same window of this length
         """
-        for pair in extract_pairs(tokens, window_length):
-            self.add_edge(*pair)
+        for vertices in extract_pairs(tokens, window_length):
+            self.add_edge(vertices[0], vertices[1])
 
     # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
@@ -626,10 +628,8 @@ class VanillaTextRank:
             scores: dict[int, float]
                 scores of all vertices in the graph
         """
-        summa = sum((1 / self._graph.calculate_inout_score(inc_vertex)) * scores[inc_vertex]
-                    for inc_vertex in incidental_vertices)
-        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
-        pass
+        self._scores[vertex] = (1 - self._damping_factor) + self._damping_factor * sum(
+            scores[inc_vertex] / self._graph.calculate_inout_score(inc_vertex) for inc_vertex in incidental_vertices)
 
     # Step 5.3
     def train(self) -> None:
@@ -674,8 +674,8 @@ class VanillaTextRank:
             tuple[int, ...]
                 top n most important tokens in the encoded text
         """
-        srtd_tokens = sorted(self._scores.items(), key=lambda elem: (-elem[1], elem[0]))
-        return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
+        top_keywords = sorted(self._scores, key=lambda key: self._scores[key], reverse=True)[:n_keywords]
+        return tuple(top_keywords)
 
 
 class PositionBiasedTextRank(VanillaTextRank):
