@@ -131,7 +131,7 @@ class TextEncoder:
             tokens : tuple[str, ...]
                 sequence of string tokens
         """
-        counter = 1001
+        counter = 1000
         for token in tokens:
             if token not in self._word2id.keys():
                 self._word2id[token] = counter + tokens.index(token)
@@ -373,8 +373,8 @@ class AdjacencyMatrixGraph:
         """
         Computes position weights for all tokens in text
         """
-        for token in self._positions:
-            self._position_weights[token] = sum(1 / index for index in self._positions.get(token))
+        self._position_weights = {token: sum(1 / position for position in positions)
+                                  for token, positions in self._positions.items()}
         norm_cum_weight = sum(value for value in self._position_weights.values())
         for token, value in self._position_weights.items():
             self._position_weights[token] = value / norm_cum_weight

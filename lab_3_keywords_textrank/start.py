@@ -31,21 +31,19 @@ if __name__ == "__main__":
     if tokens:
         print(extract_pairs(tokens, 3))
 
-    # step 6, working with VTR through AdjacencyMatrixGraph
+    # step 6, working with VTR through AdjacencyMatrixGraph and step 7, working with VTR through EdgeListGraph
     adjacency_matrix_graph = AdjacencyMatrixGraph()
-    if tokens:
-        adjacency_matrix_graph.fill_from_tokens(tokens, 3)
-    adjacency_ranking = VanillaTextRank(adjacency_matrix_graph)
-    adjacency_ranking.train()
-    print(encoder.decode(adjacency_ranking.get_top_keywords(10)))
-
-    # step 7, working with VTR through EdgeListGraph
     edge_list_graph = EdgeListGraph()
     if tokens:
-        edge_list_graph.fill_from_tokens(tokens, 3)
-    edge_ranking = VanillaTextRank(edge_list_graph)
-    edge_ranking.train()
-    print(encoder.decode(edge_ranking.get_top_keywords(10)))
+        for graph in adjacency_matrix_graph, edge_list_graph:
+            adjacency_matrix_graph.fill_from_tokens(tokens, 3)
+            adjacency_matrix_graph.fill_positions(tokens)
+            adjacency_matrix_graph.calculate_position_weights()
+    vanilla_rank_adjacency = VanillaTextRank(adjacency_matrix_graph)
+    vanilla_rank_edge = VanillaTextRank(edge_list_graph)
+    for vanilla_rank in vanilla_rank_adjacency, vanilla_rank_edge:
+        vanilla_rank.train()
+        print(encoder.decode(vanilla_rank.get_top_keywords(10)))
 
     # step 9, working with PTR(PositionTextRank) through AdjacencyMatrixGraph and
     # step 7, working with VTR through
