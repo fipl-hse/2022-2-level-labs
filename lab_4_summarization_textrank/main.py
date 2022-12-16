@@ -17,10 +17,34 @@ def check_type(user_var: Any, expected_type: Union[Type, tuple[Type, ...]]) -> N
     Checks whether type of user_var is expected_type,
     if not - raises ValueError
     """
-    if not isinstance(user_var, expected_type):
-        raise ValueError
     if expected_type == int and isinstance(user_var, int) and isinstance(user_var, bool):
         raise ValueError
+    if not isinstance(user_var, expected_type):
+        raise ValueError
+
+
+# def check_collection(user_var: Any,
+#                      expected_elements_type: Type,
+#                      *expected_collection_type: Type,
+#                      can_be_empty: bool = False) -> None:
+#     """
+#     Checks whether type of user_var is at least one of expected_collection_type,
+#     checks whether type of elements in user_var are expected_elements_type,
+#     if not - raises ValueError
+#     if expected_elements_type is None, doesn't check elements
+#     """
+#     num_errors = 0
+#     if can_be_empty is False and not user_var:
+#         raise ValueError
+#     for i in expected_collection_type:
+#         try:
+#             check_type(user_var, i)
+#         except ValueError:
+#             num_errors += 1
+#     if num_errors != 0 and num_errors >= len(expected_collection_type) - 1:
+#         raise ValueError
+#     for i in user_var:
+#         check_type(i, expected_elements_type)
 
 
 def check_collection(user_var: Any,
@@ -36,12 +60,7 @@ def check_collection(user_var: Any,
     num_errors = 0
     if can_be_empty is False and not user_var:
         raise ValueError
-    for i in expected_collection_type:
-        try:
-            check_type(user_var, i)
-        except ValueError:
-            num_errors += 1
-    if num_errors != 0 and num_errors >= len(expected_collection_type) - 1:
+    if not isinstance(user_var, expected_collection_type):
         raise ValueError
     for i in user_var:
         check_type(i, expected_elements_type)
@@ -176,6 +195,12 @@ class SentenceEncoder(TextEncoder):
     """
     A class to encode string sequence into matching integer sequence
     """
+    def __init__(self, index: int = 1000) -> None:
+        """
+        Constructs all the necessary attributes
+        """
+        super().__init__()
+        self._index = index
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -185,7 +210,7 @@ class SentenceEncoder(TextEncoder):
         """
         check_collection(tokens, str, tuple, can_be_empty=True)    # can_be_empty?
         my_tokens = (token for token in tokens if token not in self._word2id)
-        for ind, token in enumerate(my_tokens, start=1000 + len(self._word2id)):
+        for ind, token in enumerate(my_tokens, start=self._index + len(self._word2id)):
             self._word2id[token] = ind
             self._id2word[ind] = token
 
@@ -223,15 +248,12 @@ class SimilarityMatrix:
     """
     A class to represent relations between sentences
     """
-
-    _matrix: list[list[float]]
-
     def __init__(self) -> None:
         """
         Constructs necessary attributes
         """
         self._vertices = []
-        self._matrix = []
+        self._matrix: list[list[float]] = []
 
     def get_vertices(self) -> tuple[Sentence, ...]:
         """
@@ -306,21 +328,17 @@ class TextRankSummarizer:
     """
     TextRank for summarization
     """
-
-    _scores: dict[Sentence, float]
-    _graph: SimilarityMatrix
-
     def __init__(self, graph: SimilarityMatrix) -> None:
         """
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
         check_type(graph, SimilarityMatrix)
-        self._graph = graph
+        self._graph: SimilarityMatrix = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
         self._max_iter = 50
-        self._scores = {}
+        self._scores: dict[Sentence, float] = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
