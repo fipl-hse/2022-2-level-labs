@@ -3,9 +3,17 @@ TextRank keyword extraction starter
 """
 
 from pathlib import Path
+from string import punctuation
+from lab_3_keywords_textrank.main import (
+    TextPreprocessor,
+    TextEncoder,
+    extract_pairs,
+    AdjacencyMatrixGraph,
+    EdgeListGraph,
+    VanillaTextRank,
+    PositionBiasedTextRank
+)
 
-from lab_3_keywords_textrank.main import extract_pairs, TextPreprocessor, TextEncoder, AdjacencyMatrixGraph, \
-    VanillaTextRank, EdgeListGraph,  PositionBiasedTextRank
 
 if __name__ == "__main__":
 
@@ -23,43 +31,49 @@ if __name__ == "__main__":
     with open(stop_words_path, 'r', encoding='utf-8') as file:
         stop_words = tuple(file.read().split('\n'))
 
-    preprocessor = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
-    tokens = preprocessor.preprocess_text(text)
-
+    text_preprocessor = TextPreprocessor(stop_words, tuple(punctuation))
+    text_preprocessed = text_preprocessor.preprocess_text(text)
     encoder = TextEncoder()
-    encoded_tokens = encoder.encode(tokens)
-
-    # step 3
-    preprocessor = TextPreprocessor(stop_words, tuple('.,!?-:;()'))
-    preprocessed_text = preprocessor.preprocess_text(text)
-    encoder = TextEncoder()
-    tokens = encoder.encode(preprocessed_text)
-    if tokens:
-        print(extract_pairs(tokens, 3))
-
-    # steps 6 and 7
+    tokens = encoder.encode(text_preprocessed)
     adjacency_matrix_graph = AdjacencyMatrixGraph()
-    edge_list_graph = EdgeListGraph()
+    edge_graph = EdgeListGraph()
+    PAIRS = None
+
     if tokens:
-        for graph in adjacency_matrix_graph, edge_list_graph:
-            adjacency_matrix_graph.fill_from_tokens(tokens, 3)
-            adjacency_matrix_graph.fill_positions(tokens)
-            adjacency_matrix_graph.calculate_position_weights()
-    vanilla_rank_adjacency = VanillaTextRank(adjacency_matrix_graph)
-    vanilla_rank_edge = VanillaTextRank(edge_list_graph)
-    for vanilla_rank in vanilla_rank_adjacency, vanilla_rank_edge:
-        vanilla_rank.train()
-        print(encoder.decode(vanilla_rank.get_top_keywords(10)))
+        PAIRS = extract_pairs(tokens, 3)
+    print(PAIRS)
+    if tokens:
+        adjacency_matrix_graph.fill_from_tokens(tokens, 3)
+        adjacency_matrix_graph.fill_positions(tokens)
+        adjacency_matrix_graph.calculate_position_weights()
+        vanilla_rank_adj = VanillaTextRank(adjacency_matrix_graph)
+        vanilla_rank_adj.train()
+        top_10_vanilla_adj = vanilla_rank_adj.get_top_keywords(10)
+        DECODED_TOP_10_VANILLA_ADJ = encoder.decode(top_10_vanilla_adj)
+        print(DECODED_TOP_10_VANILLA_ADJ)
 
-    # step 9
-    position_rank_adjacency = PositionBiasedTextRank(adjacency_matrix_graph)
-    position_rank_edge = PositionBiasedTextRank(edge_list_graph)
-    for position_rank in position_rank_adjacency, position_rank_edge:
-        position_rank.train()
-    get_top_keywords = encoder.decode(position_rank.get_top_keywords(10))
-    print(get_top_keywords)
+        if tokens:
+            edge_graph.fill_from_tokens(tokens, 3)
+            edge_graph.fill_positions(tokens)
+            edge_graph.calculate_position_weights()
+        vanilla_rank_edge = VanillaTextRank(edge_graph)
+        vanilla_rank_edge.train()
+        top_10_vanilla_edge = vanilla_rank_edge.get_top_keywords(10)
+        DECODED_TOP_10_VANILLA_EDGE = encoder.decode(top_10_vanilla_edge)
+        print(DECODED_TOP_10_VANILLA_EDGE)
 
-    RESULT = get_top_keywords
+        biased_rank_adj = PositionBiasedTextRank(adjacency_matrix_graph)
+        biased_rank_adj.train()
+        top_10_biased_adj = biased_rank_adj.get_top_keywords(10)
+        DECODED_TOP_10_BIASED_ADJ = encoder.decode(top_10_biased_adj)
+        print(DECODED_TOP_10_BIASED_ADJ)
+
+        biased_rank_edge = PositionBiasedTextRank(edge_graph)
+        biased_rank_edge.train()
+        top_10_biased_edge = biased_rank_edge.get_top_keywords(10)
+        DECODED_TOP_10_BIASED_EDGE = encoder.decode(top_10_biased_edge)
+        print(DECODED_TOP_10_BIASED_EDGE)
+        RESULT = DECODED_TOP_10_BIASED_ADJ
 
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Keywords are not extracted'
