@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any
+from typing import Union
 import re
 from lab_3_keywords_textrank.main import TextEncoder, \
     TextPreprocessor
