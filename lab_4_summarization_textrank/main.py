@@ -113,13 +113,13 @@ class SentencePreprocessor(TextPreprocessor):
         """
         Constructs all the necessary attributes
         """
-        super().__init__(stop_words, punctuation)
         if not isinstance(stop_words, tuple) or not isinstance(punctuation, tuple):
             raise ValueError
 
         for stop_word, mark in zip(stop_words, punctuation):
             if not isinstance(stop_word, str) or not isinstance(mark, str):
                 raise ValueError
+        super().__init__(stop_words, punctuation)
 
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
@@ -198,16 +198,11 @@ class SentenceEncoder(TextEncoder):
         """
         if not isinstance(sentences, tuple):
             raise ValueError
-        sentences_list = []
-        for sentence_1 in sentences:
-            sentences_list.append((sentence_1, sentence_1.get_preprocessed()))
-        for sentence, preprocessed_sentence in sentences_list:
-            self._learn_indices(preprocessed_sentence)
-            sentences_list1 = []
-            for token in preprocessed_sentence:
-                var = self._word2id[token]
-                sentences_list1.append(var)
-            sentence.set_encoded(tuple(sentences_list1))
+        for token in sentences:
+            if not isinstance(token, Sentence):
+                raise ValueError
+            self._learn_indices(token.get_preprocessed())
+            token.set_encoded(tuple(self._word2id[word] for word in token.get_preprocessed()))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
@@ -217,17 +212,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, list | tuple) or not isinstance(other_sequence, list | tuple):
+    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
         raise ValueError
-    try:
-        similar = 0
-        for elem in sequence:
-            if elem in other_sequence:
-                similar += 1
-        index_jaccard = similar / (len(set(sequence) | set(other_sequence)))
-        return index_jaccard
-    except ZeroDivisionError:
+    if not sequence or not other_sequence:
         return 0
+    return len(set(sequence) and set(other_sequence)) / len(set(sequence) | set(other_sequence))
 
 
 class SimilarityMatrix:
@@ -259,11 +248,11 @@ class SimilarityMatrix:
         """
         if vertex not in self._vertices:
             raise ValueError
-        summarization = -1
+        summarization = 0
         for index in self._matrix[self._vertices.index(vertex)]:
             if index > 0:
                 summarization += 1
-        return summarization
+        return summarization - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -390,8 +379,6 @@ class TextRankSummarizer:
             raise ValueError
         sentences = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
         return '\n'.join(sentence.get_text() for sentence in sentences)
-
-
 
 
 class Buddy:
