@@ -1032,8 +1032,10 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
+
         with open(path, 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow(('name', *self.themes))
             for algorithm in self.report:
-                writer.writerow((algorithm, *self.report[algorithm].values()))
+                avg = sum(self.report[algorithm].values()) / len(self.report[algorithm])
+                writer.writerow((algorithm, *self.report[algorithm].values(), avg))
