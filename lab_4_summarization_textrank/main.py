@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Any, Type, Optional
+from typing import Union, Any, Type
 
 import re
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -21,13 +21,32 @@ def check_types(variable: Any, possible_var_type: list[Type]) -> None:
     param: container_value_type (default = None)
     return:
     """
+    # error_result = []  # save 'not' bools of check result
+    # first_type = type(possible_var_type[0])
+    #
+    # if not variable:
+    #     raise ValueError
+    #
+    # if len(possible_var_type) == 1:
+    #     if isinstance(possible_var_type[0], bool):
+    #         a_check = not (isinstance(variable, first_type))
+    #         error_result.append(a_check)
+    #     else:
+    #         a_check = not (isinstance(variable, first_type) and not isinstance(variable, bool))
+    #         error_result.append(a_check)
+    # else:
+    #     second_type = type(possible_var_type[1])
+    #     a_check = not (isinstance(variable, (first_type, second_type)) and not isinstance(variable, bool))
+    #     error_result.append(a_check)
+    # if any(error_result):
+    #     raise ValueError
     error_result = []  # save 'not' bools of check result
     for one_type in possible_var_type:
         if isinstance(one_type, bool):
             a_check = not (isinstance(variable, one_type))
             error_result.append(a_check)
         else:
-            a_check = not (isinstance(variable, one_type) and not isinstance(variable, bool))
+            a_check = not isinstance(variable, one_type) or isinstance(variable, bool)
             error_result.append(a_check)
 
     if any(error_result):
@@ -238,6 +257,8 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     if not sequence or not other_sequence:
         return 0
 
+    # check_types(sequence, [list, tuple])
+    # check_types(other_sequence, [list, tuple])
     for variable in (sequence, other_sequence):
         if not isinstance(variable, (list, tuple)):
             raise ValueError
