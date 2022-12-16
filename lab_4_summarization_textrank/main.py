@@ -246,7 +246,7 @@ class SimilarityMatrix:
                 self._vertices.append(one_vertex)
                 self._matrix.append([])
         for row in self._matrix:
-            for i in range(len(self._matrix) - len(row)):
+            for _ in range(len(self._matrix) - len(row)):
                 row.append(0)
         index1 = self._vertices.index(vertex1)
         index2 = self._vertices.index(vertex2)
