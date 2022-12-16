@@ -82,6 +82,9 @@ def arg_check(data: Any, expected: Type, empty_allowed: bool = False) -> bool:
 
 
 def list_tuple_check(data: Any, expected: Type, content: Type, empty_allowed: bool = False) -> bool:
+    """
+    Docstring
+    """
     if not isinstance(data, expected) or not empty_allowed and not data:
         raise ValueError
     if isinstance(data, (tuple, list)) and not all(arg_check(i, content) for i in data):
@@ -90,6 +93,9 @@ def list_tuple_check(data: Any, expected: Type, content: Type, empty_allowed: bo
 
 
 def dict_check(data: Any, expected: Type, content: Type, values: Type, empty_allowed: bool = False) -> bool:
+    """
+    Docstring
+    """
     if not isinstance(data, expected) or not empty_allowed and not data:
         raise ValueError
     if isinstance(data, dict) and \
