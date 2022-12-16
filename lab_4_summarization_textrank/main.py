@@ -11,22 +11,17 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(variable: Any, possible_types: list[Type]) -> None:
+def check_type(variable: Any, possible_type: Type) -> None:
     """
     Checks type of variable and raise ValueError if incorrect
     """
-    checks = []
-    for type_ in possible_types:
-        check = not isinstance(variable, type_) \
-                or (isinstance(variable, int) and isinstance(variable, bool))
-        checks.append(check)
-    if all(checks):
+    if not isinstance(variable, possible_type)\
+            or (possible_type is int and isinstance(variable, bool)):
         raise ValueError
 
 
 def check_iterable(
-        container: Any, container_type: list[Type], elements_type: list[Type]
-) -> None:
+        container: Any, container_type: Type, elements_type: Type) -> None:
     """
     Checks type of variables in iterable and raise ValueError if incorrect
     """
@@ -47,8 +42,8 @@ class Sentence:
         """
         Constructs all the necessary attributes
         """
-        check_type(text, [str])
-        check_type(position, [int])
+        check_type(text, str)
+        check_type(position, int)
         self._text = text
         self._position = position
         self._preprocessed = ()
@@ -67,7 +62,7 @@ class Sentence:
         :param text: the text
         :return: None
         """
-        check_type(text, [str])
+        check_type(text, str)
         self._text = text
 
     def get_text(self) -> str:
@@ -83,7 +78,7 @@ class Sentence:
         :param preprocessed_sentence: the preprocessed sentence (a sequence of tokens)
         :return: None
         """
-        check_iterable(preprocessed_sentence, [tuple], [str])
+        check_iterable(preprocessed_sentence, tuple, str)
         self._preprocessed = preprocessed_sentence
 
     def get_preprocessed(self) -> PreprocessedSentence:
@@ -99,7 +94,7 @@ class Sentence:
         :param encoded_sentence: the encoded sentence (a sequence of numbers)
         :return: None
         """
-        check_iterable(encoded_sentence, [tuple], [int])
+        check_iterable(encoded_sentence, tuple, int)
         self._encoded = encoded_sentence
 
     def get_encoded(self) -> EncodedSentence:
@@ -120,9 +115,9 @@ class SentencePreprocessor(TextPreprocessor):
         Constructs all the necessary attributes
         """
         super().__init__(stop_words, punctuation)
-        check_iterable(stop_words, [tuple], [str])
+        check_iterable(stop_words, tuple, str)
         self._stop_words = stop_words
-        check_iterable(punctuation, [tuple], [str])
+        check_iterable(punctuation, tuple, str)
         self._punctuation = punctuation
 
     def _split_by_sentence(self, text: str) -> tuple[Sentence, ...]:
@@ -131,7 +126,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param text: the raw text
         :return: a sequence of sentences
         """
-        check_type(text, [str])
+        check_type(text, str)
         text = text.replace('\n', ' ').replace('  ', ' ')
         sentences = []
         count = 0
@@ -160,7 +155,7 @@ class SentencePreprocessor(TextPreprocessor):
         :param sentences: a list of sentences
         :return:
         """
-        check_iterable(sentences, [tuple], [Sentence])
+        check_iterable(sentences, tuple, Sentence)
         for sentence in sentences:
             preprocessed = self.preprocess_text(sentence.get_text())
             sentence.set_preprocessed(preprocessed)
@@ -180,6 +175,12 @@ class SentenceEncoder(TextEncoder):
     """
     A class to encode string sequence into matching integer sequence
     """
+    def __init__(self) -> None:
+        """
+        Constructs all the necessary attributes
+        """
+        super().__init__()
+        self.max_id = 1000
 
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
@@ -187,11 +188,12 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        check_iterable(tokens, [tuple], [str])
+        check_iterable(tokens, tuple, str)
         new_tokens = (i for i in tokens if i not in self._word2id)
-        for index, token in enumerate(new_tokens, start=max(1000, 1000 + len(self._word2id))):
+        for index, token in enumerate(new_tokens, start=self.max_id):
             self._word2id[token] = index
             self._id2word[index] = token
+            self.max_id += 1
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -199,7 +201,7 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        check_iterable(sentences, [tuple], [Sentence])
+        check_iterable(sentences, tuple, Sentence)
         for sentence in sentences:
             self._learn_indices(sentence.get_preprocessed())
             sentence.set_encoded(tuple(self._word2id[word] for word in sentence.get_preprocessed()))
@@ -212,10 +214,13 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    check_type(sequence, [list, tuple])
-    check_type(other_sequence, [list, tuple])
-    if not sequence or not sequence:
-        return 0
+    for seq in sequence, other_sequence:
+        try:
+                check_type(seq, list)
+        except ValueError:
+                check_type(seq, tuple)
+        if not seq:
+            return 0
     sequence_set, other_sequence_set = set(sequence), set(other_sequence)
     return len(sequence_set & other_sequence_set) / len(sequence_set | other_sequence_set)
 
@@ -247,7 +252,7 @@ class SimilarityMatrix:
         :param vertex
         :return:
         """
-        check_type(vertex, [Sentence])
+        check_type(vertex, Sentence)
         return sum(i > 0 for i in self._matrix[self._vertices_list.index(vertex)]) - 1
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
@@ -260,7 +265,7 @@ class SimilarityMatrix:
         if vertex1 == vertex2:
             raise ValueError
         for vertex in vertex1, vertex2:
-            check_type(vertex, [Sentence])
+            check_type(vertex, Sentence)
             if vertex not in self._vertices_list:
                 self._vertices_list.append(vertex)
                 new_row = [calculate_similarity(vertex.get_encoded(), other.get_encoded())
@@ -276,8 +281,8 @@ class SimilarityMatrix:
         :param other_sentence
         :return: the similarity score
         """
-        check_type(sentence, [Sentence])
-        check_type(other_sentence, [Sentence])
+        check_type(sentence, Sentence)
+        check_type(other_sentence, Sentence)
         if sentence not in self._vertices_list or other_sentence not in self._vertices_list:
             raise ValueError
         ind1, ind2 = self._vertices_list.index(sentence), self._vertices_list.index(other_sentence)
@@ -289,10 +294,10 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        check_iterable(sentences, [tuple], [Sentence])
+        check_iterable(sentences, tuple, Sentence)
         if not sentences:
             raise ValueError
-        check_type(sentences, [tuple])
+        check_type(sentences, tuple)
         for ind1, one_sent in enumerate(sentences):
             for ind2, another_sent in enumerate(sentences):
                 if ind2 == ind1:
@@ -313,7 +318,7 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        check_type(graph, [SimilarityMatrix])
+        check_type(graph, SimilarityMatrix)
         self._graph = graph
         self._damping_factor = 0.85
         self._convergence_threshold = 0.0001
@@ -330,8 +335,8 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        check_type(vertex, [Sentence])
-        check_type(scores, [dict])
+        check_type(vertex, Sentence)
+        check_type(scores, dict)
         sum_ = sum((1 / (1 + self._graph.calculate_inout_score(inc))) * scores[inc] for inc in incidental_vertices)
         self._scores[vertex] = self._damping_factor * (sum_ - 1) + 1
 
@@ -361,7 +366,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        check_type(n_sentences, [int])
+        check_type(n_sentences, int)
         return tuple(sorted(self._scores, key=lambda x: self._scores[x], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
@@ -370,7 +375,7 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        check_type(n_sentences, [int])
+        check_type(n_sentences, int)
         top_sentences = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
         return '\n'.join([i.get_text() for i in top_sentences])
 
@@ -420,7 +425,7 @@ class Buddy:
         :param path_to_text
         :return:
         """
-        check_type(path_to_text, [str])
+        check_type(path_to_text, str)
         with open(path_to_text, encoding='utf-8') as file:
             text = file.read()
         preprocessor = SentencePreprocessor(self._stop_words, self._punctuation)
@@ -447,8 +452,8 @@ class Buddy:
         :param n_texts: number of texts to find
         :return: the texts' ids
         """
-        check_iterable(keywords, [tuple], [str])
-        check_type(n_texts, [int])
+        check_iterable(keywords, tuple, str)
+        check_type(n_texts, int)
         scores = {}
         for path_to_text, data in self._knowledge_database.items():
             scores[path_to_text] = calculate_similarity(data['keywords'], keywords)
@@ -466,10 +471,10 @@ class Buddy:
         if not query:
             raise IncorrectQueryError('Incorrect query. Use string as input.')
         try:
-            check_type(query, [str])
+            check_type(query, str)
         except ValueError as exc:
             raise IncorrectQueryError('Incorrect query. Use string as input.') from exc
-        check_type(n_summaries, [int])
+        check_type(n_summaries, int)
         if len(self._knowledge_database) < n_summaries:
             raise ValueError
         user_keywords = self._text_preprocessor.preprocess_text(query)

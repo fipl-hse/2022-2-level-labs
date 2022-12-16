@@ -45,10 +45,10 @@ if __name__ == "__main__":
     print('Summary:\n', SUMMARY)
 
     BUDDY = Buddy(paths_to_texts, stop_words, punctuation, idf)
-    QUIRES = ['Когда родился Гагарин?', 'Кто такой Ленин?', 'Где работает Демидовский?']
-    for QUIRE in QUIRES:
+    QUERIES = ['Когда родился Гагарин?', 'Кто такой Ленин?', 'Где работает Демидовский?']
+    for QUERY in QUERIES:
         try:
-            print(BUDDY.reply(QUIRE))
+            print(BUDDY.reply(QUERY))
         except NoRelevantTextsError:
             print('Try another query')
 
