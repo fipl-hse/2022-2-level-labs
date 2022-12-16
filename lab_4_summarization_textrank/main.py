@@ -109,6 +109,13 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not isinstance(text, str):
             raise ValueError
+        # new_txt = text.replace('\n', ' ').replace('  ', ' ')
+        # splitted_txt = re.split(r'(?<=[.!?])\s+(?=[A-ZА-Я])', new_txt)
+        # final_sentences = []
+        # for index, sent in enumerate(list(splitted_txt)):
+        #     sentence = Sentence(sent.strip(), index)
+        #     final_sentences.append(sentence)
+        # return tuple(final_sentences)
         final_sentences = []
         clean_txt = ''
         new_txt = text.replace('\n', ' ').replace('  ', ' ')
@@ -190,7 +197,7 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     if not (isinstance(sequence, (list, tuple)) and isinstance(other_sequence, (list, tuple))):
         raise ValueError
     if not sequence or not other_sequence:
-        return 0.
+        return 0
     return len(set(sequence) & set(other_sequence)) / len(set(sequence) | set(other_sequence))
 
 
@@ -444,7 +451,6 @@ class Buddy:
         close_texts = {}
         for key, value in self._knowledge_database.items():
             close_texts[key] = calculate_similarity(keywords, value['keywords'])
-        # if all(close_texts.values()) == 0:
         if not any(close_texts.values()):
             raise NoRelevantTextsError('Texts that are related to the query were not found. Try another query.')
         return tuple(sorted(close_texts, key=lambda x: close_texts[x], reverse=True))[:n_texts]

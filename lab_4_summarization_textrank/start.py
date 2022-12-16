@@ -46,8 +46,9 @@ if __name__ == "__main__":
     print(BRIEF)
 
     buddy = Buddy(paths_to_texts, stop_words, tuple(punctuation), idf)
-    user_txt = 'Чем известен Юрий Гагарин?'
-    print(buddy.reply(user_txt))
+    USER_TXT = ['Чем известен Юрий Гагарин?', ]
+    for user_text in USER_TXT:
+        print(buddy.reply(user_text))
 
     RESULT = BRIEF
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
