@@ -482,8 +482,8 @@ class Buddy:
                       for text, words in self._knowledge_database.items()}
         if not any(calculation[text] for text in calculation):
             raise NoRelevantTextsError
-        return tuple(sorted(sorted(calculation, reverse=True),
-                            key=lambda obj: calculation[obj], reverse=True))[:n_texts]
+        sorted_calculation = dict(sorted(calculation.items(), key=lambda x: (x[1], x[0]), reverse=True))
+        return tuple(sorted_calculation.keys())[:n_texts]
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
