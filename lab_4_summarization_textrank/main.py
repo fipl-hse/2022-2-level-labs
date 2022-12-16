@@ -15,7 +15,7 @@ def check_type(variable: Any, possible_type: Type) -> None:
     """
     Checks type of variable and raise ValueError if incorrect
     """
-    if not isinstance(variable, possible_type)\
+    if not isinstance(variable, possible_type) \
             or (possible_type is int and isinstance(variable, bool)):
         raise ValueError
 
@@ -35,7 +35,7 @@ class Sentence:
     An abstraction over the real-world sentences
     """
 
-    _preprocessed:  tuple[str, ...]
+    _preprocessed: tuple[str, ...]
     _encoded: tuple[int, ...]
 
     def __init__(self, text: str, position: int) -> None:
@@ -175,6 +175,7 @@ class SentenceEncoder(TextEncoder):
     """
     A class to encode string sequence into matching integer sequence
     """
+
     def __init__(self) -> None:
         """
         Constructs all the necessary attributes
@@ -216,9 +217,9 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     """
     for seq in sequence, other_sequence:
         try:
-                check_type(seq, list)
+            check_type(seq, list)
         except ValueError:
-                check_type(seq, tuple)
+            check_type(seq, tuple)
         if not seq:
             return 0
     sequence_set, other_sequence_set = set(sequence), set(other_sequence)
