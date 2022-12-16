@@ -212,11 +212,15 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
+    if not isinstance(sequence, list | tuple) or not isinstance(other_sequence, list | tuple):
         raise ValueError
-    if not sequence or not other_sequence:
+    if not sequence or not sequence:
         return 0
-    return len(set(sequence) and set(other_sequence)) / len(set(sequence) | set(other_sequence))
+
+    sequence1 = set(sequence)
+    sequence2 = set(other_sequence)
+    junction = sequence1.intersection(sequence2)
+    return float(len(junction)) / (len(sequence1) + len(sequence2) - len(junction))
 
 
 class SimilarityMatrix:
@@ -248,11 +252,12 @@ class SimilarityMatrix:
         """
         if vertex not in self._vertices:
             raise ValueError
-        summarization = 0
-        for index in self._matrix[self._vertices.index(vertex)]:
-            if index > 0:
-                summarization += 1
-        return summarization - 1
+        index = self._vertices.index(vertex)
+        count = -1
+        for item in self._matrix[index]:
+            if item > 0:
+                count += 1
+        return count
 
     def add_edge(self, vertex1: Sentence, vertex2: Sentence) -> None:
         """
@@ -333,11 +338,8 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        if not isinstance(vertex, Sentence) or not isinstance(scores, dict) or not isinstance(vertex, Sentence):
-            raise ValueError
-        summa = sum((1 / (self._graph.calculate_inout_score(inc_vertex) + 1)) * scores[inc_vertex]
-                    for inc_vertex in incidental_vertices)
-        self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
+        sum_ = sum((1 / (1 + self._graph.calculate_inout_score(inc))) * scores[inc] for inc in incidental_vertices)
+        self._scores[vertex] = self._damping_factor * (sum_ - 1) + 1
 
     def train(self) -> None:
         """
@@ -367,7 +369,7 @@ class TextRankSummarizer:
         """
         if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
-        return tuple(sorted(self._scores, key=lambda elem: self._scores[elem], reverse=True))[:n_sentences]
+        return tuple(sorted(self._scores, key=lambda token: self._scores[token], reverse=True))[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -375,10 +377,16 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        if not isinstance(n_sentences, int):
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
             raise ValueError
-        sentences = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
-        return '\n'.join(sentence.get_text() for sentence in sentences)
+        top_sent = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        return '\n'.join([sentence.get_text() for sentence in top_sent])
+
+    class NoRelevantTextsError(Exception):
+        pass
+
+    class IncorrectQueryError(Exception):
+        pass
 
 
 class Buddy:
