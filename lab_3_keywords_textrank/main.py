@@ -1005,7 +1005,6 @@ class KeywordExtractionBenchmark:
                     rank_dict[algorithm.__class__.__name__].update(inner_dict)
         self.report = rank_dict
         return rank_dict
-
     # Step 12.4
     def save_to_csv(self, path: Path) -> None:
         """
@@ -1015,11 +1014,4 @@ class KeywordExtractionBenchmark:
             path: Path
                 a path where to save the report file
         """
-        report_path = path / 'report.csv'
-        with open(report_path, 'w') as csv_file:
-            writer = csv.writer(csv_file)
-            headers = 'name', *self.themes
-            writer.writerow(headers)
-            for algorithm in self.report:
-                writer.writerow((algorithm, *self.report[algorithm].values()))
 pass
