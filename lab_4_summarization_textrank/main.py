@@ -23,30 +23,6 @@ def check_type(user_var: Any, expected_type: Union[Type, tuple[Type, ...]]) -> N
         raise ValueError
 
 
-# def check_collection(user_var: Any,
-#                      expected_elements_type: Type,
-#                      *expected_collection_type: Type,
-#                      can_be_empty: bool = False) -> None:
-#     """
-#     Checks whether type of user_var is at least one of expected_collection_type,
-#     checks whether type of elements in user_var are expected_elements_type,
-#     if not - raises ValueError
-#     if expected_elements_type is None, doesn't check elements
-#     """
-#     num_errors = 0
-#     if can_be_empty is False and not user_var:
-#         raise ValueError
-#     for i in expected_collection_type:
-#         try:
-#             check_type(user_var, i)
-#         except ValueError:
-#             num_errors += 1
-#     if num_errors != 0 and num_errors >= len(expected_collection_type) - 1:
-#         raise ValueError
-#     for i in user_var:
-#         check_type(i, expected_elements_type)
-
-
 def check_collection(user_var: Any,
                      expected_elements_type: Type,
                      *expected_collection_type: Type,
@@ -57,7 +33,6 @@ def check_collection(user_var: Any,
     if not - raises ValueError
     if expected_elements_type is None, doesn't check elements
     """
-    num_errors = 0
     if can_be_empty is False and not user_var:
         raise ValueError
     if not isinstance(user_var, expected_collection_type):
