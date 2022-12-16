@@ -11,11 +11,14 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(user_input: Any, user_input_type: type, can_be_empty: bool) -> None:
+def check_type(user_input: Any, user_input_type: Any, can_be_empty: bool) -> None:
     """
     Checks weather object has the correct type
     """
-    if not isinstance(user_input, user_input_type):
+    if isinstance(user_input_type, tuple):
+        if not isinstance(user_input, user_input_type[0] | user_input_type[1]):
+            raise ValueError
+    if not isinstance(user_input, user_input_type) or (isinstance(user_input, int) and isinstance(user_input, bool)):
         raise ValueError
     if not user_input and can_be_empty is False:
         raise ValueError
@@ -201,6 +204,13 @@ class SentenceEncoder(TextEncoder):
     A class to encode string sequence into matching integer sequence
     """
 
+    def __init__(self) -> None:
+        """
+        Constructs all the necessary attributes
+        """
+        super().__init__()
+        self.start = 1000
+
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other
@@ -210,7 +220,7 @@ class SentenceEncoder(TextEncoder):
         check_inner_types(tokens, tuple, str, True)
         new_tokens = (elem for elem in tokens if elem not in self._word2id)
 
-        for ind, element in enumerate(new_tokens, start=1000 + len(self._word2id)):
+        for ind, element in enumerate(new_tokens, self.start + len(self._word2id)):
             self._word2id[element] = ind
             self._id2word[ind] = element
 
@@ -233,9 +243,9 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
     :param other_sequence: a sequence of items
     :return: similarity score
     """
-    if not isinstance(sequence, (list, tuple)) or not isinstance(other_sequence, (list, tuple)):
-        raise ValueError
-    if len(sequence) == 0 or len(other_sequence) == 0:
+    check_type(sequence, (list, tuple), True)
+    check_type(other_sequence, (list, tuple), True)
+    if not sequence or not other_sequence:
         return 0
     whole_sequence = tuple(sequence) + tuple(other_sequence)
     all_unique_element = set(whole_sequence)
@@ -400,8 +410,6 @@ class TextRankSummarizer:
         :return: a sequence of sentences
         """
         check_type(n_sentences, int, True)
-        if isinstance(n_sentences, bool):
-            raise ValueError
         return tuple(sorted(self._scores, key=lambda elem: self._scores[elem], reverse=True)[:n_sentences])
 
     def make_summary(self, n_sentences: int) -> str:
@@ -411,8 +419,8 @@ class TextRankSummarizer:
         :return: summary
         """
         check_type(n_sentences, int, False)
-        summery = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
-        return '\n'.join(element.get_text() for element in summery)
+        summary = sorted(self.get_top_sentences(n_sentences), key=lambda elem: elem.get_position())
+        return '\n'.join(element.get_text() for element in summary)
 
 
 class Buddy:
@@ -479,16 +487,14 @@ class Buddy:
         """
         check_inner_types(keywords, tuple, str, True)
         check_type(n_texts, int, False)
-        if isinstance(n_texts, bool):
-            raise ValueError
         top_similar_texts = {}
         for element in self._knowledge_database.items():
             number = calculate_similarity(element[1]['keywords'], keywords)
             top_similar_texts[element[0]] = number
         if not any(top_similar_texts.values()):
             raise NoRelevantTextsError
-        sorted_top_similar_texts = dict(sorted(top_similar_texts.items(), key=lambda x: (x[1], x[0]), reverse=True))
-        return tuple(sorted_top_similar_texts.keys())[:n_texts]
+        return tuple(sorted(sorted(top_similar_texts, reverse=True), key=lambda elem: top_similar_texts[elem],
+                            reverse=True))[:n_texts]
 
     def reply(self, query: str, n_summaries: int = 3) -> str:
         """
