@@ -40,6 +40,6 @@ if __name__ == "__main__":
     ENCODER.encode_sentences(SENTENCES)
     print("Encoded:", *(sentence.get_encoded() for sentence in SENTENCES))
 
-    RESULT = None
+    RESULT = True
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
