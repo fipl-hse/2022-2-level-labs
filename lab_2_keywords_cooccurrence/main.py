@@ -167,29 +167,4 @@ def process_text(text: str, stop_words: Optional[Sequence[str]] = None, max_leng
     """
     Extract key phrases, returns extracted key phrases or None.
     """
-    candidate_keyword_phrases, word_frequencies, word_degrees, word_scores, keyword_phrases_with_scores, \
-        candidates_adjoined, cumulative_score_with_stop_words = repeat(None, 7)
-    phrases = extract_phrases(text)
-    if not stop_words and max_length and (stop_words_generated := generate_stop_words(text, max_length)):
-        stop_words = stop_words_generated
-    if phrases and stop_words:
-        candidate_keyword_phrases = extract_candidate_keyword_phrases(phrases, stop_words)
-    if candidate_keyword_phrases:
-        word_frequencies = calculate_frequencies_for_content_words(candidate_keyword_phrases)
-    if candidate_keyword_phrases and word_frequencies:
-        word_degrees = calculate_word_degrees(candidate_keyword_phrases, list(word_frequencies.keys()))
-    if word_degrees and word_frequencies:
-        word_scores = calculate_word_scores(word_degrees, word_frequencies)
-    if candidate_keyword_phrases and word_scores:
-        keyword_phrases_with_scores = calculate_cumulative_score_for_candidates(candidate_keyword_phrases, word_scores)
-    if candidate_keyword_phrases and phrases:
-        candidates_adjoined = \
-            extract_candidate_keyword_phrases_with_adjoining(candidate_keyword_phrases, phrases)
-    if candidates_adjoined and word_scores and stop_words:
-        cumulative_score_with_stop_words = \
-            calculate_cumulative_score_for_candidates_with_stop_words(candidates_adjoined, word_scores, stop_words)
-    else:
-        cumulative_score_with_stop_words = {}
-    if keyword_phrases_with_scores and cumulative_score_with_stop_words is not None:
-        return {**keyword_phrases_with_scores, **cumulative_score_with_stop_words}
-    return None
+    pass
