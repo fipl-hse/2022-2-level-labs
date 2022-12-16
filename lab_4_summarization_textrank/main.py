@@ -13,6 +13,9 @@ EncodedSentence = tuple[int, ...]
 def check_types(collection: Any,
                 collections_type: list[Type]) \
         -> None:
+    """
+    blegh
+    """
 
     checks = list()
     for concrete_type in collections_type:
@@ -25,6 +28,10 @@ def check_types(collection: Any,
 
 def check_items_type(collection: Any, collections_type: list[Type], items_type: list[Type]) \
         -> None:
+    """
+    blegh
+    """
+    
     check_types(collection, collections_type)
     for item in collection:
         check_types(item, items_type)
