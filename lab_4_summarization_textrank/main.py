@@ -2,7 +2,7 @@
 Lab 4
 Summarize text using TextRank algorithm
 """
-from typing import Union, Iterable
+from typing import Union, Iterable, Type, Any, Optional
 import re
 from itertools import permutations
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -10,8 +10,23 @@ from lab_3_keywords_textrank.main import TextEncoder, \
 
 PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
-
-def check_iter(iterable: Iterable, val_type: type) -> bool:
+def check_types(variable: Any, possible_var_type: Type, container_value_type: Optional[Type] = None) -> None:
+    """
+    Checks if the variable is of an appropriate type
+    param: variable
+    param: possible_var_type
+    param: container_value_type (default = None)
+    return:
+    """
+    if not isinstance(variable, possible_var_type) or isinstance(variable, bool):
+        raise ValueError
+    if not container_value_type:
+        return None
+    for element in variable:
+        if not isinstance(element, container_value_type):
+            raise ValueError
+    return None
+def check_iter(iterable: Iterable, val_type: Type) -> bool:
     """
     Checks, if all values in iterable are of needed type
     """
@@ -121,8 +136,9 @@ class SentencePreprocessor(TextPreprocessor):
         """
         if not (text and isinstance(text, str)):
             raise ValueError
-        text_list = re.split(r'(?<=\w\w[.!?])\s', text)
-        return tuple(Sentence(sent, pos) for pos, sent in enumerate(text_list) if sent)
+        text_list = re.split(r'(?<=[.!?])\s+(?=[А-ЯA-Z])', text)
+        return tuple(Sentence(sent.replace('\n', ' ').replace('  ', ' '), pos)
+                     for pos, sent in enumerate(text_list) if sent)
 
     def _preprocess_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -133,9 +149,10 @@ class SentencePreprocessor(TextPreprocessor):
         if not (sentences and isinstance(sentences, tuple) and
         check_iter(sentences, Sentence)):
             raise ValueError
-        for sent in sentences:
-            preprocessed_sentence = super().preprocess_text(sent.get_text())
-            sent.set_preprocessed(preprocessed_sentence)
+        for one_sentence in sentences:
+            txt = one_sentence.get_text()
+            preprocessing = TextPreprocessor.preprocess_text(self, txt)
+            one_sentence.set_preprocessed(preprocessing)
 
     def get_sentences(self, text: str) -> tuple[Sentence, ...]:
         """
@@ -148,6 +165,7 @@ class SentencePreprocessor(TextPreprocessor):
         tuple_of_sentences = self._split_by_sentence(text)
         self._preprocess_sentences(tuple_of_sentences)
         return tuple_of_sentences
+
 
 
 class SentenceEncoder(TextEncoder):
@@ -209,9 +227,11 @@ def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[lis
         return 0.0
     seq_set = frozenset(sequence)
     other_seq_set = frozenset(other_sequence)
-    intersedtion = seq_set.intersection(other_seq_set)
+    intersection = seq_set.intersection(other_seq_set)
     union = seq_set.union(other_seq_set)
-    return len(intersedtion) / len(union)
+    return len(intersection) / len(union)
+
+
 
 class SimilarityMatrix:
     """
@@ -285,8 +305,6 @@ class SimilarityMatrix:
         except IndexError:
             self._matrix[v2_idx][v1_idx] = similarity
 
-
-
     def get_similarity_score(self, sentence: Sentence, other_sentence: Sentence) -> float:
         """
         Gets the similarity score for two sentences from the matrix
@@ -311,7 +329,6 @@ class SimilarityMatrix:
         pairs = list(permutations(sentences, r=2))
         for idx, pair in enumerate(pairs):
             self.add_edge(pair[0], pair[1])
-
 
 class TextRankSummarizer:
     """
@@ -392,10 +409,11 @@ class TextRankSummarizer:
 
         if not (n_sentences and isinstance(n_sentences, int) and not isinstance(n_sentences, bool)):
             raise ValueError
-        sent_positions = {sent.get_text(): sent.get_position() for sent in self._graph.get_vertices()}
+        sent_positions = {sent.get_text(): sent.get_position() for sent in self.get_top_sentences(n_sentences)}
         sent_sorted = sorted(sent_positions, key=lambda x: sent_positions[x])
-        return ' '.join(sent_sorted[:n_sentences])
-
+        summary = '\n'.join(sent_sorted)
+        summary.replace('\n \n', '')
+        return summary
 
 class Buddy:
     """
