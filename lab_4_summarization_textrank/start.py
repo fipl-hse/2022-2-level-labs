@@ -49,13 +49,6 @@ if __name__ == "__main__":
     SUMMARY = RANK.make_summary(5)
     print(f'Summary:\n {SUMMARY}')
 
-    BUDDY = Buddy(paths_to_texts, stop_words, tuple(punctuation), idf)
-    QUERY = 'Где учился Юрий Гагарин?'
-    try:
-        print(f'Вопрос: {QUERY}\n{BUDDY.reply(QUERY)}')
-    except NoRelevantTextsError:
-        print('haven\'t find. try again')
-
     RESULT = SUMMARY
     # DO NOT REMOVE NEXT LINE - KEEP IT INTENTIONALLY LAST
     assert RESULT, 'Summaries are not extracted'
