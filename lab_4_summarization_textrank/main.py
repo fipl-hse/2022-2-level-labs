@@ -3,7 +3,6 @@ Lab 4
 Summarize text using TextRank algorithm
 """
 import re
-from itertools import combinations
 from typing import Union, Any, Tuple, get_args
 
 from lab_3_keywords_textrank.main import TextEncoder, \
@@ -288,11 +287,14 @@ class SimilarityMatrix:
         :param sentences
         :return:
         """
-        if not sentences:
+        if not isinstance(sentences, tuple) or not sentences:
             raise ValueError
-        check_types(sentences, tuple, Sentence)
-        for sentence, other_sentence in combinations(sentences, 2):
-            self.add_edge(sentence, other_sentence)
+
+        for sentence in sentences:
+            for other_sentence in sentences:
+                if sentence.get_encoded() != other_sentence.get_encoded():
+                    self.add_edge(sentence, other_sentence)
+
 
 
 class TextRankSummarizer:

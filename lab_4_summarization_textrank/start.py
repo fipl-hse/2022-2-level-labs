@@ -42,7 +42,7 @@ if __name__ == "__main__":
     summarizer = TextRankSummarizer(graph)
     summarizer.train()
 
-    RESULT = summarizer.make_summary(10)
+    RESULT = summarizer.make_summary(1)
     print(RESULT)
 
     print('=' * 20)
