@@ -325,7 +325,11 @@ class TextRankSummarizer:
         Constructs all the necessary attributes
         :param graph: the filled instance of the similarity matrix
         """
-        pass
+        self._graph = graph
+        self._damping_factor = 0.85
+        self._convergence_threshold = 0.0001
+        self._max_iter = 50
+        self._scores = {}
 
     def update_vertex_score(
             self, vertex: Sentence, incidental_vertices: list[Sentence], scores: dict[Sentence, float]
@@ -337,7 +341,20 @@ class TextRankSummarizer:
         :param scores: current vertices scores
         :return:
         """
-        pass
+        if not (isinstance(vertex, Sentence) or isinstance(incidental_vertices, list) or isinstance(scores, dict)):
+            raise ValueError
+        for one_vertex in incidental_vertices:
+            if not isinstance(one_vertex, Sentence):
+                raise ValueError
+        for one_sentence, score in scores:
+            if not (isinstance(score, float) or isinstance(one_sentence, Sentence)):
+                raise ValueError
+        summ = 0.0
+        for ver in incidental_vertices:
+            inout_score = self._graph.calculate_inout_score(ver)
+            summ += 1 / inout_score * self._scores[ver]
+        weight = summ * self._damping_factor + 1 - self._damping_factor
+        self._scores[vertex] = weight
 
     def train(self) -> None:
         """
@@ -365,7 +382,9 @@ class TextRankSummarizer:
         :param n_sentences: number of sentence to retrieve
         :return: a sequence of sentences
         """
-        pass
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        return tuple(sorted(self._scores, key=lambda token: self._scores[token], reverse=True))[:n_sentences]
 
     def make_summary(self, n_sentences: int) -> str:
         """
@@ -373,7 +392,10 @@ class TextRankSummarizer:
         :param n_sentences: number of sentences to include in the summary
         :return: summary
         """
-        pass
+        if not isinstance(n_sentences, int) or isinstance(n_sentences, bool):
+            raise ValueError
+        top = sorted(self.get_top_sentences(n_sentences), key=lambda x: x.get_position())
+        return '\n'.join([sentence.get_text() for sentence in top])
 
 
 class Buddy:
