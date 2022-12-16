@@ -49,7 +49,7 @@ class Sentence:
             raise ValueError
         self._text = text
         self._position = position
-        self._preprocessed = ()
+        self._preprocessed: tuple[str, ...] = ()
         self._encoded = ()
 
     def get_position(self) -> int:
