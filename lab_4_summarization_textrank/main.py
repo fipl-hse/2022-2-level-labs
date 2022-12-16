@@ -12,17 +12,6 @@ PreprocessedSentence = tuple[str, ...]
 EncodedSentence = tuple[int, ...]
 
 
-def check_type(input1: Any,  objects_type: type, elements_type: type) -> None:
-    """
-    Checks type of variables and if incorrect raises ValueError
-    """
-    if not isinstance(input1, objects_type):
-        raise ValueError
-    for item in input1:
-        if not isinstance(item, elements_type):
-            raise ValueError
-
-
 class Sentence:
     """
     An abstraction over the real-world sentences
