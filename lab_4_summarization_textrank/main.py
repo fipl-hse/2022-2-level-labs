@@ -125,7 +125,7 @@ class SentencePreprocessor(TextPreprocessor):
         if not isinstance(text, str):
             raise ValueError
         text = text.replace('\n', ' ').strip()
-        split_text = re.split(r"[.!?\s]\s*", text)
+        split_text = re.split(r'(?<=[?!.])\s+(?=[А-ЯA-Z])', text)
         new_sentences = []
         for position, sentence in enumerate(split_text):
             new_sentences.append(Sentence(sentence, position))
@@ -178,7 +178,16 @@ class SentenceEncoder(TextEncoder):
         :param tokens: a sequence of string tokens
         :return:
         """
-        pass
+        if not isinstance(tokens, tuple):
+            raise ValueError
+        for token in tokens:
+            if not isinstance(token, str):
+                raise ValueError
+        tokens_list = [token for token in tokens if token not in self._word2id]
+        for idx, token in enumerate(tokens_list, 1000 + len(self._word2id)):
+            self._word2id[token] = idx
+            self._id2word[idx] = token
+
 
     def encode_sentences(self, sentences: tuple[Sentence, ...]) -> None:
         """
@@ -186,7 +195,13 @@ class SentenceEncoder(TextEncoder):
         :param sentences: a sequence of sentences
         :return: a list of sentences with their preprocessed versions
         """
-        pass
+        if not isinstance(sentences, tuple):
+            raise ValueError
+        for sentence in sentences:
+            if not isinstance(sentence, Sentence):
+                raise ValueError
+            self._learn_indices(sentence.get_preprocessed())
+            sentence.set_encoded(tuple(self._word2id[token] for token in sentence.get_preprocessed()))
 
 
 def calculate_similarity(sequence: Union[list, tuple], other_sequence: Union[list, tuple]) -> float:
