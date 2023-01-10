@@ -41,7 +41,7 @@ class TextPreprocessor:
     preprocess_text(text: str) -> tuple[str, ...]:
         Produces filtered clean lowercase tokens from raw text
     """
-    # Step 1.1
+
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...]) -> None:
         """
         Constructs all the necessary attributes for the text preprocessor object
@@ -55,7 +55,6 @@ class TextPreprocessor:
         self._stop_words = stop_words
         self._punctuation = punctuation
 
-    # Step 1.2
     def _clean_and_tokenize(self, text: str) -> tuple[str, ...]:
         """
         Removes punctuation, casts to lowercase, splits into tokens.
@@ -73,7 +72,6 @@ class TextPreprocessor:
                 text = text.replace(punc, '')
         return tuple(text.lower().split())
 
-    # Step 1.3
     def _remove_stop_words(self, tokens: tuple[str, ...]) -> tuple[str, ...]:
         """
         Filters tokens, removing stop words
@@ -88,7 +86,6 @@ class TextPreprocessor:
         """
         return tuple(token for token in tokens if token not in self._stop_words)
 
-    # Step 1.4
     def preprocess_text(self, text: str) -> tuple[str, ...]:
         """
         Produces filtered clean lowercase tokens from raw text
@@ -124,7 +121,6 @@ class TextEncoder:
         Decodes input sequence of integer tokens to sequence of string tokens
     """
 
-    # Step 2.1
     def __init__(self) -> None:
         """
         Constructs all the necessary attributes for the text encoder object
@@ -132,7 +128,6 @@ class TextEncoder:
         self._word2id = {}
         self._id2word = {}
 
-    # Step 2.2
     def _learn_indices(self, tokens: tuple[str, ...]) -> None:
         """
         Fills attributes mapping words and integer equivalents to each other
@@ -147,7 +142,6 @@ class TextEncoder:
         for token, idx in self._word2id.items():
             self._id2word[idx] = token
 
-    # Step 2.3
     def encode(self, tokens: tuple[str, ...]) -> Optional[tuple[int, ...]]:
         """
         Encodes input sequence of string tokens to sequence of integer tokens
@@ -166,7 +160,6 @@ class TextEncoder:
         self._learn_indices(tokens)
         return tuple(self._word2id[token] for token in tokens)
 
-    # Step 2.4
     def decode(self, encoded_tokens: tuple[int, ...]) -> Optional[tuple[str, ...]]:
         """
         Decodes input sequence of integer tokens to sequence of string tokens
@@ -185,7 +178,6 @@ class TextEncoder:
         return tuple(self._id2word[encoded_token] for encoded_token in encoded_tokens)
 
 
-# Step 3
 def extract_pairs(tokens: tuple[int, ...], window_length: int) -> Optional[tuple[tuple[int, ...], ...]]:
     """
     Retrieves all pairs of co-occurring words in the token sequence
@@ -247,7 +239,6 @@ class AdjacencyMatrixGraph:
     _positions: dict[int, list[int]]
     _position_weights: dict[int, float]
 
-    # Step 4.1
     def __init__(self) -> None:
         """
         Constructs all the necessary attributes for the adjacency matrix graph object
@@ -257,7 +248,6 @@ class AdjacencyMatrixGraph:
         self._positions = {}
         self._position_weights = {}
 
-    # Step 4.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
         Adds or overwrites an edge in the graph between the specified vertices
@@ -290,7 +280,6 @@ class AdjacencyMatrixGraph:
         self._matrix[idx2][idx1] = 1
         return 0
 
-    # Step 4.3
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
         """
         Retrieves information about whether the two vertices are incidental
@@ -312,7 +301,6 @@ class AdjacencyMatrixGraph:
         idx2 = self._vertices.index(vertex2)
         return self._matrix[idx1][idx2]
 
-    # Step 4.4
     def get_vertices(self) -> tuple[int, ...]:
         """
         Returns a sequence of all vertices present in the graph
@@ -323,7 +311,6 @@ class AdjacencyMatrixGraph:
         """
         return tuple(self._vertices)
 
-    # Step 4.5
     def calculate_inout_score(self, vertex: int) -> int:
         """
         Retrieves a number of incidental vertices to a specified vertex
@@ -342,7 +329,6 @@ class AdjacencyMatrixGraph:
         idx = self._vertices.index(vertex)
         return sum(self._matrix[idx])
 
-    # Step 4.6
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
         """
         Updates graph instance with vertices and edges extracted from tokenized text
@@ -357,7 +343,6 @@ class AdjacencyMatrixGraph:
         for pair in extract_pairs(tokens, window_length):
             self.add_edge(*pair)
 
-    # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
         """
         Saves information about all positions of each vertex in the token sequence
@@ -384,7 +369,6 @@ class AdjacencyMatrixGraph:
         for vertex in self._position_weights:
             self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
 
-    # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
         """
         Retrieves position weights for all vertices in the graph
@@ -424,7 +408,6 @@ class EdgeListGraph:
         Retrieves position weights for all vertices in the graph
     """
 
-    # Step 7.1
     def __init__(self) -> None:
         """
         Constructs all the necessary attributes for the edge list graph object
@@ -433,7 +416,6 @@ class EdgeListGraph:
         self._positions = {}
         self._position_weights = {}
 
-    # Step 7.2
     def get_vertices(self) -> tuple[int, ...]:
         """
         Returns a sequence of all vertices present in the graph
@@ -444,7 +426,6 @@ class EdgeListGraph:
         """
         return tuple(self._edges.keys())
 
-    # Step 7.2
     def add_edge(self, vertex1: int, vertex2: int) -> int:
         """
         Adds or overwrites an edge in the graph between the specified vertices
@@ -472,7 +453,6 @@ class EdgeListGraph:
             self._edges[vertex1].append(vertex2)
         return 0
 
-    # Step 7.2
     def is_incidental(self, vertex1: int, vertex2: int) -> int:
         """
         Retrieves information about whether the two vertices are incidental
@@ -492,7 +472,6 @@ class EdgeListGraph:
             return -1
         return int(vertex1 in self._edges.get(vertex2, 0))
 
-    # Step 7.2
     def calculate_inout_score(self, vertex: int) -> int:
         """
         Retrieves a number of incidental vertices to a specified vertex
@@ -510,7 +489,6 @@ class EdgeListGraph:
             return -1
         return len(self._edges[vertex])
 
-    # Step 7.2
     def fill_from_tokens(self, tokens: tuple[int, ...], window_length: int) -> None:
         """
         Updates graph instance with vertices and edges extracted from tokenized text
@@ -525,7 +503,6 @@ class EdgeListGraph:
         for pair in extract_pairs(tokens, window_length):
             self.add_edge(*pair)
 
-    # Step 8.2
     def fill_positions(self, tokens: tuple[int, ...]) -> None:
         """
         Saves information on all positions of each vertex in the token sequence
@@ -538,7 +515,6 @@ class EdgeListGraph:
                 self._positions[token] = []
             self._positions[token] += [idx + 1]
 
-    # Step 8.3
     def calculate_position_weights(self) -> None:
         """
         Computes position weights for all tokens in text
@@ -552,7 +528,6 @@ class EdgeListGraph:
         for vertex in self._position_weights:
             self._position_weights[vertex] = self._position_weights.get(vertex, 0.0) / non_norm_total_weight
 
-    # Step 8.4
     def get_position_weights(self) -> dict[int, float]:
         """
         Retrieves position weights for all vertices in the graph
@@ -595,7 +570,6 @@ class VanillaTextRank:
 
     _scores: dict[int, float]
 
-    # Step 5.1
     def __init__(self, graph: Union[AdjacencyMatrixGraph, EdgeListGraph]) -> None:
         """
         Constructs all the necessary attributes for the text rank algorithm implementation
@@ -610,7 +584,6 @@ class VanillaTextRank:
         self._max_iter = 50
         self._scores = {}
 
-    # Step 5.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
         """
         Changes vertex significance score using algorithm-specific formula
@@ -628,7 +601,6 @@ class VanillaTextRank:
         self._scores[vertex] = summa * self._damping_factor + (1 - self._damping_factor)
         pass
 
-    # Step 5.3
     def train(self) -> None:
         """
         Iteratively computes significance scores for vertices
@@ -651,7 +623,6 @@ class VanillaTextRank:
             if sum(abs_score_diff) <= self._convergence_threshold:
                 break
 
-    # Step 5.4
     def get_scores(self) -> dict[int, float]:
         """
         Retrieves importance scores of all tokens in the encoded text
@@ -662,7 +633,6 @@ class VanillaTextRank:
         """
         return self._scores
 
-    # Step 5.5
     def get_top_keywords(self, n_keywords: int) -> tuple[int, ...]:
         """
         Retrieves top n most important tokens in the encoded text
@@ -706,7 +676,6 @@ class PositionBiasedTextRank(VanillaTextRank):
         Retrieves top n most important tokens in the encoded text
     """
 
-    # Step 9.1
     def __init__(self, graph: Union[AdjacencyMatrixGraph, EdgeListGraph]) -> None:
         """
         Constructs all the necessary attributes
@@ -719,7 +688,6 @@ class PositionBiasedTextRank(VanillaTextRank):
         super().__init__(graph)
         self._position_weights = graph.get_position_weights()
 
-    # Step 9.2
     def update_vertex_score(self, vertex: int, incidental_vertices: list[int], scores: dict[int, float]) -> None:
         """
         Changes vertex significance score using algorithm-specific formula
@@ -760,7 +728,6 @@ class TFIDFAdapter:
 
     _scores: dict[str, float]
 
-    # Step 10.1
     def __init__(self, tokens: tuple[str, ...], idf: dict[str, float]) -> None:
         """
         Constructs all the necessary attributes
@@ -776,7 +743,6 @@ class TFIDFAdapter:
         self._idf = idf
         self._scores = {}
 
-    # Step 10.2
     def train(self) -> int:
         """
         Computes importance scores for all tokens
@@ -794,7 +760,6 @@ class TFIDFAdapter:
         self._scores = tfidf_dict
         return 0
 
-    # Step 10.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         Retrieves a requested number of the most important tokens
@@ -833,7 +798,6 @@ class RAKEAdapter:
 
     _scores: dict[str, float]
 
-    # Step 11.1
     def __init__(self, text: str, stop_words: tuple[str, ...]) -> None:
         """
         Constructs all the necessary attributes
@@ -849,7 +813,6 @@ class RAKEAdapter:
         self._stop_words = stop_words
         self._scores = {}
 
-    # Step 11.2
     def train(self) -> int:
         """
         Computes importance scores for all tokens
@@ -876,7 +839,6 @@ class RAKEAdapter:
         self._scores = dict(score_dict)
         return 0
 
-    # Step 11.3
     def get_top_keywords(self, n_keywords: int) -> tuple[str, ...]:
         """
         Retrieves a requested number of the most important tokens
@@ -893,7 +855,6 @@ class RAKEAdapter:
         return tuple(elem[0] for elem in srtd_tokens)[:n_keywords]
 
 
-# Step 12.1
 def calculate_recall(predicted: tuple[str, ...], target: tuple[str, ...]) -> float:
     """
     Computes recall metric
@@ -938,7 +899,6 @@ class KeywordExtractionBenchmark:
     save_to_csv(self, path: Path) -> None:
         saves the report in the .csv format
     """
-    # Step 12.2
     def __init__(self, stop_words: tuple[str, ...], punctuation: tuple[str, ...],
                  idf: dict[str, float], materials_path: Path) -> None:
         """
@@ -961,7 +921,6 @@ class KeywordExtractionBenchmark:
         self.themes = ('culture', 'business', 'crime', 'fashion', 'health', 'politics', 'science', 'sports', 'tech')
         self.report = {}
 
-    # Step 12.3
     def run(self) -> Optional[dict[str, dict[str, float]]]:
         """
         Creates comparison report
@@ -1011,7 +970,6 @@ class KeywordExtractionBenchmark:
         self.report = rank_dict
         return rank_dict
 
-    # Step 12.4
     def save_to_csv(self, path: Path) -> None:
         """
         Saves comparison report to csv
