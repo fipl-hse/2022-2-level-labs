@@ -1,4 +1,5 @@
-"""
+]
+10"""
 TextRank summarizer starter
 """
 from pathlib import Path
